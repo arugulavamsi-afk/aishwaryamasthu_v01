@@ -14319,6 +14319,8 @@
         return 'Thematic';
     }
 
+    const MFE_DATA_URL = 'https://arugulavamsi-afk.github.io/aishwaryamasthu_v01/output/mf-data.json';
+    let _mfePrecomputed = false;
     let _mfeSubSect = 'All'; // current sub-sector filter (Sectoral only)
 
     /* ── state ── */
@@ -14344,10 +14346,55 @@
         if (_mfeBusy) return;
         if (_mfeReady) { _mfeShowTable(); mfeCatLoad(_mfeCur); return; }
         _mfeBusy = true;
-        _mfeShow('mfe-loading'); _mfeHide('mfe-error'); _mfeHide('mfe-table-wrap'); _mfeHide('mfe-phase-bar');
-        _mfeMsg('Fetching all funds from AMFI…', 'Loading complete fund universe · one-time per session · subsequent switches are instant');
-        mfeStep1();
+        _mfeShow('mfe-loading'); _mfeHide('mfe-error');
+        _mfeHide('mfe-table-wrap'); _mfeHide('mfe-phase-bar');
+        _mfeMsg('Loading fund data…', 'Pre-scored data · loads instantly · updated nightly');
+        mfeLoadPrecomputed();
     }
+
+    async function mfeLoadPrecomputed() {
+        try {
+            const res = await fetch(MFE_DATA_URL, { signal: AbortSignal.timeout(30000) });
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const data = await res.json();
+            if (!data?.categories || !data?.generated) throw new Error('Invalid data format');
+
+            const ts = document.getElementById('mfe-last-updated');
+            if (ts) {
+                const d = new Date(data.generated);
+                ts.textContent = 'Data: ' + d.toLocaleDateString('en-IN', {
+                    day: '2-digit', month: 'short', year: 'numeric'
+                });
+            }
+
+            _mfeList = [];
+            Object.entries(data.categories).forEach(([cat, funds]) => {
+                funds.forEach(f => {
+                    _mfeList.push({ code: f.code, name: f.name, amc: f.amc, cat: cat, subSect: f.subSect || 'Thematic' });
+                    if (f.nav !== null) _mfeNavCache[f.code] = { nav: f.nav, date: f.navDate };
+                    _mfeMetCache[f.code] = f.metrics;
+                    _mfeCatNav[cat]  = true;
+                    _mfeCatDone[cat] = true;
+                });
+            });
+
+            document.getElementById('mfe-stat-total').textContent = _mfeList.length.toLocaleString();
+            _mfePrecomputed = true;
+            _mfeReady = true;
+            _mfeBusy  = false;
+            _mfeHide('mfe-loading');
+            _mfeShowTable();
+            mfeCatLoad('Index');
+            mfeSyncCatDropdowns('Index');
+
+        } catch (err) {
+            console.warn('[MFExplorer] Pre-computed load failed, falling back:', err.message);
+            _mfeBusy = false;
+            _mfeMsg('Fetching all funds from AMFI…', 'Live mode · one-time per session');
+            mfeStep1();
+        }
+    }
+
 
     function refreshMFExplorer() {
         _mfeList=[]; _mfeNavCache={}; _mfeMetCache={}; _mfeCatDone={}; _mfeCatNav={};
