@@ -357,17 +357,25 @@
 
     function tgRegimeCard(label, gross, deductions, taxable, tax, cess, total, isWinner, color) {
         var fmt = function(n){ return 'Rs.' + Math.round(n).toLocaleString('en-IN'); };
-        return '<div class="rounded-xl p-2.5" style="background:' + color + '08;border:2px solid ' + (isWinner ? color : '#e2e8f0') + ';">' +
-            '<div class="text-[10px] font-black mb-1.5" style="color:' + color + ';">' + label + (isWinner ? ' &#127942;' : '') + '</div>' +
+        var row = function(lbl, val, extraClass) {
+            return '<div class="flex justify-between items-center min-h-[1.35rem]' + (extraClass ? ' ' + extraClass : '') + '">' +
+                '<span class="text-slate-500 leading-tight">' + lbl + '</span>' +
+                '<span class="font-bold tabular-nums whitespace-nowrap ml-1">' + val + '</span></div>';
+        };
+        return '<div class="rounded-xl p-2.5 flex flex-col" style="background:' + color + '08;border:2px solid ' + (isWinner ? color : '#e2e8f0') + ';">' +
+            '<div class="text-[10px] font-black mb-1.5 min-h-[1.25rem] flex items-center" style="color:' + color + ';">' + label + (isWinner ? ' &#127942;' : '') + '</div>' +
             '<div class="space-y-0.5 text-[9.5px]">' +
-                '<div class="flex justify-between"><span class="text-slate-500">' + _t('tg.card.gross') + '</span><span class="font-bold">' + fmt(gross) + '</span></div>' +
-                '<div class="flex justify-between"><span class="text-slate-500">' + _t('tg.card.ded') + '</span><span class="font-bold text-emerald-600">-' + fmt(deductions) + '</span></div>' +
-                '<div class="flex justify-between"><span class="text-slate-500">' + _t('tg.card.taxable') + '</span><span class="font-bold">' + fmt(taxable) + '</span></div>' +
-                '<div class="flex justify-between pt-0.5 border-t border-slate-100 mt-0.5"><span class="text-slate-500">' + _t('tg.card.tax') + '</span><span class="font-bold">' + fmt(tax) + '</span></div>' +
-                '<div class="flex justify-between"><span class="text-slate-500">' + _t('tg.card.cess') + '</span><span class="font-bold">' + fmt(cess) + '</span></div>' +
-                '<div class="flex justify-between rounded-lg px-1.5 py-1 mt-1" style="background:#fff;"><span class="font-black text-slate-700 text-[10px]">' + _t('tg.card.total') + '</span><span class="font-black text-[10px]" style="color:' + color + ';">' + fmt(total) + '</span></div>' +
-                '<div class="text-[9px] text-slate-400">' + _t('tg.card.takehome') + ': ' + fmt(gross - total) + '</div>' +
+                row(_t('tg.card.gross'),   fmt(gross)) +
+                row(_t('tg.card.ded'),     '<span class="text-emerald-600">-' + fmt(deductions) + '</span>') +
+                row(_t('tg.card.taxable'), fmt(taxable)) +
+                row(_t('tg.card.tax'),     fmt(tax), 'pt-0.5 border-t border-slate-100 mt-0.5') +
+                row(_t('tg.card.cess'),    fmt(cess)) +
             '</div>' +
+            '<div class="flex justify-between items-center rounded-lg px-1.5 py-1 mt-2" style="background:#fff;">' +
+                '<span class="font-black text-slate-700 text-[10px] leading-tight">' + _t('tg.card.total') + '</span>' +
+                '<span class="font-black text-[10px] tabular-nums whitespace-nowrap ml-1" style="color:' + color + ';">' + fmt(total) + '</span>' +
+            '</div>' +
+            '<div class="text-[9px] text-slate-400 mt-1 min-h-[1.1rem]">' + _t('tg.card.takehome') + ': ' + fmt(gross - total) + '</div>' +
         '</div>';
     }
 
