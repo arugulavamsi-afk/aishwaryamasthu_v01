@@ -14,7 +14,7 @@ const fs   = require('fs');
 const path = require('path');
 
 /* ── Config ─────────────────────────────────────────────── */
-const OUT_DIR  = path.join(__dirname, '..', 'output');
+const OUT_DIR  = path.join(__dirname, '..', 'public');  // served directly by Firebase hosting
 const OUT_FILE = path.join(OUT_DIR, 'mf-data.json');
 const FETCH_TIMEOUT_MS  = 20_000;
 const BATCH_SIZE        = 15;   // concurrent fetches per batch
@@ -62,9 +62,17 @@ const CAT_BENCH_CODE = {
 /* ── Helpers ─────────────────────────────────────────────── */
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
+// Browser-like headers — prevents mfapi.in from rejecting cloud-runner requests
+const HEADERS = {
+  'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+  'Accept':     'application/json, text/plain, */*',
+  'Accept-Language': 'en-IN,en;q=0.9',
+  'Referer':    'https://www.mfapi.in/',
+};
+
 async function fetchWithRetry(url, attempt = 1) {
   try {
-    const res = await fetch(url, { signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) });
+    const res = await fetch(url, { headers: HEADERS, signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return await res.json();
   } catch (err) {
@@ -74,6 +82,31 @@ async function fetchWithRetry(url, attempt = 1) {
     }
     return null;
   }
+}
+
+// Fallback fund list from AMFI's official government server (never blocks cloud IPs).
+// Returns same shape as mfapi.in /mf, plus amfiNav/amfiNavDate as a bonus.
+async function fetchFundListFromAMFI() {
+  const res = await fetch('https://www.amfiindia.com/spages/NAVAll.txt', {
+    headers: { 'User-Agent': HEADERS['User-Agent'], 'Accept': 'text/plain' },
+    signal:  AbortSignal.timeout(30_000),
+  });
+  if (!res.ok) throw new Error(`AMFI HTTP ${res.status}`);
+  const text  = await res.text();
+  const funds = [];
+  for (const line of text.split('\n')) {
+    const parts = line.trim().split(';');
+    if (parts.length < 6) continue;
+    const code = parseInt(parts[0], 10);
+    if (isNaN(code)) continue;
+    const name = parts[3]?.trim();
+    if (!name) continue;
+    const nav  = parseFloat(parts[4]);
+    const date = parts[5]?.trim() || null;
+    funds.push({ schemeCode: code, schemeName: name,
+                 amfiNav: isNaN(nav) ? null : nav, amfiNavDate: date });
+  }
+  return funds;
 }
 
 function navArray(data) {
@@ -287,12 +320,30 @@ async function main() {
   console.log('=== MF Score Builder ===');
   console.log(`Started: ${new Date().toISOString()}\n`);
 
-  fs.mkdirSync(OUT_DIR, { recursive: true });
+  if (!fs.existsSync(OUT_DIR)) { console.error('FATAL: public/ directory not found at', OUT_DIR); process.exit(1); }
 
-  /* Step 1: Fetch full fund list */
-  console.log('Step 1: Fetching fund list from mfapi.in...');
-  const listData = await fetchWithRetry('https://api.mfapi.in/mf');
-  if (!listData) { console.error('FATAL: Could not fetch fund list'); process.exit(1); }
+  /* Step 1: Fetch full fund list (mfapi.in → AMFI fallback) */
+  console.log('Step 1: Fetching fund list...');
+  let listData  = await fetchWithRetry('https://api.mfapi.in/mf');
+  let amfiNavMap = null; // populated when AMFI fallback is used
+
+  if (!listData) {
+    console.log('  mfapi.in unreachable — falling back to AMFI NAVAll.txt...');
+    try {
+      const amfiList = await fetchFundListFromAMFI();
+      listData   = amfiList;
+      amfiNavMap = {};
+      amfiList.forEach(f => {
+        if (f.amfiNav !== null) amfiNavMap[String(f.schemeCode)] = { nav: f.amfiNav, date: f.amfiNavDate };
+      });
+      console.log(`  AMFI fallback: ${listData.length} schemes`);
+    } catch (err) {
+      console.error('FATAL: Could not fetch fund list from mfapi.in or AMFI:', err.message);
+      process.exit(1);
+    }
+  } else {
+    console.log(`  mfapi.in: ${listData.length} schemes`);
+  }
 
   const EXCLUDE = new RegExp([
     'segregated','idcw','dividend','weekly dividend','monthly dividend',
@@ -317,16 +368,19 @@ async function main() {
     if (!existing || /growth/i.test(f.schemeName)) growthMap.set(base, f);
   });
 
-  const funds = Array.from(growthMap.values()).map(f => ({
-    code:    String(f.schemeCode),
-    name:    f.schemeName,
-    amc:     parseAMC(f.schemeName),
-    cat:     parseCat(f.schemeName),
-    subSect: parseSubSect(f.schemeName),
-    nav:     null,
-    navDate: null,
-    metrics: null,
-  }));
+  const funds = Array.from(growthMap.values()).map(f => {
+    const preNav = amfiNavMap?.[String(f.schemeCode)];
+    return {
+      code:    String(f.schemeCode),
+      name:    f.schemeName,
+      amc:     parseAMC(f.schemeName),
+      cat:     parseCat(f.schemeName),
+      subSect: parseSubSect(f.schemeName),
+      nav:     preNav?.nav    ?? null, // pre-populated from AMFI when available
+      navDate: preNav?.date   ?? null,
+      metrics: null,
+    };
+  });
   console.log(`  Found ${funds.length} eligible funds\n`);
 
   /* Step 2: Fetch benchmarks */
@@ -354,9 +408,13 @@ async function main() {
     const data = await fetchWithRetry(`https://api.mfapi.in/mf/${f.code}`);
     if (!data) return;
 
-    // Refine category from API meta (more accurate than name parsing)
+    // Refine category from API meta (more accurate than name parsing).
+    // Guard: don't let meta override a name-parsed Debt fund to 'Index' —
+    // SEBI sometimes returns "Index Funds" for target-maturity debt index funds.
     const metaCat = catFromMeta(data?.meta?.scheme_category);
-    if (metaCat) f.cat = metaCat;
+    if (metaCat && !(metaCat === 'Index' && /crisil|ibx|target.?matur|bharat.?bond|\bsdl\b/i.test(f.name))) {
+      f.cat = metaCat;
+    }
 
     const arr = navArray(data);
     if (!arr.length) return;
@@ -369,6 +427,24 @@ async function main() {
     const bench = getBench(f.cat);
     f.metrics   = compute(arr, bench);
   });
+
+  /* Step 3B: NAV fallback — funds that had no data in Step 3 get nav from /latest */
+  const navMissing = funds.filter(f => f.nav === null);
+  if (navMissing.length > 0) {
+    console.log(`Step 3B: ${navMissing.length} funds missing nav — fetching /latest fallback...`);
+    await batchMap(navMissing, async f => {
+      const data = await fetchWithRetry(`https://api.mfapi.in/mf/${f.code}/latest`);
+      if (!data || !Array.isArray(data) || !data[0]) return;
+      const nav = parseFloat(data[0].nav);
+      if (!isNaN(nav) && nav > 0) { f.nav = nav; f.navDate = data[0].date; }
+      // f.metrics stays null — no history available, so no risk metrics possible
+    });
+    const stillMissing = funds.filter(f => f.nav === null);
+    console.log(`  Recovered: ${navMissing.length - stillMissing.length}  |  Still missing: ${stillMissing.length}`);
+    if (stillMissing.length > 0) {
+      stillMissing.forEach(f => console.log(`    [${f.cat}] ${f.name} (${f.code})`));
+    }
+  }
   console.log();
 
   /* Step 4: Score within each category */
@@ -440,11 +516,13 @@ function catFromMeta(c) {
   if (/banking.?psu|banking.*psu|psu.*bond/.test(cl))                 return 'Banking & PSU Debt';
   if (/gilt/.test(cl))                                                 return 'Gilt';
   if (/dynamic.?bond/.test(cl))                                        return 'Dynamic Bond';
-  if (/credit.?risk/.test(cl))                                         return 'Short Duration';
+  if (/credit.?risk/.test(cl))                                         return 'Debt';
   if (/floater|floating.?rate/.test(cl))                               return 'Ultra Short';
-  if (/debt|bond|income|duration|credit|corporate|money|floating|crisil|ibx|\\bsdl\\b|state.?dev|g.?sec|gsec|target.?matur|\\bhtm\\b|bharat.?bond/.test(cl)) return 'Debt';
+  if (/equity.?saving/.test(cl))                                       return 'Hybrid';
+  if (/debt|bond|income|duration|credit|corporate|money|floating|crisil|ibx|\bsdl\b|state.?dev|g.?sec|gsec|target.?matur|\bhtm\b|bharat.?bond/.test(cl)) return 'Debt';
   if (/sector|thematic|manufactur|consum|defence|housing|media|tourism|transport|mnc/.test(cl)) return 'Sectoral';
-  if (/index|etf/.test(cl))                                            return 'Index';
+  // Only classify as Index/ETF when there are no debt-type indicators in the category string
+  if (/index|etf/.test(cl) && !/debt|target.?matur|bond|sdl|ibx|crisil/.test(cl)) return 'Index';
   if (/fof|fund.?of/.test(cl))                                         return 'FoF';
   return null;
 }

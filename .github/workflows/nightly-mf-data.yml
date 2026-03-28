@@ -10,41 +10,55 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 30   # script usually finishes in 8-15 min; hard-kill at 30
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Setup Node 20
+      - name: Setup Node 22
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Run compute script
         run: node scripts/compute-mf-scores.js
+        # Writes to public/mf-data.json.
         # If mfapi.in is down, the script exits 1 and the step fails.
-        # The PREVIOUS mf-data.json (last successful run) stays in the repo,
-        # so the app keeps working — it just shows yesterday's data.
+        # The PREVIOUS public/mf-data.json (last successful run) stays in the repo,
+        # so the live app keeps serving yesterday's data automatically.
 
       - name: Verify output file exists and is non-empty
         run: |
-          if [ ! -s output/mf-data.json ]; then
-            echo "ERROR: output/mf-data.json is missing or empty"
+          if [ ! -s public/mf-data.json ]; then
+            echo "ERROR: public/mf-data.json is missing or empty"
             exit 1
           fi
-          SIZE=$(wc -c < output/mf-data.json)
+          SIZE=$(wc -c < public/mf-data.json)
           echo "Output size: ${SIZE} bytes"
           # Sanity: reject if suspiciously small (< 100 KB = something went wrong)
           if [ "$SIZE" -lt 102400 ]; then
             echo "ERROR: output file too small — likely a partial fetch"
             exit 1
           fi
+          # Print the generated timestamp from the JSON for the run log
+          node -e "const d=require('./public/mf-data.json'); console.log('Generated:', d.generated, '| Funds:', d.fundCount);"
 
       - name: Commit and push mf-data.json
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add output/mf-data.json
+          git add public/mf-data.json
           # Only commit if something actually changed
           git diff --staged --quiet || git commit -m "chore: nightly MF data update $(date -u '+%Y-%m-%d')"
           git push
+
+      - name: Deploy to Firebase Hosting
+        # Deploys the updated public/mf-data.json (and any other public/ changes) to Firebase CDN.
+        # Requires FIREBASE_TOKEN secret — generate with: firebase login:ci
+        # Then add it to: GitHub repo → Settings → Secrets → Actions → FIREBASE_TOKEN
+        if: ${{ secrets.FIREBASE_TOKEN != '' }}
+        run: |
+          npm install -g firebase-tools
+          firebase deploy --only hosting --token "${{ secrets.FIREBASE_TOKEN }}" --non-interactive
