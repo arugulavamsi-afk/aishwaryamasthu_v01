@@ -40,14 +40,14 @@
         else            { favs.splice(idx, 1); }
         _dashSaveFavs(favs);
         var ca = document.getElementById('dash-fav-count-arrow');
-        if (ca) ca.textContent = favs.length + ' pinned →';
+        if (ca) ca.textContent = _t('pin.count').replace('{n}', favs.length);
     }
     function initDashFav() {
         var favs  = _dashGetFavs() || _dashFavDefaults.slice();
         var grid  = document.getElementById('dashcat-fav-grid');
         if (!grid) return;
         if (favs.length === 0) {
-            grid.innerHTML = '<div style="text-align:center;color:rgba(255,255,255,0.4);padding:32px 0;font-size:13px;">No tools pinned yet. Open a category and click ☆ Pin on any tool.</div>';
+            grid.innerHTML = '<div style="text-align:center;color:rgba(255,255,255,0.4);padding:32px 0;font-size:13px;">' + _t('pin.empty') + '</div>';
             return;
         }
         grid.innerHTML = '';
@@ -61,7 +61,7 @@
                 '<div class="dash-card-title">' + t.title + '</div>' +
                 '<div class="dash-card-desc" style="margin-top:4px;">' +
                     '<span onclick="event.stopPropagation();dashToggleFav(\'' + k + '\',this);initDashFav();" ' +
-                    'style="cursor:pointer;font-size:10px;font-weight:800;color:#f5c842;">★ Pinned — tap to unpin</span>' +
+                    'style="cursor:pointer;font-size:10px;font-weight:800;color:#f5c842;">' + _t('pin.active.tap') + '</span>' +
                 '</div>' +
                 '<div class="dash-card-arrow">→</div>';
             btn.onclick = function() { switchMode(k); };
@@ -84,7 +84,7 @@
             var span = document.createElement('span');
             span.className = 'dash-pin-btn';
             span.style.cssText = 'display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:800;cursor:pointer;margin-top:6px;padding:3px 8px;border-radius:8px;transition:all 0.2s;' + (isPinned ? 'color:#f5c842;background:rgba(245,200,66,0.18);border:1px solid rgba(245,200,66,0.4);' : 'color:rgba(255,255,255,0.6);background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);');
-            span.textContent = isPinned ? '★ Pinned' : '☆ Pin';
+            span.textContent = isPinned ? _t('pin.active') : _t('pin.inactive');
             span.onclick = function(e) {
                 e.stopPropagation();
                 dashToggleFav(m, null);
@@ -98,11 +98,11 @@
         var greetEl = document.getElementById('dash-user-greeting');
         if (greetEl && window._fbAuth && window._fbAuth.currentUser) {
             var name = (window._fbAuth.currentUser.displayName || '').split(' ')[0];
-            if (name) greetEl.textContent = 'Welcome back, ' + name + '! 👋';
+            if (name) greetEl.textContent = _t('dash.greeting').replace('{n}', name);
         }
         var favs = _dashGetFavs() || _dashFavDefaults.slice();
         var ca = document.getElementById('dash-fav-count-arrow');
-        if (ca) ca.textContent = favs.length + ' pinned →';
+        if (ca) ca.textContent = _t('pin.count').replace('{n}', favs.length);
     }
     // Call on first load after auth
     window.addEventListener('DOMContentLoaded', function() {
@@ -167,7 +167,7 @@
         var wrap = document.getElementById('su-table-wrap');
         var btn  = document.getElementById('su-table-btn');
         var hidden = wrap.classList.toggle('hidden');
-        btn.textContent = hidden ? 'Show table ▾' : 'Hide table ▴';
+        btn.textContent = hidden ? _t('common.show.tbl') : _t('common.hide.tbl');
     }
 
     function resetStepUpSIP() {
@@ -506,7 +506,7 @@
         var wrap = document.getElementById('epf-table-wrap');
         var btn  = document.getElementById('epf-table-btn');
         var hidden = wrap.classList.toggle('hidden');
-        btn.textContent = hidden ? 'Show ▾' : 'Hide ▴';
+        btn.textContent = hidden ? _t('common.show') : _t('common.hide');
     }
 
     function epfChartView(view) {
@@ -826,7 +826,7 @@
         var wrap = document.getElementById('ssa-table-wrap');
         var btn  = document.getElementById('ssa-table-btn');
         wrap.classList.toggle('hidden');
-        btn.textContent = wrap.classList.contains('hidden') ? 'Show ▾' : 'Hide ▴';
+        btn.textContent = wrap.classList.contains('hidden') ? _t('common.show') : _t('common.hide');
     }
 
     function ssaChartView(view) {
@@ -859,7 +859,7 @@
         var isIneligible = false;
         if (ageWarn && ageDisp && dobYear > 2000) {
             if (curAge >= 10) {
-                ageDisp.textContent = curAge + ' years old';
+                ageDisp.textContent = curAge + _t('common.years.old');
                 ageWarn.classList.remove('hidden');
                 isIneligible = true;
             } else {
@@ -1162,7 +1162,7 @@
         var parts = [];
         if (p.name)       parts.push(p.name.split(' ')[0]);
         if (p.age)        parts.push(p.age + 'y');
-        if (p.occupation) parts.push({ salaried:'Salaried', 'self-employed':'Self-Employed', business:'Business', retired:'Retired', student:'Student' }[p.occupation] || p.occupation);
+        if (p.occupation) parts.push({ salaried:_t('up.occ.s'), 'self-employed':_t('up.occ.se'), business:_t('up.occ.b'), retired:_t('up.occ.r'), student:_t('up.occ.st') }[p.occupation] || p.occupation);
         if (p.income)     parts.push('₹' + p.income + '/mo');
         el.textContent = parts.length ? parts.join(' · ') : 'Set your details once — auto-fill any tool instantly';
     }
@@ -1177,14 +1177,17 @@
     }
 
     // ── Risk profile display helpers ──────────────────────────────────────────
-    var _upRiskLabels = { conservative:'🛡️ Conservative', moderate:'⚖️ Moderate', moderateAggressive:'📈 Mod-Aggressive', aggressive:'🚀 Aggressive' };
+    function _upRiskLabel(key) {
+        var map = { conservative:'risk.conservative', moderate:'risk.moderate', moderateAggressive:'risk.modagg', aggressive:'risk.aggressive' };
+        return _t(map[key] || 'risk.moderate');
+    }
 
     function upRefreshRiskDisplay() {
         var cache = window._fpRiskCache;
         var displayEl = document.getElementById('up-risk-display');
         var badgeEl   = document.getElementById('up-risk-badge');
         if (!cache) {
-            if (displayEl) displayEl.textContent = 'Not assessed yet';
+            if (displayEl) displayEl.textContent = _t('up.risk.unset');
             if (badgeEl)   badgeEl.classList.add('hidden');
             return;
         }
@@ -1192,7 +1195,7 @@
         var profileKey = typeof window.fpGetRiskProfile === 'function'
             ? window.fpGetRiskProfile(cache.score, age)
             : (cache.score <= 4 ? 'conservative' : cache.score <= 8 ? 'moderate' : cache.score <= 11 ? 'moderateAggressive' : 'aggressive');
-        var label = _upRiskLabels[profileKey] || '⚖️ Moderate';
+        var label = _upRiskLabel(profileKey);
         if (displayEl) displayEl.textContent = label + ' · Score ' + cache.score + '/15';
         if (badgeEl)   { badgeEl.textContent = label; badgeEl.classList.remove('hidden'); }
     }
@@ -1200,16 +1203,11 @@
     // ── Risk Questionnaire ────────────────────────────────────────────────────
     var _upRiskAnswers = {};
     var _upRiskQs = [
-        { id:'q1', icon:'📉', text:'Market drops 20% — what do you do?',
-          opts:['Sell immediately','Wait & reassess','Hold steady','Buy more!'] },
-        { id:'q2', icon:'💼', text:'How stable is your monthly income?',
-          opts:['Very uncertain','Mostly stable','Stable salary','Very stable'] },
-        { id:'q3', icon:'🧠', text:'Your investing mindset:',
-          opts:['Preserve capital','Slow & steady','Grow meaningfully','Max returns'] },
-        { id:'q4', icon:'⏳', text:'How long can you stay invested?',
-          opts:['< 2 years','2–5 years','5–10 years','10+ years'] },
-        { id:'q5', icon:'📊', text:'Your investing experience:',
-          opts:['None','FDs only','SIPs & MFs','Stocks & ETFs'] }
+        { id:'q1', icon:'📉', tk:'rq.q1' },
+        { id:'q2', icon:'💼', tk:'rq.q2' },
+        { id:'q3', icon:'🧠', tk:'rq.q3' },
+        { id:'q4', icon:'⏳', tk:'rq.q4' },
+        { id:'q5', icon:'📊', tk:'rq.q5' }
     ];
 
     function upShowRiskQuiz() {
@@ -1240,8 +1238,8 @@
         var html = '<div class="p-4">';
         // Header + progress
         html += '<div class="flex items-center justify-between mb-2">';
-        html += '<span class="text-[11px] font-bold" style="color:#7c5c0a;">Risk Assessment — ' + answered + '/' + total + ' answered</span>';
-        html += '<button onclick="document.getElementById(\'up-risk-quiz\').classList.add(\'hidden\')" class="text-[10px] px-2 py-0.5 rounded-lg" style="background:rgba(0,0,0,0.06);color:#666;">✕ Close</button>';
+        html += '<span class="text-[11px] font-bold" style="color:#7c5c0a;">' + _t('quiz.title') + ' — ' + answered + '/' + total + '</span>';
+        html += '<button onclick="document.getElementById(\'up-risk-quiz\').classList.add(\'hidden\')" class="text-[10px] px-2 py-0.5 rounded-lg" style="background:rgba(0,0,0,0.06);color:#666;">' + _t('quiz.close') + '</button>';
         html += '</div>';
         html += '<div class="h-1.5 rounded-full mb-4" style="background:rgba(245,200,66,0.20);">';
         html += '<div class="h-1.5 rounded-full transition-all" style="width:' + pct + '%;background:linear-gradient(90deg,#f5c842,#e8a44a);"></div>';
@@ -1249,14 +1247,14 @@
 
         _upRiskQs.forEach(function(q) {
             html += '<div class="mb-3.5">';
-            html += '<div class="text-[11px] font-bold mb-1.5" style="color:#162a10;">' + q.icon + ' ' + q.text + '</div>';
+            html += '<div class="text-[11px] font-bold mb-1.5" style="color:#162a10;">' + q.icon + ' ' + _t(q.tk + '.t') + '</div>';
             html += '<div class="flex flex-wrap gap-1.5">';
-            q.opts.forEach(function(opt, oi) {
+            [0,1,2,3].forEach(function(oi) {
                 var sel = _upRiskAnswers[q.id] === oi;
                 var selStyle = sel
                     ? 'background:linear-gradient(130deg,#f5c842,#e8a44a);color:#162a10;border-color:rgba(245,200,66,0.8);font-weight:700;'
                     : 'background:rgba(255,255,255,0.85);color:#4a3a0a;border-color:rgba(245,200,66,0.30);';
-                html += '<button onclick="upRiskAnswer(\'' + q.id + '\',' + oi + ')" class="text-[10px] px-2.5 py-1.5 rounded-xl border transition-all" style="' + selStyle + '">' + opt + '</button>';
+                html += '<button onclick="upRiskAnswer(\'' + q.id + '\',' + oi + ')" class="text-[10px] px-2.5 py-1.5 rounded-xl border transition-all" style="' + selStyle + '">' + _t(q.tk + '.' + oi) + '</button>';
             });
             html += '</div></div>';
         });
@@ -1266,7 +1264,7 @@
             ? 'background:linear-gradient(130deg,#f5c842,#e8a44a);color:#162a10;cursor:pointer;'
             : 'background:rgba(245,200,66,0.20);color:#9a8060;cursor:default;';
         html += '<button onclick="upRiskSubmit()" class="mt-2 w-full py-2 rounded-xl text-[12px] font-bold transition-all" style="' + btnStyle + '"' + (allAnswered ? '' : ' disabled') + '>';
-        html += allAnswered ? '✅ Get My Risk Profile →' : 'Answer all ' + total + ' questions to continue';
+        html += allAnswered ? _t('quiz.submit') : _t('quiz.title') + ' — ' + answered + '/' + total;
         html += '</button></div>';
 
         inner.innerHTML = html;
@@ -1312,8 +1310,8 @@
             inner.innerHTML = '<div class="p-5 text-center">'
                 + '<div class="text-3xl mb-2">🎉</div>'
                 + '<div class="text-[14px] font-black mb-1" style="color:#162a10;">' + label + '</div>'
-                + '<div class="text-[10px] mb-4" style="color:rgba(22,42,16,0.60);">Score ' + score + ' / 15 · Saved to your profile &amp; Financial Plan</div>'
-                + '<button onclick="document.getElementById(\'up-risk-quiz\').classList.add(\'hidden\')" class="text-[12px] px-5 py-2 rounded-xl font-bold" style="background:linear-gradient(130deg,#f5c842,#e8a44a);color:#162a10;">Close</button>'
+                + '<div class="text-[10px] mb-4" style="color:rgba(22,42,16,0.60);">' + _t('quiz.title') + ' · ' + score + '/15</div>'
+                + '<button onclick="document.getElementById(\'up-risk-quiz\').classList.add(\'hidden\')" class="text-[12px] px-5 py-2 rounded-xl font-bold" style="background:linear-gradient(130deg,#f5c842,#e8a44a);color:#162a10;">' + _t('quiz.close.btn') + '</button>'
                 + '</div>';
         }
         setTimeout(function() {
@@ -1384,7 +1382,7 @@
         var btn = document.querySelector('#up-banner-' + tool + ' .up-apply-btn');
         if (btn) {
             var orig = btn.textContent;
-            btn.textContent = '✓ Applied!';
+            btn.textContent = _t('up.applied');
             btn.style.background = '#059669';
             setTimeout(function() { btn.textContent = orig; btn.style.background = ''; }, 1500);
         }
@@ -1658,7 +1656,7 @@
         var wrap = document.getElementById('dd-table-wrap');
         var btn  = document.getElementById('dd-table-btn');
         var hidden = wrap.classList.toggle('hidden');
-        btn.textContent = hidden ? 'Show ▾' : 'Hide ▴';
+        btn.textContent = hidden ? _t('common.show') : _t('common.hide');
     }
 
     /* ══════════════════════════════════════════════════════════
@@ -4096,7 +4094,7 @@
         var wrap = document.getElementById('ppf-table-wrap');
         var btn  = document.getElementById('ppf-table-btn');
         var hidden = wrap.classList.toggle('hidden');
-        btn.textContent = hidden ? 'Show ▾' : 'Hide ▴';
+        btn.textContent = hidden ? _t('common.show') : _t('common.hide');
     }
 
     function ppfCalc() {
@@ -4986,6 +4984,81 @@
         'hs.pie.emi':           'EMIs / Loans',
         'hs.pie.exp':           'Living Expenses',
         'hs.pie.cash':          'Free Cash',
+        /* ── My Profile ── */
+        'up.title':             'My Profile',
+        'up.subtitle':          'Set your details once — auto-fill any tool instantly',
+        'up.lbl.name':          'Full Name',
+        'up.lbl.age':           'Age',
+        'up.lbl.occ':           'Occupation',
+        'up.lbl.income':        'Monthly Income (₹)',
+        'up.lbl.exp':           'Monthly Expenses (₹)',
+        'up.lbl.regime':        'Preferred Tax Regime',
+        'up.lbl.city':          'City Type',
+        'up.lbl.risk':          'Risk Appetite',
+        'up.risk.unset':        'Not assessed yet',
+        'up.risk.btn':          '🎯 Assess Risk',
+        'up.footer':            '🔒 Saved securely to your account · Used only within this app',
+        'up.occ.s':             'Salaried',
+        'up.occ.se':            'Self-Employed',
+        'up.occ.b':             'Business Owner',
+        'up.occ.r':             'Retired',
+        'up.occ.st':            'Student',
+        'up.regime.new':        'New Regime',
+        'up.regime.old':        'Old Regime',
+        'up.city.m':            'Metro',
+        'up.city.nm':           'Non-Metro',
+        'up.apply':             '↙ Apply Profile',
+        'up.applied':           '✓ Applied!',
+        /* ── Risk Quiz ── */
+        'quiz.title':           'Risk Assessment',
+        'quiz.close':           '✕ Close',
+        'quiz.submit':          '✅ Get My Risk Profile →',
+        'quiz.close.btn':       'Close',
+        'rq.q1.t':              'Market drops 20% — what do you do?',
+        'rq.q1.0':              'Sell immediately',
+        'rq.q1.1':              'Wait & reassess',
+        'rq.q1.2':              'Hold steady',
+        'rq.q1.3':              'Buy more!',
+        'rq.q2.t':              'How stable is your monthly income?',
+        'rq.q2.0':              'Very uncertain',
+        'rq.q2.1':              'Mostly stable',
+        'rq.q2.2':              'Stable salary',
+        'rq.q2.3':              'Very stable',
+        'rq.q3.t':              'Your investing mindset:',
+        'rq.q3.0':              'Preserve capital',
+        'rq.q3.1':              'Slow & steady',
+        'rq.q3.2':              'Grow meaningfully',
+        'rq.q3.3':              'Max returns',
+        'rq.q4.t':              'How long can you stay invested?',
+        'rq.q4.0':              '< 2 years',
+        'rq.q4.1':              '2–5 years',
+        'rq.q4.2':              '5–10 years',
+        'rq.q4.3':              '10+ years',
+        'rq.q5.t':              'Your investing experience:',
+        'rq.q5.0':              'None',
+        'rq.q5.1':              'FDs only',
+        'rq.q5.2':              'SIPs & MFs',
+        'rq.q5.3':              'Stocks & ETFs',
+        /* ── Risk levels ── */
+        'risk.conservative':    '🛡️ Conservative',
+        'risk.moderate':        '⚖️ Moderate',
+        'risk.modagg':          '📈 Mod-Aggressive',
+        'risk.aggressive':      '🚀 Aggressive',
+        /* ── Common UI ── */
+        'common.show':          'Show ▾',
+        'common.hide':          'Hide ▴',
+        'common.show.tbl':      'Show table ▾',
+        'common.hide.tbl':      'Hide table ▴',
+        'common.yrs':           ' yrs',
+        'common.mo':            ' mo',
+        'common.years.old':     ' years old',
+        /* ── Dashboard dynamic ── */
+        'dash.greeting':        'Welcome back, {n}! 👋',
+        'pin.count':            '{n} pinned →',
+        'pin.empty':            'No tools pinned yet. Open a category and click ☆ Pin on any tool.',
+        'pin.active':           '★ Pinned',
+        'pin.inactive':         '☆ Pin',
+        'pin.active.tap':       '★ Pinned — tap to unpin',
       },
 
       hi: {
@@ -5323,6 +5396,81 @@
         'hs.pie.emi':           'EMI / ऋण',
         'hs.pie.exp':           'जीवन व्यय',
         'hs.pie.cash':          'मुक्त नकद',
+        /* ── My Profile ── */
+        'up.title':             'मेरी प्रोफ़ाइल',
+        'up.subtitle':          'एक बार विवरण भरें — कोई भी टूल ऑटो-फिल होगा',
+        'up.lbl.name':          'पूरा नाम',
+        'up.lbl.age':           'आयु',
+        'up.lbl.occ':           'व्यवसाय',
+        'up.lbl.income':        'मासिक आय (₹)',
+        'up.lbl.exp':           'मासिक खर्च (₹)',
+        'up.lbl.regime':        'पसंदीदा कर व्यवस्था',
+        'up.lbl.city':          'शहर का प्रकार',
+        'up.lbl.risk':          'जोखिम क्षमता',
+        'up.risk.unset':        'मूल्यांकन नहीं हुआ',
+        'up.risk.btn':          '🎯 जोखिम मूल्यांकन',
+        'up.footer':            '🔒 सुरक्षित रूप से सहेजा गया · केवल इस ऐप में उपयोग',
+        'up.occ.s':             'नौकरीपेशा',
+        'up.occ.se':            'स्व-नियोजित',
+        'up.occ.b':             'व्यापारी',
+        'up.occ.r':             'सेवानिवृत्त',
+        'up.occ.st':            'छात्र/छात्रा',
+        'up.regime.new':        'नई व्यवस्था',
+        'up.regime.old':        'पुरानी व्यवस्था',
+        'up.city.m':            'मेट्रो',
+        'up.city.nm':           'गैर-मेट्रो',
+        'up.apply':             '↙ प्रोफ़ाइल लागू करें',
+        'up.applied':           '✓ लागू!',
+        /* ── Risk Quiz ── */
+        'quiz.title':           'जोखिम मूल्यांकन',
+        'quiz.close':           '✕ बंद करें',
+        'quiz.submit':          '✅ मेरी जोखिम प्रोफ़ाइल देखें →',
+        'quiz.close.btn':       'बंद करें',
+        'rq.q1.t':              'बाज़ार 20% गिरा — आप क्या करेंगे?',
+        'rq.q1.0':              'तुरंत बेच दूंगा',
+        'rq.q1.1':              'इंतजार करूंगा',
+        'rq.q1.2':              'स्थिर रहूंगा',
+        'rq.q1.3':              'और खरीदूंगा!',
+        'rq.q2.t':              'आपकी मासिक आय कितनी स्थिर है?',
+        'rq.q2.0':              'बहुत अनिश्चित',
+        'rq.q2.1':              'ज्यादातर स्थिर',
+        'rq.q2.2':              'स्थिर वेतन',
+        'rq.q2.3':              'बहुत स्थिर',
+        'rq.q3.t':              'निवेश के प्रति आपकी सोच:',
+        'rq.q3.0':              'पूंजी बचाएं',
+        'rq.q3.1':              'धीरे-धीरे बढ़ाएं',
+        'rq.q3.2':              'अच्छी वृद्धि',
+        'rq.q3.3':              'अधिकतम रिटर्न',
+        'rq.q4.t':              'कितने समय तक निवेश रख सकते हैं?',
+        'rq.q4.0':              '< 2 साल',
+        'rq.q4.1':              '2–5 साल',
+        'rq.q4.2':              '5–10 साल',
+        'rq.q4.3':              '10+ साल',
+        'rq.q5.t':              'आपका निवेश अनुभव:',
+        'rq.q5.0':              'कोई नहीं',
+        'rq.q5.1':              'केवल FD',
+        'rq.q5.2':              'SIP और MF',
+        'rq.q5.3':              'शेयर और ETF',
+        /* ── Risk levels ── */
+        'risk.conservative':    '🛡️ रूढ़िवादी',
+        'risk.moderate':        '⚖️ मध्यम',
+        'risk.modagg':          '📈 मध्यम-आक्रामक',
+        'risk.aggressive':      '🚀 आक्रामक',
+        /* ── Common UI ── */
+        'common.show':          'दिखाएं ▾',
+        'common.hide':          'छुपाएं ▴',
+        'common.show.tbl':      'तालिका दिखाएं ▾',
+        'common.hide.tbl':      'तालिका छुपाएं ▴',
+        'common.yrs':           ' साल',
+        'common.mo':            ' महीने',
+        'common.years.old':     ' साल',
+        /* ── Dashboard dynamic ── */
+        'dash.greeting':        'वापस स्वागत है, {n}! 👋',
+        'pin.count':            '{n} पिन किए →',
+        'pin.empty':            'कोई टूल पिन नहीं। किसी श्रेणी में जाएं और ☆ Pin दबाएं।',
+        'pin.active':           '★ पिन किया',
+        'pin.inactive':         '☆ पिन',
+        'pin.active.tap':       '★ पिन किया — हटाने के लिए टैप करें',
       },
 
       te: {
@@ -5660,6 +5808,81 @@
         'hs.pie.emi':           'EMI / రుణాలు',
         'hs.pie.exp':           'జీవన వ్యయాలు',
         'hs.pie.cash':          'స్వేచ్ఛా నగదు',
+        /* ── My Profile ── */
+        'up.title':             'నా ప్రొఫైల్',
+        'up.subtitle':          'వివరాలు ఒకసారి నమోదు చేయండి — ఏ సాధనానికైనా ఆటో-ఫిల్',
+        'up.lbl.name':          'పూర్తి పేరు',
+        'up.lbl.age':           'వయసు',
+        'up.lbl.occ':           'వృత్తి',
+        'up.lbl.income':        'నెలవారీ ఆదాయం (₹)',
+        'up.lbl.exp':           'నెలవారీ వ్యయాలు (₹)',
+        'up.lbl.regime':        'ఇష్టమైన పన్ను విధానం',
+        'up.lbl.city':          'నగర రకం',
+        'up.lbl.risk':          'రిస్క్ సామర్థ్యం',
+        'up.risk.unset':        'ఇంకా అంచనా లేదు',
+        'up.risk.btn':          '🎯 రిస్క్ అంచనా',
+        'up.footer':            '🔒 సురక్షితంగా సేవ్ చేయబడింది · ఈ యాప్‌లో మాత్రమే',
+        'up.occ.s':             'వేతనజీవి',
+        'up.occ.se':            'స్వయం ఉపాధి',
+        'up.occ.b':             'వ్యాపారి',
+        'up.occ.r':             'పదవీ విరమణ',
+        'up.occ.st':            'విద్యార్థి',
+        'up.regime.new':        'కొత్త పాలన',
+        'up.regime.old':        'పాత పాలన',
+        'up.city.m':            'మెట్రో',
+        'up.city.nm':           'నాన్-మెట్రో',
+        'up.apply':             '↙ ప్రొఫైల్ వర్తించు',
+        'up.applied':           '✓ వర్తించింది!',
+        /* ── Risk Quiz ── */
+        'quiz.title':           'రిస్క్ అంచనా',
+        'quiz.close':           '✕ మూసివేయి',
+        'quiz.submit':          '✅ నా రిస్క్ ప్రొఫైల్ పొందండి →',
+        'quiz.close.btn':       'మూసివేయి',
+        'rq.q1.t':              'మార్కెట్ 20% పడిపోయింది — మీరు ఏమి చేస్తారు?',
+        'rq.q1.0':              'వెంటనే అమ్మేస్తా',
+        'rq.q1.1':              'వేచి చూస్తా',
+        'rq.q1.2':              'నిలబడతా',
+        'rq.q1.3':              'ఇంకా కొంటా!',
+        'rq.q2.t':              'మీ నెలవారీ ఆదాయం ఎంత స్థిరంగా ఉంది?',
+        'rq.q2.0':              'చాలా అనిశ్చితం',
+        'rq.q2.1':              'ఎక్కువగా స్థిరం',
+        'rq.q2.2':              'స్థిర జీతం',
+        'rq.q2.3':              'చాలా స్థిరం',
+        'rq.q3.t':              'పెట్టుబడి మనస్తత్వం:',
+        'rq.q3.0':              'మూలధనం కాపాడు',
+        'rq.q3.1':              'నెమ్మదిగా పెరుగు',
+        'rq.q3.2':              'అర్థవంతంగా పెరుగు',
+        'rq.q3.3':              'గరిష్ట రాబడి',
+        'rq.q4.t':              'ఎంత కాలం పెట్టుబడి ఉంచగలరు?',
+        'rq.q4.0':              '< 2 సం.',
+        'rq.q4.1':              '2–5 సం.',
+        'rq.q4.2':              '5–10 సం.',
+        'rq.q4.3':              '10+ సం.',
+        'rq.q5.t':              'పెట్టుబడి అనుభవం:',
+        'rq.q5.0':              'ఏదీ లేదు',
+        'rq.q5.1':              'FD మాత్రమే',
+        'rq.q5.2':              'SIP & MF',
+        'rq.q5.3':              'స్టాక్స్ & ETF',
+        /* ── Risk levels ── */
+        'risk.conservative':    '🛡️ సంప్రదాయవాది',
+        'risk.moderate':        '⚖️ మధ్యస్థ',
+        'risk.modagg':          '📈 మిడ్-అగ్రెసివ్',
+        'risk.aggressive':      '🚀 దూకుడు',
+        /* ── Common UI ── */
+        'common.show':          'చూపించు ▾',
+        'common.hide':          'దాచు ▴',
+        'common.show.tbl':      'పట్టిక చూపించు ▾',
+        'common.hide.tbl':      'పట్టిక దాచు ▴',
+        'common.yrs':           ' సం.',
+        'common.mo':            ' నె.',
+        'common.years.old':     ' సంవత్సరాలు',
+        /* ── Dashboard dynamic ── */
+        'dash.greeting':        'తిరిగి స్వాగతం, {n}! 👋',
+        'pin.count':            '{n} పిన్ చేయబడ్డాయి →',
+        'pin.empty':            'ఏ సాధనాలూ పిన్ లేవు. ఒక వర్గం తెరచి ☆ Pin నొక్కండి.',
+        'pin.active':           '★ పిన్ చేయబడింది',
+        'pin.inactive':         '☆ పిన్',
+        'pin.active.tap':       '★ పిన్ — తీసివేయడానికి నొక్కండి',
       },
 
       ta: {
@@ -5997,6 +6220,81 @@
         'hs.pie.emi':           'EMI / கடன்கள்',
         'hs.pie.exp':           'வாழ்க்கை செலவுகள்',
         'hs.pie.cash':          'இலவச பணம்',
+        /* ── My Profile ── */
+        'up.title':             'என் சுயவிவரம்',
+        'up.subtitle':          'ஒருமுறை உள்ளிடுங்கள் — எந்த கருவியிலும் தானாக நிரப்பும்',
+        'up.lbl.name':          'முழுப் பெயர்',
+        'up.lbl.age':           'வயது',
+        'up.lbl.occ':           'தொழில்',
+        'up.lbl.income':        'மாதாந்திர வருமானம் (₹)',
+        'up.lbl.exp':           'மாதாந்திர செலவுகள் (₹)',
+        'up.lbl.regime':        'விருப்பமான வரி முறை',
+        'up.lbl.city':          'நகர வகை',
+        'up.lbl.risk':          'ரிஸ்க் திறன்',
+        'up.risk.unset':        'மதிப்பிடவில்லை',
+        'up.risk.btn':          '🎯 ரிஸ்க் மதிப்பீடு',
+        'up.footer':            '🔒 பாதுகாப்பாக சேமிக்கப்பட்டது · இந்த ஆப்பில் மட்டுமே',
+        'up.occ.s':             'சம்பளக்காரர்',
+        'up.occ.se':            'சுய தொழில்',
+        'up.occ.b':             'வணிகர்',
+        'up.occ.r':             'ஓய்வு பெற்றவர்',
+        'up.occ.st':            'மாணவர்',
+        'up.regime.new':        'புதிய முறை',
+        'up.regime.old':        'பழைய முறை',
+        'up.city.m':            'மெட்ரோ',
+        'up.city.nm':           'மெட்ரோ அல்லாதது',
+        'up.apply':             '↙ சுயவிவரம் பயன்படுத்து',
+        'up.applied':           '✓ பயன்படுத்தப்பட்டது!',
+        /* ── Risk Quiz ── */
+        'quiz.title':           'ரிஸ்க் மதிப்பீடு',
+        'quiz.close':           '✕ மூடு',
+        'quiz.submit':          '✅ என் ரிஸ்க் சுயவிவரம் பெறுங்கள் →',
+        'quiz.close.btn':       'மூடு',
+        'rq.q1.t':              'சந்தை 20% வீழ்ந்தது — என்ன செய்வீர்கள்?',
+        'rq.q1.0':              'உடனே விற்பேன்',
+        'rq.q1.1':              'காத்திருப்பேன்',
+        'rq.q1.2':              'நிலையாக இருப்பேன்',
+        'rq.q1.3':              'இன்னும் வாங்குவேன்!',
+        'rq.q2.t':              'உங்கள் மாத வருமானம் எவ்வளவு நிலையானது?',
+        'rq.q2.0':              'மிகவும் நிச்சயமற்றது',
+        'rq.q2.1':              'பெரும்பாலும் நிலையானது',
+        'rq.q2.2':              'நிலையான சம்பளம்',
+        'rq.q2.3':              'மிகவும் நிலையானது',
+        'rq.q3.t':              'உங்கள் முதலீட்டு மனநிலை:',
+        'rq.q3.0':              'மூலதனம் காப்பாற்று',
+        'rq.q3.1':              'மெதுவாக வளரு',
+        'rq.q3.2':              'அர்த்தமுள்ள வளர்ச்சி',
+        'rq.q3.3':              'அதிகபட்ச வருமானம்',
+        'rq.q4.t':              'எவ்வளவு காலம் முதலீடு செய்யலாம்?',
+        'rq.q4.0':              '< 2 ஆண்.',
+        'rq.q4.1':              '2–5 ஆண்.',
+        'rq.q4.2':              '5–10 ஆண்.',
+        'rq.q4.3':              '10+ ஆண்.',
+        'rq.q5.t':              'உங்கள் முதலீட்டு அனுபவம்:',
+        'rq.q5.0':              'எதுவுமில்லை',
+        'rq.q5.1':              'FD மட்டும்',
+        'rq.q5.2':              'SIP & MF',
+        'rq.q5.3':              'பங்குகள் & ETF',
+        /* ── Risk levels ── */
+        'risk.conservative':    '🛡️ பாதுகாப்பான',
+        'risk.moderate':        '⚖️ மிதமான',
+        'risk.modagg':          '📈 மிதம்-தீவிர',
+        'risk.aggressive':      '🚀 தீவிரமான',
+        /* ── Common UI ── */
+        'common.show':          'காட்டு ▾',
+        'common.hide':          'மறை ▴',
+        'common.show.tbl':      'அட்டவணை காட்டு ▾',
+        'common.hide.tbl':      'அட்டவணை மறை ▴',
+        'common.yrs':           ' ஆண்.',
+        'common.mo':            ' மா.',
+        'common.years.old':     ' வயது',
+        /* ── Dashboard dynamic ── */
+        'dash.greeting':        'மீண்டும் வரவேற்கிறோம், {n}! 👋',
+        'pin.count':            '{n} பின் செய்யப்பட்டது →',
+        'pin.empty':            'எந்த கருவியும் பின் செய்யப்படவில்லை. ஒரு பிரிவைத் திறந்து ☆ Pin மீது கிளிக் செய்யுங்கள்.',
+        'pin.active':           '★ பின் செய்யப்பட்டது',
+        'pin.inactive':         '☆ பின்',
+        'pin.active.tap':       '★ பின் — நீக்க தட்டுங்கள்',
       }
     };
 
@@ -6504,6 +6802,13 @@
             badge.textContent === _T.ta['hs.notscored'])) {
             badge.textContent = _t('hs.notscored');
         }
+
+        /* 5. My Profile — re-apply dynamic strings that live outside data-i18n */
+        if (typeof upRefreshRiskDisplay === 'function') upRefreshRiskDisplay();
+        if (typeof upUpdateSummary      === 'function') upUpdateSummary();
+        // Re-render risk quiz if it is currently visible
+        var _upQuiz = document.getElementById('up-risk-quiz');
+        if (_upQuiz && !_upQuiz.classList.contains('hidden') && typeof upRiskRender === 'function') upRiskRender();
 
         /* Reset MF Kit and Fund Picker so they re-render with new language */
         if (typeof _mfRendered !== 'undefined') {
