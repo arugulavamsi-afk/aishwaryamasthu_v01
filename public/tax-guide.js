@@ -239,10 +239,9 @@
             '<div class="text-center mb-3 rounded-xl py-2.5 px-3 font-black text-sm" style="background:' + winColor + '18;color:' + winColor + ';border:1px solid ' + winColor + '30;">' +
                 (winner !== 'equal' ? '&#x2705; ' : '&#x1F504; ') + winLabel + (winAmt > 0 ? ' &mdash; ' + _t('tg.win.save') + ' ' + fmt(winAmt) + '/yr' : '') +
             '</div>' +
-            '<div class="grid grid-cols-2 gap-2 mb-2">' +
-                tgRegimeCard('Old Regime', gross, oldDeductions, oldTaxable, oldTax, oldCess, oldTotal, winner === 'old', '#7c3aed') +
-                tgRegimeCard('New Regime', gross, stdNew, newTaxable, newTax, newCess, newTotal, winner === 'new', '#059669') +
-            '</div>' +
+            tgRegimeTable(gross, oldDeductions, oldTaxable, oldTax, oldCess, oldTotal,
+                                        stdNew,       newTaxable, newTax, newCess, newTotal,
+                                        winner) +
             '<div class="rounded-lg px-3 py-2 text-[10px] space-y-0.5" style="background:#f1f5f9;">' +
                 '<div class="flex justify-between"><span class="text-slate-500">' + _t('tg.res.best') + '</span><span class="font-black" style="color:' + winColor + ';">' + bestRegime + '</span></div>' +
                 '<div class="flex justify-between"><span class="text-slate-500">' + _t('tg.res.effrate') + '</span><span class="font-bold">' + effRate + '%</span></div>' +
@@ -355,28 +354,42 @@
         if (typeof saveUserData === 'function') saveUserData();
     }
 
-    function tgRegimeCard(label, gross, deductions, taxable, tax, cess, total, isWinner, color) {
-        var fmt = function(n){ return 'Rs.' + Math.round(n).toLocaleString('en-IN'); };
-        var row = function(lbl, val, extraClass) {
-            return '<div class="flex justify-between items-center min-h-[1.35rem]' + (extraClass ? ' ' + extraClass : '') + '">' +
-                '<span class="text-slate-500 leading-tight">' + lbl + '</span>' +
-                '<span class="font-bold tabular-nums whitespace-nowrap ml-1">' + val + '</span></div>';
+    function tgRegimeTable(gross,
+                           oldDed, oldTaxable, oldTax, oldCess, oldTotal,
+                           newDed, newTaxable, newTax, newCess, newTotal,
+                           winner) {
+        var f = function(n){ return '&#8377;' + Math.round(n).toLocaleString('en-IN'); };
+        var oldW = winner === 'old', newW = winner === 'new';
+        var OC = '#7c3aed', NC = '#059669';
+
+        // header row
+        var h = '<div class="grid grid-cols-3 text-[9.5px] font-black px-3 py-2 rounded-t-xl" style="background:#f8fafc;border:1px solid #e2e8f0;border-bottom:none;">' +
+            '<span class="text-slate-500 uppercase tracking-wider">Metric</span>' +
+            '<span class="text-right" style="color:' + OC + ';">Old Regime' + (oldW ? ' &#127942;' : '') + '</span>' +
+            '<span class="text-right" style="color:' + NC + ';">New Regime' + (newW ? ' &#127942;' : '') + '</span>' +
+            '</div>';
+
+        var mkRow = function(label, oldVal, newVal, bold, sep, highlight) {
+            var bg   = highlight ? 'background:#f5f3ff;' : (sep ? 'background:#f8fafc;' : '');
+            var bdr  = sep ? 'border-top:1.5px solid #e2e8f0;' : '';
+            var fw   = bold ? 'font-black text-[10px]' : 'font-semibold text-[9.5px]';
+            return '<div class="grid grid-cols-3 px-3 py-1.5 items-center" style="' + bg + bdr + '">' +
+                '<span class="' + fw + ' text-slate-600 leading-tight">' + label + '</span>' +
+                '<span class="' + fw + ' text-right tabular-nums whitespace-nowrap" style="color:' + (bold ? OC : '#374151') + ';">' + oldVal + '</span>' +
+                '<span class="' + fw + ' text-right tabular-nums whitespace-nowrap" style="color:' + (bold ? NC : '#374151') + ';">' + newVal + '</span>' +
+                '</div>';
         };
-        return '<div class="rounded-xl p-2.5 flex flex-col" style="background:' + color + '08;border:2px solid ' + (isWinner ? color : '#e2e8f0') + ';">' +
-            '<div class="text-[10px] font-black mb-1.5 min-h-[1.25rem] flex items-center" style="color:' + color + ';">' + label + (isWinner ? ' &#127942;' : '') + '</div>' +
-            '<div class="space-y-0.5 text-[9.5px]">' +
-                row(_t('tg.card.gross'),   fmt(gross)) +
-                row(_t('tg.card.ded'),     '<span class="text-emerald-600">-' + fmt(deductions) + '</span>') +
-                row(_t('tg.card.taxable'), fmt(taxable)) +
-                row(_t('tg.card.tax'),     fmt(tax), 'pt-0.5 border-t border-slate-100 mt-0.5') +
-                row(_t('tg.card.cess'),    fmt(cess)) +
-            '</div>' +
-            '<div class="flex justify-between items-center rounded-lg px-1.5 py-1 mt-2" style="background:#fff;">' +
-                '<span class="font-black text-slate-700 text-[10px] leading-tight">' + _t('tg.card.total') + '</span>' +
-                '<span class="font-black text-[10px] tabular-nums whitespace-nowrap ml-1" style="color:' + color + ';">' + fmt(total) + '</span>' +
-            '</div>' +
-            '<div class="text-[9px] text-slate-400 mt-1 min-h-[1.1rem]">' + _t('tg.card.takehome') + ': ' + fmt(gross - total) + '</div>' +
-        '</div>';
+
+        var rows =
+            mkRow(_t('tg.card.gross'),   f(gross),        f(gross)) +
+            mkRow(_t('tg.card.ded'),     '<span style="color:#059669;">-' + f(oldDed) + '</span>', '<span style="color:#059669;">-' + f(newDed) + '</span>') +
+            mkRow(_t('tg.card.taxable'), f(oldTaxable),   f(newTaxable)) +
+            mkRow(_t('tg.card.tax'),     f(oldTax),       f(newTax),   false, true) +
+            mkRow(_t('tg.card.cess'),    f(oldCess),      f(newCess)) +
+            mkRow(_t('tg.card.total'),   f(oldTotal),     f(newTotal), true,  true,  true) +
+            mkRow(_t('tg.card.takehome'), f(gross-oldTotal), f(gross-newTotal), false, true);
+
+        return '<div class="rounded-xl overflow-hidden mb-2" style="border:1px solid #e2e8f0;">' + h + rows + '</div>';
     }
 
     function tgSendToFinPlan() {
