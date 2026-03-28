@@ -1103,6 +1103,147 @@
         el.value = raw ? Number(raw).toLocaleString('en-IN') : '';
     }
 
+    /* ═══════════════════════════════════════════════
+       USER PROFILE — save, load, autofill
+    ═══════════════════════════════════════════════ */
+    window._userProfile = {};
+
+    function upFmt(el) {
+        var raw = el.value.replace(/[^0-9]/g, '');
+        if (!raw) { el.value = ''; return; }
+        el.value = parseInt(raw, 10).toLocaleString('en-IN');
+    }
+
+    function upNum(id) {
+        return parseFloat((document.getElementById(id)?.value || '').replace(/,/g, '')) || 0;
+    }
+
+    function upSave() {
+        var p = {
+            name:       document.getElementById('up-name')?.value.trim()  || '',
+            age:        document.getElementById('up-age')?.value           || '',
+            occupation: document.getElementById('up-occupation')?.value    || '',
+            income:     document.getElementById('up-income')?.value        || '',
+            expenses:   document.getElementById('up-expenses')?.value      || '',
+            regime:     document.getElementById('up-regime')?.value        || 'new',
+            city:       document.getElementById('up-city')?.value          || 'metro',
+            risk:       document.getElementById('up-risk')?.value          || 'moderate',
+        };
+        window._userProfile = p;
+        upUpdateSummary();
+        upRefreshBanners();
+        if (typeof saveUserData === 'function') saveUserData();
+    }
+
+    function upLoad(p) {
+        if (!p) return;
+        window._userProfile = p;
+        ['name','age','occupation','income','expenses','regime','city','risk'].forEach(function(k) {
+            var el = document.getElementById('up-' + k);
+            if (el && p[k] !== undefined) el.value = p[k];
+        });
+        upUpdateSummary();
+        upRefreshBanners();
+    }
+
+    function upToggle() {
+        var body    = document.getElementById('up-body');
+        var chevron = document.getElementById('up-chevron');
+        if (!body) return;
+        var open = !body.classList.contains('hidden');
+        body.classList.toggle('hidden', open);
+        if (chevron) chevron.style.transform = open ? '' : 'rotate(180deg)';
+    }
+
+    function upUpdateSummary() {
+        var el  = document.getElementById('up-summary');
+        if (!el) return;
+        var p   = window._userProfile;
+        var parts = [];
+        if (p.name)       parts.push(p.name.split(' ')[0]);
+        if (p.age)        parts.push(p.age + 'y');
+        if (p.occupation) parts.push({ salaried:'Salaried', 'self-employed':'Self-Employed', business:'Business', retired:'Retired', student:'Student' }[p.occupation] || p.occupation);
+        if (p.income)     parts.push('₹' + p.income + '/mo');
+        el.textContent = parts.length ? parts.join(' · ') : 'Set your details once — auto-fill any tool instantly';
+    }
+
+    function upRefreshBanners() {
+        var p = window._userProfile;
+        var hasProfile = p.income || p.age || p.name;
+        ['taxguide', 'finplan', 'drawdown'].forEach(function(tool) {
+            var banner = document.getElementById('up-banner-' + tool);
+            if (banner) banner.classList.toggle('hidden', !hasProfile);
+        });
+    }
+
+    function upApply(tool) {
+        var p   = window._userProfile;
+        var inc = upNum('up-income');    // monthly income
+        var exp = upNum('up-expenses');  // monthly expenses
+        var age = parseInt(p.age, 10) || 0;
+
+        if (tool === 'taxguide') {
+            // Annual gross = monthly × 12
+            if (inc > 0) {
+                var annualInc = (inc * 12).toLocaleString('en-IN');
+                var el = document.getElementById('tg-income');
+                if (el) { el.value = annualInc; el.classList.remove('text-slate-400'); }
+            }
+            // Tax regime
+            var regEl = document.getElementById('tg-regime');
+            if (regEl && p.regime) {
+                for (var i = 0; i < regEl.options.length; i++) {
+                    if (regEl.options[i].value === p.regime || regEl.options[i].text.toLowerCase().includes(p.regime)) {
+                        regEl.selectedIndex = i; break;
+                    }
+                }
+            }
+            if (typeof tgCalc === 'function') tgCalc();
+        }
+
+        if (tool === 'finplan') {
+            if (p.name) {
+                var fnEl = document.getElementById('fp-name');
+                if (fnEl) fnEl.value = p.name;
+            }
+            if (age > 0) {
+                var faEl = document.getElementById('fp-age');
+                if (faEl) faEl.value = age;
+            }
+            if (inc > 0) {
+                var fiEl = document.getElementById('fp-income');
+                if (fiEl) { fiEl.value = inc.toLocaleString('en-IN'); if (typeof fpFormatMoney === 'function') fpFormatMoney(fiEl, 'fp-income-words'); }
+            }
+            if (inc > 0 && exp > 0 && inc > exp) {
+                var surplus = inc - exp;
+                var fsEl = document.getElementById('fp-invest-amt');
+                if (fsEl) { fsEl.value = surplus.toLocaleString('en-IN'); if (typeof fpFormatMoney === 'function') fpFormatMoney(fsEl, 'fp-invest-words'); }
+            }
+            if (typeof fpLiveUpdate === 'function') fpLiveUpdate();
+        }
+
+        if (tool === 'drawdown') {
+            if (age > 0) {
+                var daEl = document.getElementById('dd-current-age');
+                if (daEl) { daEl.value = age; daEl.classList.remove('text-slate-400'); }
+            }
+            if (exp > 0) {
+                var deEl = document.getElementById('dd-expenses');
+                if (deEl) { deEl.value = exp.toLocaleString('en-IN'); deEl.classList.remove('text-slate-400'); }
+            }
+            if (typeof drawdownCalc === 'function') drawdownCalc();
+        }
+
+        // Flash the banner button to confirm
+        var btn = document.querySelector('#up-banner-' + tool + ' .up-apply-btn');
+        if (btn) {
+            var orig = btn.textContent;
+            btn.textContent = '✓ Applied!';
+            btn.style.background = '#059669';
+            setTimeout(function() { btn.textContent = orig; btn.style.background = ''; }, 1500);
+        }
+    }
+
     function ddNum(id) {
         return parseFloat((document.getElementById(id)?.value || '').replace(/,/g, '')) || 0;
     }

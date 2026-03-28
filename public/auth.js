@@ -437,6 +437,7 @@
                     });
                     return obj;
                 })(),
+                userProfile: window._userProfile || {},
                 drawdown: (function(){
                     var obj = {};
                     ['dd-corpus','dd-current-age','dd-ret-age','dd-expenses','dd-inflation','dd-return','dd-other-income'].forEach(function(id){
@@ -824,6 +825,20 @@
                     if (typeof ssaCalc === 'function') ssaCalc();
                 }
             } catch(e) { console.warn('loadUserData ssaPlanner:', e); }
+
+            // User Profile restore
+            try {
+                if (data.userProfile && typeof upLoad === 'function') {
+                    upLoad(data.userProfile);
+                    // Auto-expand card if profile has data
+                    if (data.userProfile.name || data.userProfile.income) {
+                        var upBody = document.getElementById('up-body');
+                        var upChev = document.getElementById('up-chevron');
+                        if (upBody) { upBody.classList.remove('hidden'); }
+                        if (upChev) { upChev.style.transform = 'rotate(180deg)'; }
+                    }
+                }
+            } catch(e) { console.warn('loadUserData userProfile:', e); }
 
             // Drawdown Planner restore
             try {
