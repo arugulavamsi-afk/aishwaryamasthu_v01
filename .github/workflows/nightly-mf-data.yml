@@ -12,6 +12,7 @@ jobs:
     timeout-minutes: 30   # script usually finishes in 8-15 min; hard-kill at 30
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+      FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
 
     steps:
       - name: Checkout repo
@@ -58,7 +59,7 @@ jobs:
         # Deploys the updated public/mf-data.json (and any other public/ changes) to Firebase CDN.
         # Requires FIREBASE_TOKEN secret — generate with: firebase login:ci
         # Then add it to: GitHub repo → Settings → Secrets → Actions → FIREBASE_TOKEN
-        if: ${{ secrets.FIREBASE_TOKEN != '' }}
+        if: env.FIREBASE_TOKEN != ''
         run: |
           npm install -g firebase-tools
-          firebase deploy --only hosting --token "${{ secrets.FIREBASE_TOKEN }}" --non-interactive
+          firebase deploy --only hosting --token "$FIREBASE_TOKEN" --non-interactive
