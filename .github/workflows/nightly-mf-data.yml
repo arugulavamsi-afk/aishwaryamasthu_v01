@@ -10,6 +10,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 30   # script usually finishes in 8-15 min; hard-kill at 30
+    permissions:
+      contents: write     # needed for git push back to repo
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
