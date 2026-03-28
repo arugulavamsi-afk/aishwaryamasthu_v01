@@ -1578,6 +1578,149 @@
                 avoid: 'Most schemes have lock-in periods (1–15 years). Interest on most (except PPF) is taxable at slab rate. KVP and RBI FRB do not qualify for 80C. Check eligibility — SCSS is only for 60+ (or 55+ on VRS).',
                 example: 'Shyam, 62, retired with ₹50L corpus. He puts ₹30L in SCSS (8.2%, ₹61,500/quarter) + ₹9L in POMIS (7.4%, ₹5,550/month) + ₹11L in PPF. His guaranteed quarterly + monthly income covers living expenses with zero market exposure — a retiree blueprint using only government schemes.',
                 popular: 'SCSS (best for 60+), PPF (best long-term tax-free), POMIS (monthly income), NSC (80C, 5yr), KVP (doubles money), RBI Floating Rate Bonds (large corpus, rate-linked)'
+            },
+            {
+                id: 'large-mid-cap', icon: '🏗️', name: 'Large & Mid Cap Funds', category: 'equity',
+                categoryLabel: 'Equity', categoryColor: '#2563eb', categoryBg: '#eff6ff',
+                returns: '12 – 16%', horizon: '5+ yrs', risk: 4, riskLabel: 'High',
+                tagline: 'Mandatory 35% each in large + mid cap — best of both worlds.',
+                what: 'Large & Mid Cap funds are mandated by SEBI to invest minimum 35% in top-100 large cap companies and minimum 35% in mid cap companies (ranked 101–250). Unlike flexi cap funds, the fund manager cannot retreat entirely to large caps during volatile times — the mid cap floor ensures meaningful growth exposure at all times.',
+                scenarios: 'Ideal for investors who want large cap stability combined with mid cap growth potential in a single fund. A good alternative to managing a large cap + mid cap combo separately. Suitable for 5–8 year wealth-building goals.',
+                avoid: 'The mandatory mid cap allocation (35%) means higher volatility than pure large cap funds. Not suitable for investors with less than 5-year horizon or those who cannot stomach 25–35% drawdowns.',
+                example: 'Rohit invests ₹10,000/month in Mirae Asset Large & Midcap Fund. The large cap half provided stability during 2022 correction while the mid cap portion delivered superior gains in the 2023–24 bull run. Over 7 years at ~14% CAGR, his ₹8.4L grew to ₹20.1L.',
+                popular: 'Mirae Asset Large & Midcap Fund, Canara Robeco Emerging Equities Fund, Kotak Equity Opportunities Fund, DSP Equity Opportunities Fund, SBI Large & Midcap Fund'
+            },
+            {
+                id: 'focused', icon: '🎯', name: 'Focused Funds', category: 'equity',
+                categoryLabel: 'Equity', categoryColor: '#2563eb', categoryBg: '#eff6ff',
+                returns: '11 – 16%', horizon: '5+ yrs', risk: 4, riskLabel: 'High',
+                tagline: 'Max 30 high-conviction stocks — concentrated bets for higher alpha.',
+                what: 'Focused funds are equity funds that invest in a concentrated portfolio of maximum 30 stocks (across any market cap). Unlike diversified equity funds with 50–80 stocks, the fund manager bets heavily on their best ideas. This concentration can lead to significant outperformance — or underperformance — compared to the broader market.',
+                scenarios: 'Best for investors who believe in active fund management and want a fund manager\'s highest-conviction calls. Can complement a diversified core portfolio as a satellite allocation (10–20%). Best for 5+ year investors who can handle volatility from concentration risk.',
+                avoid: 'Avoid if you want safety in diversification. A wrong call on even 2–3 stocks can hurt significantly since each holding is a large percentage of the portfolio. Not suited for conservative investors or short-term goals.',
+                example: 'Anand puts ₹5,000/month in SBI Focused Equity Fund. The fund manager\'s concentrated 25-stock portfolio included early bets on Titan and Bajaj Finance. Over 10 years, this focus on quality compounders delivered ~15.5% CAGR vs Nifty\'s ~13% — turning ₹6L into ₹16.9L.',
+                popular: 'SBI Focused Equity Fund, Nippon India Focused Equity Fund, HDFC Focused 30 Fund, Axis Focused Fund, Mirae Asset Focused Fund'
+            },
+            {
+                id: 'value-contra', icon: '💎', name: 'Value / Contra Funds', category: 'equity',
+                categoryLabel: 'Equity', categoryColor: '#2563eb', categoryBg: '#eff6ff',
+                returns: '11 – 16%', horizon: '7+ yrs', risk: 3, riskLabel: 'Medium–High',
+                tagline: 'Buy undervalued or out-of-favour stocks — patience rewarded richly.',
+                what: 'Value funds follow the Warren Buffett philosophy — buying stocks trading below their intrinsic value (low P/E, P/B ratios) and holding until the market recognises their true worth. Contra funds take a contrarian approach — investing in sectors or stocks currently out of favour with the market crowd. Both require patience as undervalued stocks can remain so for extended periods.',
+                scenarios: 'Great for patient, long-term investors (7+ years) who can wait for value unlocking. Historically outperforms during market recoveries after bear markets. Best used as a 15–25% satellite allocation alongside core diversified equity funds.',
+                avoid: 'Value traps are real — some cheap stocks are cheap for a reason (poor business fundamentals). These funds can significantly underperform in growth-led bull markets. Not suitable for investors who need consistent year-on-year performance.',
+                example: 'Meenakshi bought ₹2,00,000 of Quant Value Fund in early 2020 when PSU and value stocks were deeply out of favour. By 2023, PSU stocks roared back — the fund delivered ~35% CAGR over 3 years. Value investing requires conviction to buy when others are selling.',
+                popular: 'Quant Value Fund, ICICI Pru Value Discovery Fund, Nippon India Value Fund, JM Value Fund, UTI Value Opportunities Fund'
+            },
+            {
+                id: 'balanced-advantage', icon: '⚖️', name: 'Balanced Advantage Funds (BAF)', category: 'hybrid',
+                categoryLabel: 'Hybrid', categoryColor: '#b45309', categoryBg: '#fffbeb',
+                returns: '9 – 12%', horizon: '3+ yrs', risk: 2, riskLabel: 'Low–Medium',
+                tagline: 'Automatically buys equity cheap and books profits when expensive.',
+                what: 'Balanced Advantage Funds (also called Dynamic Asset Allocation Funds) use quantitative models — based on P/E ratios, P/B ratios, or earnings yield — to automatically shift allocation between equity and debt. When equity is expensive (high P/E), they reduce equity; when cheap, they increase it. This mechanical de-risking removes human emotional bias from asset allocation.',
+                scenarios: 'Ideal for investors who want market participation but without managing their own equity-debt rebalancing. Great for investors in their 40s–50s who want growth with downside protection. Excellent "all-weather" fund for new investors uncertain about market timing.',
+                avoid: 'The model-driven de-risking can cause underperformance during strong, sustained bull runs (when equity is reduced based on valuation). Returns will lag pure equity funds over very long periods. Not designed to maximise returns — designed to manage drawdowns.',
+                example: 'HDFC Balanced Advantage Fund automatically reduced equity from 75% to 30% in 2021 (high valuations), then deployed back to 65%+ in the 2022 correction. Investors enjoyed ~11% CAGR with maximum drawdown of only ~18% vs Nifty\'s ~25% — peace of mind in exchange for slightly lower returns.',
+                popular: 'HDFC Balanced Advantage Fund, ICICI Pru Balanced Advantage Fund, Nippon India Balanced Advantage Fund, Edelweiss Balanced Advantage Fund, Kotak Balanced Advantage Fund'
+            },
+            {
+                id: 'multi-asset', icon: '🌈', name: 'Multi Asset Allocation Funds', category: 'hybrid',
+                categoryLabel: 'Hybrid', categoryColor: '#b45309', categoryBg: '#fffbeb',
+                returns: '9 – 13%', horizon: '3–5+ yrs', risk: 3, riskLabel: 'Medium',
+                tagline: 'Equity + Debt + Gold in one fund — true all-weather diversification.',
+                what: 'Multi Asset Allocation funds invest in at least 3 asset classes with minimum 10% allocation to each. Typically they hold equity (40–60%), debt (20–30%), and gold or REITs (10–20%). This true multi-asset approach means at least one asset class is usually performing well — cushioning drawdowns while maintaining growth. Gold and equity often move inversely, providing natural hedging.',
+                scenarios: 'Excellent "complete portfolio in one fund" solution, especially for investors who want automatic gold + equity + debt rebalancing. Great for 3–5 year goals, investors in their 40s, and those who find portfolio management overwhelming. Also useful as a core holding during uncertain macro environments.',
+                avoid: 'The gold/alternative allocation can drag returns during strong equity bull markets. Tax treatment depends on equity allocation — check if the fund qualifies as equity-oriented (65%+ equity) for tax purposes. Not ideal if you want to separately control each asset class allocation.',
+                example: 'Nalini, 42, puts ₹12,000/month in ICICI Pru Multi Asset Fund. When equity markets fell 20% in 2022, her portfolio fell only 11% because gold surged 12% in INR terms (USD strengthened). She continued her SIP confidently — her diversified mix delivered ~11% CAGR over 5 years with far less anxiety.',
+                popular: 'ICICI Pru Multi Asset Fund, Nippon India Multi Asset Fund, Quant Multi Asset Fund, Tata Multi Asset Opportunities Fund, Axis Multi Asset Allocation Fund'
+            },
+            {
+                id: 'equity-savings', icon: '🏦', name: 'Equity Savings Funds', category: 'hybrid',
+                categoryLabel: 'Hybrid', categoryColor: '#b45309', categoryBg: '#fffbeb',
+                returns: '7 – 9%', horizon: '1–2+ yrs', risk: 2, riskLabel: 'Low–Medium',
+                tagline: 'Equity tax efficiency with debt-like stability — a smart middle ground.',
+                what: 'Equity Savings funds split allocation across three buckets: unhedged equity (25–40%, for growth), equity arbitrage (25–35%, for equity taxation without equity risk), and debt (25–35%, for stability). Since they hold 65%+ in equity (including arbitrage), they are taxed as equity funds — giving them a significant tax advantage over pure debt funds for investors in high tax brackets.',
+                scenarios: 'Perfect for investors in 20–30% tax brackets who want better post-tax returns than FDs or debt funds for 1–2 year goals. A great step-up from liquid/ultra-short funds for money needed in 12–24 months. Also suitable for retirees who want monthly dividend-like income with lower volatility.',
+                avoid: 'Lower upside than aggressive hybrid or equity funds. The arbitrage component means gross returns look lower than pure equity. Not suited for very short term (<1 year) due to exit loads and equity STCG tax applicability.',
+                example: 'Suresh (30% tax slab) has ₹5,00,000 to deploy for 18 months. A 1-year FD at 7% gives ₹35,000 interest — taxed at 30% slab, net ₹24,500. Equity Savings Fund returning 8% gives ₹40,000 gain — but taxed at just 12.5% LTCG after 1 year (holding post Apr 2023), net ₹35,000. He keeps ₹10,500 extra!',
+                popular: 'HDFC Equity Savings Fund, ICICI Pru Equity Savings Fund, Nippon India Equity Savings Fund, Kotak Equity Savings Fund, SBI Equity Savings Fund'
+            },
+            {
+                id: 'overnight', icon: '🌙', name: 'Overnight Funds', category: 'debt',
+                categoryLabel: 'Debt', categoryColor: '#059669', categoryBg: '#ecfdf5',
+                returns: '5 – 6%', horizon: '1 day – 1 week', risk: 1, riskLabel: 'Very Low',
+                tagline: 'The safest debt fund — money deployed just for one day at a time.',
+                what: 'Overnight funds invest exclusively in securities that mature the next business day — primarily TREPS (Tri-party Repo) and CBLOs. The portfolio is completely rolled over every single day. This means zero interest rate risk (duration is literally 1 day) and near-zero credit risk. NAV changes are tiny and predictable — essentially a moving parking lot for cash.',
+                scenarios: 'Best for parking money for 1–7 days — like waiting to deploy into equity after receiving salary or a lump sum. Corporates use it for daily cash management. Better than keeping cash idle in a bank savings account for very short periods. Zero exit load in most funds.',
+                avoid: 'Returns are slightly lower than liquid funds (no term premium). Not appropriate for anything beyond 1–2 weeks — move to liquid funds for longer. Interest income is taxed at your slab rate — no tax advantage.',
+                example: 'Kabir receives his ₹10,00,000 bonus and plans to invest it in an NFO opening in 5 days. He parks it in Nippon India Overnight Fund. At ~5.5% p.a., he earns ₹754 in 5 days instead of earning nothing in his savings account. When the NFO opens, he redeems — credited next morning.',
+                popular: 'Nippon India Overnight Fund, HDFC Overnight Fund, ICICI Pru Overnight Fund, SBI Overnight Fund, Aditya Birla SL Overnight Fund'
+            },
+            {
+                id: 'money-market', icon: '💹', name: 'Money Market Funds', category: 'debt',
+                categoryLabel: 'Debt', categoryColor: '#059669', categoryBg: '#ecfdf5',
+                returns: '6 – 7.5%', horizon: '3–12 months', risk: 1, riskLabel: 'Very Low',
+                tagline: 'Higher than liquid funds — invests in T-bills and CDs up to 1 year.',
+                what: 'Money Market funds invest in high-quality short-term instruments — Treasury Bills (T-bills), Certificates of Deposit (CDs), Commercial Papers (CPs) — with maturity up to 1 year. They sit between liquid funds (up to 91 days) and ultra-short duration funds (3–6 months) in the risk-return spectrum. Very low credit risk due to focus on government securities and top-rated issuers.',
+                scenarios: 'Excellent alternative to 6–12 month FDs with slightly better returns and full liquidity. Use for systematic transfer plans (STP) into equity funds — park a lump sum and STP monthly. Also suitable for businesses managing 3–12 month working capital.',
+                avoid: 'Marginally sensitive to interest rate movements (unlike overnight/liquid funds). Gains taxed at income slab — same as FD interest post-2023. Not suitable for goals beyond 12–18 months (use short/medium duration funds).',
+                example: 'Pooja receives ₹8,00,000 from matured NSC and plans to invest ₹50,000/month in equity via STP over 16 months. She parks the corpus in HDFC Money Market Fund at ~7% p.a. As she transfers monthly, the remaining corpus keeps earning — better than letting it sit idle in a savings account.',
+                popular: 'HDFC Money Market Fund, Nippon India Money Market Fund, ICICI Pru Money Market Fund, Aditya Birla SL Money Manager Fund, UTI Money Market Fund'
+            },
+            {
+                id: 'medium-duration', icon: '📆', name: 'Medium Duration Funds', category: 'debt',
+                categoryLabel: 'Debt', categoryColor: '#059669', categoryBg: '#ecfdf5',
+                returns: '7 – 9%', horizon: '3–4 yrs', risk: 3, riskLabel: 'Medium',
+                tagline: 'FD alternative for 3–4 year money — higher returns, more interest rate risk.',
+                what: 'Medium duration funds invest in bonds with portfolio Macaulay duration of 3–4 years. They hold a mix of government bonds, PSU bonds, and corporate bonds of medium maturity. Higher duration than short-duration funds means higher sensitivity to interest rate changes — both on the upside (falling rates boost returns significantly) and downside (rising rates can cause temporary NAV dips).',
+                scenarios: 'Best when you expect interest rates to remain stable or fall over the next 3–4 years. A good alternative to 3-year FDs for investors in lower tax brackets. Can benefit from capital appreciation when RBI enters a rate-cutting cycle.',
+                avoid: 'Rising interest rate environments (like 2022) can cause meaningful NAV drawdowns due to the longer duration. Not suitable for investors who need capital protection at a specific future date. All gains taxed at slab rate post Apr 2023.',
+                example: 'In 2019, Anil parked ₹5,00,000 in ICICI Pru Medium Term Bond Fund expecting the rate cut cycle. As RBI cut rates by 250 bps, his fund delivered ~9.5% annually over 3 years — far better than the ~7% FD he would have locked into. ₹5L became ₹6.57L.',
+                popular: 'ICICI Pru Medium Term Bond Fund, Aditya Birla SL Medium Term Plan, SBI Magnum Medium Duration Fund, HDFC Medium Term Debt Fund, Nippon India Strategic Debt Fund'
+            },
+            {
+                id: 'corporate-bond', icon: '🏢', name: 'Corporate Bond Funds', category: 'debt',
+                categoryLabel: 'Debt', categoryColor: '#059669', categoryBg: '#ecfdf5',
+                returns: '7 – 8.5%', horizon: '1–3 yrs', risk: 2, riskLabel: 'Low',
+                tagline: 'Top-rated company bonds only — safety with a yield pickup over gilts.',
+                what: 'Corporate Bond funds invest minimum 80% in AA+ or higher-rated corporate bonds — only the highest-quality debt issued by companies like HDFC, TCS, Infosys, NTPC. These funds deliberately avoid lower-rated bonds (unlike credit risk funds) to maintain quality. They typically yield 0.3–0.8% more than government securities of similar maturity, with minimal credit risk.',
+                scenarios: 'Good for risk-averse investors who want slightly higher returns than G-sec/gilt funds without taking on meaningful credit risk. Suitable for 1–3 year goals where capital safety is important. Better post-tax alternative to bank FDs for investors in lower tax brackets.',
+                avoid: 'Sensitive to interest rate movements — not as safe as liquid/overnight funds during rate hike cycles. Returns are taxed at income slab rate (same as FD). Cannot compete with short/medium duration funds if rates fall sharply.',
+                example: 'Kavita parks ₹10,00,000 retirement bonus in ICICI Pru Corporate Bond Fund for 2 years. At 7.8% p.a., she earns ₹1,62,000 over 2 years — ₹12,000 more than a comparable bank FD at 7%. The portfolio holds only AAA/AA+ rated bonds — comparable safety to top-rated FDs.',
+                popular: 'ICICI Pru Corporate Bond Fund, Aditya Birla SL Corporate Bond Fund, HDFC Corporate Bond Fund, Kotak Corporate Bond Fund, Nippon India Corporate Bond Fund'
+            },
+            {
+                id: 'banking-psu', icon: '🏦', name: 'Banking & PSU Debt Funds', category: 'debt',
+                categoryLabel: 'Debt', categoryColor: '#059669', categoryBg: '#ecfdf5',
+                returns: '6.5 – 8%', horizon: '1–3 yrs', risk: 2, riskLabel: 'Low',
+                tagline: 'Banks and government-owned company bonds — near-sovereign safety.',
+                what: 'Banking & PSU Debt funds invest minimum 80% in bonds issued by banks (SBI, HDFC Bank, ICICI Bank) and Public Sector Undertakings (NTPC, NHAI, RECL, Power Finance). These entities have implicit or explicit government backing — extremely low probability of default. The combination gives safety close to gilts but with higher yields since they\'re corporate issuers.',
+                scenarios: 'Ideal for conservative investors who want better returns than pure gilt or liquid funds but cannot tolerate any credit risk. Great for senior citizens, retirees, and institutions parking large funds. Also suitable for 2–3 year goals where capital safety is paramount.',
+                avoid: 'Slightly sensitive to interest rate movements (duration typically 2–3 years). Returns lower than corporate bond funds that take on some credit risk. Gains taxed at income slab rate — same limitation as other debt funds post-2023.',
+                example: 'An 58-year-old pre-retiree parks ₹15,00,000 in Nippon India Banking & PSU Debt Fund, 3 years before retirement. At 7.5% p.a. over 3 years, the corpus grows to ₹18,64,000 — more than a bank FD, with the comfort that every bond in the portfolio is from a PSU or scheduled bank.',
+                popular: 'Nippon India Banking & PSU Debt Fund, HDFC Banking and PSU Debt Fund, Kotak Banking and PSU Debt Fund, Axis Banking & PSU Debt Fund, IDFC Banking & PSU Debt Fund'
+            },
+            {
+                id: 'gold-funds', icon: '🥇', name: 'Gold Funds & Gold ETFs', category: 'others',
+                categoryLabel: 'Others', categoryColor: '#0f766e', categoryBg: '#f0fdfa',
+                returns: '8 – 12%', horizon: '5+ yrs', risk: 3, riskLabel: 'Medium',
+                tagline: 'Digital gold — hedge against inflation, crisis, and INR depreciation.',
+                what: 'Gold Funds (Fund of Funds investing in Gold ETFs) and Gold ETFs give you pure gold price exposure without physical storage, making charges, or purity risk. Gold ETFs track domestic gold prices (international price + import duty + INR/USD rate). Gold historically acts as a safe haven during geopolitical crises, equity market crashes, and high inflation — making it a powerful portfolio diversifier.',
+                scenarios: 'Allocate 5–15% of your portfolio to gold for diversification and crisis hedging. Gold tends to rise when equity markets fall and during INR depreciation — making it an excellent portfolio stabiliser. Especially useful if you have upcoming foreign travel/education expenses (natural USD hedge). Also superior to buying physical gold (no making charges, theft risk, or impurity).',
+                avoid: 'Gold pays no dividends or interest — returns come only from price appreciation. Can underperform for long stretches during equity bull markets (2003–2007, 2014–2018). Gains taxed at slab rate after Finance Act 2023 changes. Don\'t hold more than 15% — it\'s a diversifier, not a growth engine.',
+                example: 'During COVID-19 panic in March 2020, Nifty crashed 38% but gold rose 24% in INR terms (global uncertainty + INR weakening). An investor with 10% gold in their portfolio saw overall drawdown of ~28% vs ~38% without gold. After lockdowns ended, equity recovered and gold stabilised — the 10% allocation had done its job.',
+                popular: 'Nippon India Gold BeES (Gold ETF), HDFC Gold ETF, SBI Gold ETF, Axis Gold ETF, Kotak Gold ETF — For SIP investors: Nippon India Gold Savings Fund (FoF), SBI Gold Fund, HDFC Gold Fund'
+            },
+            {
+                id: 'solution-oriented', icon: '🎓', name: 'Solution Oriented Funds', category: 'others',
+                categoryLabel: 'Others', categoryColor: '#0f766e', categoryBg: '#f0fdfa',
+                returns: '10 – 14%', horizon: '5–25 yrs', risk: 4, riskLabel: 'High',
+                tagline: 'Retirement and children\'s funds — goal-linked, with mandatory lock-in.',
+                what: 'Solution Oriented Funds are SEBI-defined category specifically for two life goals: (1) Retirement Funds — help build a corpus for post-retirement income; (2) Children\'s Gift Funds — build wealth for a child\'s education, marriage, or future. Both have a mandatory lock-in of 5 years or until the investor turns 60 (retirement) / child reaches 18 (children\'s fund). They typically invest in equity-heavy portfolios with automatic glide path (shifting to safer debt as the goal approaches).',
+                scenarios: 'Best for investors who want to ring-fence money for a specific long-term goal and prevent premature withdrawals. The lock-in enforces investment discipline — preventing panic-selling during market crashes. If you struggle with staying invested during volatility, the forced lock-in is a feature, not a bug.',
+                avoid: 'The mandatory lock-in means you cannot access the money in emergencies. Returns are similar to a diversified equity fund — you are not getting a premium for the lock-in. Pure equity funds with self-imposed discipline may serve the same purpose with more flexibility.',
+                example: 'Arjun opens a Nippon India Retirement Fund for his daughter at her birth with ₹5,000/month. Over 25 years at ~12% CAGR (equity-heavy phase), then gradually shifting to debt, his ₹15L total investment becomes ~₹94L by the time she turns 25 — fully funded education + wedding corpus, and he never dipped into it.',
+                popular: 'Nippon India Retirement Fund, HDFC Retirement Savings Fund (Equity Plan), ICICI Pru Child Care Plan, Tata Retirement Savings Fund, UTI Retirement Benefit Pension Fund'
             }
         ];
 
