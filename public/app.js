@@ -3710,6 +3710,9 @@
             if (adjusted <= 11) return 'moderateAggressive';
             return 'aggressive';
         }
+        // Expose for My Profile risk quiz
+        window.fpSaveRiskScore  = fpSaveRiskScore;
+        window.fpGetRiskProfile = fpGetRiskProfile;
 
         // ---- FIX: Return the appropriate projected return rate for a goal
         //  based on its type and time horizon. Long-term goals use the full

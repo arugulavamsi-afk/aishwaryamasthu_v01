@@ -568,6 +568,7 @@
             // ── Load risk profile into cache (one-time activity) ──
             if (snap.exists && snap.data() && snap.data().riskProfile) {
                 window._fpRiskCache = snap.data().riskProfile;
+                if (typeof upRefreshRiskDisplay === 'function') upRefreshRiskDisplay();
             }
             const data = snap.exists && snap.data() && snap.data().appData ? snap.data().appData : null;
             if (!data) return;
