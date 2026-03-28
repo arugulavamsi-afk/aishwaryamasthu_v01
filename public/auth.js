@@ -439,7 +439,7 @@
                 })(),
                 drawdown: (function(){
                     var obj = {};
-                    ['dd-corpus','dd-ret-age','dd-expenses','dd-inflation','dd-return','dd-other-income'].forEach(function(id){
+                    ['dd-corpus','dd-current-age','dd-ret-age','dd-expenses','dd-inflation','dd-return','dd-other-income'].forEach(function(id){
                         obj[id] = document.getElementById(id)?.value || '';
                     });
                     return obj;
@@ -828,7 +828,7 @@
             // Drawdown Planner restore
             try {
                 if (data.drawdown) {
-                    var ddDefs = {'dd-corpus':'1,00,00,000','dd-ret-age':'60','dd-expenses':'60,000','dd-inflation':'6','dd-return':'8','dd-other-income':''};
+                    var ddDefs = {'dd-corpus':'1,00,00,000','dd-current-age':'30','dd-ret-age':'60','dd-expenses':'60,000','dd-inflation':'6','dd-return':'8','dd-other-income':''};
                     Object.entries(data.drawdown).forEach(function([id, val]) {
                         var el = document.getElementById(id);
                         if (!el || val === null || val === undefined) return;

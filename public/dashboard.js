@@ -1117,7 +1117,7 @@
     }
 
     function initDrawdown() {
-        var defs = {'dd-corpus':'1,00,00,000','dd-ret-age':'60','dd-expenses':'60,000','dd-inflation':'6','dd-return':'8','dd-other-income':''};
+        var defs = {'dd-corpus':'1,00,00,000','dd-current-age':'30','dd-ret-age':'60','dd-expenses':'60,000','dd-inflation':'6','dd-return':'8','dd-other-income':''};
         Object.keys(defs).forEach(function(id) {
             var el = document.getElementById(id);
             if (!el) return;
@@ -1128,7 +1128,7 @@
     }
 
     function resetDrawdown() {
-        var fields = {'dd-corpus':'1,00,00,000','dd-ret-age':'60','dd-expenses':'60,000','dd-inflation':'6','dd-return':'8','dd-other-income':''};
+        var fields = {'dd-corpus':'1,00,00,000','dd-current-age':'30','dd-ret-age':'60','dd-expenses':'60,000','dd-inflation':'6','dd-return':'8','dd-other-income':''};
         Object.entries(fields).forEach(function([id, val]) {
             var el = document.getElementById(id);
             if (!el) return;
@@ -1160,6 +1160,7 @@
 
     function drawdownCalc() {
         var corpus      = ddNum('dd-corpus');
+        var currentAge  = Math.round(ddNum('dd-current-age')) || 30;
         var retAge      = Math.round(ddNum('dd-ret-age')) || 60;
         var expToday    = ddNum('dd-expenses');
         var inflation   = (ddNum('dd-inflation') || 6) / 100;
@@ -1167,6 +1168,18 @@
         var otherIncome = ddNum('dd-other-income'); // monthly, today's ₹
 
         if (!corpus || !expToday) return;
+
+        // Inflate today's expenses to retirement date
+        var yearsToRetire   = Math.max(0, retAge - currentAge);
+        var expAtRetirement = expToday * Math.pow(1 + inflation, yearsToRetire);
+
+        // Show hint
+        var hint = document.getElementById('dd-future-exp-hint');
+        if (hint) {
+            hint.textContent = yearsToRetire > 0
+                ? '→ At retirement (' + yearsToRetire + ' yrs): ₹' + Math.round(expAtRetirement).toLocaleString('en-IN') + '/mo'
+                : '→ Retiring now — expenses used as-is';
+        }
 
         var MAX_AGE  = 100;
         var planYears = MAX_AGE - retAge;
@@ -1177,8 +1190,9 @@
 
         for (var yr = 1; yr <= planYears; yr++) {
             var age         = retAge + yr - 1;
+            // yr=1 = first year of retirement; inflation compounds from expAtRetirement
             var inflFactor  = Math.pow(1 + inflation, yr - 1);
-            var monthlyExp  = expToday * inflFactor;
+            var monthlyExp  = expAtRetirement * inflFactor;
             var monthlyOth  = otherIncome * inflFactor;
             var netMonthly  = Math.max(0, monthlyExp - monthlyOth);
             var annualWithd = netMonthly * 12;

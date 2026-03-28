@@ -3759,6 +3759,16 @@
                         </div>
 
                         <div>
+                            <label class="epf-label">Current Age</label>
+                            <input id="dd-current-age" type="number" min="20" max="74" value="30"
+                                class="epf-input text-slate-400"
+                                oninput="drawdownCalc();this.classList.remove('text-slate-400');"
+                                onfocus="if(this.value==='30'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                                onblur="if(this.value===''||this.value==='30'){this.value='30';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                            <div class="text-[9px] text-slate-400 mt-0.5">Your age today</div>
+                        </div>
+
+                        <div>
                             <label class="epf-label">Retirement Age</label>
                             <input id="dd-ret-age" type="number" min="40" max="75" value="60"
                                 class="epf-input text-slate-400"
@@ -3768,8 +3778,8 @@
                             <div class="text-[9px] text-slate-400 mt-0.5">Plan to age 90+</div>
                         </div>
 
-                        <div>
-                            <label class="epf-label">Monthly Expenses (₹)</label>
+                        <div class="col-span-2">
+                            <label class="epf-label">Today's Monthly Expenses (₹)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
                             <input id="dd-expenses" type="text" inputmode="numeric" value="60,000"
                                 class="epf-input pl-7 text-slate-400"
@@ -3777,7 +3787,7 @@
                                 onfocus="if(this.value==='60,000'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                 onblur="if(this.value===''||this.value==='60,000'){this.value='60,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
                             </div>
-                            <div class="text-[9px] text-slate-400 mt-0.5">Inflated to retirement</div>
+                            <div id="dd-future-exp-hint" class="text-[9px] text-indigo-500 font-semibold mt-0.5"></div>
                         </div>
 
                         <div>
