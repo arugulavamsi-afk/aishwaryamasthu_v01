@@ -831,13 +831,6 @@
             try {
                 if (data.userProfile && typeof upLoad === 'function') {
                     upLoad(data.userProfile);
-                    // Auto-expand card if profile has data
-                    if (data.userProfile.name || data.userProfile.income) {
-                        var upBody = document.getElementById('up-body');
-                        var upChev = document.getElementById('up-chevron');
-                        if (upBody) { upBody.classList.remove('hidden'); }
-                        if (upChev) { upChev.style.transform = 'rotate(180deg)'; }
-                    }
                 }
             } catch(e) { console.warn('loadUserData userProfile:', e); }
 
