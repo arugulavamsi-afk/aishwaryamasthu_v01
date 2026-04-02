@@ -122,7 +122,7 @@
                 }
                 updateWords('years', 'years-words');
 
-                document.getElementById('goal-type').value = s.goalType || 'vehicle';
+                document.getElementById('goal-type').value = s.goalType || 'education';
                 const customInput = document.getElementById('custom-goal-input');
                 if (customInput) customInput.style.display = s.goalType === 'custom' ? 'block' : 'none';
                 const customText = document.getElementById('custom-goal-text');
@@ -175,7 +175,7 @@
             const yearsEl = document.getElementById('years');
             yearsEl.value = '0'; yearsEl.classList.add('text-slate-400');
             updateWords('years', 'years-words');
-            document.getElementById('goal-type').value = 'vehicle';
+            document.getElementById('goal-type').value = 'education';
             const customInput = document.getElementById('custom-goal-input');
             if (customInput) customInput.style.display = 'none';
             const customText = document.getElementById('custom-goal-text');
@@ -288,6 +288,7 @@
             ssaplanner:  { label: 'SSA + Child Planner',      icon: '👧' },
             drawdown:    { label: 'Retirement Drawdown',       icon: '🏖️' },
             ppfnps:      { label: 'PPF & NPS Calculator',      icon: '🏛️' },
+            retirementhub: { label: 'Retirement Hub',          icon: '🏖️' },
             ctcoptimizer:{ label: 'CTC & Salary Optimizer',    icon: '💰' },
             insure:      { label: 'Insurance Adequacy',         icon: '🛡️' },
             gratuity:    { label: 'Gratuity Calculator',        icon: '🏅' },
@@ -297,6 +298,10 @@
             fincal:      { label: 'Financial Calendar',         icon: '📅' },
             selfempl:    { label: 'Self-Employed & Business',   icon: '🧾' },
             goldcomp:    { label: 'Gold Investment Comparator', icon: '🥇' },
+            coffeecan:   { label: 'The Coffee Can',              icon: '☕' },
+            networth:    { label: 'Net Worth Tracker',           icon: '⚖️' },
+            ulipcheck:   { label: 'ULIP / Policy Analyzer',      icon: '🔍' },
+            fixedincome: { label: 'Fixed Income Tools',          icon: '🏦' },
             'dashcat-calc': { label: 'Calculators',    icon: '⚡' },
             'dashcat-mf':   { label: 'Mutual Funds',   icon: '📊' },
             'dashcat-tax':  { label: 'Planning & Tax', icon: '🗺️' },
@@ -430,16 +435,21 @@
             const isDashMF        = mode === 'dashcat-mf';
             const isDashTax       = mode === 'dashcat-tax';
             const isDashFav       = mode === 'dashcat-fav';
-            const isFullPanel  = isDashboard || isEmergency || isMFKit || isFundPicker || isHealthScore || isFinPlan || isMFExplorer || isTaxGuide || isHomeLoan || isStepUpSIP || isEPFCalc || isSSAPlanner || isDrawdown || isPPFNPS || isCtcOptimizer || isInsure || isGratuity || isDebtPlan || isJointPlan || isCibil || isFinCal || isSelfEmpl || isGoldComp || isDashCalc || isDashMF || isDashTax || isDashFav;
+            const isCoffeeCan     = mode === 'coffeecan';
+            const isNetWorth      = mode === 'networth';
+            const isUlipCheck     = mode === 'ulipcheck';
+            const isFixedIncome   = mode === 'fixedincome';
+            const isRetirementHub = mode === 'retirementhub';
+            const isFullPanel  = isDashboard || isEmergency || isMFKit || isFundPicker || isHealthScore || isFinPlan || isMFExplorer || isTaxGuide || isHomeLoan || isStepUpSIP || isEPFCalc || isSSAPlanner || isDrawdown || isPPFNPS || isCtcOptimizer || isInsure || isGratuity || isDebtPlan || isJointPlan || isCibil || isFinCal || isSelfEmpl || isGoldComp || isDashCalc || isDashMF || isDashTax || isDashFav || isCoffeeCan || isNetWorth || isUlipCheck || isFixedIncome || isRetirementHub;
 
             // Show/hide main panels
             const leftPanel = document.getElementById('growth-left-panel');
             const rightPanel = document.querySelector('main > div.w-full.lg\\:w-2\\/3');
-            ['dashboard-panel','emergency-panel','mfkit-panel','fundpicker-panel','healthscore-panel','finplan-panel','mfexplorer-panel','taxguide-panel','homeloan-panel','stepupsip-panel','epfcalc-panel','ssaplanner-panel','drawdown-panel','ppfnps-panel','ctcoptimizer-panel','insure-panel','gratuity-panel','debtplan-panel','jointplan-panel','cibil-panel','fincal-panel','selfempl-panel','goldcomp-panel','dashcat-calc-panel','dashcat-mf-panel','dashcat-tax-panel','dashcat-fav-panel'].forEach(id => {
+            ['dashboard-panel','emergency-panel','mfkit-panel','fundpicker-panel','healthscore-panel','finplan-panel','mfexplorer-panel','taxguide-panel','homeloan-panel','stepupsip-panel','epfcalc-panel','ssaplanner-panel','drawdown-panel','ppfnps-panel','ctcoptimizer-panel','insure-panel','gratuity-panel','debtplan-panel','jointplan-panel','cibil-panel','fincal-panel','selfempl-panel','goldcomp-panel','dashcat-calc-panel','dashcat-mf-panel','dashcat-tax-panel','dashcat-fav-panel','coffeecan-panel','networth-panel','ulipcheck-panel','fixedincome-panel','retirementhub-panel'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.classList.add('hidden');
             });
-            const activeId = isDashboard ? 'dashboard-panel' : isEmergency ? 'emergency-panel' : isMFKit ? 'mfkit-panel' : isFundPicker ? 'fundpicker-panel' : isHealthScore ? 'healthscore-panel' : isFinPlan ? 'finplan-panel' : isMFExplorer ? 'mfexplorer-panel' : isTaxGuide ? 'taxguide-panel' : isHomeLoan ? 'homeloan-panel' : isStepUpSIP ? 'stepupsip-panel' : isEPFCalc ? 'epfcalc-panel' : isSSAPlanner ? 'ssaplanner-panel' : isDrawdown ? 'drawdown-panel' : isPPFNPS ? 'ppfnps-panel' : isCtcOptimizer ? 'ctcoptimizer-panel' : isInsure ? 'insure-panel' : isGratuity ? 'gratuity-panel' : isDebtPlan ? 'debtplan-panel' : isJointPlan ? 'jointplan-panel' : isCibil ? 'cibil-panel' : isFinCal ? 'fincal-panel' : isSelfEmpl ? 'selfempl-panel' : isGoldComp ? 'goldcomp-panel' : isDashCalc ? 'dashcat-calc-panel' : isDashMF ? 'dashcat-mf-panel' : isDashTax ? 'dashcat-tax-panel' : isDashFav ? 'dashcat-fav-panel' : null;
+            const activeId = isDashboard ? 'dashboard-panel' : isEmergency ? 'emergency-panel' : isMFKit ? 'mfkit-panel' : isFundPicker ? 'fundpicker-panel' : isHealthScore ? 'healthscore-panel' : isFinPlan ? 'finplan-panel' : isMFExplorer ? 'mfexplorer-panel' : isTaxGuide ? 'taxguide-panel' : isHomeLoan ? 'homeloan-panel' : isStepUpSIP ? 'stepupsip-panel' : isEPFCalc ? 'epfcalc-panel' : isSSAPlanner ? 'ssaplanner-panel' : isDrawdown ? 'drawdown-panel' : isPPFNPS ? 'ppfnps-panel' : isCtcOptimizer ? 'ctcoptimizer-panel' : isInsure ? 'insure-panel' : isGratuity ? 'gratuity-panel' : isDebtPlan ? 'debtplan-panel' : isJointPlan ? 'jointplan-panel' : isCibil ? 'cibil-panel' : isFinCal ? 'fincal-panel' : isSelfEmpl ? 'selfempl-panel' : isGoldComp ? 'goldcomp-panel' : isDashCalc ? 'dashcat-calc-panel' : isDashMF ? 'dashcat-mf-panel' : isDashTax ? 'dashcat-tax-panel' : isDashFav ? 'dashcat-fav-panel' : isCoffeeCan ? 'coffeecan-panel' : isNetWorth ? 'networth-panel' : isUlipCheck ? 'ulipcheck-panel' : isFixedIncome ? 'fixedincome-panel' : isRetirementHub ? 'retirementhub-panel' : null;
             if (activeId) {
                 const el = document.getElementById(activeId);
                 el.classList.remove('hidden');
@@ -486,6 +496,11 @@
             if (isDashMF)        { _dashInjectPinBtns('dashcat-mf-panel');   applyLang(); return; }
             if (isDashTax)       { _dashInjectPinBtns('dashcat-tax-panel');  applyLang(); return; }
             if (isDashFav)       { initDashFav();       applyLang(); return; }
+            if (isCoffeeCan)     { initCoffeeCan();     applyLang(); return; }
+            if (isNetWorth)      { initNetWorth();      applyLang(); return; }
+            if (isUlipCheck)     { initUlipCheck();     applyLang(); return; }
+            if (isFixedIncome)    { initFixedIncome();    applyLang(); return; }
+            if (isRetirementHub) { initRetirementHub(); applyLang(); return; }
 
             // Show/hide reset buttons
             document.getElementById('reset-growth-btn').style.display = isGoal ? 'none' : 'flex';
@@ -586,7 +601,7 @@
         function getGoalLabel() {
             const gt = document.getElementById('goal-type');
             if (!gt) return 'Your Goal';
-            const map = { vehicle:'🚗 Buy a Vehicle', marriage:'💍 Marriage', education:"🎓 Child's Education", retirement:'🏖️ Retirement', custom:'✏️ Custom' };
+            const map = { vehicle:'🚗 Buy a Vehicle', marriage:'💍 Marriage', education:"🎓 Child's Education", retirement:'🏖️ Retirement', custom:'✏️ Custom', home:'🏠 Home Purchase', healthcare:'🏥 Healthcare Fund' };
             if (gt.value === 'custom') {
                 const txt = document.getElementById('custom-goal-text')?.value.trim();
                 return txt ? '✏️ ' + txt : '✏️ Custom Goal';
@@ -846,13 +861,13 @@
            These are conservative mid-points — user can edit freely.
         ── */
         const GOAL_INFLATION = {
-            education: { rate: 10,  category: 'Education Inflation',  note: '10–12% p.a. historically in India' },
-            healthcare:{ rate: 12,  category: 'Healthcare Inflation',  note: '12–15% p.a. — fastest rising sector' },
-            marriage:  { rate: 8,   category: 'Wedding Cost Inflation', note: '8–10% p.a. — lifestyle + venue costs' },
-            vehicle:   { rate: 7,   category: 'Vehicle Price Inflation',note: '6–8% p.a. — input + fuel costs' },
-            retirement:{ rate: 6,   category: 'General CPI Inflation',  note: '5–7% p.a. — India CPI average' },
-            custom:    { rate: 6,   category: 'General CPI Inflation',  note: '5–7% p.a. — adjust if you know better' },
-            home:      { rate: 9,   category: 'Real Estate Inflation',  note: '8–10% p.a. — property price trend' }
+            education: { rate: 11,  category: 'Education Inflation',    note: '10–12% p.a. — IIT fees 5×\'d in 10 yrs; use 10–12%' },
+            healthcare:{ rate: 14,  category: 'Healthcare Inflation',    note: '12–15% p.a. — fastest rising sector (ASSOCHAM data)' },
+            marriage:  { rate: 8,   category: 'Wedding Cost Inflation',  note: '8–10% p.a. — venue, catering & lifestyle costs' },
+            vehicle:   { rate: 7,   category: 'Vehicle Price Inflation', note: '6–8% p.a. — input costs + GST pass-through' },
+            retirement:{ rate: 6,   category: 'General CPI Inflation',   note: '5–7% p.a. — India CPI average; use 7% if conservative' },
+            custom:    { rate: 6,   category: 'General CPI Inflation',   note: '5–7% p.a. — adjust to your specific goal' },
+            home:      { rate: 9,   category: 'Real Estate Inflation',   note: '8–10% p.a. — metro property price trend (NHB data)' }
         };
 
         function goalInflSetDefaults() {
@@ -950,6 +965,172 @@
             renderBarChart(barLabels, barData, type);
 
             renderInvestmentSuggestions(years);
+        }
+
+        // ── Goal Planner → Financial Plan bridge ──────────────────────────────
+
+        window._savedGoals = window._savedGoals || [];
+
+        var _GP_TO_FP_TYPE  = { vehicle:'custom', marriage:'marriage', education:'education', retirement:'retirement', custom:'custom', home:'custom', healthcare:'custom' };
+        var _GP_EMOJI       = { vehicle:'🚗', marriage:'💍', education:'🎓', retirement:'🏖️', custom:'✏️', home:'🏠', healthcare:'🏥' };
+        var _GP_LABEL       = { vehicle:'Buy a Vehicle', marriage:'Marriage', education:"Child's Education", retirement:'Retirement', home:'Home Purchase', healthcare:'Healthcare Fund' };
+
+        function saveGoalToFP() {
+            var gpType    = document.getElementById('goal-type').value;
+            var rawAmt    = (document.getElementById('amount').value || '').replace(/,/g,'');
+            var todayCost = parseFloat(rawAmt) || 0;
+            var years     = parseInt(document.getElementById('years').value) || 0;
+            var inflRate  = parseFloat(document.getElementById('goal-infl-rate').value) || 0;
+            var invType   = document.getElementById('inv-type').value;
+            var customTxt = (document.getElementById('custom-goal-text')?.value || '').trim();
+
+            if (todayCost <= 0 || years <= 0) {
+                var btn = document.getElementById('gp-save-fp-btn');
+                if (btn) { btn.textContent = '⚠ Enter amount & years first'; setTimeout(function(){ btn.textContent = '📌 Save to Financial Plan'; }, 2200); }
+                return;
+            }
+
+            var futureTarget = (inflRate > 0)
+                ? Math.round(todayCost * Math.pow(1 + inflRate / 100, years))
+                : Math.round(todayCost);
+
+            var fpType = _GP_TO_FP_TYPE[gpType] || 'custom';
+            var label  = _GP_LABEL[gpType] || (customTxt || 'Custom Goal');
+            var emoji  = _GP_EMOJI[gpType] || '✏️';
+
+            // Replace existing entry of same type (unless custom, where name differentiates)
+            var idx = window._savedGoals.findIndex(function(g) {
+                return g.fpType === fpType && (fpType !== 'custom' || g.label === label);
+            });
+            var entry = { gpType:gpType, fpType:fpType, label:label, emoji:emoji,
+                          targetAmt:futureTarget, years:years, inflRate:inflRate, invType:invType };
+            if (idx >= 0) window._savedGoals[idx] = entry;
+            else          window._savedGoals.push(entry);
+
+            // Feedback on button
+            var btn = document.getElementById('gp-save-fp-btn');
+            if (btn) {
+                var orig = btn.innerHTML;
+                btn.innerHTML = '<span>✅ Saved!</span>';
+                btn.disabled = true;
+                setTimeout(function(){ btn.innerHTML = orig; btn.disabled = false; }, 2000);
+            }
+
+            gpRenderSavedGoalsBanner();
+            if (typeof saveUserData === 'function') saveUserData();
+        }
+
+        function gpRenderSavedGoalsBanner() {
+            var banner = document.getElementById('fp-saved-goals-banner');
+            if (!banner) return;
+            var goals = window._savedGoals || [];
+            if (goals.length === 0) { banner.classList.add('hidden'); return; }
+            banner.classList.remove('hidden');
+
+            var fmt = function(n){ return '₹' + Number(n).toLocaleString('en-IN'); };
+            var state = (window._fpState && window._fpState.goals) || [];
+
+            var rows = goals.map(function(g, i) {
+                var already = state.some(function(fg){
+                    return fg.type === g.fpType && (g.fpType !== 'custom' || fg.label === g.label);
+                });
+                return '<div class="flex items-center gap-2 py-1.5 border-b border-amber-100 last:border-0">' +
+                    '<span class="text-base leading-none flex-shrink-0">' + g.emoji + '</span>' +
+                    '<div class="flex-1 min-w-0">' +
+                        '<div class="text-[11px] font-bold text-slate-700 truncate">' + g.label + '</div>' +
+                        '<div class="text-[9px] text-slate-400">' + fmt(g.targetAmt) + ' · ' + g.years + ' yrs</div>' +
+                    '</div>' +
+                    (already
+                        ? '<span class="text-[9px] font-bold text-emerald-600 px-1.5 py-0.5 rounded-full flex-shrink-0" style="background:#ecfdf5;">Added ✓</span>'
+                        : '<button onclick="gpImportGoal(' + i + ')" class="text-[10px] font-bold px-2 py-1 rounded-lg flex-shrink-0 transition-colors" style="background:#fef3c7;border:1px solid #fde68a;color:#92400e;">+ Add to Plan</button>') +
+                    '<button onclick="gpRemoveSavedGoal(' + i + ')" class="text-[10px] text-slate-300 hover:text-red-400 flex-shrink-0 ml-0.5 transition-colors leading-none" title="Remove">✕</button>' +
+                '</div>';
+            }).join('');
+
+            banner.innerHTML =
+                '<div class="flex items-center gap-1.5 mb-2">' +
+                    '<span class="text-sm leading-none">📌</span>' +
+                    '<span class="text-[10px] font-black text-amber-700 uppercase tracking-wider">Saved from Goal Planner</span>' +
+                    '<span class="ml-auto text-[9px] font-semibold text-amber-500">' + goals.length + ' goal' + (goals.length !== 1 ? 's' : '') + '</span>' +
+                '</div>' +
+                rows;
+        }
+
+        function gpImportGoal(idx) {
+            var g = (window._savedGoals || [])[idx];
+            if (!g) return;
+            var meta = (typeof FP_GOAL_META !== 'undefined' && FP_GOAL_META[g.fpType]) || { emoji:g.emoji, label:g.label, defaultYrs:g.years };
+            var state = window._fpState;
+            if (!state) return;
+
+            var already = state.goals.some(function(fg){
+                return fg.type === g.fpType && (g.fpType !== 'custom' || fg.label === g.label);
+            });
+            if (already) return;
+
+            // Activate the goal tile
+            var tile = document.querySelector('.fp-goal-tile[data-goal="' + g.fpType + '"]');
+            if (tile && !tile.classList.contains('fp-goal-tile-active')) {
+                tile.classList.add('fp-goal-tile-active');
+            }
+
+            var goalObj = { type:g.fpType, emoji:meta.emoji, label:g.label, targetAmt:String(g.targetAmt), years:g.years };
+            if (g.fpType === 'custom') goalObj.customName = g.label;
+            state.goals.push(goalObj);
+
+            if (typeof fpRenderGoalCards    === 'function') fpRenderGoalCards();
+            if (typeof fpLiveUpdate         === 'function') fpLiveUpdate();
+            gpRenderSavedGoalsBanner(); // refresh "Added ✓"
+        }
+
+        function gpRemoveSavedGoal(idx) {
+            if (!window._savedGoals) return;
+            window._savedGoals.splice(idx, 1);
+            gpRenderSavedGoalsBanner();
+            if (typeof saveUserData === 'function') saveUserData();
+        }
+
+        function fpSaveGoalToProfile(idx) {
+            var g = window._fpState && window._fpState.goals[idx];
+            if (!g) return;
+            var meta  = (typeof FP_GOAL_META !== 'undefined' && FP_GOAL_META[g.type]) || {};
+            var label = g.customName || g.label || meta.label || 'Goal';
+            var emoji = g.emoji || meta.emoji || '🎯';
+            var rawAmt = parseInt((String(g.targetAmt || '')).replace(/,/g,''), 10) || 0;
+            var years  = Number(g.years) || 0;
+            var p     = window._userProfile || {};
+            var goals = (p.profileGoals || []).slice();
+            if (goals.some(function(pg) { return pg.label === label && pg.source === 'fin_plan'; })) return;
+            goals.push({ label: label, emoji: emoji, targetAmt: rawAmt, years: years, source: 'fin_plan', addedAt: new Date().toISOString() });
+            p.profileGoals = goals;
+            window._userProfile = p;
+            if (typeof upRenderProfileGoals === 'function') upRenderProfileGoals();
+            if (typeof saveUserData === 'function') saveUserData();
+            fpRenderGoalCards(); // refresh toggle state
+        }
+
+        function fpRemoveGoalFromProfile(idx) {
+            var g = window._fpState && window._fpState.goals[idx];
+            if (!g) return;
+            var meta  = (typeof FP_GOAL_META !== 'undefined' && FP_GOAL_META[g.type]) || {};
+            var label = g.customName || g.label || meta.label || 'Goal';
+            var p     = window._userProfile || {};
+            var goals = (p.profileGoals || []).filter(function(pg){ return !(pg.label === label && pg.source === 'fin_plan'); });
+            p.profileGoals = goals;
+            window._userProfile = p;
+            if (typeof upRenderProfileGoals === 'function') upRenderProfileGoals();
+            if (typeof saveUserData === 'function') saveUserData();
+            fpRenderGoalCards(); // refresh toggle state
+        }
+
+        function fpToggleGoalProfile(idx) {
+            var g = window._fpState && window._fpState.goals[idx];
+            if (!g) return;
+            var meta  = (typeof FP_GOAL_META !== 'undefined' && FP_GOAL_META[g.type]) || {};
+            var label = g.customName || g.label || meta.label || 'Goal';
+            var p     = window._userProfile || {};
+            var pinned = (p.profileGoals || []).some(function(pg){ return pg.label === label && pg.source === 'fin_plan'; });
+            if (pinned) fpRemoveGoalFromProfile(idx); else fpSaveGoalToProfile(idx);
         }
 
         function renderInvestmentSuggestions(years) {
@@ -3143,6 +3324,7 @@
             if (fpState.goals.length === 0) { container.classList.add('hidden'); return; }
             container.classList.remove('hidden');
             cardsDiv.innerHTML = '';
+            var _fpProfileGoals = (window._userProfile && window._userProfile.profileGoals) || [];
             fpState.goals.forEach(function(g, i) {
                 var meta = FP_GOAL_META[g.type];
                 var card = document.createElement('div');
@@ -3155,16 +3337,24 @@
                     var raw = parseInt((g.targetAmt + '').replace(/,/g,''), 10);
                     if (!isNaN(raw)) displayAmt = new Intl.NumberFormat('en-IN').format(raw);
                 }
+                var _fpLabel   = g.customName || meta.label;
+                var _fpPinned  = _fpProfileGoals.some(function(pg){ return pg.label === _fpLabel && pg.source === 'fin_plan'; });
+                var _fpPinBtn  = _fpPinned
+                    ? '<button onclick="event.stopPropagation();fpToggleGoalProfile(' + i + ')" class="flex items-center gap-0.5 text-[9px] font-bold px-2 py-0.5 rounded-full flex-shrink-0 transition-all" style="background:linear-gradient(130deg,#f5c842,#e8a44a);color:#5c3d00;border:none;" title="Remove from My Profile"><span>●</span> My Profile</button>'
+                    : '<button onclick="event.stopPropagation();fpToggleGoalProfile(' + i + ')" class="flex items-center gap-0.5 text-[9px] font-bold px-2 py-0.5 rounded-full flex-shrink-0 transition-all" style="background:transparent;color:#94a3b8;border:1px solid #e2e8f0;" title="Save to My Profile"><span>○</span> My Profile</button>';
                 card.innerHTML =
                     '<div class="fp-goal-card-header" onclick="fpToggleCardBody(this)">' +
                         '<div class="flex items-center gap-2">' +
                             '<span class="text-base">' + meta.emoji + '</span>' +
                             '<div>' +
-                                '<div class="text-xs font-black text-slate-700">' + (g.customName || meta.label) + '</div>' +
+                                '<div class="text-xs font-black text-slate-700">' + _fpLabel + '</div>' +
                                 '<div class="text-[10px] ' + horizClass + ' font-bold" id="fp-horiz-label-' + i + '">' + horizLabel + ' · ' + g.years + ' yrs</div>' +
                             '</div>' +
                         '</div>' +
-                        '<svg class="fp-card-chevron w-4 h-4 text-slate-400 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>' +
+                        '<div class="flex items-center gap-1.5">' +
+                            _fpPinBtn +
+                            '<svg class="fp-card-chevron w-4 h-4 text-slate-400 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>' +
+                        '</div>' +
                     '</div>' +
                     '<div class="fp-goal-card-body">' +
                         '<div>' +
@@ -3472,6 +3662,7 @@
                 var income = document.getElementById('fp-income').value.replace(/,/g,'');
                 if (!age || age < 18 || age > 80) { alert('Please enter a valid age (18–80).'); return; }
                 if (!income || parseInt(income) < 1000) { alert('Please enter your monthly income.'); return; }
+                gpRenderSavedGoalsBanner();
             }
             if (n === 3 && fpState.goals.length === 0) { alert('Please select at least one financial goal.'); return; }
             fpState.step = n;
@@ -3497,6 +3688,7 @@
                     alert('Please complete your Personal Profile first (age + income).'); fpGoStep(1); return;
                 }
             }
+            if (n === 2) gpRenderSavedGoalsBanner();
             if (n >= 3 && fpState.goals.length === 0) {
                 alert('Please select at least one financial goal first.'); fpGoStep(2); return;
             }
@@ -3649,7 +3841,7 @@
                 savedView.classList.add('hidden');
                 questView.classList.remove('hidden');
                 if (editBtn) editBtn.classList.add('hidden');
-                if (headerSub) headerSub.textContent = '5 quick questions to understand your comfort with risk';
+                if (headerSub) headerSub.textContent = _t('fp.step3.sub');
                 fpInitQuestions();
             }
         }
@@ -4146,10 +4338,10 @@
             fpRC.classList.add('slide-up-in');
 
             document.getElementById('fp-result-header').style.background   = profile.gradient;
-            document.getElementById('fp-result-greeting').textContent       = 'Hi ' + name + '! Here\'s your personalised plan';
+            document.getElementById('fp-result-greeting').textContent       = _t('fp.result.greeting').replace('{n}', name);
             document.getElementById('fp-result-profile-label').textContent  = profile.label;
             document.getElementById('fp-result-profile-sub').textContent    = profile.sub;
-            document.getElementById('fp-risk-score-label').textContent      = 'Risk Score: ' + totalScore + '/15';
+            document.getElementById('fp-risk-score-label').textContent      = _t('fp.result.riskscore').replace('{s}', totalScore);
             var barFill = document.getElementById('fp-risk-bar-fill');
             barFill.style.background = profile.barColor;
             barFill.style.width = ((totalScore / 15) * 100) + '%';
@@ -4170,12 +4362,12 @@
                     onHover: function(evt, elements) {
                         var p = document.getElementById('fp-center-pct'), l = document.getElementById('fp-center-label');
                         if (elements.length > 0) { var i = elements[0].index; p.textContent = allocs[i].pct + '%'; l.textContent = allocs[i].name; }
-                        else { p.textContent = totalScore + '/15'; l.textContent = 'Risk Score'; }
+                        else { p.textContent = totalScore + '/15'; l.textContent = _t('fp.result.riskscore.label'); }
                     }
                 }
             });
             document.getElementById('fp-center-pct').textContent   = totalScore + '/15';
-            document.getElementById('fp-center-label').textContent  = 'Risk Score';
+            document.getElementById('fp-center-label').textContent  = _t('fp.result.riskscore.label');
 
             // ---- Legend — shows "best used for" per asset ----
             document.getElementById('fp-legend').innerHTML = allocs.map(function(a) {
