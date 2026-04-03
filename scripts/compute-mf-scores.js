@@ -139,7 +139,7 @@ function parseCat(n) {
   if (/hybrid|balanced|equity.?saving/.test(nl))                   return 'Hybrid';
   if (/arbitrage/.test(nl))                                        return 'Arbitrage';
   if (/gold|silver|commodity|metal/.test(nl))                      return 'Commodity';
-  if (/international|global|overseas|nasdaq|s&p|nyse|ftse|hang.?seng/.test(nl)) return 'International';
+  if (/international|global|overseas|nasdaq|s&p 500|nyse|ftse|hang.?seng/.test(nl)) return 'International';
   if (/retirement|children.?gift|solution/.test(nl))               return 'Solution';
   if (/overnight/.test(nl))                                        return 'Overnight';
   if (/liquid/.test(nl))                                           return 'Liquid';
@@ -409,10 +409,16 @@ async function main() {
     if (!data) return;
 
     // Refine category from API meta (more accurate than name parsing).
-    // Guard: don't let meta override a name-parsed Debt fund to 'Index' —
-    // SEBI sometimes returns "Index Funds" for target-maturity debt index funds.
+    // Guard: don't let meta override certain name-parsed categories to 'Index':
+    //  - Debt index funds (IBX/Crisil/SDL/G-Sec target-maturity) — SEBI categorises these as Index Funds
+    //  - International funds (Nasdaq/S&P/overseas ETF FoF) — AMFI may say "ETF Fund of Funds" without "overseas"
+    //  - Value-factor index funds (Nifty 500 Value 50, Nifty 50 Value 20) — passive but value-strategy funds
     const metaCat = catFromMeta(data?.meta?.scheme_category);
-    if (metaCat && !(metaCat === 'Index' && /crisil|ibx|target.?matur|bharat.?bond|\bsdl\b/i.test(f.name))) {
+    if (metaCat && !(metaCat === 'Index' && (
+        /crisil|ibx|target.?matur|bharat.?bond|\bsdl\b|g.?sec|gsec|gilt/i.test(f.name) ||
+        f.cat === 'International' ||
+        f.cat === 'Value/Contra'
+    ))) {
       f.cat = metaCat;
     }
 

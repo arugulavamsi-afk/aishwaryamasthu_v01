@@ -729,9 +729,12 @@
                     const nav = parseFloat(d?.nav);
                     if (!d || isNaN(nav)) return;
                     _mfeNavCache[f.code] = {nav, date: d.date};
-                    // Refine category from API metadata (more accurate than name parsing)
+                    // Refine category from API metadata (more accurate than name parsing).
+                    // Guard: don't let meta override 'International' or 'Value/Contra' to 'Index'.
+                    // AMFI may return "ETF Fund of Funds" (no "overseas") for Nasdaq/S&P FoFs, and
+                    // "Index Fund" for value-factor index funds (Nifty 500 Value 50, etc.).
                     const metaCat = mfeCatFromMeta(j?.meta?.scheme_category);
-                    if (metaCat) f.cat = metaCat;
+                    if (metaCat && !(metaCat === 'Index' && (f.cat === 'International' || f.cat === 'Value/Contra'))) f.cat = metaCat;
                 } catch {}
             }));
             done += batch.length;
@@ -1546,7 +1549,7 @@
         if (/hybrid|balanced|equity.?saving/.test(nl)) return 'Hybrid';
         if (/arbitrage/.test(nl)) return 'Arbitrage';
         if (/gold|silver|commodity|metal/.test(nl)) return 'Commodity';
-        if (/international|global|overseas|nasdaq|s&p|nyse|ftse|hang.?seng/.test(nl)) return 'International';
+        if (/international|global|overseas|nasdaq|s&p 500|nyse|ftse|hang.?seng/.test(nl)) return 'International';
         if (/retirement|children.?gift|solution/.test(nl)) return 'Solution';
         if (/overnight/.test(nl)) return 'Overnight';
         if (/liquid/.test(nl))    return 'Liquid';

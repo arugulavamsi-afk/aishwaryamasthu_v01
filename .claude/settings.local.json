@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e \"const d=require\\(''./output/mf-data.json''\\); const intl=d.categories.International||[]; const intlNames=intl.map\\(f=>f.name\\); const nasdaq=intlNames.filter\\(f=>/nasdaq/i.test\\(f\\)\\); console.log\\(''Nasdaq in Intl:''\\); nasdaq.forEach\\(n=>console.log\\('' '',n\\)\\); console.log\\(''Total Intl funds:'',intl.length\\);\")",
+      "Bash(node -e \"const d=require\\(''./output/mf-data.json''\\); const intl=d.categories.International||[]; intl.forEach\\(f=>console.log\\(f.name\\)\\);\")",
+      "Bash(node -e \"const d=require\\(''./output/mf-data.json''\\); Object.keys\\(d.categories\\).forEach\\(cat=>{const funds=d.categories[cat]; const n=funds.filter\\(f=>/nasdaq/i.test\\(f.name\\)\\); if\\(n.length\\) { console.log\\(cat+'':''\\); n.forEach\\(f=>console.log\\(''  '',f.name\\)\\); }}\\);\")",
+      "Bash(node -e \"const d=require\\(''./output/mf-data.json''\\); console.log\\(''Categories:'', Object.keys\\(d.categories\\).join\\('', ''\\)\\); console.log\\(''Fund count:'', d.fundCount\\);\")",
+      "Bash(node -e \":*)",
+      "Bash(node scripts/compute-mf-scores.js)",
+      "Bash(node --check public/app.js)",
+      "Bash(node --check public/dashboard.js)",
+      "Bash(node:*)",
+      "Bash(grep -v \"^[^'''']*''''[^'''']*''''[^'''']*$\")"
+    ]
+  }
+}

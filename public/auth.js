@@ -56,6 +56,10 @@
         if (!firebase.apps.length) firebase.initializeApp(cfg);
         _fbAuth = firebase.auth();
         _fbDb   = firebase.firestore();
+        // Expose to window so app.js / dashboard.js can do direct Firestore writes
+        // (e.g. fpSaveRiskScore, upRiskSubmit fallback — both reference window._fbAuth/_fbDb)
+        window._fbAuth = _fbAuth;
+        window._fbDb   = _fbDb;
 
         // ── Auth state listener — single source of truth for splash ──
         _fbAuth.onAuthStateChanged(user => {
@@ -465,7 +469,35 @@
                 insurance: (function(){
                     var obj = {};
                     ['ins-income','ins-age','ins-dependents','ins-loans','ins-term-current',
-                     'ins-health-current','ins-monthly-exp','ins-family'].forEach(function(id){
+                     'ins-health-current','ins-monthly-exp','ins-family',
+                     'ins-assets','ins-ci-current','ins-disability-current',
+                     'ins-parents-cover','ins-parents-age1','ins-parents-age2'].forEach(function(id){
+                        obj[id] = document.getElementById(id)?.value || '';
+                    });
+                    return obj;
+                })(),
+                fixedIncome: (function(){
+                    var obj = {};
+                    ['fi-fd-principal','fi-fd-rate','fi-fd-tenure','fi-fd-type',
+                     'fi-fd-regime','fi-fd-slab',
+                     'fi-scss-principal','fi-scss-regime','fi-scss-slab',
+                     'fi-pomis-principal','fi-pomis-regime','fi-pomis-slab',
+                     'fi-nsc-principal','fi-nsc-regime','fi-nsc-slab',
+                     'fi-kvp-principal',
+                     'fi-cmp-principal','fi-cmp-fd-rate','fi-cmp-elss-return',
+                     'fi-cmp-regime','fi-cmp-slab'].forEach(function(id){
+                        obj[id] = document.getElementById(id)?.value || '';
+                    });
+                    return obj;
+                })(),
+                retirementHub: (function(){
+                    var obj = {};
+                    ['rh-age','rh-ret-age','rh-life-exp','rh-inflation','rh-ret-return','rh-expenses',
+                     'rh-epf-balance','rh-epf-basic',
+                     'rh-ppf-balance','rh-ppf-annual','rh-ppf-years-done',
+                     'rh-nps-balance','rh-nps-monthly','rh-nps-return','rh-nps-annuity',
+                     'rh-sip-monthly','rh-sip-return',
+                     'rh-other-corpus','rh-other-return'].forEach(function(id){
                         obj[id] = document.getElementById(id)?.value || '';
                     });
                     return obj;
@@ -551,6 +583,26 @@
                     });
                     obj['gc-slab'] = document.getElementById('gc-slab')?.value || '20';
                     obj['gc-regime'] = document.getElementById('gc-regime')?.value || 'new';
+                    return obj;
+                })(),
+                savedGoals: window._savedGoals || [],
+                ulipCheck: (function(){
+                    var obj = {};
+                    ['uc-premium','uc-term','uc-paid','uc-maturity','uc-sv',
+                     'uc-cover','uc-age','uc-inv-return'].forEach(function(id){
+                        obj[id] = document.getElementById(id)?.value || '';
+                    });
+                    obj['uc-slab'] = document.getElementById('uc-slab')?.value || '20';
+                    return obj;
+                })(),
+                netWorth: (function(){
+                    var obj = {};
+                    ['nw-savings','nw-fd','nw-stocks','nw-eq-mf','nw-epf','nw-ppf','nw-nps',
+                     'nw-debt-mf','nw-home','nw-property','nw-gold-phys','nw-gold-paper',
+                     'nw-crypto','nw-ins-sv','nw-other-assets',
+                     'nw-liab-home','nw-liab-car','nw-liab-pl','nw-liab-edu','nw-liab-cc','nw-liab-other'].forEach(function(id){
+                        obj[id] = document.getElementById(id)?.value || '';
+                    });
                     return obj;
                 })()
             };
@@ -686,6 +738,12 @@
                         var epfPanel = document.getElementById('fp-epf-panel');
                         if (epfBtn)   epfBtn.classList.add('fp-existing-active');
                         if (epfPanel) epfPanel.classList.remove('hidden');
+                        // Restore the EPF balance field from existingAmounts (not saved as a DOM field)
+                        var epfBalEl = document.getElementById('fp-epf-balance');
+                        var savedEpfBal = fp.existingAmounts && fp.existingAmounts['epf'];
+                        if (epfBalEl && savedEpfBal) epfBalEl.value = Number(savedEpfBal).toLocaleString('en-IN');
+                        // Sync fpState.epfBasic and the summary chip from the restored DOM values
+                        if (typeof fpEpfSync === 'function') fpEpfSync();
                     }
                     // Restore crypto button + active indicator (already confirmed)
                     if (fp.existing && fp.existing.includes('crypto')) {
@@ -694,9 +752,35 @@
                         if (cryptoBtnR)   cryptoBtnR.classList.add('fp-existing-active');
                         if (cryptoActive) cryptoActive.classList.remove('hidden');
                     }
+                    // Restore active state for all other existing investment buttons
+                    // (mf, ppf, nps, fd, stocks, gold, real_estate, scss, pomis, kvp, rbi_frb, nsc, custom_inv)
+                    if (fp.existing && fp.existing.length > 0) {
+                        document.querySelectorAll('.fp-existing-btn').forEach(function(btn) {
+                            var onclick = btn.getAttribute('onclick') || '';
+                            var match = onclick.match(/fpToggleExisting\(this,'([^']+)'\)/);
+                            if (match && fp.existing.includes(match[1])) {
+                                btn.classList.add('fp-existing-active');
+                            }
+                        });
+                        // Restore custom_inv text input
+                        if (fp.existing.includes('custom_inv')) {
+                            var customInp = document.getElementById('fp-existing-custom-input');
+                            if (customInp) customInp.classList.remove('hidden');
+                        }
+                        // Re-render the amount inputs
+                        if (typeof fpRenderExistingAmounts === 'function') fpRenderExistingAmounts();
+                    }
                     if (typeof fpLiveUpdate === 'function') fpLiveUpdate();
                 }
             } catch(e) { console.warn('loadUserData finplan:', e); }
+
+            // Saved Goals (Goal Planner → Financial Plan bridge)
+            try {
+                if (Array.isArray(data.savedGoals)) {
+                    window._savedGoals = data.savedGoals;
+                    if (typeof gpRenderSavedGoalsBanner === 'function') gpRenderSavedGoalsBanner();
+                }
+            } catch(e) { console.warn('loadUserData savedGoals:', e); }
 
             // Tax Guide restore
             try {
@@ -831,6 +915,9 @@
             try {
                 if (data.userProfile && typeof upLoad === 'function') {
                     upLoad(data.userProfile);
+                    // Re-render FP goal cards so "My Profile" toggles reflect restored profileGoals
+                    // (fpRenderGoalCards ran earlier during finplan restore, before profile was loaded)
+                    if (typeof fpRenderGoalCards === 'function') fpRenderGoalCards();
                 }
             } catch(e) { console.warn('loadUserData userProfile:', e); }
 
@@ -894,7 +981,9 @@
                 if (data.insurance) {
                     var insDefs = {'ins-income':'12,00,000','ins-age':'30','ins-dependents':'2',
                                    'ins-loans':'0','ins-term-current':'0','ins-health-current':'0',
-                                   'ins-monthly-exp':'50,000','ins-family':'2'};
+                                   'ins-monthly-exp':'50,000','ins-family':'2',
+                                   'ins-assets':'0','ins-ci-current':'0','ins-disability-current':'0',
+                                   'ins-parents-cover':'0','ins-parents-age1':'55','ins-parents-age2':'52'};
                     Object.entries(data.insurance).forEach(function([id, val]) {
                         var el = document.getElementById(id);
                         if (!el || val === null || val === undefined || val === '') return;
@@ -905,6 +994,53 @@
                     if (typeof insureCalc === 'function') insureCalc();
                 }
             } catch(e) { console.warn('loadUserData insurance:', e); }
+
+            // Fixed Income restore
+            try {
+                if (data.fixedIncome) {
+                    var fiDefs = {
+                        'fi-fd-principal':'1,00,000','fi-fd-rate':'7.0','fi-fd-tenure':'12',
+                        'fi-fd-type':'cumulative','fi-fd-regime':'new','fi-fd-slab':'30',
+                        'fi-scss-principal':'10,00,000','fi-scss-regime':'new','fi-scss-slab':'30',
+                        'fi-pomis-principal':'5,00,000','fi-pomis-regime':'new','fi-pomis-slab':'30',
+                        'fi-nsc-principal':'1,00,000','fi-nsc-regime':'new','fi-nsc-slab':'30',
+                        'fi-kvp-principal':'1,00,000',
+                        'fi-cmp-principal':'1,50,000','fi-cmp-fd-rate':'7.0',
+                        'fi-cmp-elss-return':'12.0','fi-cmp-regime':'new','fi-cmp-slab':'30'
+                    };
+                    Object.entries(data.fixedIncome).forEach(function([id, val]) {
+                        var el = document.getElementById(id);
+                        if (!el || val === null || val === undefined || val === '') return;
+                        el.value = val;
+                        if (val === (fiDefs[id] || '')) el.classList.add('text-slate-400');
+                        else el.classList.remove('text-slate-400');
+                    });
+                    if (typeof initFixedIncome === 'function') initFixedIncome();
+                }
+            } catch(e) { console.warn('loadUserData fixedIncome:', e); }
+
+            // Retirement Hub restore
+            try {
+                if (data.retirementHub) {
+                    var rhDefs2 = {
+                        'rh-age':'30','rh-ret-age':'60','rh-life-exp':'85',
+                        'rh-inflation':'6','rh-ret-return':'7','rh-expenses':'60,000',
+                        'rh-epf-balance':'2,00,000','rh-epf-basic':'50,000',
+                        'rh-ppf-balance':'0','rh-ppf-annual':'1,50,000','rh-ppf-years-done':'0',
+                        'rh-nps-balance':'0','rh-nps-monthly':'5,000','rh-nps-return':'10','rh-nps-annuity':'6',
+                        'rh-sip-monthly':'10,000','rh-sip-return':'12',
+                        'rh-other-corpus':'0','rh-other-return':'7'
+                    };
+                    Object.entries(data.retirementHub).forEach(function([id, val]) {
+                        var el = document.getElementById(id);
+                        if (!el || val === null || val === undefined || val === '') return;
+                        el.value = val;
+                        if (val === (rhDefs2[id] || '')) el.classList.add('text-slate-400');
+                        else el.classList.remove('text-slate-400');
+                    });
+                    if (typeof retHubCalc === 'function') retHubCalc();
+                }
+            } catch(e) { console.warn('loadUserData retirementHub:', e); }
 
             // Gratuity restore
             try {
@@ -1053,6 +1189,38 @@
                     if (typeof goldCalc === 'function') goldCalc();
                 }
             } catch(e) { console.warn('loadUserData goldComp:', e); }
+
+            // ULIP / Policy Analyzer restore
+            try {
+                if (data.ulipCheck) {
+                    var ucDefs = {'uc-premium':'50,000','uc-term':'21','uc-paid':'5',
+                                  'uc-maturity':'15,00,000','uc-sv':'1,50,000',
+                                  'uc-cover':'10,00,000','uc-age':'35','uc-inv-return':'12'};
+                    Object.entries(data.ulipCheck).forEach(function([id, val]) {
+                        var el = document.getElementById(id);
+                        if (!el || val === null || val === undefined || val === '') return;
+                        el.value = val;
+                        if (el.tagName === 'SELECT') return;
+                        if (val === (ucDefs[id] || '')) el.classList.add('text-slate-400');
+                        else el.classList.remove('text-slate-400');
+                    });
+                    if (typeof ucCalc === 'function') ucCalc();
+                }
+            } catch(e) { console.warn('loadUserData ulipCheck:', e); }
+
+            // Net Worth Tracker restore
+            try {
+                if (data.netWorth) {
+                    Object.entries(data.netWorth).forEach(function([id, val]) {
+                        var el = document.getElementById(id);
+                        if (!el || val === null || val === undefined || val === '') return;
+                        el.value = val;
+                        if (val === '0' || val === '') { el.classList.add('text-slate-400'); }
+                        else { el.classList.remove('text-slate-400'); }
+                    });
+                    if (typeof nwCalc === 'function') nwCalc();
+                }
+            } catch(e) { console.warn('loadUserData netWorth:', e); }
 
             } finally {
                 _restoring = false;

@@ -75,6 +75,24 @@
         if (typeof calcFn === 'function') calcFn();
     }
 
+    function tgSurcharge(tax, taxable, regime) {
+        // Surcharge on base tax (before cess). Taxable income drives the bracket.
+        if (taxable <= 5000000) return 0;
+        var rate;
+        if (regime === 'new') {
+            // Budget 2023: new regime surcharge capped at 25% (no 37% bracket)
+            rate = taxable > 20000000 ? 0.25
+                 : taxable > 10000000 ? 0.15
+                 : 0.10;
+        } else {
+            rate = taxable > 50000000 ? 0.37
+                 : taxable > 20000000 ? 0.25
+                 : taxable > 10000000 ? 0.15
+                 : 0.10;
+        }
+        return tax * rate;
+    }
+
     function tgSlabBreakdown(taxable, regime) {
         var result = [];
         var slabs = regime === 'old'
@@ -129,9 +147,9 @@
             taxRate  = slab / 100;
             taxLabel = slab + '% slab';
             taxColor = '#d97706';
-            note     = fundType === 'fd'   ? 'TDS at 10% for FD if PAN provided' :
-                       fundType === 'intl' ? 'International funds taxed as debt post-2023' :
-                       'Post FA 2023 — no indexation benefit';
+            note     = fundType === 'fd'   ? 'TDS 10% deducted at source if annual FD interest > ₹40K (₹50K for senior citizens). Actual tax = slab rate — claim TDS credit in ITR.' :
+                       fundType === 'intl' ? 'International funds taxed at slab rate post-Apr 2023 (no indexation, treated as debt).' :
+                       'Post Finance Act 2023 — debt MFs, FoF, liquid funds all taxed at slab rate. No indexation benefit regardless of holding period.';
         }
 
         var postReturn = preReturn * (1 - taxRate);
@@ -199,16 +217,18 @@
         var oldTaxable    = Math.max(0, gross - oldDeductions);
         var oldTax        = tgTaxOld(oldTaxable);
         if (oldTaxable <= 500000) oldTax = Math.max(0, oldTax - 12500);
-        var oldCess      = oldTax * 0.04;
-        var oldTotal     = oldTax + oldCess;
+        var oldSurc      = tgSurcharge(oldTax, oldTaxable, 'old');
+        var oldCess      = (oldTax + oldSurc) * 0.04;
+        var oldTotal     = oldTax + oldSurc + oldCess;
         var oldTakeHome  = gross - oldTotal;
 
         // NEW REGIME — 80CCD(2) applies to both regimes
         var stdNew       = 75000;
         var newTaxable    = Math.max(0, gross - stdNew - empNps);
         var newTax        = tgTaxNew(newTaxable);
-        var newCess      = newTax * 0.04;
-        var newTotal     = newTax + newCess;
+        var newSurc      = tgSurcharge(newTax, newTaxable, 'new');
+        var newCess      = (newTax + newSurc) * 0.04;
+        var newTotal     = newTax + newSurc + newCess;
         var newTakeHome  = gross - newTotal;
 
         var saving   = oldTotal - newTotal;
@@ -223,24 +243,32 @@
         var bestRegime   = winner === 'new' ? _t('tg.regime.new') : (winner === 'old' ? _t('tg.regime.old') : _t('tg.regime.either'));
         var bestTaxable  = winner === 'new' ? newTaxable  : oldTaxable;
         var effRate      = gross > 0 ? ((bestTotal / gross) * 100).toFixed(1) : 0;
+        var bestSurc     = winner === 'new' ? newSurc : oldSurc;
         var marginal;
         if (winner === 'new' || winner === 'equal') {
-            // FY 2025-26 new regime
-            marginal = bestTaxable > 2400000 ? '30%' : bestTaxable > 2000000 ? '25%'
-                     : bestTaxable > 1600000 ? '20%' : bestTaxable > 1200000 ? '15%'
-                     : bestTaxable > 800000  ? '10%' : bestTaxable > 400000  ? '5%' : '0%';
+            // FY 2025-26 new regime slabs
+            var baseM = bestTaxable > 2400000 ? 30 : bestTaxable > 2000000 ? 25
+                      : bestTaxable > 1600000 ? 20 : bestTaxable > 1200000 ? 15
+                      : bestTaxable > 800000  ? 10 : bestTaxable > 400000  ?  5 : 0;
+            var srcM  = bestTaxable > 20000000 ? 25 : bestTaxable > 10000000 ? 15 : bestTaxable > 5000000 ? 10 : 0;
+            marginal  = baseM === 0 ? '0%' : srcM > 0
+                ? baseM + '% + ' + srcM + '% surcharge = ' + (baseM * (1 + srcM/100) * 1.04).toFixed(1) + '% eff.'
+                : baseM + '%';
         } else {
-            // Old regime
-            marginal = bestTaxable > 1000000 ? '30%' : bestTaxable > 500000 ? '20%'
-                     : bestTaxable > 250000  ? '5%' : '0%';
+            // Old regime slabs
+            var baseM = bestTaxable > 1000000 ? 30 : bestTaxable > 500000 ? 20 : bestTaxable > 250000 ? 5 : 0;
+            var srcM  = bestTaxable > 50000000 ? 37 : bestTaxable > 20000000 ? 25 : bestTaxable > 10000000 ? 15 : bestTaxable > 5000000 ? 10 : 0;
+            marginal  = baseM === 0 ? '0%' : srcM > 0
+                ? baseM + '% + ' + srcM + '% surcharge = ' + (baseM * (1 + srcM/100) * 1.04).toFixed(1) + '% eff.'
+                : baseM + '%';
         }
 
         document.getElementById('tg-results').innerHTML =
             '<div class="text-center mb-3 rounded-xl py-2.5 px-3 font-black text-sm" style="background:' + winColor + '18;color:' + winColor + ';border:1px solid ' + winColor + '30;">' +
                 (winner !== 'equal' ? '&#x2705; ' : '&#x1F504; ') + winLabel + (winAmt > 0 ? ' &mdash; ' + _t('tg.win.save') + ' ' + fmt(winAmt) + '/yr' : '') +
             '</div>' +
-            tgRegimeTable(gross, oldDeductions, oldTaxable, oldTax, oldCess, oldTotal,
-                                        stdNew,       newTaxable, newTax, newCess, newTotal,
+            tgRegimeTable(gross, oldDeductions, oldTaxable, oldTax, oldSurc, oldCess, oldTotal,
+                                        stdNew,       newTaxable, newTax, newSurc, newCess, newTotal,
                                         winner) +
             '<div class="rounded-lg px-3 py-2 text-[10px] space-y-0.5" style="background:#f1f5f9;">' +
                 '<div class="flex justify-between"><span class="text-slate-500">' + _t('tg.res.best') + '</span><span class="font-black" style="color:' + winColor + ';">' + bestRegime + '</span></div>' +
@@ -250,18 +278,15 @@
                 '<div class="flex justify-between"><span class="text-slate-500">' + _t('tg.res.monthly') + '</span><span class="font-black text-emerald-600">' + fmt(bestTakeHome/12) + '</span></div>' +
             '</div>' +
             '<div class="text-[9px] text-slate-400 mt-2 text-center">' + _t('tg.res.cessnote') + '</div>' +
-            (gross >= 5000000 ? (function(){
-            var sc = gross >= 20000000 ? '25%' : gross >= 10000000 ? '15%' : '10%';
-            var scDesc = gross >= 20000000 ? 'Above ₹2Cr: +25% on tax'
-                       : gross >= 10000000 ? 'Above ₹1Cr: +15% on tax'
-                       : 'Above ₹50L: +10% on tax';
-            var approxSc = Math.round(bestTotal * (gross >= 20000000 ? 0.25 : gross >= 10000000 ? 0.15 : 0.10));
-            return '<div class="mt-2 px-3 py-2 rounded-lg text-[10px] font-semibold leading-relaxed" style="background:#fef3c7;border:2px solid #fde68a;color:#92400e;">' +
-                '<div class="font-black mb-0.5">⚠️ Surcharge NOT included — add approx. ₹' + fmt(approxSc) + ' extra</div>' +
-                '<div class="font-medium">' + scDesc + ' surcharge. At your income level, total tax liability is significantly higher.</div>' +
-                '<div class="text-amber-700 mt-0.5">New regime caps surcharge at 25%. Old regime can go up to 37%. Consult a CA for accurate liability.</div>' +
-                '</div>';
-        })() : '')
+            (bestSurc > 0 ? (function(){
+                var bestTaxable2 = winner === 'new' ? newTaxable : oldTaxable;
+                var srcRate = bestTaxable2 > 50000000 ? '37%' : bestTaxable2 > 20000000 ? '25%' : bestTaxable2 > 10000000 ? '15%' : '10%';
+                var srcNote = winner === 'new' ? 'New regime caps surcharge at 25% (no 37% bracket).' : 'Old regime surcharge: 10% >₹50L · 15% >₹1Cr · 25% >₹2Cr · 37% >₹5Cr.';
+                return '<div class="mt-2 px-3 py-2 rounded-lg text-[10px] font-semibold leading-relaxed" style="background:#fef3c7;border:1px solid #fde68a;color:#92400e;">' +
+                    '<div class="font-black mb-0.5">ℹ️ Surcharge (' + srcRate + ') included in the table above — ' + fmt(bestSurc) + '</div>' +
+                    '<div class="text-amber-700">' + srcNote + ' Cess is 4% on (tax + surcharge).</div>' +
+                    '</div>';
+            })() : '')
 
         // Slab breakdown
         var breakdown = tgSlabBreakdown(bestTaxable, winner === 'new' ? 'new' : 'old');
@@ -355,8 +380,8 @@
     }
 
     function tgRegimeTable(gross,
-                           oldDed, oldTaxable, oldTax, oldCess, oldTotal,
-                           newDed, newTaxable, newTax, newCess, newTotal,
+                           oldDed, oldTaxable, oldTax, oldSurc, oldCess, oldTotal,
+                           newDed, newTaxable, newTax, newSurc, newCess, newTotal,
                            winner) {
         var f = function(n){ return '&#8377;' + Math.round(n).toLocaleString('en-IN'); };
         var oldW = winner === 'old', newW = winner === 'new';
@@ -380,12 +405,25 @@
                 '</div>';
         };
 
+        // Surcharge label with rate
+        var oldSrcLbl = 'Surcharge' + (oldSurc > 0 ? (oldTaxable > 50000000 ? ' (37%)' : oldTaxable > 20000000 ? ' (25%)' : oldTaxable > 10000000 ? ' (15%)' : ' (10%)') : '');
+        var newSrcLbl = 'Surcharge' + (newSurc > 0 ? (newTaxable > 20000000 ? ' (25%)' : newTaxable > 10000000 ? ' (15%)' : ' (10%)') : '');
+        var srcLabel  = (oldSurc > 0 || newSurc > 0) ? oldSrcLbl : 'Surcharge';
+
+        var surchargeRow = (oldSurc > 0 || newSurc > 0)
+            ? mkRow(srcLabel,
+                oldSurc > 0 ? '<span style="color:#b45309;">' + f(oldSurc) + '</span>' : '<span style="color:#94a3b8;">Nil</span>',
+                newSurc > 0 ? '<span style="color:#b45309;">' + f(newSurc) + '</span>' : '<span style="color:#94a3b8;">Nil</span>',
+                false, false)
+            : '';
+
         var rows =
             mkRow(_t('tg.card.gross'),   f(gross),        f(gross)) +
             mkRow(_t('tg.card.ded'),     '<span style="color:#059669;">-' + f(oldDed) + '</span>', '<span style="color:#059669;">-' + f(newDed) + '</span>') +
             mkRow(_t('tg.card.taxable'), f(oldTaxable),   f(newTaxable)) +
             mkRow(_t('tg.card.tax'),     f(oldTax),       f(newTax),   false, true) +
-            mkRow(_t('tg.card.cess'),    f(oldCess),      f(newCess)) +
+            surchargeRow +
+            mkRow(_t('tg.card.cess') + ' (4%)',  f(oldCess),   f(newCess)) +
             mkRow(_t('tg.card.total'),   f(oldTotal),     f(newTotal), true,  true,  true) +
             mkRow(_t('tg.card.takehome'), f(gross-oldTotal), f(gross-newTotal), false, true);
 

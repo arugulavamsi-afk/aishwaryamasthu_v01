@@ -7,12 +7,12 @@
         homeloan:     { icon:'🏠', title:'Home Loan Advisor',             color:'#3b82f6' },
         stepupsip:    { icon:'📈', title:'Step-Up SIP Calculator',        color:'#f59e0b' },
         epfcalc:      { icon:'🏦', title:'EPF Corpus Projector',          color:'#0891b2' },
-        drawdown:     { icon:'🏖️', title:'Retirement Drawdown',           color:'#ea580c' },
         ppfnps:       { icon:'🏛️', title:'PPF & NPS Calculator',          color:'#059669' },
         insure:       { icon:'🛡️', title:'Insurance Adequacy',            color:'#dc2626' },
         mfexplorer:   { icon:'🔭', title:'MF Explorer',                   color:'#0891b2' },
         mfkit:        { icon:'💼', title:'MF Kit',                        color:'#7c3aed' },
         fundpicker:   { icon:'🔬', title:'Fund Picker Guide',             color:'#059669' },
+        coffeecan:    { icon:'☕', title:'The Coffee Can',                color:'#7c4a00' },
         finplan:      { icon:'📋', title:'Financial Plan',                color:'#dc2626' },
         taxguide:     { icon:'🧾', title:'Tax Guide',                     color:'#b45309' },
         healthscore:  { icon:'💗', title:'Financial Health Score',        color:'#e11d48' },
@@ -25,6 +25,10 @@
         fincal:       { icon:'📅', title:'Financial Calendar',            color:'#0891b2' },
         selfempl:     { icon:'🧾', title:'Self-Employed & Business',      color:'#059669' },
         goldcomp:     { icon:'🥇', title:'Gold Comparator',              color:'#b45309' },
+        networth:     { icon:'⚖️', title:'Net Worth Tracker',            color:'#059669' },
+        ulipcheck:    { icon:'🔍', title:'ULIP / Policy Analyzer',       color:'#dc2626' },
+        fixedincome:    { icon:'🏦', title:'Fixed Income Tools',           color:'#0369a1' },
+        retirementhub:  { icon:'🏖️', title:'Retirement Hub + Drawdown',    color:'#7c3aed' },
     };
 
     function _dashGetFavs() {
@@ -1118,15 +1122,57 @@
         return parseFloat((document.getElementById(id)?.value || '').replace(/,/g, '')) || 0;
     }
 
+    function upRenderProfileGoals() {
+        var section = document.getElementById('up-goals-section');
+        var list    = document.getElementById('up-goals-list');
+        var countEl = document.getElementById('up-goals-count');
+        if (!section || !list) return;
+        var goals = (window._userProfile && window._userProfile.profileGoals) || [];
+        if (goals.length === 0) { section.classList.add('hidden'); return; }
+        section.classList.remove('hidden');
+        if (countEl) countEl.textContent = goals.length + ' goal' + (goals.length !== 1 ? 's' : '');
+        var now = Date.now();
+        list.innerHTML = goals.map(function(g, i) {
+            var days  = g.addedAt ? Math.floor((now - new Date(g.addedAt).getTime()) / 86400000) : 0;
+            var daysLabel = days === 0 ? 'Added today' : days === 1 ? '1 day ago' : days + ' days ago';
+            var amt   = g.targetAmt > 0 ? '₹' + Number(g.targetAmt).toLocaleString('en-IN') : '';
+            var srcLabel = g.source === 'fin_plan' ? 'Financial Plan' : 'Goal Planner';
+            return '<div class="flex items-start gap-2 rounded-xl px-3 py-2" style="background:rgba(245,200,66,0.08);border:1px solid rgba(245,200,66,0.28);">' +
+                '<span class="text-sm leading-none flex-shrink-0 mt-0.5">' + (g.emoji || '🎯') + '</span>' +
+                '<div class="flex-1 min-w-0">' +
+                    '<div class="text-[11px] font-bold truncate" style="color:#1e293b;">' + g.label + '</div>' +
+                    '<div class="text-[9px] text-slate-500 leading-snug">' +
+                        (amt ? amt + ' &middot; ' : '') + g.years + ' yr' + (g.years !== 1 ? 's' : '') +
+                        ' &middot; <span style="color:#b45309;">' + srcLabel + '</span>' +
+                    '</div>' +
+                    '<div class="text-[9px] font-semibold mt-0.5" style="color:#92400e;">📅 ' + daysLabel + '</div>' +
+                '</div>' +
+                '<button onclick="upRemoveProfileGoal(' + i + ')" class="text-[10px] text-slate-300 hover:text-red-400 flex-shrink-0 transition-colors leading-none mt-0.5" title="Remove goal">✕</button>' +
+            '</div>';
+        }).join('');
+    }
+
+    function upRemoveProfileGoal(idx) {
+        var p     = window._userProfile || {};
+        var goals = (p.profileGoals || []).slice();
+        goals.splice(idx, 1);
+        p.profileGoals = goals;
+        window._userProfile = p;
+        upRenderProfileGoals();
+        if (typeof saveUserData === 'function') saveUserData();
+    }
+
     function upSave() {
+        var existing = window._userProfile || {};
         var p = {
-            name:       document.getElementById('up-name')?.value.trim()  || '',
-            age:        document.getElementById('up-age')?.value           || '',
-            occupation: document.getElementById('up-occupation')?.value    || '',
-            income:     document.getElementById('up-income')?.value        || '',
-            expenses:   document.getElementById('up-expenses')?.value      || '',
-            regime:     document.getElementById('up-regime')?.value        || 'new',
-            city:       document.getElementById('up-city')?.value          || 'metro',
+            name:         document.getElementById('up-name')?.value.trim()  || '',
+            age:          document.getElementById('up-age')?.value           || '',
+            occupation:   document.getElementById('up-occupation')?.value    || '',
+            income:       document.getElementById('up-income')?.value        || '',
+            expenses:     document.getElementById('up-expenses')?.value      || '',
+            regime:       document.getElementById('up-regime')?.value        || 'new',
+            city:         document.getElementById('up-city')?.value          || 'metro',
+            profileGoals: existing.profileGoals || []
         };
         window._userProfile = p;
         upUpdateSummary();
@@ -1144,6 +1190,7 @@
         upUpdateSummary();
         upRefreshBanners();
         upRefreshRiskDisplay();
+        upRenderProfileGoals();
     }
 
     function upToggle() {
@@ -1541,14 +1588,14 @@
         var surpDefEl = document.getElementById('dd-surplus-deficit');
         if (depletionAge) {
             var shortfall = MAX_AGE - depletionAge;
-            deplLabel.textContent = '⚠ Runs out ' + shortfall + ' years before age 100!';
+            deplLabel.textContent = _t('dd.runsout').replace('{n}', shortfall);
             deplLabel.style.color = '#fbbf24';
-            surpDefEl.textContent = '⚠ SHORTFALL of ' + shortfall + ' years vs age 100';
+            surpDefEl.textContent = _t('dd.shortfall').replace('{n}', shortfall);
             surpDefEl.style.color = '#fbbf24';
         } else {
-            deplLabel.textContent = '✅ Corpus survives to age 100+';
+            deplLabel.textContent = _t('dd.survives');
             deplLabel.style.color = '#86efac';
-            surpDefEl.textContent = '✅ Corpus sufficient for 100+ age';
+            surpDefEl.textContent = _t('dd.sufficient');
             surpDefEl.style.color = '#86efac';
         }
 
@@ -2036,7 +2083,9 @@
     function resetInsure() {
         var defs = {'ins-income':'12,00,000','ins-age':'30','ins-dependents':'2',
                     'ins-loans':'0','ins-term-current':'0','ins-health-current':'0',
-                    'ins-monthly-exp':'50,000','ins-family':'2'};
+                    'ins-monthly-exp':'50,000','ins-family':'2',
+                    'ins-assets':'0','ins-ci-current':'0','ins-disability-current':'0',
+                    'ins-parents-cover':'0','ins-parents-age1':'55','ins-parents-age2':'52'};
         Object.entries(defs).forEach(function([id, val]) {
             var el = document.getElementById(id); if (!el) return;
             el.value = val; el.classList.add('text-slate-400');
@@ -2045,16 +2094,22 @@
         if (typeof saveUserData === 'function') saveUserData();
     }
 
-    function insPreset(income, age, dependents, loans, termCurrent, healthCurrent, expenses, family) {
+    function insPreset(income, age, dependents, loans, termCurrent, healthCurrent, expenses, family, assets, ciCurrent, disabilityCurrent, parentsCover, parentsAge1, parentsAge2) {
         var f = {
-            'ins-income':         Number(income).toLocaleString('en-IN'),
-            'ins-age':            String(age),
-            'ins-dependents':     String(dependents),
-            'ins-loans':          Number(loans).toLocaleString('en-IN'),
-            'ins-term-current':   Number(termCurrent).toLocaleString('en-IN'),
-            'ins-health-current': Number(healthCurrent).toLocaleString('en-IN'),
-            'ins-monthly-exp':    Math.round(Number(expenses) / 12).toLocaleString('en-IN'),
-            'ins-family':         String(family)
+            'ins-income':              Number(income).toLocaleString('en-IN'),
+            'ins-age':                 String(age),
+            'ins-dependents':          String(dependents),
+            'ins-loans':               Number(loans).toLocaleString('en-IN'),
+            'ins-term-current':        Number(termCurrent).toLocaleString('en-IN'),
+            'ins-health-current':      Number(healthCurrent).toLocaleString('en-IN'),
+            'ins-monthly-exp':         Math.round(Number(expenses) / 12).toLocaleString('en-IN'),
+            'ins-family':              String(family),
+            'ins-assets':              Number(assets || 0).toLocaleString('en-IN'),
+            'ins-ci-current':          Number(ciCurrent || 0).toLocaleString('en-IN'),
+            'ins-disability-current':  Number(disabilityCurrent || 0).toLocaleString('en-IN'),
+            'ins-parents-cover':       Number(parentsCover || 0).toLocaleString('en-IN'),
+            'ins-parents-age1':        String(parentsAge1 || 55),
+            'ins-parents-age2':        String(parentsAge2 || 52)
         };
         Object.entries(f).forEach(function([id, val]) {
             var el = document.getElementById(id); if (!el) return;
@@ -2064,80 +2119,108 @@
     }
 
     function insureCalc() {
-        var income       = insNum('ins-income');
-        var age          = Math.round(insNum('ins-age')) || 30;
-        var dependents   = Math.round(insNum('ins-dependents'));
-        var loans        = insNum('ins-loans');
-        var termCurrent  = insNum('ins-term-current');
-        var healthCurrent= insNum('ins-health-current');
-        var monthlyExp   = insNum('ins-monthly-exp');
-        var expenses     = monthlyExp * 12;
-        var hintEl = document.getElementById('ins-exp-annual-hint');
+        var income           = insNum('ins-income');
+        var age              = Math.round(insNum('ins-age')) || 30;
+        var dependents       = Math.round(insNum('ins-dependents'));
+        var loans            = insNum('ins-loans');
+        var termCurrent      = insNum('ins-term-current');
+        var healthCurrent    = insNum('ins-health-current');
+        var monthlyExp       = insNum('ins-monthly-exp');
+        var expenses         = monthlyExp * 12;
+        var hintEl           = document.getElementById('ins-exp-annual-hint');
         if (hintEl) hintEl.textContent = monthlyExp > 0 ? '= ' + insFmt(expenses) + '/yr' : '= ₹0/yr';
-        var familySize   = Math.max(1, Math.round(parseFloat(document.getElementById('ins-family')?.value) || 2));
+        var familySize       = Math.max(1, Math.round(parseFloat(document.getElementById('ins-family')?.value) || 2));
+        var assets           = insNum('ins-assets');
+        var ciCurrent        = insNum('ins-ci-current');
+        var disabilityCurrent= insNum('ins-disability-current');
+        var parentsCover     = insNum('ins-parents-cover');
+        var parentsAge1      = Math.round(insNum('ins-parents-age1')) || 0;
+        var parentsAge2      = Math.round(insNum('ins-parents-age2')) || 0;
 
         if (!income) return;
 
-        var retireAge  = 60;
-        var yearsLeft  = Math.max(0, retireAge - age);
-
-        // ── TERM INSURANCE: HLV Method ────────────────────────────
-        // HLV = PV of future income stream at ~6% discount, adjusted for expenses
-        // Simplified: income × years × 0.6 (net of personal expenses ~40% of income)
-        // Then add outstanding loans, subtract existing assets (none input here)
-        var hlvMultiple  = age <= 35 ? 15 : age <= 45 ? 12 : 10;
-        var hlvBase      = income * hlvMultiple;
-        var termNeeded   = Math.round(hlvBase + loans);
-        // Cap at reasonable max
-        termNeeded       = Math.max(termNeeded, income * 10); // at least 10x
-
-        var termGap      = Math.max(0, termNeeded - termCurrent);
+        // ── TERM INSURANCE: HLV Method (assets-netted) ────────────
+        var hlvMultiple = age <= 35 ? 15 : age <= 45 ? 12 : 10;
+        var hlvBase     = income * hlvMultiple;
+        // Net out liquid assets: family already has those savings
+        var termNeeded  = Math.max(income * 10, Math.round(hlvBase + loans - assets));
+        var termGap     = Math.max(0, termNeeded - termCurrent);
 
         // ── HEALTH INSURANCE ──────────────────────────────────────
-        // Base floater per family size
         var baseFloater  = familySize <= 2 ? 1000000 : familySize <= 3 ? 1500000 : 2000000;
-        // Super top-up: ₹25L above ₹5L deductible — fixed recommendation post-COVID
         var superTopUp   = 2500000;
         var healthNeeded = baseFloater + superTopUp;
         var healthGap    = Math.max(0, healthNeeded - healthCurrent);
 
-        // ── Estimated term premium (rough — ₹8/L/yr at 30, increases with age) ──
-        var ratePerLakh  = age <= 30 ? 8 : age <= 35 ? 10 : age <= 40 ? 14 : age <= 45 ? 20 : 30;
-        var termPremium  = Math.round((termGap / 100000) * ratePerLakh * 100); // per year
+        // ── CRITICAL ILLNESS ──────────────────────────────────────
+        // Target: max(₹25L, 3× income) capped at ₹50L
+        // CI pays lump sum for cancer, heart attack, stroke — separate from health insurance
+        var ciNeeded = Math.min(5000000, Math.max(2500000, income * 3));
+        var ciGap    = Math.max(0, ciNeeded - ciCurrent);
 
-        // ── DOM Updates ──────────────────────────────────────────
-        document.getElementById('ins-term-needed').textContent = insFmt(termNeeded);
+        // ── DISABILITY INSURANCE ──────────────────────────────────
+        // Target corpus = 10× annual income (generate income if unable to work)
+        var disabilityNeeded = income * 10;
+        var disabilityGap    = Math.max(0, disabilityNeeded - disabilityCurrent);
+
+        // ── PARENTS HEALTH COVER ──────────────────────────────────
+        var maxParentAge = Math.max(parentsAge1, parentsAge2);
+        var parentsNeeded    = 0;
+        var estParentsPremium= 0;
+        if (maxParentAge > 0) {
+            // ₹5L floater + ₹20L super top-up = ₹25L recommended per parent couple
+            parentsNeeded = 2500000;
+            // Premium estimate by age of oldest parent
+            estParentsPremium = maxParentAge < 60 ? 22000 : maxParentAge < 65 ? 34000 : maxParentAge < 70 ? 50000 : 68000;
+        }
+        var parentsGap = Math.max(0, parentsNeeded - parentsCover);
+
+        // ── Estimated term premium ─────────────────────────────────
+        var ratePerLakh = age <= 30 ? 8 : age <= 35 ? 10 : age <= 40 ? 14 : age <= 45 ? 20 : 30;
+        var termPremium = Math.round((termGap / 100000) * ratePerLakh * 100);
+
+        // ── DOM Updates — Term & Health ───────────────────────────
+        document.getElementById('ins-term-needed').textContent   = insFmt(termNeeded);
         document.getElementById('ins-health-needed').textContent = insFmt(healthNeeded);
-        document.getElementById('ins-hlv-multiple').textContent = hlvMultiple + 'x';
-        document.getElementById('ins-term-premium').textContent = termPremium > 0 ? insFmt(termPremium) + '/yr' : '—';
-        document.getElementById('ins-term-gap-pill').textContent = termGap > 0 ? insFmt(termGap) : '✅ Adequate';
+        document.getElementById('ins-hlv-multiple').textContent  = hlvMultiple + 'x';
+        document.getElementById('ins-term-premium').textContent  = termPremium > 0 ? insFmt(termPremium) + '/yr' : '—';
+        document.getElementById('ins-term-gap-pill').textContent   = termGap > 0 ? insFmt(termGap) : '✅ Adequate';
         document.getElementById('ins-health-gap-pill').textContent = healthGap > 0 ? insFmt(healthGap) : '✅ Adequate';
 
         var tGapEl = document.getElementById('ins-term-gap');
-        if (termGap > 0) {
-            tGapEl.textContent = '⚠ Gap: ' + insFmt(termGap) + ' — buy more term';
-            tGapEl.style.color = '#fbbf24';
-        } else {
-            tGapEl.textContent = '✅ Coverage is adequate';
-            tGapEl.style.color = '#86efac';
-        }
+        if (tGapEl) { if (termGap > 0) { tGapEl.textContent = '⚠ Gap: ' + insFmt(termGap); tGapEl.style.color = '#fbbf24'; } else { tGapEl.textContent = '✅ Adequate'; tGapEl.style.color = '#86efac'; } }
 
         var hGapEl = document.getElementById('ins-health-gap');
-        if (healthGap > 0) {
-            hGapEl.textContent = '⚠ Gap: ' + insFmt(healthGap) + ' — add floater/top-up';
-            hGapEl.style.color = '#fbbf24';
-        } else {
-            hGapEl.textContent = '✅ Coverage is adequate';
-            hGapEl.style.color = '#86efac';
-        }
+        if (hGapEl) { if (healthGap > 0) { hGapEl.textContent = '⚠ Gap: ' + insFmt(healthGap); hGapEl.style.color = '#fbbf24'; } else { hGapEl.textContent = '✅ Adequate'; hGapEl.style.color = '#86efac'; } }
 
-        // ── Term workings ────────────────────────────────────────
+        // ── DOM Updates — CI, Disability, Parents ─────────────────
+        var ciNeedEl = document.getElementById('ins-ci-needed');
+        if (ciNeedEl) ciNeedEl.textContent = insFmt(ciNeeded);
+        var ciGapEl = document.getElementById('ins-ci-gap');
+        if (ciGapEl) { if (ciGap > 0) { ciGapEl.textContent = '⚠ Gap: ' + insFmt(ciGap); ciGapEl.style.color = '#fdba74'; } else { ciGapEl.textContent = '✅ Adequate'; ciGapEl.style.color = '#6ee7b7'; } }
+        var ciGapPill = document.getElementById('ins-ci-gap-pill');
+        if (ciGapPill) ciGapPill.textContent = ciGap > 0 ? insFmt(ciGap) : '✅ Adequate';
+
+        var disNeedEl = document.getElementById('ins-disability-needed');
+        if (disNeedEl) disNeedEl.textContent = insFmt(disabilityNeeded);
+        var disGapEl = document.getElementById('ins-disability-gap');
+        if (disGapEl) { if (disabilityGap > 0) { disGapEl.textContent = '⚠ Gap: ' + insFmt(disabilityGap); disGapEl.style.color = '#fca5a5'; } else { disGapEl.textContent = '✅ Adequate'; disGapEl.style.color = '#6ee7b7'; } }
+
+        var parNeedEl = document.getElementById('ins-parents-needed');
+        if (parNeedEl) parNeedEl.textContent = parentsNeeded > 0 ? insFmt(parentsNeeded) : '—';
+        var parGapEl = document.getElementById('ins-parents-gap');
+        if (parGapEl) { if (parentsNeeded === 0) { parGapEl.textContent = 'Enter parent age'; parGapEl.style.color = '#5eead4'; } else if (parentsGap > 0) { parGapEl.textContent = '⚠ Gap: ' + insFmt(parentsGap); parGapEl.style.color = '#5eead4'; } else { parGapEl.textContent = '✅ Adequate'; parGapEl.style.color = '#6ee7b7'; } }
+        var parPremEl = document.getElementById('ins-parents-premium');
+        if (parPremEl) parPremEl.textContent = estParentsPremium > 0 ? insFmt(estParentsPremium) + '/yr' : '—';
+
+        // ── Term workings ─────────────────────────────────────────
         var tw = document.getElementById('ins-term-workings');
         if (tw) tw.innerHTML =
             '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>Annual income</span><span class="font-bold">' + insFmt(income) + '</span></div>' +
             '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>HLV multiple (age ' + age + ')</span><span class="font-bold">× ' + hlvMultiple + '</span></div>' +
             '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>HLV base</span><span class="font-bold">' + insFmt(Math.round(income * hlvMultiple)) + '</span></div>' +
             (loans > 0 ? '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>+ Outstanding loans</span><span class="font-bold">' + insFmt(loans) + '</span></div>' : '') +
+            (assets > 0 ? '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>− Liquid assets (family holds)</span><span class="font-bold text-emerald-600">−' + insFmt(assets) + '</span></div>' : '') +
             '<div class="flex justify-between py-1 font-black text-blue-700"><span>= Total term needed</span><span>' + insFmt(termNeeded) + '</span></div>' +
             '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>− Existing cover</span><span class="font-bold">' + insFmt(termCurrent) + '</span></div>' +
             '<div class="flex justify-between py-1 font-black ' + (termGap > 0 ? 'text-red-600' : 'text-emerald-600') + '"><span>' + (termGap > 0 ? '⚠ Gap to fill' : '✅ No gap') + '</span><span>' + (termGap > 0 ? insFmt(termGap) : 'Covered') + '</span></div>';
@@ -2154,17 +2237,418 @@
             '<div class="flex justify-between py-1 font-black ' + (healthGap > 0 ? 'text-red-600' : 'text-emerald-600') + '"><span>' + (healthGap > 0 ? '⚠ Gap to fill' : '✅ No gap') + '</span><span>' + (healthGap > 0 ? insFmt(healthGap) : 'Covered') + '</span></div>' +
             '<div class="mt-2 text-[9px] text-slate-500">ICU costs post-COVID: ₹40K–80K/day. A ₹25L top-up costs only ₹4,000–8,000/yr.</div>';
 
+        // ── CI + Disability workings ───────────────────────────────
+        var cw = document.getElementById('ins-ci-workings');
+        if (cw) cw.innerHTML =
+            '<div class="text-[9px] font-black text-orange-700 mb-1">🎗️ Critical Illness</div>' +
+            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>Recommended (max ₹25L, 3× income)</span><span class="font-bold">' + insFmt(ciNeeded) + '</span></div>' +
+            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>− Current CI cover</span><span class="font-bold">' + insFmt(ciCurrent) + '</span></div>' +
+            '<div class="flex justify-between py-1 font-black ' + (ciGap > 0 ? 'text-red-600' : 'text-emerald-600') + '"><span>' + (ciGap > 0 ? '⚠ CI gap' : '✅ No CI gap') + '</span><span>' + (ciGap > 0 ? insFmt(ciGap) : 'Covered') + '</span></div>' +
+            '<div class="text-[9px] font-black text-rose-700 mt-2 mb-1">♿ Disability Cover</div>' +
+            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>Income replacement corpus (10× income)</span><span class="font-bold">' + insFmt(disabilityNeeded) + '</span></div>' +
+            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>− Current disability cover</span><span class="font-bold">' + insFmt(disabilityCurrent) + '</span></div>' +
+            '<div class="flex justify-between py-1 font-black ' + (disabilityGap > 0 ? 'text-red-600' : 'text-emerald-600') + '"><span>' + (disabilityGap > 0 ? '⚠ Disability gap' : '✅ No gap') + '</span><span>' + (disabilityGap > 0 ? insFmt(disabilityGap) : 'Covered') + '</span></div>' +
+            '<div class="mt-2 text-[9px] text-slate-500">CI pays a lump sum regardless of hospitalisation. Most group covers exclude CI and disability.</div>';
+
+        // ── Parents workings ──────────────────────────────────────
+        var pw = document.getElementById('ins-parents-workings');
+        if (pw) {
+            if (maxParentAge === 0) {
+                pw.innerHTML = '<div class="text-slate-400 text-[10px]">Enter parent ages above to see their cover analysis.</div>';
+            } else {
+                pw.innerHTML =
+                    '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>Oldest parent age</span><span class="font-bold">' + maxParentAge + ' yrs</span></div>' +
+                    '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>Recommended cover (₹5L + ₹20L top-up)</span><span class="font-bold">' + insFmt(parentsNeeded) + '</span></div>' +
+                    '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>− Existing parents cover</span><span class="font-bold">' + insFmt(parentsCover) + '</span></div>' +
+                    '<div class="flex justify-between py-1 font-black ' + (parentsGap > 0 ? 'text-red-600' : 'text-emerald-600') + '"><span>' + (parentsGap > 0 ? '⚠ Gap to fill' : '✅ No gap') + '</span><span>' + (parentsGap > 0 ? insFmt(parentsGap) : 'Covered') + '</span></div>' +
+                    '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>Est. annual senior floater premium</span><span class="font-bold text-teal-700">' + insFmt(estParentsPremium) + '/yr</span></div>' +
+                    '<div class="mt-2 text-[9px] text-slate-500">Senior citizen floaters have 3–4 yr waiting for pre-existing conditions. Buy when parents are still healthy (under 65).</div>';
+            }
+        }
+
         // ── Insight ───────────────────────────────────────────────
         var ins = document.getElementById('ins-insight');
         if (ins) {
             ins.classList.remove('hidden');
             var msgs = [];
-            if (termGap > 0) msgs.push('Your term cover has a <strong>' + insFmt(termGap) + ' gap</strong>. Buy a pure online term plan to close it — at age ' + age + ' it costs ~₹' + ratePerLakh.toLocaleString('en-IN') + '/L/yr.');
-            else msgs.push('Your term cover looks adequate ✅ — review annually as income grows.');
-            if (healthGap > 0) msgs.push('Your health cover has a <strong>' + insFmt(healthGap) + ' gap</strong>. Add a ₹10L family floater + ₹25L super top-up (costs ~₹15,000–25,000/yr combined).');
-            else msgs.push('Your health cover meets the post-COVID ₹35L baseline ✅.');
-            ins.innerHTML = '<strong>💡 Adequacy Summary:</strong> ' + msgs.join(' ');
+            if (termGap > 0) msgs.push('Term gap <strong>' + insFmt(termGap) + '</strong> — buy pure term (₹' + ratePerLakh + '/L/yr at age ' + age + ').');
+            else msgs.push('Term cover adequate ✅.');
+            if (healthGap > 0) msgs.push('Health gap <strong>' + insFmt(healthGap) + '</strong> — add floater + ₹25L top-up (~₹15K–25K/yr).');
+            else msgs.push('Health cover adequate ✅.');
+            if (ciGap > 0) msgs.push('CI gap <strong>' + insFmt(ciGap) + '</strong> — add a standalone CI rider (~₹5K–15K/yr).');
+            if (disabilityGap > 0) msgs.push('No disability cover — consider a group personal accident or income protection plan.');
+            if (parentsNeeded > 0 && parentsGap > 0) msgs.push('Parents health gap <strong>' + insFmt(parentsGap) + '</strong> — buy senior floater before they turn 65, est. ₹' + insFmt(estParentsPremium) + '/yr.');
+            ins.innerHTML = '<strong>💡 Summary:</strong> ' + msgs.join(' ');
         }
+
+        if (typeof saveUserData === 'function') saveUserData();
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       FIXED INCOME TOOLS
+    ══════════════════════════════════════════════════════════ */
+
+    var _fiNewSlabs = [
+        ['0',  '0% — ≤₹4L (nil) / 87A rebate ≤₹12L'],
+        ['5',  '5% — ₹4L–₹8L'],
+        ['10', '10% — ₹8L–₹12L'],
+        ['15', '15% — ₹12L–₹16L'],
+        ['20', '20% — ₹16L–₹20L'],
+        ['25', '25% — ₹20L–₹24L'],
+        ['30', '30% — Above ₹24L']
+    ];
+    var _fiOldSlabs = [
+        ['0',  '0% — ≤₹2.5L (nil slab)'],
+        ['5',  '5% — ₹2.5L–₹5L'],
+        ['20', '20% — ₹5L–₹10L'],
+        ['30', '30% — Above ₹10L']
+    ];
+
+    function fiSetSlabOptions(slabId, regime) {
+        var el = document.getElementById(slabId);
+        if (!el) return;
+        var prev = el.value;
+        var opts = regime === 'old' ? _fiOldSlabs : _fiNewSlabs;
+        el.innerHTML = opts.map(function(o) {
+            return '<option value="' + o[0] + '">' + o[1] + '</option>';
+        }).join('');
+        el.value = opts.some(function(o) { return o[0] === prev; }) ? prev : '30';
+        el.classList.remove('text-slate-400'); // selects are never greyed
+    }
+
+    function fiUpdateSlabs(tab) {
+        var pairs = {
+            fd:    [['fi-fd-regime',   'fi-fd-slab']],
+            scss:  [['fi-scss-regime', 'fi-scss-slab'], ['fi-pomis-regime','fi-pomis-slab']],
+            pomis: [['fi-pomis-regime','fi-pomis-slab']],
+            nsc:   [['fi-nsc-regime',  'fi-nsc-slab']],
+            elss:  [['fi-cmp-regime',  'fi-cmp-slab']]
+        };
+        (pairs[tab] || []).forEach(function(pair) {
+            var regEl = document.getElementById(pair[0]);
+            if (regEl) regEl.classList.remove('text-slate-400');
+            var regime = regEl?.value || 'new';
+            fiSetSlabOptions(pair[1], regime);
+        });
+        if (tab === 'fd')    fiCalcFD();
+        if (tab === 'scss')  { fiCalcSCSS(); }
+        if (tab === 'pomis') { fiCalcPOMIS(); }
+        if (tab === 'nsc')   { fiCalcNSC(); }
+        if (tab === 'elss')  fiCalcELSS();
+        if (typeof saveUserData === 'function') saveUserData();
+    }
+
+    function fiFmt(n) {
+        if (!n && n !== 0) return '—';
+        var a = Math.abs(n), s = n < 0 ? '-' : '';
+        if (a >= 1e7) return s + '₹' + (a/1e7).toFixed(2) + ' Cr';
+        if (a >= 1e5) return s + '₹' + (a/1e5).toFixed(2) + ' L';
+        return s + '₹' + Math.round(a).toLocaleString('en-IN');
+    }
+    function fiNum(id) {
+        return parseFloat((document.getElementById(id)?.value || '').replace(/,/g, '')) || 0;
+    }
+    function fiFormat(el) {
+        var raw = (el.value || '').replace(/[^0-9]/g, '');
+        el.value = raw ? Number(raw).toLocaleString('en-IN') : '';
+    }
+    function fiPct(id, def) {
+        return parseFloat((document.getElementById(id)?.value || String(def)).replace(/[^0-9.]/g, '')) || def;
+    }
+    function fiSel(id, def) {
+        return document.getElementById(id)?.value || String(def);
+    }
+
+    function fiTab(tab) {
+        ['fd','scss','nsc','elss'].forEach(function(t) {
+            var pane = document.getElementById('fi-pane-' + t);
+            var btn  = document.getElementById('fi-btn-' + t);
+            if (!pane || !btn) return;
+            pane.classList.toggle('hidden', t !== tab);
+            if (t === tab) {
+                btn.className = 'fi-tab-active rounded-xl px-3 py-1.5 text-[11px] font-bold text-yellow-300';
+                btn.style.background = 'rgba(245,200,66,0.18)';
+                btn.style.border     = '1px solid rgba(245,200,66,0.45)';
+            } else {
+                btn.className = 'rounded-xl px-3 py-1.5 text-[11px] font-semibold text-slate-600 bg-white border border-slate-200';
+                btn.style.background = '';
+                btn.style.border     = '';
+            }
+        });
+        if (tab === 'fd')   fiCalcFD();
+        if (tab === 'scss') { fiCalcSCSS(); fiCalcPOMIS(); }
+        if (tab === 'nsc')  { fiCalcNSC(); fiCalcKVP(); }
+        if (tab === 'elss') fiCalcELSS();
+    }
+
+    function initFixedIncome() {
+        // Populate all slab dropdowns and clear grey from all selects
+        [['fi-fd-regime','fi-fd-slab'],['fi-scss-regime','fi-scss-slab'],
+         ['fi-pomis-regime','fi-pomis-slab'],['fi-nsc-regime','fi-nsc-slab'],
+         ['fi-cmp-regime','fi-cmp-slab']].forEach(function(pair) {
+            var regEl = document.getElementById(pair[0]);
+            if (regEl) regEl.classList.remove('text-slate-400');
+            var regime = regEl?.value || 'new';
+            fiSetSlabOptions(pair[1], regime); // also clears grey on slab
+        });
+        var fdType = document.getElementById('fi-fd-type');
+        if (fdType) fdType.classList.remove('text-slate-400');
+        fiTab('fd');
+    }
+
+    function resetFixedIncome() {
+        var defs = {
+            'fi-fd-principal': '1,00,000', 'fi-fd-rate': '7.0', 'fi-fd-tenure': '12',
+            'fi-scss-principal': '10,00,000', 'fi-pomis-principal': '5,00,000',
+            'fi-nsc-principal': '1,00,000', 'fi-kvp-principal': '1,00,000',
+            'fi-cmp-principal': '1,50,000', 'fi-cmp-fd-rate': '7.0', 'fi-cmp-elss-return': '12.0'
+        };
+        Object.entries(defs).forEach(function([id, v]) {
+            var el = document.getElementById(id); if (!el) return;
+            el.value = v; el.classList.add('text-slate-400');
+        });
+        // Reset regime selects to new
+        ['fi-fd-regime','fi-scss-regime','fi-pomis-regime','fi-nsc-regime','fi-cmp-regime'].forEach(function(id) {
+            var el = document.getElementById(id); if (el) el.value = 'new';
+        });
+        document.getElementById('fi-fd-type').selectedIndex = 0;
+        // Repopulate slabs after regime reset
+        [['fi-fd-regime','fi-fd-slab'],['fi-scss-regime','fi-scss-slab'],
+         ['fi-pomis-regime','fi-pomis-slab'],['fi-nsc-regime','fi-nsc-slab'],
+         ['fi-cmp-regime','fi-cmp-slab']].forEach(function(pair) {
+            fiSetSlabOptions(pair[1], 'new');
+            var sl = document.getElementById(pair[1]); if (sl) sl.value = '30';
+        });
+        fiTab('fd');
+        if (typeof saveUserData === 'function') saveUserData();
+    }
+
+    // ── FD Calculator ────────────────────────────────────────
+    function fiCalcFD() {
+        var P    = fiNum('fi-fd-principal');
+        var rate = fiPct('fi-fd-rate', 7.0);
+        var mo   = fiNum('fi-fd-tenure') || 12;
+        var type = fiSel('fi-fd-type', 'cumulative');
+        var slab = parseFloat(fiSel('fi-fd-slab', '0')) / 100;
+        if (!P) return;
+
+        var r = rate / 100;
+        var yrs = mo / 12;
+        var grossMat, grossInt, payoutAmt, payoutLabel;
+
+        if (type === 'cumulative') {
+            grossMat  = P * Math.pow(1 + r/4, 4 * yrs);
+            grossInt  = grossMat - P;
+        } else if (type === 'quarterly') {
+            grossInt  = P * r * yrs;
+            grossMat  = P + grossInt;
+            payoutAmt = P * r / 4;
+            payoutLabel = 'Quarterly payout';
+        } else {
+            grossInt  = P * r * yrs;
+            grossMat  = P + grossInt;
+            payoutAmt = P * r / 12;
+            payoutLabel = 'Monthly payout';
+        }
+
+        var taxAmt  = grossInt * slab;
+        var netInt  = grossInt - taxAmt;
+        var netMat  = P + netInt;
+
+        var effYield;
+        if (type === 'cumulative') {
+            effYield = yrs > 0 ? (Math.pow(netMat / P, 1/yrs) - 1) * 100 : 0;
+        } else {
+            effYield = yrs > 0 ? (netInt / P / yrs) * 100 : 0;
+        }
+
+        var annInt  = grossInt / (yrs || 1);
+        var tdsNote = annInt > 40000 ? '⚠ TDS @ 10% applies (annual interest > ₹40K). Submit Form 15G/H if total income < taxable limit.' : '✅ No TDS (annual interest ≤ ₹40K). For senior citizens threshold is ₹50K.';
+
+        function $s(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; }
+        $s('fi-fd-gross-mat',  fiFmt(grossMat));
+        $s('fi-fd-net-mat',    fiFmt(netMat));
+        $s('fi-fd-gross-int',  fiFmt(grossInt));
+        $s('fi-fd-tax-amt',    slab > 0 ? fiFmt(taxAmt) : '—');
+        $s('fi-fd-net-int',    fiFmt(netInt));
+        $s('fi-fd-yield',      effYield.toFixed(2) + '%');
+
+        var payEl  = document.getElementById('fi-fd-payout-row');
+        var payVal = document.getElementById('fi-fd-payout');
+        if (payEl && payVal) {
+            if (payoutAmt) { payVal.textContent = fiFmt(payoutAmt); payEl.classList.remove('hidden'); }
+            else payEl.classList.add('hidden');
+        }
+        var tdsEl = document.getElementById('fi-fd-tds');
+        if (tdsEl) { tdsEl.textContent = tdsNote; tdsEl.classList.remove('hidden'); }
+
+        var tw = document.getElementById('fi-fd-workings');
+        if (tw) tw.innerHTML =
+            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>Principal</span><span class="font-bold">' + fiFmt(P) + '</span></div>' +
+            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>Rate · Tenure</span><span class="font-bold">' + rate + '% · ' + mo + ' mo</span></div>' +
+            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>Gross interest</span><span class="font-bold">' + fiFmt(grossInt) + '</span></div>' +
+            (slab > 0 ? '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>Tax @ ' + (slab*100).toFixed(0) + '%</span><span class="font-bold text-red-600">−' + fiFmt(taxAmt) + '</span></div>' : '') +
+            '<div class="flex justify-between py-1 font-black text-blue-700"><span>Net maturity</span><span>' + fiFmt(netMat) + '</span></div>' +
+            '<div class="flex justify-between py-0.5"><span class="text-[9px] text-slate-400">Post-tax yield</span><span class="font-bold text-emerald-600">' + effYield.toFixed(2) + '% p.a.</span></div>';
+
+        if (typeof saveUserData === 'function') saveUserData();
+    }
+
+    // ── SCSS Calculator (8.2% p.a., quarterly payout) ────────
+    function fiCalcSCSS() {
+        var P    = fiNum('fi-scss-principal');
+        var slab = parseFloat(fiSel('fi-scss-slab', '30')) / 100;
+        if (!P) return;
+
+        var rate = 0.082; // 8.2% per annum, Q1 FY25-26
+        var maxInv = 3000000; // ₹30L max
+        var capNote = P > maxInv ? '⚠ Exceeds ₹30L limit. Max investment is ₹30L.' : '';
+
+        var annual   = P * rate;
+        var quarterly = annual / 4;
+        var postTaxQ = quarterly * (1 - slab);
+        var postTaxA = annual * (1 - slab);
+        var tdsSCSS  = annual > 50000 ? '⚠ TDS applicable (annual > ₹50K). Submit 15H to avoid.' : '✅ No TDS';
+        var taxSaving80C = Math.min(P, 150000) * slab;
+
+        function $s(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; }
+        $s('fi-scss-quarterly', fiFmt(quarterly));
+        $s('fi-scss-post-tax-q', fiFmt(postTaxQ));
+        $s('fi-scss-annual',    fiFmt(annual));
+        $s('fi-scss-post-tax-a', fiFmt(postTaxA));
+        $s('fi-scss-80c',       taxSaving80C > 0 ? fiFmt(taxSaving80C) : '—');
+        $s('fi-scss-tds',       tdsSCSS + (capNote ? ' ' + capNote : ''));
+        if (typeof saveUserData === 'function') saveUserData();
+    }
+
+    // ── POMIS Calculator (7.4% p.a., monthly payout) ─────────
+    function fiCalcPOMIS() {
+        var P    = fiNum('fi-pomis-principal');
+        var slab = parseFloat(fiSel('fi-pomis-slab', '30')) / 100;
+        if (!P) return;
+
+        var rate    = 0.074; // 7.4% p.a.
+        var maxSingle = 900000; var maxJoint = 1500000;
+        var monthly  = P * rate / 12;
+        var annual   = P * rate;
+        var postTaxM = monthly * (1 - slab);
+        var postTaxA = annual * (1 - slab);
+        var capNote  = P > maxSingle ? (P > maxJoint ? '⚠ Exceeds ₹15L joint limit.' : '⚠ Exceeds ₹9L single limit — open joint account.') : '';
+
+        function $s(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; }
+        $s('fi-pomis-monthly',   fiFmt(monthly));
+        $s('fi-pomis-post-tax-m', fiFmt(postTaxM));
+        $s('fi-pomis-annual',    fiFmt(annual));
+        $s('fi-pomis-post-tax-a', fiFmt(postTaxA));
+        $s('fi-pomis-note',      capNote || '✅ Within ₹9L single account limit. Capital returned at maturity (5 yrs).');
+        if (typeof saveUserData === 'function') saveUserData();
+    }
+
+    // ── NSC Calculator (7.7% p.a., 5-year, compounded annually) ──
+    function fiCalcNSC() {
+        var P    = fiNum('fi-nsc-principal');
+        var slab = parseFloat(fiSel('fi-nsc-slab', '30')) / 100;
+        if (!P) return;
+
+        var rate    = 0.077;
+        var maturity = P * Math.pow(1 + rate, 5);
+        var totalInt = maturity - P;
+        // 80C benefit on investment + years 1-4 reinvested interest (deemed reinvested)
+        // Tax due only on year-5 interest (accrual in year 5 not covered by 80C)
+        var yr5Int   = P * Math.pow(1 + rate, 4) * rate; // interest in final year
+        var taxDue   = yr5Int * slab;
+        var taxSaving80C = Math.min(P, 150000) * slab; // initial 80C
+        var netGain  = totalInt - taxDue + taxSaving80C; // net advantage
+        var effYield = (Math.pow((P + totalInt - taxDue) / P, 1/5) - 1) * 100;
+
+        function $s(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; }
+        $s('fi-nsc-maturity',  fiFmt(maturity));
+        $s('fi-nsc-total-int', fiFmt(totalInt));
+        $s('fi-nsc-yr5-tax',   fiFmt(taxDue));
+        $s('fi-nsc-80c',       fiFmt(taxSaving80C));
+        $s('fi-nsc-yield',     effYield.toFixed(2) + '%');
+        $s('fi-nsc-note',      '80C deduction on investment + reinvested interest (years 1–4). Only year-5 interest taxable.');
+        if (typeof saveUserData === 'function') saveUserData();
+    }
+
+    // ── KVP Calculator (7.5% p.a., doubles in 115 months) ───────
+    function fiCalcKVP() {
+        var P = fiNum('fi-kvp-principal');
+        if (!P) return;
+
+        var rate      = 0.075;
+        var months    = 115; // doubles in 115 months at 7.5%
+        var maturity  = P * 2;
+        var totalInt  = P;
+        var yrs       = months / 12;
+        var effYield  = (Math.pow(2, 1/yrs) - 1) * 100; // pre-tax CAGR
+
+        function $s(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; }
+        $s('fi-kvp-maturity',  fiFmt(maturity));
+        $s('fi-kvp-months',    months + ' months (' + yrs.toFixed(1) + ' yrs)');
+        $s('fi-kvp-int',       fiFmt(totalInt));
+        $s('fi-kvp-yield',     effYield.toFixed(2) + '% CAGR');
+        $s('fi-kvp-note',      '⚠ No 80C benefit. Interest taxable at maturity as per your slab. Premature closure allowed after 2.5 yrs with penalty.');
+        if (typeof saveUserData === 'function') saveUserData();
+    }
+
+    // ── Tax FD vs ELSS Comparison ─────────────────────────────
+    function fiCalcELSS() {
+        var P         = fiNum('fi-cmp-principal');
+        var fdRate    = fiPct('fi-cmp-fd-rate', 7.0) / 100;
+        var elssRate  = fiPct('fi-cmp-elss-return', 12.0) / 100;
+        var slab      = parseFloat(fiSel('fi-cmp-slab', '30')) / 100;
+        if (!P) return;
+
+        var cap = Math.min(P, 150000);
+        var taxSaving = cap * slab; // same 80C for both
+
+        // Tax FD: 5-year lock-in, interest taxed at slab rate annually (approx via post-tax rate)
+        var fdPostRate = fdRate * (1 - slab);
+        var fdMat5     = P * Math.pow(1 + fdPostRate/4, 4*5); // quarterly compounding
+        var fdGrossMat = P * Math.pow(1 + fdRate/4, 4*5);
+        var fdTax5     = (fdGrossMat - P) * slab;
+
+        // ELSS: 3-year lock-in, 5-year holding; LTCG 10% on gains above ₹1L
+        var elssMat5   = P * Math.pow(1 + elssRate, 5);
+        var elssGains  = elssMat5 - P;
+        var ltcgTax    = Math.max(0, (elssGains - 100000)) * 0.10;
+        var elssNet5   = elssMat5 - ltcgTax;
+        var elssYield  = (Math.pow(elssNet5 / P, 0.2) - 1) * 100;
+        var fdYield    = (Math.pow(fdMat5 / P, 0.2) - 1) * 100;
+
+        var winner = elssNet5 > fdMat5 ? 'ELSS' : 'Tax FD';
+        var diff   = Math.abs(elssNet5 - fdMat5);
+        var winnerColor = winner === 'ELSS' ? '#059669' : '#0369a1';
+
+        function $s(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; }
+        $s('fi-cmp-fd-mat',    fiFmt(fdMat5));
+        $s('fi-cmp-elss-mat',  fiFmt(elssNet5));
+        $s('fi-cmp-fd-yield',  fdYield.toFixed(2) + '%');
+        $s('fi-cmp-elss-yield',elssYield.toFixed(2) + '%');
+        $s('fi-cmp-fd-tax',    fiFmt(fdTax5));
+        $s('fi-cmp-elss-tax',  ltcgTax > 0 ? fiFmt(ltcgTax) : 'Nil (gains ≤ ₹1L)');
+        $s('fi-cmp-80c',       fiFmt(taxSaving));
+        $s('fi-cmp-diff',      fiFmt(diff));
+
+        var wEl = document.getElementById('fi-cmp-winner');
+        if (wEl) {
+            wEl.textContent = winner + ' wins by ' + fiFmt(diff) + ' over 5 years';
+            wEl.style.color = winnerColor;
+        }
+
+        var cw = document.getElementById('fi-cmp-workings');
+        if (cw) cw.innerHTML =
+            '<div class="text-[9px] font-black text-blue-700 mb-1">📊 Tax-Saving FD (5 yrs)</div>' +
+            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>Investment</span><span class="font-bold">' + fiFmt(P) + '</span></div>' +
+            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>FD rate (gross)</span><span class="font-bold">' + (fdRate*100).toFixed(1) + '% → post-tax ' + (fdPostRate*100).toFixed(2) + '%</span></div>' +
+            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>Tax on interest (@ ' + (slab*100).toFixed(0) + '% slab)</span><span class="font-bold text-red-600">−' + fiFmt(fdTax5) + '</span></div>' +
+            '<div class="flex justify-between py-1 font-black text-blue-700"><span>FD post-tax maturity</span><span>' + fiFmt(fdMat5) + '</span></div>' +
+            '<div class="text-[9px] font-black text-emerald-700 mt-2 mb-1">📈 ELSS (5 yr hold)</div>' +
+            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>Expected CAGR</span><span class="font-bold">' + (elssRate*100).toFixed(1) + '%</span></div>' +
+            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>Gross maturity</span><span class="font-bold">' + fiFmt(elssMat5) + '</span></div>' +
+            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>LTCG tax (10% above ₹1L)</span><span class="font-bold text-red-600">−' + (ltcgTax > 0 ? fiFmt(ltcgTax) : '0') + '</span></div>' +
+            '<div class="flex justify-between py-1 font-black text-emerald-700"><span>ELSS post-tax maturity</span><span>' + fiFmt(elssNet5) + '</span></div>';
 
         if (typeof saveUserData === 'function') saveUserData();
     }
@@ -2416,8 +2900,10 @@
         var p2Invest    = jpParseMoney('jp-p2-invest');
         var p1Portfolio = jpParseMoney('jp-p1-portfolio');
         var p2Portfolio = jpParseMoney('jp-p2-portfolio');
-        var p1Slab      = parseInt(document.getElementById('jp-p1-slab').value) || 20;
-        var p2Slab      = parseInt(document.getElementById('jp-p2-slab').value) || 20;
+        var p1SlabEl = document.getElementById('jp-p1-slab');
+        var p2SlabEl = document.getElementById('jp-p2-slab');
+        var p1Slab   = p1SlabEl && p1SlabEl.value !== '' ? parseInt(p1SlabEl.value) : 20;
+        var p2Slab   = p2SlabEl && p2SlabEl.value !== '' ? parseInt(p2SlabEl.value) : 20;
         var retRate     = (parseFloat(document.getElementById('jp-return').value) || 12) / 100;
 
         var combinedMonthly = p1Invest + p2Invest;
@@ -4017,6 +4503,211 @@
         return sign + '₹' + Math.round(abs).toLocaleString('en-IN');
     }
 
+    /* ══════════════════════════════════════════════════════════
+       RETIREMENT HUB — Integrated Retirement View
+    ══════════════════════════════════════════════════════════ */
+    function rhFmt(n) { return '₹' + Math.round(n).toLocaleString('en-IN'); }
+    function rhNum(id) {
+        var el = document.getElementById(id);
+        return el ? (parseFloat(el.value.replace(/[^0-9.]/g, '')) || 0) : 0;
+    }
+    function rhFormatInput(el) {
+        var raw = el.value.replace(/[^0-9]/g, '');
+        if (raw) el.value = parseInt(raw).toLocaleString('en-IN');
+    }
+
+    var _rhDefs = {
+        'rh-age':'30','rh-ret-age':'60','rh-life-exp':'85',
+        'rh-inflation':'6','rh-ret-return':'7','rh-expenses':'60,000',
+        'rh-epf-balance':'2,00,000','rh-epf-basic':'50,000',
+        'rh-ppf-balance':'0','rh-ppf-annual':'1,50,000','rh-ppf-years-done':'0',
+        'rh-nps-balance':'0','rh-nps-monthly':'5,000','rh-nps-return':'10','rh-nps-annuity':'6',
+        'rh-sip-monthly':'10,000','rh-sip-return':'12',
+        'rh-other-corpus':'0','rh-other-return':'7'
+    };
+
+    function initRetirementHub() {
+        Object.entries(_rhDefs).forEach(function(kv) {
+            var el = document.getElementById(kv[0]); if (!el) return;
+            if (!el.value || el.value === kv[1]) el.classList.add('text-slate-400');
+            else el.classList.remove('text-slate-400');
+        });
+        retHubCalc();
+    }
+
+    function resetRetirementHub() {
+        Object.entries(_rhDefs).forEach(function(kv) {
+            var el = document.getElementById(kv[0]); if (!el) return;
+            el.value = kv[1]; el.classList.add('text-slate-400');
+        });
+        retHubCalc();
+        if (typeof saveUserData === 'function') saveUserData();
+    }
+
+    function retHubCalc() {
+        var age       = Math.round(rhNum('rh-age')) || 30;
+        var retAge    = Math.round(rhNum('rh-ret-age')) || 60;
+        var lifeExp   = Math.round(rhNum('rh-life-exp')) || 85;
+        var inflation = (rhNum('rh-inflation') || 6) / 100;
+        var retReturn = (rhNum('rh-ret-return') || 7) / 100;
+        var yrs       = Math.max(0, retAge - age);
+        var drawYrs   = Math.max(1, lifeExp - retAge);
+
+        // ── EPF ──────────────────────────────────────────────────────────
+        var epfBal     = rhNum('rh-epf-balance');
+        var epfBasic   = rhNum('rh-epf-basic');
+        var EPF_RATE   = 0.0825;
+        var epfBalFV   = epfBal * Math.pow(1 + EPF_RATE, yrs);
+        var epfMonthly = 0;
+        if (epfBasic > 0) {
+            var emp = epfBasic * 0.12;
+            var eps = Math.min(1250, Math.round(epfBasic * 0.0833));
+            epfMonthly = emp + (emp - eps); // employee + employer excl EPS
+        }
+        var emr       = EPF_RATE / 12;
+        var epfSipFV  = (epfMonthly > 0 && yrs > 0 && emr > 0)
+            ? epfMonthly * ((Math.pow(1 + emr, yrs * 12) - 1) / emr) * (1 + emr)
+            : 0;
+        var epfCorpus = Math.round(epfBalFV + epfSipFV);
+
+        // ── PPF ──────────────────────────────────────────────────────────
+        var ppfBal    = rhNum('rh-ppf-balance');
+        var ppfAnnual = rhNum('rh-ppf-annual');
+        var PPF_RATE  = 0.071;
+        var ppfC      = ppfBal;
+        for (var py = 0; py < yrs; py++) {
+            ppfC = (ppfC + ppfAnnual) * (1 + PPF_RATE);
+        }
+        var ppfCorpus = Math.round(ppfC);
+
+        // ── NPS ──────────────────────────────────────────────────────────
+        var npsBal      = rhNum('rh-nps-balance');
+        var npsMonthly  = rhNum('rh-nps-monthly');
+        var npsReturn   = (rhNum('rh-nps-return') || 10) / 100;
+        var npsAnnuity  = (rhNum('rh-nps-annuity') || 6) / 100;
+        var nmr         = npsReturn / 12;
+        var npsBalFV    = npsBal * Math.pow(1 + npsReturn, yrs);
+        var npsSipFV    = (npsMonthly > 0 && yrs > 0 && nmr > 0)
+            ? npsMonthly * ((Math.pow(1 + nmr, yrs * 12) - 1) / nmr) * (1 + nmr)
+            : 0;
+        var npsTotalC   = Math.round(npsBalFV + npsSipFV);
+        var npsLumpsum  = Math.round(npsTotalC * 0.6);
+        var npsAnnPool  = Math.round(npsTotalC * 0.4);
+        var npsPension  = Math.round((npsAnnPool * npsAnnuity) / 12);
+
+        // ── SIP ───────────────────────────────────────────────────────────
+        var sipMonthly = rhNum('rh-sip-monthly');
+        var sipReturn  = (rhNum('rh-sip-return') || 12) / 100;
+        var smr        = sipReturn / 12;
+        var sipCorpus  = (sipMonthly > 0 && yrs > 0 && smr > 0)
+            ? Math.round(sipMonthly * ((Math.pow(1 + smr, yrs * 12) - 1) / smr) * (1 + smr))
+            : 0;
+
+        // ── Other ─────────────────────────────────────────────────────────
+        var otherC      = rhNum('rh-other-corpus');
+        var otherReturn = (rhNum('rh-other-return') || 7) / 100;
+        var otherFV     = Math.round(otherC * Math.pow(1 + otherReturn, yrs));
+
+        // ── Total withdrawable corpus ──────────────────────────────────────
+        var totalCorpus = epfCorpus + ppfCorpus + npsLumpsum + sipCorpus + otherFV;
+
+        // ── SWP (monthly, lasts drawYrs) ───────────────────────────────────
+        var rMo = retReturn / 12;
+        var n   = drawYrs * 12;
+        var swp = totalCorpus > 0
+            ? (rMo > 0 ? Math.round(totalCorpus * rMo / (1 - Math.pow(1 + rMo, -n)))
+                       : Math.round(totalCorpus / n))
+            : 0;
+        var totalIncome = swp + npsPension;
+
+        // ── Expenses at retirement ─────────────────────────────────────────
+        var expToday    = rhNum('rh-expenses');
+        var expInflated = Math.round(expToday * Math.pow(1 + inflation, yrs));
+        var gap         = totalIncome - expInflated;
+
+        // ── Corpus depletion simulation ────────────────────────────────────
+        var depletionAge = null;
+        var needMo = Math.max(0, expInflated - npsPension);
+        if (needMo > 0 && totalCorpus > 0) {
+            var bal = totalCorpus;
+            for (var mo = 1; mo <= 60 * 12; mo++) {
+                bal = bal * (1 + rMo) - needMo;
+                if (bal <= 0) { depletionAge = retAge + Math.floor(mo / 12); break; }
+            }
+        }
+
+        // ── DOM updates ────────────────────────────────────────────────────
+        function set(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; }
+        function pct(part)  { return totalCorpus > 0 ? Math.round(part / totalCorpus * 100) : 0; }
+
+        set('rh-total-corpus',  rhFmt(totalCorpus));
+        set('rh-ret-age-disp',  'Age ' + retAge);
+        set('rh-yrs-disp',      yrs + ' years to go');
+        set('rh-draw-yrs-disp', drawYrs + '-yr drawdown');
+        set('rh-epf-result',    rhFmt(epfCorpus));
+        set('rh-ppf-result',    rhFmt(ppfCorpus));
+        set('rh-nps-result',    rhFmt(npsLumpsum));
+        set('rh-sip-result',    rhFmt(sipCorpus));
+        set('rh-other-result',  rhFmt(otherFV));
+        set('rh-nps-total-note', '40% annuity pool: ' + rhFmt(npsAnnPool));
+
+        var items = { epf: epfCorpus, ppf: ppfCorpus, nps: npsLumpsum, sip: sipCorpus, other: otherFV };
+        Object.keys(items).forEach(function(k) {
+            var p   = pct(items[k]);
+            var bar = document.getElementById('rh-bar-' + k);
+            var pEl = document.getElementById('rh-pct-' + k);
+            if (bar) bar.style.width = p + '%';
+            if (pEl) pEl.textContent = p + '%';
+        });
+
+        set('rh-swp',           rhFmt(swp) + '/mo');
+        set('rh-nps-pension-d', rhFmt(npsPension) + '/mo');
+        set('rh-total-income',  rhFmt(totalIncome) + '/mo');
+        set('rh-exp-inflated',  rhFmt(expInflated) + '/mo');
+        set('rh-exp-note',      'Today ₹' + Math.round(expToday).toLocaleString('en-IN') + ' → inflated at ' + (inflation * 100).toFixed(0) + '% p.a.');
+
+        var gapEl = document.getElementById('rh-gap');
+        if (gapEl) {
+            gapEl.textContent = (gap >= 0 ? '+' : '') + rhFmt(gap) + '/mo';
+            gapEl.className   = 'text-2xl font-black mt-0.5 ' + (gap >= 0 ? 'text-emerald-400' : 'text-rose-400');
+        }
+        var gapLabelEl = document.getElementById('rh-gap-label');
+        if (gapLabelEl) {
+            gapLabelEl.textContent = gap >= 0 ? 'Monthly Surplus' : 'Monthly Shortfall';
+            gapLabelEl.style.color = gap >= 0 ? '#6ee7b7' : '#fca5a5';
+        }
+
+        // Insight
+        var insEl = document.getElementById('rh-insight');
+        if (insEl) {
+            var lines = [];
+            lines.push('At <strong>age ' + retAge + '</strong>, your total withdrawable corpus is <strong>' + rhFmt(totalCorpus) + '</strong>. ' +
+                'This supports <strong>' + rhFmt(swp) + '/mo</strong> via SWP for ' + drawYrs + ' years at ' + (retReturn * 100).toFixed(0) + '% post-retirement return.');
+            if (npsPension > 0)
+                lines.push('NPS annuity (40% of corpus = ' + rhFmt(npsAnnPool) + ') adds <strong>' + rhFmt(npsPension) + '/mo</strong> guaranteed pension on top — total <strong>' + rhFmt(totalIncome) + '/mo</strong>.');
+            if (gap >= 0)
+                lines.push('<span style="color:#065f46;font-weight:700">✅ Surplus: ' + rhFmt(gap) + '/mo</span> — retirement income exceeds projected expenses of ' + rhFmt(expInflated) + '/mo. You\'re on track.');
+            else {
+                var shortfall = -gap;
+                lines.push('<span style="color:#991b1b;font-weight:700">⚠️ Shortfall: ' + rhFmt(shortfall) + '/mo</span> vs projected expenses of ' + rhFmt(expInflated) + '/mo at retirement.');
+                if (sipMonthly > 0 && yrs > 0 && smr > 0 && rMo > 0) {
+                    var corpusNeeded = (expInflated - npsPension) * (1 - Math.pow(1 + rMo, -n)) / rMo;
+                    var corpusGap    = Math.max(0, corpusNeeded - totalCorpus);
+                    var addlSip      = corpusGap * smr / ((Math.pow(1 + smr, yrs * 12) - 1) * (1 + smr));
+                    if (addlSip > 500)
+                        lines.push('💡 Increase SIP by ~<strong>' + rhFmt(Math.round(addlSip)) + '/mo</strong> at ' + (sipReturn * 100).toFixed(0) + '% return to bridge the gap.');
+                }
+            }
+            if (depletionAge && depletionAge < lifeExp)
+                lines.push('<span style="color:#92400e;font-weight:700">⚠️ Warning:</span> Corpus depletes at <strong>age ' + depletionAge + '</strong> — ' + (lifeExp - depletionAge) + ' years short of life expectancy (' + lifeExp + ').');
+            else if (!depletionAge && totalCorpus > 0)
+                lines.push('✅ Corpus <strong>outlasts life expectancy</strong> (age ' + lifeExp + '). Strong retirement foundation.');
+            insEl.innerHTML = lines.map(function(l) { return '<p style="margin-bottom:4px">' + l + '</p>'; }).join('');
+        }
+
+        if (typeof saveUserData === 'function') saveUserData();
+    }
+
     function initPPFNPS() {
         ppfCalc();
         npsCalc();
@@ -4603,6 +5294,48 @@
                   '\nCheck before Akshaya Tritiya / Dhanteras 👇';
         }
 
+        else if (page === 'ulipcheck') {
+            var ucIrrVal  = document.getElementById('uc-irr')?.textContent?.trim() || '';
+            var ucAdvVal  = document.getElementById('uc-advantage')?.textContent?.trim() || '';
+            msg = '🔍 I just analysed my *LIC/ULIP policy* on Aishwaryamasthu!\n' +
+                  (ucIrrVal ? 'My policy IRR: *' + ucIrrVal + '*\n' : '') +
+                  (ucAdvVal ? 'BTID advantage: *' + ucAdvVal + '*\n' : '') +
+                  'Should I surrender? IRR vs FD vs BTID — full analysis\n' +
+                  '₹50,000/yr for ₹5L cover & 4% return — is your LIC worth it?\n' +
+                  '\nCheck your policy 👇';
+        }
+
+        else if (page === 'fixedincome') {
+            var fiTab = document.querySelector('.fi-tab-active')?.textContent?.trim() || 'FD';
+            msg = '🏦 I just used *Fixed Income Tools* on Aishwaryamasthu!\n' +
+                  'FD Calculator · SCSS · POMIS · NSC · KVP · FD vs ELSS comparison\n' +
+                  'Smart tools for every Indian investor — not just SIP investors!\n\n' +
+                  'Know your fixed income 👇';
+        }
+        else if (page === 'networth') {
+            var nwVal = document.getElementById('nw-net-worth')?.textContent?.trim() || '';
+            var nwAst = document.getElementById('nw-total-assets')?.textContent?.trim() || '';
+            msg = '⚖️ I just calculated my *Net Worth* on Aishwaryamasthu!\n' +
+                  (nwAst ? 'Total Assets: *' + nwAst + '*\n' : '') +
+                  (nwVal ? 'Net Worth: *' + nwVal + '*\n' : '') +
+                  'Assets vs Liabilities · Asset allocation · Debt ratio · Full financial snapshot\n' +
+                  '\nKnow your number 👇';
+        }
+
+        else if (page === 'retirementhub') {
+            var rhTotal   = document.getElementById('rh-total-corpus')?.textContent?.trim() || '';
+            var rhIncome  = document.getElementById('rh-total-income')?.textContent?.trim() || '';
+            var rhGap     = document.getElementById('rh-gap')?.textContent?.trim() || '';
+            var rhRetAge  = document.getElementById('rh-ret-age-disp')?.textContent?.trim() || '';
+            msg = '🏖️ I just mapped my *Retirement — all in one view* on Aishwaryamasthu!\n' +
+                  (rhRetAge  ? 'Retirement ' + rhRetAge + '\n' : '') +
+                  (rhTotal   ? 'Total corpus: *' + rhTotal + '*\n' : '') +
+                  (rhIncome  ? 'Monthly income: *' + rhIncome + '*\n' : '') +
+                  (rhGap     ? 'Surplus/Gap: *' + rhGap + '*\n' : '') +
+                  'EPF + PPF + NPS + SIP — one number, one plan\n' +
+                  '\nPlan your retirement 👇';
+        }
+
         if (!msg) {
             msg = '📊 Check out *Aishwaryamasthu* — India\'s best free financial planning tool!\n\n' +
                   'SIP calculator · Goal planner · EPF projector · SSA planner · Tax guide & more 👇';
@@ -4615,6 +5348,489 @@
 
 
 
+
+    /* ══════════════════════════════════════════════════════════
+       ULIP / ENDOWMENT POLICY ANALYZER
+    ══════════════════════════════════════════════════════════ */
+
+    var _ucDefaults = {
+        'uc-premium':'50,000','uc-term':'21','uc-paid':'5',
+        'uc-maturity':'15,00,000','uc-sv':'1,50,000',
+        'uc-cover':'10,00,000','uc-age':'35','uc-inv-return':'12'
+    };
+
+    function ucFmt(n) {
+        var a = Math.abs(n), s = n < 0 ? '-' : '';
+        if (a >= 1e7) return s + '₹' + (a / 1e7).toFixed(2) + ' Cr';
+        if (a >= 1e5) return s + '₹' + (a / 1e5).toFixed(2) + ' L';
+        return s + '₹' + Math.round(a).toLocaleString('en-IN');
+    }
+
+    function ucNum(id) {
+        return parseFloat((document.getElementById(id)?.value || '').replace(/,/g, '')) || 0;
+    }
+
+    function ucFmtInput(el) {
+        var raw = (el.value || '').replace(/[^0-9]/g, '');
+        el.value = raw ? Number(raw).toLocaleString('en-IN') : '';
+    }
+
+    function ucSet(id, txt) {
+        var el = document.getElementById(id);
+        if (el) el.textContent = txt;
+    }
+
+    // Bisection IRR: all premiums paid from year 1..term, maturity at year term
+    function _ucTotalIRR(premium, term, maturity) {
+        function npv(r) {
+            var s = 0;
+            for (var t = 1; t <= term; t++) s -= premium / Math.pow(1 + r, t);
+            s += maturity / Math.pow(1 + r, term);
+            return s;
+        }
+        var lo = -0.50, hi = 2.0;
+        if (npv(hi) > 0) return hi;   // maturity astronomically high
+        if (npv(lo) < 0) return lo;   // IRR below -50%
+        for (var i = 0; i < 200; i++) {
+            var mid = (lo + hi) / 2;
+            if (npv(mid) > 0) lo = mid; else hi = mid;
+        }
+        return (lo + hi) / 2;
+    }
+
+    // Forward IRR: opportunity cost of SV + remaining premiums → maturity
+    function _ucForwardIRR(sv, premium, remaining, maturity) {
+        if (remaining <= 0) return null;
+        function npv(r) {
+            var s = -sv;
+            for (var t = 1; t <= remaining; t++) s -= premium / Math.pow(1 + r, t);
+            s += maturity / Math.pow(1 + r, remaining);
+            return s;
+        }
+        var lo = -0.50, hi = 2.0;
+        if (npv(hi) > 0) return hi;
+        if (npv(lo) < 0) return lo;
+        for (var i = 0; i < 200; i++) {
+            var mid = (lo + hi) / 2;
+            if (npv(mid) > 0) lo = mid; else hi = mid;
+        }
+        return (lo + hi) / 2;
+    }
+
+    function initUlipCheck() {
+        Object.keys(_ucDefaults).forEach(function(id) {
+            var el = document.getElementById(id);
+            if (!el || !el.value || el.value === _ucDefaults[id]) {
+                if (el) el.classList.add('text-slate-400');
+            } else {
+                el.classList.remove('text-slate-400');
+            }
+        });
+        ucCalc();
+    }
+
+    function resetUlipCheck() {
+        Object.entries(_ucDefaults).forEach(function(entry) {
+            var el = document.getElementById(entry[0]);
+            if (!el) return;
+            el.value = entry[1];
+            el.classList.add('text-slate-400');
+        });
+        var slabEl = document.getElementById('uc-slab');
+        if (slabEl) slabEl.value = '20';
+        ucCalc();
+        if (typeof saveUserData === 'function') saveUserData();
+    }
+
+    function ucPreset(type) {
+        var presets = {
+            jeevan_anand: { premium:50000,  term:21, paid:5, maturity:1500000, sv:150000,  cover:1000000, age:35 },
+            endowment:    { premium:30000,  term:20, paid:3, maturity:800000,  sv:60000,   cover:500000,  age:32 },
+            moneyback:    { premium:45000,  term:20, paid:7, maturity:1200000, sv:250000,  cover:750000,  age:40 },
+            ulip:         { premium:100000, term:15, paid:5, maturity:2500000, sv:400000,  cover:1000000, age:38 }
+        };
+        var p = presets[type]; if (!p) return;
+        var fmtIds = ['uc-premium','uc-maturity','uc-sv','uc-cover'];
+        [['uc-premium',p.premium],['uc-term',p.term],['uc-paid',p.paid],
+         ['uc-maturity',p.maturity],['uc-sv',p.sv],['uc-cover',p.cover],['uc-age',p.age]
+        ].forEach(function(pair) {
+            var el = document.getElementById(pair[0]);
+            if (!el) return;
+            el.value = fmtIds.indexOf(pair[0]) !== -1
+                ? Number(pair[1]).toLocaleString('en-IN')
+                : String(pair[1]);
+            el.classList.remove('text-slate-400');
+        });
+        ucCalc();
+    }
+
+    function ucCalc() {
+        var premium   = ucNum('uc-premium');
+        var term      = Math.round(ucNum('uc-term'));
+        var paid      = Math.round(ucNum('uc-paid'));
+        var maturity  = ucNum('uc-maturity');
+        var sv        = ucNum('uc-sv');
+        var cover     = ucNum('uc-cover');
+        var age       = Math.round(ucNum('uc-age')) || 35;
+        var invRet    = ucNum('uc-inv-return') || 12;
+        var slabPct   = parseFloat(document.getElementById('uc-slab')?.value || '20');
+
+        if (!premium || !term || !maturity) return;
+        paid = Math.min(paid, term);
+        var remaining = term - paid;
+
+        // ── Summary numbers ─────────────────────────────────────
+        var totalPaid   = premium * paid;
+        var totalRemain = premium * remaining;
+
+        // ── IRRs ─────────────────────────────────────────────────
+        var totalIRR = _ucTotalIRR(premium, term, maturity);
+        var fwdIRR   = remaining > 0 ? _ucForwardIRR(sv, premium, remaining, maturity) : null;
+
+        // ── Term cost estimate ────────────────────────────────────
+        var ratePerL = age <= 30 ? 8 : age <= 35 ? 10 : age <= 40 ? 14 : age <= 45 ? 20 : 30;
+        var termCost = Math.round((cover / 100000) * ratePerL * 100);
+
+        // ── BTID corpus ───────────────────────────────────────────
+        var freeInvest = premium - termCost;          // annual surplus after buying term
+        var r = invRet / 100;
+        var btidCorpus = 0;
+        if (remaining > 0) {
+            if (freeInvest > 0) {
+                // SV grows + monthly SIP of freeInvest/12
+                var monthly = freeInvest / 12;
+                var mRate   = r / 12;
+                var months  = remaining * 12;
+                var sipGrowth = monthly * (Math.pow(1 + mRate, months) - 1) / mRate * (1 + mRate);
+                btidCorpus = sv * Math.pow(1 + r, remaining) + sipGrowth;
+            } else {
+                // Only surrender value grows; term cost > premium so no surplus
+                btidCorpus = sv * Math.pow(1 + r, remaining);
+            }
+        } else {
+            btidCorpus = sv;
+        }
+
+        var advantage = btidCorpus - maturity;
+
+        // ── 80C tax benefit ───────────────────────────────────────
+        var annualTaxBenefit  = Math.min(premium, 150000) * (slabPct / 100);
+        var totalTaxBenefit   = annualTaxBenefit * remaining;
+        var effPremium        = premium - annualTaxBenefit;
+        var effTotalIRR       = _ucTotalIRR(effPremium > 0 ? effPremium : 1, term, maturity);
+
+        // ── DOM: IRR cards ────────────────────────────────────────
+        var irrPct = (totalIRR * 100).toFixed(2);
+        var irrEl  = document.getElementById('uc-irr');
+        if (irrEl) {
+            irrEl.textContent = irrPct + '%';
+            irrEl.style.color = totalIRR < 0.05 ? '#ef4444' : totalIRR < 0.07 ? '#f59e0b' : '#10b981';
+        }
+
+        var gradeEl = document.getElementById('uc-irr-grade');
+        if (gradeEl) {
+            if (totalIRR < 0.03)       gradeEl.textContent = '🔴 Terrible — below savings account rate';
+            else if (totalIRR < 0.05)  gradeEl.textContent = '🔴 Very Poor — FD gives more than this';
+            else if (totalIRR < 0.06)  gradeEl.textContent = '🟡 Poor — barely at FD rate';
+            else if (totalIRR < 0.07)  gradeEl.textContent = '🟡 Below Average — inflation erodes it';
+            else if (totalIRR < 0.08)  gradeEl.textContent = '🟡 Mediocre — marginally above FD';
+            else                        gradeEl.textContent = '🟢 Decent — but verify with BTID below';
+        }
+
+        var effIrrEl = document.getElementById('uc-eff-irr');
+        if (effIrrEl) {
+            effIrrEl.textContent = (effTotalIRR * 100).toFixed(2) + '%';
+            effIrrEl.style.color = effTotalIRR < 0.06 ? '#f59e0b' : '#10b981';
+        }
+
+        var fwdEl = document.getElementById('uc-fwd-irr');
+        if (fwdEl && fwdIRR !== null) {
+            var fwdPct = (fwdIRR * 100).toFixed(2);
+            fwdEl.textContent = fwdPct + '%';
+            fwdEl.style.color = fwdIRR < 0.06 ? '#ef4444' : fwdIRR < 0.09 ? '#f59e0b' : '#10b981';
+        } else if (fwdEl) {
+            fwdEl.textContent = '—';
+        }
+
+        // ── DOM: summary numbers ──────────────────────────────────
+        ucSet('uc-total-paid',      ucFmt(totalPaid));
+        ucSet('uc-total-remain',    ucFmt(totalRemain));
+        ucSet('uc-remaining-years', remaining + ' yrs left');
+        ucSet('uc-term-cost',       ucFmt(termCost) + '/yr');
+        ucSet('uc-free-invest',     freeInvest > 0 ? ucFmt(freeInvest) + '/yr' : 'Term > Premium');
+        ucSet('uc-btid-corpus',     ucFmt(Math.round(btidCorpus)));
+        ucSet('uc-policy-maturity', ucFmt(maturity));
+        ucSet('uc-tax-benefit',     ucFmt(annualTaxBenefit) + '/yr · ' + ucFmt(totalTaxBenefit) + ' total');
+        ucSet('uc-sv-display',      ucFmt(sv));
+
+        var advEl = document.getElementById('uc-advantage');
+        if (advEl) {
+            if (advantage >= 0) {
+                advEl.textContent = '+' + ucFmt(Math.round(advantage)) + ' more via BTID';
+                advEl.style.color = '#10b981';
+            } else {
+                advEl.textContent = ucFmt(Math.round(-advantage)) + ' more from policy';
+                advEl.style.color = '#f59e0b';
+            }
+        }
+
+        // ── Recommendation ────────────────────────────────────────
+        var recEl = document.getElementById('uc-recommendation');
+        if (recEl) {
+            var rec, bg, bdr, clr;
+            if (totalIRR < 0.04) {
+                rec = '🚨 <strong>STRONGLY RECOMMEND SURRENDERING.</strong> This policy earns less than a savings account (' + irrPct + '% IRR). Even a simple FD at 7% would be better. The BTID strategy projects <strong>' + ucFmt(Math.round(btidCorpus)) + '</strong> vs policy maturity of <strong>' + ucFmt(maturity) + '</strong>. <em>First buy a pure term plan to replace the cover, then surrender.</em>';
+                bg='#fef2f2'; bdr='#ef4444'; clr='#7f1d1d';
+            } else if (totalIRR < 0.06 && advantage > 0) {
+                rec = '⚠️ <strong>LIKELY WORTH SURRENDERING.</strong> Policy IRR ' + irrPct + '% is at or below FD rate. BTID projects <strong>' + ucFmt(Math.round(btidCorpus)) + '</strong> vs <strong>' + ucFmt(maturity) + '</strong> — a surplus of <strong>' + ucFmt(Math.round(advantage)) + '</strong>. Note: continuing gives 80C tax benefit of ~' + ucFmt(totalTaxBenefit) + ' total — factor this in. <em>Buy term insurance first before surrendering.</em>';
+                bg='#fff7ed'; bdr='#f97316'; clr='#7c2d12';
+            } else if (totalIRR < 0.08 && advantage > 0) {
+                rec = '💡 <strong>CONSIDER SURRENDERING.</strong> BTID projects more wealth. However, policy IRR of ' + irrPct + '% is above FD rate. Key question: is this cover (' + ucFmt(cover) + ') your <em>only</em> life insurance? If yes, buy a term plan first. Also consider: 80C benefit of ~' + ucFmt(totalTaxBenefit) + ' reduces your effective cost if you stay.';
+                bg='#fffbeb'; bdr='#fde68a'; clr='#78350f';
+            } else if (advantage <= 0) {
+                rec = '✅ <strong>CONTINUE THE POLICY</strong> in this scenario. The policy maturity (' + ucFmt(maturity) + ') exceeds the BTID projection. However: <strong>never rely on an endowment policy as your primary life cover</strong> — buy a separate term plan. Also verify the maturity projection in your policy bond is realistic.';
+                bg='#f0fdf4'; bdr='#86efac'; clr='#14532d';
+            } else {
+                rec = '💡 <strong>MARGINAL CASE.</strong> IRR of ' + irrPct + '% and BTID advantage of ' + ucFmt(Math.round(advantage)) + '. Decision depends on your other 80C investments, risk appetite, and whether this is your only life cover. Consult a SEBI-registered fee-only advisor before deciding.';
+                bg='#eff6ff'; bdr='#93c5fd'; clr='#1e3a5f';
+            }
+            recEl.innerHTML = '<div class="text-[11px] leading-relaxed">' + rec + '</div>';
+            recEl.style.cssText = 'background:' + bg + ';border:1.5px solid ' + bdr + ';color:' + clr + ';border-radius:14px;padding:12px 14px;';
+        }
+
+        if (typeof saveUserData === 'function') saveUserData();
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       NET WORTH TRACKER
+    ══════════════════════════════════════════════════════════ */
+
+    var _nwChart = null;
+
+    var _nwAssetFields = [
+        'nw-savings','nw-fd',
+        'nw-stocks','nw-eq-mf',
+        'nw-epf','nw-ppf','nw-nps',
+        'nw-debt-mf',
+        'nw-home','nw-property',
+        'nw-gold-phys','nw-gold-paper',
+        'nw-crypto','nw-ins-sv','nw-other-assets'
+    ];
+    var _nwLiabFields = [
+        'nw-liab-home','nw-liab-car',
+        'nw-liab-pl','nw-liab-edu',
+        'nw-liab-cc','nw-liab-other'
+    ];
+    var _nwAllFields = _nwAssetFields.concat(_nwLiabFields);
+
+    function nwFmt(n) {
+        var a = Math.abs(n), s = n < 0 ? '-' : '';
+        if (a >= 1e7) return s + '₹' + (a / 1e7).toFixed(2) + ' Cr';
+        if (a >= 1e5) return s + '₹' + (a / 1e5).toFixed(2) + ' L';
+        return s + '₹' + Math.round(a).toLocaleString('en-IN');
+    }
+
+    function nwNum(id) {
+        return parseFloat((document.getElementById(id)?.value || '').replace(/,/g, '')) || 0;
+    }
+
+    function nwFmtInput(el) {
+        var raw = (el.value || '').replace(/[^0-9]/g, '');
+        el.value = raw ? Number(raw).toLocaleString('en-IN') : '';
+    }
+
+    function initNetWorth() {
+        _nwAllFields.forEach(function(id) {
+            var el = document.getElementById(id);
+            if (!el) return;
+            if (!el.value || el.value === '0') {
+                el.value = '0';
+                el.classList.add('text-slate-400');
+            } else {
+                el.classList.remove('text-slate-400');
+            }
+        });
+        nwCalc();
+    }
+
+    function resetNetWorth() {
+        _nwAllFields.forEach(function(id) {
+            var el = document.getElementById(id);
+            if (!el) return;
+            el.value = '0';
+            el.classList.add('text-slate-400');
+        });
+        nwCalc();
+        if (typeof saveUserData === 'function') saveUserData();
+    }
+
+    function nwCalc() {
+        var savings   = nwNum('nw-savings');
+        var fd        = nwNum('nw-fd');
+        var stocks    = nwNum('nw-stocks');
+        var eqMf      = nwNum('nw-eq-mf');
+        var epf       = nwNum('nw-epf');
+        var ppf       = nwNum('nw-ppf');
+        var nps       = nwNum('nw-nps');
+        var debtMf    = nwNum('nw-debt-mf');
+        var home      = nwNum('nw-home');
+        var property  = nwNum('nw-property');
+        var goldPhys  = nwNum('nw-gold-phys');
+        var goldPaper = nwNum('nw-gold-paper');
+        var crypto    = nwNum('nw-crypto');
+        var insSv     = nwNum('nw-ins-sv');
+        var other     = nwNum('nw-other-assets');
+
+        var liabHome  = nwNum('nw-liab-home');
+        var liabCar   = nwNum('nw-liab-car');
+        var liabPl    = nwNum('nw-liab-pl');
+        var liabEdu   = nwNum('nw-liab-edu');
+        var liabCc    = nwNum('nw-liab-cc');
+        var liabOther = nwNum('nw-liab-other');
+
+        var catLiquid    = savings + fd;
+        var catEquity    = stocks + eqMf;
+        var catRetire    = epf + ppf + nps + debtMf;
+        var catRealty    = home + property;
+        var catGoldOther = goldPhys + goldPaper + crypto + insSv + other;
+
+        var totalAssets = catLiquid + catEquity + catRetire + catRealty + catGoldOther;
+        var totalLiab   = liabHome + liabCar + liabPl + liabEdu + liabCc + liabOther;
+        var netWorth    = totalAssets - totalLiab;
+
+        // Summary cards
+        var nwEl = document.getElementById('nw-net-worth');
+        if (nwEl) {
+            nwEl.textContent = nwFmt(netWorth);
+            nwEl.style.color = netWorth >= 0 ? '#10b981' : '#ef4444';
+        }
+        var astEl = document.getElementById('nw-total-assets');
+        if (astEl) astEl.textContent = nwFmt(totalAssets);
+        var lbEl = document.getElementById('nw-total-liab');
+        if (lbEl) lbEl.textContent = nwFmt(totalLiab);
+
+        // Ratios
+        var dtar = totalAssets > 0 ? (totalLiab / totalAssets * 100) : 0;
+        var dtarEl = document.getElementById('nw-dtar');
+        if (dtarEl) {
+            dtarEl.textContent = dtar.toFixed(1) + '%';
+            dtarEl.style.color = dtar <= 30 ? '#10b981' : dtar <= 50 ? '#f59e0b' : '#ef4444';
+        }
+
+        var invAssets = catEquity + catRetire;
+        var invPct = totalAssets > 0 ? (invAssets / totalAssets * 100) : 0;
+        var invEl = document.getElementById('nw-inv-ratio');
+        if (invEl) invEl.textContent = invPct.toFixed(1) + '%';
+
+        var liqPct = totalAssets > 0 ? (catLiquid / totalAssets * 100) : 0;
+        var liqEl = document.getElementById('nw-liq-ratio');
+        if (liqEl) liqEl.textContent = liqPct.toFixed(1) + '%';
+
+        // Insight
+        var insEl = document.getElementById('nw-insight');
+        if (insEl) {
+            var insights = [];
+            if (totalAssets === 0) {
+                insEl.classList.add('hidden');
+            } else {
+                insEl.classList.remove('hidden');
+                if (dtar > 50) insights.push('⚠️ Debt-to-asset ratio is <strong>' + dtar.toFixed(0) + '%</strong> — above 50% is a financial risk. Prioritise paying down high-interest loans first.');
+                else if (dtar > 30) insights.push('🟡 Debt-to-asset ratio is <strong>' + dtar.toFixed(0) + '%</strong>. Aim to get this below 30% for financial resilience.');
+                else if (dtar > 0) insights.push('✅ Debt-to-asset ratio is a healthy <strong>' + dtar.toFixed(0) + '%</strong>. Keep liabilities under 30% of assets.');
+                if (liqPct < 5) insights.push('⚠️ Liquid assets are only <strong>' + liqPct.toFixed(0) + '%</strong> of total. Keep at least 3–6 months of expenses in liquid form.');
+                if (invPct < 20 && totalAssets > 0) insights.push('💡 Only <strong>' + invPct.toFixed(0) + '%</strong> is in wealth-creating investments. Try to grow equity + retirement assets to at least 40% over time.');
+                if (catGoldOther > 0 && crypto > catGoldOther * 0.5) insights.push('⚠️ Crypto is >50% of your "gold & other" assets. High volatility — keep crypto under 5% of total net worth.');
+                if (insSv > 0) insights.push('💡 Your LIC/ULIP surrender value is ₹' + nwFmt(insSv) + '. Consider: if the IRR is below 6%, term insurance + MF investment is likely superior. Use the "ULIP Analyzer" for a full comparison.');
+                if (insights.length === 0) insights.push('✅ Your financial snapshot looks balanced. Update this quarterly to track your net worth journey!');
+                insEl.innerHTML = '<strong>💡 Snapshot Insights:</strong><ul class="mt-1 space-y-1">' + insights.map(function(i){ return '<li class="leading-relaxed">' + i + '</li>'; }).join('') + '</ul>';
+            }
+        }
+
+        // Render chart
+        nwRenderChart(catLiquid, catEquity, catRetire, catRealty, catGoldOther, totalAssets);
+
+        // Breakdown rows
+        var bkEl = document.getElementById('nw-breakdown');
+        if (bkEl && totalAssets > 0) {
+            var rows = [
+                { label: '💵 Liquid (Cash + FD)',          val: catLiquid,    color: '#0ea5e9' },
+                { label: '📈 Equity (Stocks + MF)',         val: catEquity,    color: '#10b981' },
+                { label: '🔒 Retirement (EPF+PPF+NPS+Debt)',val: catRetire,    color: '#8b5cf6' },
+                { label: '🏠 Real Estate',                  val: catRealty,    color: '#f59e0b' },
+                { label: '🥇 Gold, Crypto & Other',         val: catGoldOther, color: '#b45309' }
+            ];
+            bkEl.innerHTML = rows.filter(function(r){ return r.val > 0; }).map(function(r) {
+                var pct = (r.val / totalAssets * 100).toFixed(1);
+                return '<div class="flex items-center gap-2 py-1.5 border-b border-slate-100 last:border-0">' +
+                    '<div style="width:8px;height:8px;border-radius:50%;background:' + r.color + ';flex-shrink:0;"></div>' +
+                    '<div class="text-[10px] text-slate-600 flex-1">' + r.label + '</div>' +
+                    '<div class="text-[10px] font-black text-slate-400">' + pct + '%</div>' +
+                    '<div class="text-[11px] font-black text-slate-700">' + nwFmt(r.val) + '</div>' +
+                    '</div>';
+            }).join('');
+        } else if (bkEl) {
+            bkEl.innerHTML = '<div class="text-[10px] text-slate-400 text-center py-4">Enter your assets above to see breakdown</div>';
+        }
+
+        if (typeof saveUserData === 'function') saveUserData();
+    }
+
+    function nwRenderChart(liquid, equity, retire, realty, goldOther, total) {
+        var canvas = document.getElementById('nw-chart-canvas');
+        if (!canvas) return;
+        if (_nwChart) { _nwChart.destroy(); _nwChart = null; }
+        if (total <= 0) return;
+
+        var labels = ['Liquid', 'Equity', 'Retirement', 'Real Estate', 'Gold & Other'];
+        var vals   = [liquid, equity, retire, realty, goldOther];
+        var colors = ['#0ea5e9','#10b981','#8b5cf6','#f59e0b','#b45309'];
+
+        // Filter out zero-value segments
+        var filtLabels = [], filtVals = [], filtColors = [];
+        vals.forEach(function(v, i) {
+            if (v > 0) { filtLabels.push(labels[i]); filtVals.push(v); filtColors.push(colors[i]); }
+        });
+        if (filtVals.length === 0) return;
+
+        _nwChart = new Chart(canvas.getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: filtLabels,
+                datasets: [{
+                    data: filtVals,
+                    backgroundColor: filtColors,
+                    borderColor: '#ffffff',
+                    borderWidth: 2,
+                    hoverOffset: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '60%',
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom',
+                        labels: { boxWidth: 10, boxHeight: 10, font: { size: 9, weight: 'bold' }, color: '#64748b', padding: 8 }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(15,23,42,0.93)',
+                        titleFont: { size: 11, weight: 'bold' },
+                        bodyFont: { size: 12, weight: 'bold' },
+                        padding: 10,
+                        cornerRadius: 8,
+                        callbacks: {
+                            label: function(ctx) {
+                                var pct = (ctx.raw / total * 100).toFixed(1);
+                                return ' ' + ctx.label + ': ' + nwFmt(ctx.raw) + ' (' + pct + '%)';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
 
     /* ══════════════════════════════════════════════════════════
        MULTILINGUAL  (EN / HI / TE / TA)
@@ -5059,6 +6275,134 @@
         'pin.active':           '★ Pinned',
         'pin.inactive':         '☆ Pin',
         'pin.active.tap':       '★ Pinned — tap to unpin',
+        /* ── Goal Planner ── */
+        'goal.type.vehicle':    'Buy a Vehicle',
+        'goal.type.marriage':   'Marriage',
+        'goal.type.education':  "Child's Education",
+        'goal.type.retirement': 'Retirement',
+        'goal.type.custom':     'Write your goal',
+        'inv.type.lumpsum':     'Lumpsum (One-time)',
+        'inv.type.sip':         'SIP (Monthly)',
+        'inv.type.annually':    'Annually Once',
+        'goal.infl.rate':       'Assumed rate:',
+        'goal.infl.reset':      'reset',
+        /* ── Emergency Fund ── */
+        'ef.lbl.coverage':      'Coverage Duration',
+        'ef.btn.3m':            '3 Months',
+        'ef.btn.6m':            '6 Months',
+        'ef.badge.recommended': 'Recommended',
+        'ef.btn.12m':           '12 Months',
+        'ef.lbl.monthly':       'Monthly Expenses',
+        'ef.cat.rent':          'Rent / EMI',
+        'ef.cat.groceries':     'Groceries',
+        'ef.cat.fuel':          'Fuel / Transport',
+        'ef.cat.school':        'School / Tuition',
+        'ef.cat.utilities':     'Utilities (Electricity, Water, Internet)',
+        'ef.cat.health':        'Health / Medical',
+        'ef.btn.add':           'Add Custom Expense',
+        'ef.btn.reset':         'Reset All',
+        /* ── MF Kit Filters ── */
+        'mfk.filter.all':       'All',
+        'mfk.filter.equity':    'Equity',
+        'mfk.filter.debt':      'Debt',
+        'mfk.filter.hybrid':    'Hybrid',
+        'mfk.filter.tax':       'Tax Saving',
+        'mfk.filter.passive':   'Passive',
+        'mfk.filter.others':    'Others',
+        /* ── Financial Plan ── */
+        'fp.tab.profile':       'Personal Profile',
+        'fp.tab.goals':         'Your Goals',
+        'fp.tab.risk':          'Risk Profile',
+        'fp.tab.generate':      'Generate Plan',
+        'fp.step1.title':       'Personal Profile',
+        'fp.step1.sub':         'Tell us about yourself',
+        'fp.lbl.name':          'Your Name',
+        'fp.lbl.age':           'Current Age',
+        'fp.lbl.retire':        'Retirement Age Goal',
+        'fp.lbl.income':        'Monthly Take-Home Income',
+        'fp.lbl.invest':        'Monthly Amount You Can Invest',
+        'fp.lbl.yrs':           'yrs',
+        'fp.btn.next.goals':    'Next: Your Goals →',
+        'fp.step2.title':       'Your Financial Goals',
+        'fp.step2.sub':         'Select all that apply — add a target amount & timeline for each',
+        'fp.step3.title':       'Risk Appetite Assessment',
+        'fp.step3.sub':         '5 quick questions to understand your comfort with risk',
+        'fp.goal.select':       'Select Your Goals',
+        'fp.goal.select.sub':   '(pick one or more)',
+        'fp.goal.retirement':   'Retirement',
+        'fp.goal.home':         'Buy a Home',
+        'fp.goal.education':    'Education',
+        'fp.goal.wealth':       'Wealth Creation',
+        'fp.goal.marriage':     'Marriage',
+        'fp.goal.travel':       'Travel / Break',
+        'fp.goal.emergency':    'Emergency Fund',
+        'fp.goal.business':     'Start Business',
+        'fp.goal.custom':       'Custom',
+        /* ── Tool Page Headers ── */
+        'page.dd.h':            '🏖️ Retirement Drawdown Planner',
+        'page.ppfnps.h':        '🏛️ PPF & NPS Calculator',
+        'page.ctc.h':           '💰 CTC Breakup & Salary Optimizer',
+        'page.insure.h':        '🛡️ Insurance Adequacy Calculator',
+        'page.gratuity.h':      '🏅 Gratuity Calculator',
+        'page.debt.h':          '⚡ Loan Prepayment Planner',
+        'page.joint.h':         '👨‍👩‍👧 Joint / Family Financial Planner',
+        'page.cibil.h':         '🏦 CIBIL Score Education & Improvement Tracker',
+        'page.fincal.h':        '📅 Financial Calendar & Smart Reminders',
+        'page.selfempl.h':      '🧾 Self-Employed & Business Owner Planner',
+        'page.gold.h':          '🥇 Gold Investment Comparator',
+        /* ── Category Panel Headers ── */
+        'dashcat.calc.h':       '⚡ Calculators',
+        'dashcat.mf.h':         '📊 Mutual Funds',
+        'dashcat.tax.h':        '🗺️ Planning & Tax',
+        'dashcat.fav.h':        '⭐ Favourites',
+        /* ── Dashboard Nav Tiles ── */
+        'nav.calc':             'Calculators',
+        'nav.calc.desc':        'SIP · Goal · Home Loan · EPF · Emergency Fund',
+        'nav.mf':               'Mutual Funds',
+        'nav.mf.desc':          'MF Explorer · MF Kit · Fund Picker · Live NAV',
+        'nav.tax':              'Planning & Tax',
+        'nav.tax.desc':         'Financial Plan · Tax Guide · CIBIL · Gold',
+        'nav.fav':              'Favourites',
+        'nav.fav.desc':         'Your pinned tools · Quick access favourites',
+        /* ── Tool Cards (missing) ── */
+        'card.dd.title':        'Retirement Drawdown',
+        'card.dd.desc':         'How long will ₹3Cr last? · SWP strategy · 3-bucket allocation · Corpus depletion timeline',
+        'card.ppfnps.title':    'PPF & NPS Calculator',
+        'card.ppfnps.desc':     'PPF 7.1% tax-free · 15yr lock-in · NPS lumpsum + annuity · 80C + 80CCD deductions',
+        'card.insure.title':    'Insurance Adequacy',
+        'card.insure.desc':     'HLV method · Term 10–15× income · Health ₹10L + ₹25L super top-up · Stop underinsurance now',
+        'card.ctc.title':       'CTC Breakup & Salary Optimizer',
+        'card.ctc.desc':        'Enter CTC → exact take-home · HRA · NPS · Food coupons · Increase take-home ₹10K–50K/mo without a raise',
+        'card.gratuity.title':  'Gratuity Calculator',
+        'card.gratuity.desc':   '15/26 × Basic × Years · Tax-free up to ₹25L · Partial year rules · Know what you\'re owed when you resign',
+        'card.debt.title':      'Loan Prepayment Planner',
+        'card.debt.desc':       'Avalanche & Snowball · Kill credit card 36% first · Save massive interest · All loans in one view',
+        'card.joint.title':     'Joint Family Financial Planner',
+        'card.joint.desc':      'Dual-income · Combined goals · Split LTCG ₹1.25L×2 = ₹2.5L tax-free · No other free tool in India offers this',
+        'card.cibil.title':     'CIBIL Score Education & Tracker',
+        'card.cibil.desc':      'Score 750+ = ₹6L+ EMI savings · Credit utilisation impact · Missed EMI cost · Dispute errors · Actionable improvement plan',
+        'card.fincal.title':    'Financial Calendar & Smart Reminders',
+        'card.fincal.desc':     'Advance tax · ITR deadlines · PPF · ELSS rush · SGB windows · EPF check · Credit card dates · Never miss a deadline again',
+        'card.selfempl.title':  'Self-Employed & Business Planner',
+        'card.selfempl.desc':   '44AD / 44ADA presumptive tax · Business emergency fund · GST cash-flow · Freelancer vs MSME · Quarterly advance tax',
+        'card.gold.title':      'Gold Investment Comparator',
+        'card.gold.desc':       'ETF vs Gold MF vs Physical Gold · True cost after GST + making charges + locker · Digital Gold warning · GMS idle gold insight',
+        /* ── Financial Plan Result ── */
+        'fp.result.greeting':       "Hi {n}! Here's your personalised plan",
+        'fp.result.riskscore':      'Risk Score: {s}/15',
+        'fp.result.riskscore.label':'Risk Score',
+        /* ── Retirement Drawdown ── */
+        'dd.runsout':           '⚠ Runs out {n} years before age 100!',
+        'dd.shortfall':         '⚠ SHORTFALL of {n} years vs age 100',
+        'dd.survives':          '✅ Corpus survives to age 100+',
+        'dd.sufficient':        '✅ Corpus sufficient for 100+ age',
+        /* ── Auth Screen ── */
+        'auth.google':          'Continue with Google',
+        'auth.newhere':         'New here?',
+        'auth.createaccount':   'Create an account',
+        'auth.haveaccount':     'Already have an account?',
+        'auth.login':           'Login',
+        'auth.signout':         'Not you? Sign out',
       },
 
       hi: {
@@ -5471,6 +6815,134 @@
         'pin.active':           '★ पिन किया',
         'pin.inactive':         '☆ पिन',
         'pin.active.tap':       '★ पिन किया — हटाने के लिए टैप करें',
+        /* ── Goal Planner ── */
+        'goal.type.vehicle':    'वाहन खरीदें',
+        'goal.type.marriage':   'विवाह',
+        'goal.type.education':  'बच्चे की शिक्षा',
+        'goal.type.retirement': 'सेवानिवृत्ति',
+        'goal.type.custom':     'अपना लक्ष्य लिखें',
+        'inv.type.lumpsum':     'एकमुश्त (एक बार)',
+        'inv.type.sip':         'SIP (मासिक)',
+        'inv.type.annually':    'वार्षिक एक बार',
+        'goal.infl.rate':       'अनुमानित दर:',
+        'goal.infl.reset':      'रीसेट',
+        /* ── Emergency Fund ── */
+        'ef.lbl.coverage':      'कवरेज अवधि',
+        'ef.btn.3m':            '3 महीने',
+        'ef.btn.6m':            '6 महीने',
+        'ef.badge.recommended': 'अनुशंसित',
+        'ef.btn.12m':           '12 महीने',
+        'ef.lbl.monthly':       'मासिक खर्च',
+        'ef.cat.rent':          'किराया / EMI',
+        'ef.cat.groceries':     'किराना',
+        'ef.cat.fuel':          'ईंधन / परिवहन',
+        'ef.cat.school':        'स्कूल / ट्यूशन',
+        'ef.cat.utilities':     'उपयोगिताएं (बिजली, पानी, इंटरनेट)',
+        'ef.cat.health':        'स्वास्थ्य / चिकित्सा',
+        'ef.btn.add':           'कस्टम खर्च जोड़ें',
+        'ef.btn.reset':         'सब रीसेट करें',
+        /* ── MF Kit Filters ── */
+        'mfk.filter.all':       'सभी',
+        'mfk.filter.equity':    'इक्विटी',
+        'mfk.filter.debt':      'डेब्ट',
+        'mfk.filter.hybrid':    'हाइब्रिड',
+        'mfk.filter.tax':       'टैक्स सेविंग',
+        'mfk.filter.passive':   'पैसिव',
+        'mfk.filter.others':    'अन्य',
+        /* ── Financial Plan ── */
+        'fp.tab.profile':       'व्यक्तिगत प्रोफ़ाइल',
+        'fp.tab.goals':         'आपके लक्ष्य',
+        'fp.tab.risk':          'जोखिम प्रोफ़ाइल',
+        'fp.tab.generate':      'योजना बनाएं',
+        'fp.step1.title':       'व्यक्तिगत प्रोफ़ाइल',
+        'fp.step1.sub':         'अपने बारे में बताएं',
+        'fp.lbl.name':          'आपका नाम',
+        'fp.lbl.age':           'वर्तमान आयु',
+        'fp.lbl.retire':        'सेवानिवृत्ति आयु लक्ष्य',
+        'fp.lbl.income':        'मासिक टेक-होम आय',
+        'fp.lbl.invest':        'मासिक निवेश राशि',
+        'fp.lbl.yrs':           'वर्ष',
+        'fp.btn.next.goals':    'अगला: लक्ष्य →',
+        'fp.step2.title':       'आपके वित्तीय लक्ष्य',
+        'fp.step2.sub':         'सभी लागू विकल्प चुनें — प्रत्येक के लिए राशि और समयसीमा जोड़ें',
+        'fp.step3.title':       'जोखिम क्षमता मूल्यांकन',
+        'fp.step3.sub':         'जोखिम के साथ आपकी सहजता समझने के लिए 5 त्वरित प्रश्न',
+        'fp.goal.select':       'अपने लक्ष्य चुनें',
+        'fp.goal.select.sub':   '(एक या अधिक चुनें)',
+        'fp.goal.retirement':   'सेवानिवृत्ति',
+        'fp.goal.home':         'घर खरीदें',
+        'fp.goal.education':    'शिक्षा',
+        'fp.goal.wealth':       'धन सृजन',
+        'fp.goal.marriage':     'विवाह',
+        'fp.goal.travel':       'यात्रा / अवकाश',
+        'fp.goal.emergency':    'आपातकालीन निधि',
+        'fp.goal.business':     'व्यापार शुरू करें',
+        'fp.goal.custom':       'कस्टम',
+        /* ── Tool Page Headers ── */
+        'page.dd.h':            '🏖️ सेवानिवृत्ति आहरण योजनाकार',
+        'page.ppfnps.h':        '🏛️ PPF और NPS कैलकुलेटर',
+        'page.ctc.h':           '💰 CTC विश्लेषण और सैलरी ऑप्टिमाइज़र',
+        'page.insure.h':        '🛡️ बीमा पर्याप्तता कैलकुलेटर',
+        'page.gratuity.h':      '🏅 ग्रेच्युटी कैलकुलेटर',
+        'page.debt.h':          '⚡ लोन प्रीपेमेंट प्लानर',
+        'page.joint.h':         '👨‍👩‍👧 संयुक्त / पारिवारिक वित्तीय योजनाकार',
+        'page.cibil.h':         '🏦 CIBIL स्कोर शिक्षा और सुधार ट्रैकर',
+        'page.fincal.h':        '📅 वित्तीय कैलेंडर और स्मार्ट रिमाइंडर',
+        'page.selfempl.h':      '🧾 स्व-नियोजित और व्यापार मालिक योजनाकार',
+        'page.gold.h':          '🥇 गोल्ड निवेश तुलनाकार',
+        /* ── Category Panel Headers ── */
+        'dashcat.calc.h':       '⚡ कैलकुलेटर',
+        'dashcat.mf.h':         '📊 म्यूचुअल फंड',
+        'dashcat.tax.h':        '🗺️ प्लानिंग और टैक्स',
+        'dashcat.fav.h':        '⭐ पसंदीदा',
+        /* ── Dashboard Nav Tiles ── */
+        'nav.calc':             'कैलकुलेटर',
+        'nav.calc.desc':        'SIP · लक्ष्य · होम लोन · EPF · आपातकालीन निधि',
+        'nav.mf':               'म्यूचुअल फंड',
+        'nav.mf.desc':          'MF एक्सप्लोरर · MF किट · फंड पिकर · लाइव NAV',
+        'nav.tax':              'प्लानिंग और टैक्स',
+        'nav.tax.desc':         'वित्तीय योजना · टैक्स गाइड · CIBIL · गोल्ड',
+        'nav.fav':              'पसंदीदा',
+        'nav.fav.desc':         'आपके पिन किए टूल · त्वरित पहुँच',
+        /* ── Tool Cards (missing) ── */
+        'card.dd.title':        'सेवानिवृत्ति आहरण',
+        'card.dd.desc':         '₹3 करोड़ कितने चलेगा? · SWP रणनीति · 3-बकेट आवंटन',
+        'card.ppfnps.title':    'PPF और NPS कैलकुलेटर',
+        'card.ppfnps.desc':     'PPF 7.1% टैक्स-फ्री · 15 वर्ष लॉक-इन · NPS एकमुश्त + वार्षिकी',
+        'card.insure.title':    'बीमा पर्याप्तता',
+        'card.insure.desc':     'HLV पद्धति · टर्म 10–15× आय · स्वास्थ्य ₹10L + ₹25L सुपर टॉप-अप',
+        'card.ctc.title':       'CTC विश्लेषण और सैलरी ऑप्टिमाइज़र',
+        'card.ctc.desc':        'CTC दर्ज करें → सटीक टेक-होम · HRA · NPS · फूड कूपन',
+        'card.gratuity.title':  'ग्रेच्युटी कैलकुलेटर',
+        'card.gratuity.desc':   '15/26 × बेसिक × वर्ष · ₹25L तक टैक्स-फ्री · आंशिक वर्ष नियम',
+        'card.debt.title':      'लोन प्रीपेमेंट प्लानर',
+        'card.debt.desc':       'एवलांश और स्नोबॉल · क्रेडिट कार्ड 36% पहले खत्म करें',
+        'card.joint.title':     'संयुक्त परिवार वित्तीय योजनाकार',
+        'card.joint.desc':      'दोहरी आय · संयुक्त लक्ष्य · LTCG ₹1.25L×2 = ₹2.5L टैक्स-फ्री',
+        'card.cibil.title':     'CIBIL स्कोर शिक्षा और ट्रैकर',
+        'card.cibil.desc':      'स्कोर 750+ = ₹6L+ EMI बचत · क्रेडिट उपयोग प्रभाव',
+        'card.fincal.title':    'वित्तीय कैलेंडर और स्मार्ट रिमाइंडर',
+        'card.fincal.desc':     'अग्रिम कर · ITR समयसीमा · PPF · ELSS · कोई समयसीमा न चूकें',
+        'card.selfempl.title':  'स्व-नियोजित और व्यापार प्लानर',
+        'card.selfempl.desc':   '44AD / 44ADA अनुमानित कर · व्यापार आपातकालीन निधि · GST',
+        'card.gold.title':      'गोल्ड निवेश तुलनाकार',
+        'card.gold.desc':       'ETF बनाम गोल्ड MF बनाम भौतिक सोना · GST के बाद वास्तविक लागत',
+        /* ── Financial Plan Result ── */
+        'fp.result.greeting':       'हाय {n}! यहाँ आपकी व्यक्तिगत योजना है',
+        'fp.result.riskscore':      'जोखिम स्कोर: {s}/15',
+        'fp.result.riskscore.label':'जोखिम स्कोर',
+        /* ── Retirement Drawdown ── */
+        'dd.runsout':           '⚠ 100 वर्ष से {n} वर्ष पहले समाप्त होगा!',
+        'dd.shortfall':         '⚠ 100 वर्ष की तुलना में {n} वर्ष की कमी',
+        'dd.survives':          '✅ कोष 100+ आयु तक पर्याप्त',
+        'dd.sufficient':        '✅ 100+ आयु के लिए कोष पर्याप्त',
+        /* ── Auth Screen ── */
+        'auth.google':          'Google से जारी रखें',
+        'auth.newhere':         'नए हैं?',
+        'auth.createaccount':   'खाता बनाएं',
+        'auth.haveaccount':     'पहले से खाता है?',
+        'auth.login':           'लॉगिन',
+        'auth.signout':         'आप नहीं? साइन आउट',
       },
 
       te: {
@@ -5883,6 +7355,134 @@
         'pin.active':           '★ పిన్ చేయబడింది',
         'pin.inactive':         '☆ పిన్',
         'pin.active.tap':       '★ పిన్ — తీసివేయడానికి నొక్కండి',
+        /* ── Goal Planner ── */
+        'goal.type.vehicle':    'వాహనం కొనండి',
+        'goal.type.marriage':   'వివాహం',
+        'goal.type.education':  'పిల్లల విద్య',
+        'goal.type.retirement': 'పదవీ విరమణ',
+        'goal.type.custom':     'మీ లక్ష్యం రాయండి',
+        'inv.type.lumpsum':     'ఒకేసారి (లంప్‌సమ్)',
+        'inv.type.sip':         'SIP (నెలవారీ)',
+        'inv.type.annually':    'వార్షిక ఒకసారి',
+        'goal.infl.rate':       'అంచనా రేటు:',
+        'goal.infl.reset':      'రీసెట్',
+        /* ── Emergency Fund ── */
+        'ef.lbl.coverage':      'కవరేజ్ వ్యవధి',
+        'ef.btn.3m':            '3 నెలలు',
+        'ef.btn.6m':            '6 నెలలు',
+        'ef.badge.recommended': 'సిఫారసు చేయబడింది',
+        'ef.btn.12m':           '12 నెలలు',
+        'ef.lbl.monthly':       'నెలవారీ ఖర్చులు',
+        'ef.cat.rent':          'అద్దె / EMI',
+        'ef.cat.groceries':     'కిరాణా',
+        'ef.cat.fuel':          'ఇంధనం / రవాణా',
+        'ef.cat.school':        'పాఠశాల / ట్యూషన్',
+        'ef.cat.utilities':     'యుటిలిటీలు (విద్యుత్, నీరు, ఇంటర్నెట్)',
+        'ef.cat.health':        'ఆరోగ్యం / వైద్యం',
+        'ef.btn.add':           'కస్టమ్ ఖర్చు జోడించండి',
+        'ef.btn.reset':         'అన్నీ రీసెట్',
+        /* ── MF Kit Filters ── */
+        'mfk.filter.all':       'అన్నీ',
+        'mfk.filter.equity':    'ఈక్విటీ',
+        'mfk.filter.debt':      'డెట్',
+        'mfk.filter.hybrid':    'హైబ్రిడ్',
+        'mfk.filter.tax':       'పన్ను ఆదా',
+        'mfk.filter.passive':   'పాసివ్',
+        'mfk.filter.others':    'ఇతరాలు',
+        /* ── Financial Plan ── */
+        'fp.tab.profile':       'వ్యక్తిగత వివరాలు',
+        'fp.tab.goals':         'మీ లక్ష్యాలు',
+        'fp.tab.risk':          'రిస్క్ ప్రొఫైల్',
+        'fp.tab.generate':      'ప్లాన్ రూపొందించండి',
+        'fp.step1.title':       'వ్యక్తిగత వివరాలు',
+        'fp.step1.sub':         'మీ గురించి చెప్పండి',
+        'fp.lbl.name':          'మీ పేరు',
+        'fp.lbl.age':           'ప్రస్తుత వయస్సు',
+        'fp.lbl.retire':        'పదవీ విరమణ వయస్సు లక్ష్యం',
+        'fp.lbl.income':        'నెలవారీ టేక్-హోమ్ ఆదాయం',
+        'fp.lbl.invest':        'నెలవారీ పెట్టుబడి మొత్తం',
+        'fp.lbl.yrs':           'సం.',
+        'fp.btn.next.goals':    'తదుపరి: లక్ష్యాలు →',
+        'fp.step2.title':       'మీ ఆర్థిక లక్ష్యాలు',
+        'fp.step2.sub':         'వర్తించే అన్నింటినీ ఎంచుకోండి — ప్రతి దాని కోసం మొత్తం & కాలపరిమితి జోడించండి',
+        'fp.step3.title':       'రిస్క్ సామర్థ్య మూల్యాంకనం',
+        'fp.step3.sub':         'రిస్క్ పట్ల మీ సౌకర్యాన్ని అర్థం చేసుకోవడానికి 5 శీఘ్ర ప్రశ్నలు',
+        'fp.goal.select':       'మీ లక్ష్యాలు ఎంచుకోండి',
+        'fp.goal.select.sub':   '(ఒకటి లేదా అంతకంటే ఎక్కువ ఎంచుకోండి)',
+        'fp.goal.retirement':   'పదవీ విరమణ',
+        'fp.goal.home':         'ఇల్లు కొనండి',
+        'fp.goal.education':    'విద్య',
+        'fp.goal.wealth':       'సంపద సృష్టి',
+        'fp.goal.marriage':     'వివాహం',
+        'fp.goal.travel':       'ప్రయాణం / విరామం',
+        'fp.goal.emergency':    'అత్యవసర నిధి',
+        'fp.goal.business':     'వ్యాపారం ప్రారంభించండి',
+        'fp.goal.custom':       'కస్టమ్',
+        /* ── Tool Page Headers ── */
+        'page.dd.h':            '🏖️ పదవీ విరమణ డ్రాడౌన్ ప్లానర్',
+        'page.ppfnps.h':        '🏛️ PPF & NPS కాలిక్యులేటర్',
+        'page.ctc.h':           '💰 CTC విశ్లేషణ & సాలరీ ఆప్టిమైజర్',
+        'page.insure.h':        '🛡️ బీమా సమర్థత కాలిక్యులేటర్',
+        'page.gratuity.h':      '🏅 గ్రాచ్యుటీ కాలిక్యులేటర్',
+        'page.debt.h':          '⚡ లోన్ ప్రీపేమెంట్ ప్లానర్',
+        'page.joint.h':         '👨‍👩‍👧 జాయింట్ / కుటుంబ ఆర్థిక ప్లానర్',
+        'page.cibil.h':         '🏦 CIBIL స్కోర్ విద్య & మెరుగుదల ట్రాకర్',
+        'page.fincal.h':        '📅 ఫైనాన్షియల్ క్యాలెండర్ & స్మార్ట్ రిమైండర్లు',
+        'page.selfempl.h':      '🧾 స్వయం ఉపాధి & వ్యాపార యజమాని ప్లానర్',
+        'page.gold.h':          '🥇 గోల్డ్ ఇన్వెస్ట్‌మెంట్ కంపారేటర్',
+        /* ── Category Panel Headers ── */
+        'dashcat.calc.h':       '⚡ కాలిక్యులేటర్లు',
+        'dashcat.mf.h':         '📊 మ్యూచువల్ ఫండ్లు',
+        'dashcat.tax.h':        '🗺️ ప్లానింగ్ & పన్ను',
+        'dashcat.fav.h':        '⭐ ఇష్టాలు',
+        /* ── Dashboard Nav Tiles ── */
+        'nav.calc':             'కాలిక్యులేటర్లు',
+        'nav.calc.desc':        'SIP · లక్ష్యం · హోమ్ లోన్ · EPF · అత్యవసర నిధి',
+        'nav.mf':               'మ్యూచువల్ ఫండ్లు',
+        'nav.mf.desc':          'MF ఎక్స్‌ప్లోరర్ · MF కిట్ · ఫండ్ పికర్ · లైవ్ NAV',
+        'nav.tax':              'ప్లానింగ్ & పన్ను',
+        'nav.tax.desc':         'ఆర్థిక ప్లాన్ · పన్ను గైడ్ · CIBIL · బంగారం',
+        'nav.fav':              'ఇష్టాలు',
+        'nav.fav.desc':         'మీ పిన్ చేసిన సాధనాలు · శీఘ్ర యాక్సెస్',
+        /* ── Tool Cards (missing) ── */
+        'card.dd.title':        'పదవీ విరమణ డ్రాడౌన్',
+        'card.dd.desc':         '₹3Cr ఎంత కాలం చాలుతుంది? · SWP వ్యూహం · 3-బకెట్ కేటాయింపు',
+        'card.ppfnps.title':    'PPF & NPS కాలిక్యులేటర్',
+        'card.ppfnps.desc':     'PPF 7.1% పన్ను-రహిత · 15 సం. లాక్-ఇన్ · NPS లంప్‌సమ్ + వార్షికి',
+        'card.insure.title':    'బీమా సమర్థత',
+        'card.insure.desc':     'HLV పద్ధతి · టర్మ్ 10–15× ఆదాయం · ఆరోగ్యం ₹10L + ₹25L సూపర్ టాప్-అప్',
+        'card.ctc.title':       'CTC విశ్లేషణ & సాలరీ ఆప్టిమైజర్',
+        'card.ctc.desc':        'CTC నమోదు చేయండి → ఖచ్చితమైన టేక్-హోమ్ · HRA · NPS',
+        'card.gratuity.title':  'గ్రాచ్యుటీ కాలిక్యులేటర్',
+        'card.gratuity.desc':   '15/26 × బేసిక్ × సంవత్సరాలు · ₹25L వరకు పన్ను-రహిత',
+        'card.debt.title':      'లోన్ ప్రీపేమెంట్ ప్లానర్',
+        'card.debt.desc':       'అవలాంచ్ & స్నోబాల్ · క్రెడిట్ కార్డ్ 36% ముందు చెల్లించండి',
+        'card.joint.title':     'జాయింట్ ఫ్యామిలీ ఫైనాన్షియల్ ప్లానర్',
+        'card.joint.desc':      'డ్యూయల్-ఇన్‌కమ్ · సంయుక్త లక్ష్యాలు · LTCG ₹1.25L×2 = ₹2.5L పన్ను-రహిత',
+        'card.cibil.title':     'CIBIL స్కోర్ విద్య & ట్రాకర్',
+        'card.cibil.desc':      'స్కోర్ 750+ = ₹6L+ EMI ఆదా · క్రెడిట్ వినియోగ ప్రభావం',
+        'card.fincal.title':    'ఫైనాన్షియల్ క్యాలెండర్ & స్మార్ట్ రిమైండర్లు',
+        'card.fincal.desc':     'అడ్వాన్స్ పన్ను · ITR గడువులు · PPF · ELSS · గడువు మిస్ కాకండి',
+        'card.selfempl.title':  'స్వయం ఉపాధి & వ్యాపార ప్లానర్',
+        'card.selfempl.desc':   '44AD / 44ADA అంచనా పన్ను · వ్యాపార అత్యవసర నిధి · GST',
+        'card.gold.title':      'గోల్డ్ ఇన్వెస్ట్‌మెంట్ కంపారేటర్',
+        'card.gold.desc':       'ETF vs గోల్డ్ MF vs భౌతిక బంగారం · GST తర్వాత నిజమైన వ్యయం',
+        /* ── Financial Plan Result ── */
+        'fp.result.greeting':       'హాయ్ {n}! ఇదిగో మీ వ్యక్తిగత ప్లాన్',
+        'fp.result.riskscore':      'రిస్క్ స్కోర్: {s}/15',
+        'fp.result.riskscore.label':'రిస్క్ స్కోర్',
+        /* ── Retirement Drawdown ── */
+        'dd.runsout':           '⚠ 100 వయసుకు {n} సంవత్సరాల ముందు అయిపోతుంది!',
+        'dd.shortfall':         '⚠ 100 వయసుతో పోలిస్తే {n} సంవత్సరాల లోటు',
+        'dd.survives':          '✅ కార్పస్ 100+ వయసు వరకు సరిపోతుంది',
+        'dd.sufficient':        '✅ 100+ వయసుకు కార్పస్ సరిపోతుంది',
+        /* ── Auth Screen ── */
+        'auth.google':          'Google తో కొనసాగించండి',
+        'auth.newhere':         'కొత్తవారా?',
+        'auth.createaccount':   'ఖాతా సృష్టించండి',
+        'auth.haveaccount':     'ఇప్పటికే ఖాతా ఉందా?',
+        'auth.login':           'లాగిన్',
+        'auth.signout':         'మీరు కాదా? సైన్ అవుట్',
       },
 
       ta: {
@@ -6295,6 +7895,134 @@
         'pin.active':           '★ பின் செய்யப்பட்டது',
         'pin.inactive':         '☆ பின்',
         'pin.active.tap':       '★ பின் — நீக்க தட்டுங்கள்',
+        /* ── Goal Planner ── */
+        'goal.type.vehicle':    'வாகனம் வாங்கு',
+        'goal.type.marriage':   'திருமணம்',
+        'goal.type.education':  'குழந்தை கல்வி',
+        'goal.type.retirement': 'ஓய்வு பெறுதல்',
+        'goal.type.custom':     'உங்கள் இலக்கை எழுதுங்கள்',
+        'inv.type.lumpsum':     'ஒட்டுமொத்தம் (ஒரு முறை)',
+        'inv.type.sip':         'SIP (மாதாந்திர)',
+        'inv.type.annually':    'வருடத்திற்கு ஒருமுறை',
+        'goal.infl.rate':       'கணக்கிடப்பட்ட விகிதம்:',
+        'goal.infl.reset':      'மீட்டமை',
+        /* ── Emergency Fund ── */
+        'ef.lbl.coverage':      'கவரேஜ் காலம்',
+        'ef.btn.3m':            '3 மாதங்கள்',
+        'ef.btn.6m':            '6 மாதங்கள்',
+        'ef.badge.recommended': 'பரிந்துரைக்கப்பட்டது',
+        'ef.btn.12m':           '12 மாதங்கள்',
+        'ef.lbl.monthly':       'மாதாந்திர செலவுகள்',
+        'ef.cat.rent':          'வாடகை / EMI',
+        'ef.cat.groceries':     'மளிகை',
+        'ef.cat.fuel':          'எரிபொருள் / போக்குவரத்து',
+        'ef.cat.school':        'பள்ளி / ட்யூஷன்',
+        'ef.cat.utilities':     'பயன்பாடுகள் (மின்சாரம், தண்ணீர், இன்டர்நெட்)',
+        'ef.cat.health':        'உடல்நலம் / மருத்துவம்',
+        'ef.btn.add':           'தனிப்பட்ட செலவு சேர்க்கவும்',
+        'ef.btn.reset':         'அனைத்தையும் மீட்டமை',
+        /* ── MF Kit Filters ── */
+        'mfk.filter.all':       'அனைத்தும்',
+        'mfk.filter.equity':    'ஈக்விட்டி',
+        'mfk.filter.debt':      'டெட்',
+        'mfk.filter.hybrid':    'ஹைப்ரிட்',
+        'mfk.filter.tax':       'வரி சேமிப்பு',
+        'mfk.filter.passive':   'பாசிவ்',
+        'mfk.filter.others':    'மற்றவை',
+        /* ── Financial Plan ── */
+        'fp.tab.profile':       'தனிப்பட்ட சுயவிவரம்',
+        'fp.tab.goals':         'உங்கள் இலக்குகள்',
+        'fp.tab.risk':          'ரிஸ்க் சுயவிவரம்',
+        'fp.tab.generate':      'திட்டம் உருவாக்கு',
+        'fp.step1.title':       'தனிப்பட்ட சுயவிவரம்',
+        'fp.step1.sub':         'உங்களைப் பற்றி சொல்லுங்கள்',
+        'fp.lbl.name':          'உங்கள் பெயர்',
+        'fp.lbl.age':           'தற்போதைய வயது',
+        'fp.lbl.retire':        'ஓய்வு வயது இலக்கு',
+        'fp.lbl.income':        'மாதாந்திர வீட்டிற்கு வரும் வருமானம்',
+        'fp.lbl.invest':        'மாதாந்திர முதலீட்டு தொகை',
+        'fp.lbl.yrs':           'ஆண்.',
+        'fp.btn.next.goals':    'அடுத்து: இலக்குகள் →',
+        'fp.step2.title':       'உங்கள் நிதி இலக்குகள்',
+        'fp.step2.sub':         'பொருந்தும் அனைத்தையும் தேர்ந்தெடுங்கள் — ஒவ்வொன்றிற்கும் தொகை & காலக்கெடு சேர்க்கவும்',
+        'fp.step3.title':       'ரிஸ்க் திறன் மதிப்பீடு',
+        'fp.step3.sub':         'ரிஸ்க் குறித்த உங்கள் வசதியை புரிந்துகொள்ள 5 விரைவான கேள்விகள்',
+        'fp.goal.select':       'உங்கள் இலக்குகளை தேர்ந்தெடுங்கள்',
+        'fp.goal.select.sub':   '(ஒன்று அல்லது அதிகமாக தேர்வு செய்யுங்கள்)',
+        'fp.goal.retirement':   'ஓய்வு',
+        'fp.goal.home':         'வீடு வாங்கு',
+        'fp.goal.education':    'கல்வி',
+        'fp.goal.wealth':       'செல்வம் படைக்கல்',
+        'fp.goal.marriage':     'திருமணம்',
+        'fp.goal.travel':       'பயணம் / ஓய்வு',
+        'fp.goal.emergency':    'அவசர நிதி',
+        'fp.goal.business':     'தொழில் தொடங்கு',
+        'fp.goal.custom':       'தனிப்பயன்',
+        /* ── Tool Page Headers ── */
+        'page.dd.h':            '🏖️ ஓய்வூதிய திரும்பப் பெறுதல் திட்டகர்',
+        'page.ppfnps.h':        '🏛️ PPF & NPS கணிப்பான்',
+        'page.ctc.h':           '💰 CTC பிரிப்பு & சம்பள ஆப்டிமைஸர்',
+        'page.insure.h':        '🛡️ காப்பீட்டு போதுமையான தன்மை கணிப்பான்',
+        'page.gratuity.h':      '🏅 தகுதித் தொகை கணிப்பான்',
+        'page.debt.h':          '⚡ கடன் முன்கூட்டிய திருப்பம் திட்டகர்',
+        'page.joint.h':         '👨‍👩‍👧 கூட்டு / குடும்ப நிதி திட்டகர்',
+        'page.cibil.h':         '🏦 CIBIL மதிப்பெண் கல்வி & மேம்படுத்தல் கண்காணிப்பு',
+        'page.fincal.h':        '📅 நிதி நாட்காட்டி & ஸ்மார்ட் நினைவூட்டல்கள்',
+        'page.selfempl.h':      '🧾 சுய தொழில் & வணிக உரிமையாளர் திட்டகர்',
+        'page.gold.h':          '🥇 தங்க முதலீட்டு ஒப்பீட்டு கருவி',
+        /* ── Category Panel Headers ── */
+        'dashcat.calc.h':       '⚡ கணிப்பான்கள்',
+        'dashcat.mf.h':         '📊 மியூச்சுவல் ஃபண்டுகள்',
+        'dashcat.tax.h':        '🗺️ திட்டமிடல் & வரி',
+        'dashcat.fav.h':        '⭐ பிடித்தவை',
+        /* ── Dashboard Nav Tiles ── */
+        'nav.calc':             'கணிப்பான்கள்',
+        'nav.calc.desc':        'SIP · இலக்கு · வீட்டு கடன் · EPF · அவசர நிதி',
+        'nav.mf':               'மியூச்சுவல் ஃபண்டுகள்',
+        'nav.mf.desc':          'MF எக்ஸ்ப்ளோரர் · MF கிட் · ஃபண்ட் பிக்கர் · நேரடி NAV',
+        'nav.tax':              'திட்டமிடல் & வரி',
+        'nav.tax.desc':         'நிதி திட்டம் · வரி வழிகாட்டி · CIBIL · தங்கம்',
+        'nav.fav':              'பிடித்தவை',
+        'nav.fav.desc':         'உங்கள் பின் செய்த கருவிகள் · விரைவு அணுகல்',
+        /* ── Tool Cards (missing) ── */
+        'card.dd.title':        'ஓய்வூதிய திரும்பப் பெறுதல்',
+        'card.dd.desc':         '₹3Cr எவ்வளவு காலம் நீடிக்கும்? · SWP உத்தி · 3-பக்கெட் ஒதுக்கீடு',
+        'card.ppfnps.title':    'PPF & NPS கணிப்பான்',
+        'card.ppfnps.desc':     'PPF 7.1% வரி இல்லாமல் · 15 ஆண்டு லாக்-இன் · NPS தொகை + வருடாந்திரம்',
+        'card.insure.title':    'காப்பீட்டு போதுமையான தன்மை',
+        'card.insure.desc':     'HLV முறை · டேர்ம் 10–15× வருமானம் · உடல்நலம் ₹10L + ₹25L சூப்பர் டாப்-அப்',
+        'card.ctc.title':       'CTC பிரிப்பு & சம்பள ஆப்டிமைஸர்',
+        'card.ctc.desc':        'CTC உள்ளிடு → சரியான டேக்-ஹோம் · HRA · NPS',
+        'card.gratuity.title':  'தகுதித் தொகை கணிப்பான்',
+        'card.gratuity.desc':   '15/26 × அடிப்படை × ஆண்டுகள் · ₹25L வரை வரி இல்லாமல்',
+        'card.debt.title':      'கடன் முன்கூட்டிய திருப்பம் திட்டகர்',
+        'card.debt.desc':       'அவலாஞ்ச் & ஸ்னோபால் · கிரெடிட் கார்டு 36% முதலில் செலுத்துங்கள்',
+        'card.joint.title':     'கூட்டு குடும்ப நிதி திட்டகர்',
+        'card.joint.desc':      'இரட்டை வருமானம் · ஒருங்கிணைந்த இலக்குகள் · LTCG ₹1.25L×2 = ₹2.5L வரி இல்லாமல்',
+        'card.cibil.title':     'CIBIL மதிப்பெண் கல்வி & கண்காணிப்பு',
+        'card.cibil.desc':      'மதிப்பெண் 750+ = ₹6L+ EMI சேமிப்பு · கிரெடிட் பயன்பாட்டு தாக்கம்',
+        'card.fincal.title':    'நிதி நாட்காட்டி & ஸ்மார்ட் நினைவூட்டல்கள்',
+        'card.fincal.desc':     'முன்கூட்டிய வரி · ITR கடைசி தேதி · PPF · ELSS · எந்த கடைசி தேதியும் தவறவிடாதீர்கள்',
+        'card.selfempl.title':  'சுய தொழில் & வணிக திட்டகர்',
+        'card.selfempl.desc':   '44AD / 44ADA அனுமானிக்கப்பட்ட வரி · வணிக அவசர நிதி · GST',
+        'card.gold.title':      'தங்க முதலீட்டு ஒப்பீட்டு கருவி',
+        'card.gold.desc':       'ETF vs தங்க MF vs உடல் தங்கம் · GST-க்கு பிறகு உண்மையான செலவு',
+        /* ── Financial Plan Result ── */
+        'fp.result.greeting':       'வணக்கம் {n}! இதோ உங்கள் தனிப்பட்ட திட்டம்',
+        'fp.result.riskscore':      'ரிஸ்க் மதிப்பெண்: {s}/15',
+        'fp.result.riskscore.label':'ரிஸ்க் மதிப்பெண்',
+        /* ── Retirement Drawdown ── */
+        'dd.runsout':           '⚠ 100 வயதிற்கு {n} ஆண்டுகள் முன்பே தீர்ந்துவிடும்!',
+        'dd.shortfall':         '⚠ 100 வயதுடன் ஒப்பிட்டு {n} ஆண்டுகள் பற்றாக்குறை',
+        'dd.survives':          '✅ கார்பஸ் 100+ வயது வரை போதும்',
+        'dd.sufficient':        '✅ 100+ வயதிற்கு கார்பஸ் போதுமானது',
+        /* ── Auth Screen ── */
+        'auth.google':          'Google மூலம் தொடரவும்',
+        'auth.newhere':         'புதியவரா?',
+        'auth.createaccount':   'கணக்கை உருவாக்குங்கள்',
+        'auth.haveaccount':     'ஏற்கனவே கணக்கு உள்ளதா?',
+        'auth.login':           'உள்நுழை',
+        'auth.signout':         'நீங்கள் இல்லையா? வெளியேறு',
       }
     };
 
