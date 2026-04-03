@@ -1,0 +1,417 @@
+<div id="mfexplorer-panel" class="hidden w-full flex flex-col gap-4">
+
+            <!-- Header -->
+            <div class="rounded-2xl px-5 py-4 text-white shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a5276 45%,#0e4d3e 100%);border:2px solid rgba(245,200,66,0.4);box-shadow:0 4px 18px rgba(0,0,0,0.25);">
+                <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                    <div>
+                        <h2 class="text-lg font-black flex items-center gap-2" data-i18n="page.mfe.h">🔭 Indian MF Explorer</h2>
+                        <p class="text-blue-200 text-xs mt-1 max-w-lg" data-i18n="page.mfe.sub">Live NAV from AMFI · Auto-scored per category · Top AMCs · 3+ year funds only</p>
+                    </div>
+                    <div class="flex items-center gap-2 flex-shrink-0">
+                        <span id="mfe-last-updated" class="text-[10px] text-blue-300 font-medium"></span>
+                        <button onclick="refreshMFExplorer()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold" style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);color:#fff;">
+                            <svg id="mfe-refresh-icon" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+                            Refresh
+                        </button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3">
+                    <div class="bg-white/10 rounded-xl px-3 py-2"><div class="text-[9px] font-bold text-blue-200 uppercase tracking-wider">Eligible Funds</div><div class="text-lg font-black" id="mfe-stat-total">—</div></div>
+                    <div class="bg-white/10 rounded-xl px-3 py-2"><div class="text-[9px] font-bold text-blue-200 uppercase tracking-wider">In Category</div><div class="text-lg font-black" id="mfe-stat-cat">—</div></div>
+                    <div class="bg-white/10 rounded-xl px-3 py-2"><div class="text-[9px] font-bold text-blue-200 uppercase tracking-wider">Scored</div><div class="text-lg font-black" id="mfe-stat-scored">—</div></div>
+                    <div class="bg-white/10 rounded-xl px-3 py-2"><div class="text-[9px] font-bold text-blue-200 uppercase tracking-wider">AUM Filter</div><div class="text-sm font-black">≥ ₹500 Cr proxy</div></div>
+                </div>
+            </div>
+
+            <!-- Disclaimer -->
+            <div class="flex items-start gap-2 px-4 py-2.5 rounded-xl text-xs font-medium text-amber-800" style="background:#fffbeb;border:1px solid rgba(245,158,11,0.3);">
+                <span class="text-base flex-shrink-0 mt-0.5">ℹ️</span>
+                <span><strong>AUM ≥ ₹500 Cr proxy:</strong> Only Direct plans from India's top 25 AMCs are shown — established fund houses managing the bulk of Indian MF industry AUM. No data is hardcoded; the full list is fetched live from AMFI daily.</span>
+            </div>
+
+            <!-- Phase progress bar -->
+            <div id="mfe-phase-bar" class="hidden bg-white rounded-2xl border border-[#f5c842]/30 px-4 py-3">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center gap-2"><div class="mfe-spinner-sm"></div><span class="text-xs font-bold text-slate-700" id="mfe-phase-label">Loading…</span></div>
+                    <span class="text-xs font-black text-teal-600" id="mfe-phase-pct"></span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                    <div id="mfe-phase-prog" class="h-1.5 rounded-full transition-all duration-300" style="width:0%;background:linear-gradient(90deg,#0d9488,#10b981)"></div>
+                </div>
+                <p class="text-[10px] text-slate-400 mt-1.5" id="mfe-phase-sub">Scores fill in progressively — best funds rise to the top 🏆</p>
+            </div>
+
+            <!-- Controls: category selector + search -->
+            <div class="bg-white rounded-2xl border border-[#f5c842]/30 px-4 py-3 flex flex-col gap-3">
+
+                <!-- ── Category Selector: 4 grouped dropdowns ── -->
+                <div class="flex flex-wrap gap-2 items-end">
+
+                    <!-- Equity Funds -->
+                    <div class="flex flex-col gap-0.5">
+                        <label class="text-[9px] font-black text-slate-400 uppercase tracking-wider px-0.5">Equity</label>
+                        <div class="relative">
+                            <select id="mfe-cat-equity" onchange="mfeSetCatGroup(this)"
+                                class="appearance-none pl-3 pr-7 py-1.5 rounded-lg text-xs font-bold text-slate-700 bg-slate-50 border outline-none focus:ring-2 focus:ring-teal-400 cursor-pointer"
+                                style="border-color:rgba(13,148,136,0.35);min-width:130px;">
+                                <option value="" disabled>— Equity Funds —</option>
+                                <option value="Index">Index / ETFs</option>
+                                <option value="Large Cap">Large Cap</option>
+                                <option value="Large & Mid Cap">Large &amp; Mid Cap</option>
+                                <option value="Mid Cap">Mid Cap</option>
+                                <option value="Small Cap">Small Cap</option>
+                                <option value="Multi Cap">Multi Cap</option>
+                                <option value="Flexi Cap">Flexi Cap</option>
+                                <option value="Focused">Focused Fund</option>
+                                <option value="Value/Contra">Value / Contra</option>
+                                <option value="ELSS">ELSS</option>
+                                <option value="Sectoral">Sectoral / Thematic</option>
+                            </select>
+                            <svg class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-teal-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>
+                        </div>
+                    </div>
+
+                    <!-- Debt Funds -->
+                    <div class="flex flex-col gap-0.5">
+                        <label class="text-[9px] font-black text-slate-400 uppercase tracking-wider px-0.5">Debt</label>
+                        <div class="relative">
+                            <select id="mfe-cat-debt" onchange="mfeSetCatGroup(this)"
+                                class="appearance-none pl-3 pr-7 py-1.5 rounded-lg text-xs font-bold text-slate-700 bg-slate-50 border outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"
+                                style="border-color:rgba(59,130,246,0.35);min-width:130px;">
+                                <option value="" disabled>— Debt Funds —</option>
+                                <option value="Liquid">Liquid / Overnight</option>
+                                <option value="Ultra Short">Ultra Short</option>
+                                <option value="Money Market">Money Market</option>
+                                <option value="Short Duration">Short Duration</option>
+                                <option value="Medium Duration">Medium / Long Duration</option>
+                                <option value="Corporate Bond">Corporate Bond</option>
+                                <option value="Banking & PSU Debt">Banking &amp; PSU Debt</option>
+                                <option value="Gilt">Gilt Fund</option>
+                                <option value="Dynamic Bond">Dynamic Bond</option>
+                                <option value="Debt">Debt (Other)</option>
+                            </select>
+                            <svg class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>
+                        </div>
+                    </div>
+
+                    <!-- Hybrid Funds -->
+                    <div class="flex flex-col gap-0.5">
+                        <label class="text-[9px] font-black text-slate-400 uppercase tracking-wider px-0.5">Hybrid</label>
+                        <div class="relative">
+                            <select id="mfe-cat-hybrid" onchange="mfeSetCatGroup(this)"
+                                class="appearance-none pl-3 pr-7 py-1.5 rounded-lg text-xs font-bold text-slate-700 bg-slate-50 border outline-none focus:ring-2 focus:ring-purple-400 cursor-pointer"
+                                style="border-color:rgba(124,58,237,0.35);min-width:130px;">
+                                <option value="" disabled>— Hybrid Funds —</option>
+                                <option value="Aggressive Hybrid">Aggressive Hybrid</option>
+                                <option value="Conservative Hybrid">Conservative Hybrid</option>
+                                <option value="Balanced Advantage">Balanced Advantage</option>
+                                <option value="Multi Asset">Multi Asset</option>
+                                <option value="Hybrid">Hybrid (Other)</option>
+                            </select>
+                            <svg class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-purple-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>
+                        </div>
+                    </div>
+
+                    <!-- Solution & Others -->
+                    <div class="flex flex-col gap-0.5">
+                        <label class="text-[9px] font-black text-slate-400 uppercase tracking-wider px-0.5">Others</label>
+                        <div class="relative">
+                            <select id="mfe-cat-others" onchange="mfeSetCatGroup(this)"
+                                class="appearance-none pl-3 pr-7 py-1.5 rounded-lg text-xs font-bold text-slate-700 bg-slate-50 border outline-none focus:ring-2 focus:ring-amber-400 cursor-pointer"
+                                style="border-color:rgba(245,158,11,0.35);min-width:130px;">
+                                <option value="" disabled>— Solution &amp; Others —</option>
+                                <option value="Solution">Solution Oriented</option>
+                                <option value="FoF">Fund of Funds</option>
+                                <option value="International">International</option>
+                                <option value="Commodity">Commodity / Gold</option>
+                            </select>
+                            <svg class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-amber-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>
+                        </div>
+                    </div>
+
+                    <!-- Active category + fund count badge -->
+                    <div class="flex flex-col gap-0.5 ml-1">
+                        <label class="text-[9px] font-black text-slate-400 uppercase tracking-wider px-0.5 invisible">x</label>
+                        <span id="mfe-fund-count-badge" class="text-[10px] font-bold px-2.5 py-1.5 rounded-lg whitespace-nowrap" style="background:rgba(13,148,136,0.1);color:#0d9488;border:1px solid rgba(13,148,136,0.2);"></span>
+                    </div>
+
+                </div>
+
+                <!-- Sub-sector — mobile: dropdown / desktop: scrollable pills with arrows -->
+                <div id="mfe-subsect-row" class="hidden pt-2 border-t border-slate-100">
+                    <div class="flex items-center gap-3">
+                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-wider whitespace-nowrap">Sub-Sector</label>
+                        <div class="relative flex-1 min-w-[180px] max-w-xs">
+                            <select id="mfe-ss-dropdown" onchange="mfeSetSubSect(this.value)"
+                                class="w-full appearance-none pl-3 pr-8 py-2 rounded-xl text-sm font-bold text-slate-700 bg-slate-50 border outline-none focus:ring-2 focus:ring-purple-400 cursor-pointer"
+                                style="border-color:rgba(124,58,237,0.3);">
+                            </select>
+                            <svg class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4" style="color:#7c3aed;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                        </div>
+                        <span id="mfe-ss-bench-badge" class="text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap" style="background:rgba(124,58,237,0.1);color:#7c3aed;"></span>
+                    </div>
+                </div>
+                <div class="relative">
+                    <svg class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                    <input id="mfe-search" type="text" placeholder="Search fund name or AMC within this category…"
+                        class="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-teal-400 transition-all"
+                        oninput="mfeOnSearch()">
+                </div>
+            </div>
+
+            <!-- Signal bar legend -->
+            <div class="mfe-legend-scroll">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Signal strength (within category):</span>
+                <span class="flex items-center gap-1.5">
+                    <span class="mfe-sig mfe-sig-5" style="gap:2px;">
+                        <span class="mfe-sig-bar on" style="height:4px;"></span><span class="mfe-sig-bar on" style="height:7px;"></span><span class="mfe-sig-bar on" style="height:11px;"></span><span class="mfe-sig-bar on" style="height:15px;"></span><span class="mfe-sig-bar on" style="height:19px;"></span>
+                    </span>
+                    <span class="text-[10px] font-bold text-violet-700">Elite</span><span class="text-[10px] text-slate-400">Top 10%</span>
+                </span>
+                <span class="flex items-center gap-1.5">
+                    <span class="mfe-sig mfe-sig-4" style="gap:2px;">
+                        <span class="mfe-sig-bar on" style="height:4px;"></span><span class="mfe-sig-bar on" style="height:7px;"></span><span class="mfe-sig-bar on" style="height:11px;"></span><span class="mfe-sig-bar on" style="height:15px;"></span><span class="mfe-sig-bar off" style="height:19px;"></span>
+                    </span>
+                    <span class="text-[10px] font-bold text-teal-700">Strong</span><span class="text-[10px] text-slate-400">Next 22.5%</span>
+                </span>
+                <span class="flex items-center gap-1.5">
+                    <span class="mfe-sig mfe-sig-3" style="gap:2px;">
+                        <span class="mfe-sig-bar on" style="height:4px;"></span><span class="mfe-sig-bar on" style="height:7px;"></span><span class="mfe-sig-bar on" style="height:11px;"></span><span class="mfe-sig-bar off" style="height:15px;"></span><span class="mfe-sig-bar off" style="height:19px;"></span>
+                    </span>
+                    <span class="text-[10px] font-bold text-slate-500">Average</span><span class="text-[10px] text-slate-400">Middle 35%</span>
+                </span>
+                <span class="flex items-center gap-1.5">
+                    <span class="mfe-sig mfe-sig-2" style="gap:2px;">
+                        <span class="mfe-sig-bar on" style="height:4px;"></span><span class="mfe-sig-bar on" style="height:7px;"></span><span class="mfe-sig-bar off" style="height:11px;"></span><span class="mfe-sig-bar off" style="height:15px;"></span><span class="mfe-sig-bar off" style="height:19px;"></span>
+                    </span>
+                    <span class="text-[10px] font-bold text-amber-700">Weak</span><span class="text-[10px] text-slate-400">Next 22.5%</span>
+                </span>
+                <span class="flex items-center gap-1.5">
+                    <span class="mfe-sig mfe-sig-1" style="gap:2px;">
+                        <span class="mfe-sig-bar on" style="height:4px;"></span><span class="mfe-sig-bar off" style="height:7px;"></span><span class="mfe-sig-bar off" style="height:11px;"></span><span class="mfe-sig-bar off" style="height:15px;"></span><span class="mfe-sig-bar off" style="height:19px;"></span>
+                    </span>
+                    <span class="text-[10px] font-bold text-red-700">Avoid</span><span class="text-[10px] text-slate-400">Bottom 10%</span>
+                </span>
+            </div>
+
+            <!-- Initial loading -->
+            <div id="mfe-loading" class="flex flex-col items-center justify-center py-16">
+                <div class="mfe-spinner mb-4"></div>
+                <p class="text-sm font-bold text-slate-500" id="mfe-loading-text">Fetching fund list from AMFI…</p>
+                <p class="text-xs text-slate-400 mt-1" id="mfe-loading-sub">One-time load — subsequent category switches are fast</p>
+            </div>
+
+            <!-- Error -->
+            <div id="mfe-error" class="hidden flex flex-col items-center justify-center py-14">
+                <div class="text-5xl mb-3">⚠️</div>
+                <p class="text-sm font-bold text-slate-500">Could not load fund data</p>
+                <p class="text-xs mt-1 text-slate-400 max-w-xs text-center" id="mfe-error-msg"></p>
+                <button onclick="refreshMFExplorer()" class="mt-4 px-5 py-2.5 rounded-xl text-sm font-bold text-white shine-header shine-btn" style="background:linear-gradient(135deg,#1a5276,#0d9488);">Try Again</button>
+            </div>
+
+            <!-- Table -->
+            <div id="mfe-table-wrap" class="hidden bg-white rounded-2xl border border-[#f5c842]/30 overflow-hidden shadow-sm">
+                <!-- ── Selected category header ── -->
+                <div id="mfe-cat-header" class="px-4 py-3 flex items-center justify-between gap-3 flex-wrap border-b border-slate-100" style="background:linear-gradient(135deg,#f8fafc 0%,#f0fdfa 100%);">
+                    <div class="flex items-center gap-2 min-w-0">
+                        <div id="mfe-cat-header-icon" class="w-7 h-7 rounded-lg flex items-center justify-center text-sm flex-shrink-0" style="background:rgba(13,148,136,0.12);"></div>
+                        <div class="min-w-0">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span id="mfe-cat-header-name" class="text-sm font-black text-slate-800"></span>
+                                <span id="mfe-cat-header-count" class="text-[10px] font-bold px-2 py-0.5 rounded-full" style="background:rgba(13,148,136,0.1);color:#0d9488;"></span>
+                            </div>
+                            <div class="text-[10px] text-slate-400 font-semibold mt-0.5" id="mfe-cat-header-bench"></div>
+                        </div>
+                    </div>
+                    <div id="mfe-cat-header-page" class="text-[10px] font-bold text-slate-400"></div>
+                </div>
+                <!-- CAGR period toggle -->
+                <div class="px-4 pt-3 pb-2 flex items-center gap-2 border-b border-slate-100 flex-wrap">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">CAGR Period:</span>
+                    <button onclick="mfeSetCagr('1Y')"  class="mfe-cagr-btn" data-cagr="1Y">1 Year</button>
+                    <button onclick="mfeSetCagr('3Y')"  class="mfe-cagr-btn active" data-cagr="3Y">3 Year</button>
+                    <button onclick="mfeSetCagr('5Y')"  class="mfe-cagr-btn" data-cagr="5Y">5 Year</button>
+                    <button onclick="mfeSetCagr('10Y')" class="mfe-cagr-btn" data-cagr="10Y">10 Year</button>
+                    <span class="text-[10px] text-slate-300 hidden sm:inline">Shows — if fund history is too short for that period</span>
+                </div>
+                <!-- Benchmark label + proxy disclaimer -->
+                <div class="px-4 py-2 border-b border-slate-100" style="background:#fffbeb;">
+                    <div class="flex items-start gap-2 flex-wrap">
+                        <span class="text-[10px] font-black text-amber-700 uppercase tracking-wider flex-shrink-0 mt-0.5">⚠️ Benchmark Note:</span>
+                        <span class="text-[10px] font-bold text-teal-700 flex-shrink-0 self-start mt-0.5" id="mfe-bench-label">Benchmark: Nifty 100</span>
+                        <span class="text-[10px] text-amber-700 leading-relaxed">
+                            — Alpha, Beta, Sharpe &amp; Sortino are computed against a <strong>category proxy fund NAV</strong> (not the actual index).
+                            Each fund's SEBI-mandated benchmark may differ. Values are <strong>approximate estimates</strong> — use for relative comparison within this tool, not as definitive published metrics.
+                        </span>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse" style="min-width:780px;width:100%;">
+                        <colgroup>
+                            <col style="width:34px">
+                            <col style="width:180px">
+                            <col style="width:70px">
+                            <col style="width:76px">
+                            <col style="width:76px">
+                            <col style="width:72px">
+                            <col style="width:72px">
+                            <col style="width:72px">
+                            <col style="width:66px">
+                            <col style="width:60px">
+                            <col style="width:68px">
+                            <col style="width:66px">
+                            <col style="width:66px">
+                        </colgroup>
+                        <thead>
+                            <tr style="background:linear-gradient(135deg,#1e3a5f 0%,#1a5276 40%,#0e6655 100%);">
+                                <th class="mfe-th" style="width:34px;text-align:center;">#</th>
+                                <th class="mfe-th mfe-th-sort" onclick="mfeSortBy('name')" style="width:180px;">Fund Name <span class="mfe-si">↕</span></th>
+                                <th class="mfe-th mfe-th-sort" onclick="mfeSortBy('score')" title="Signal strength: Elite (top 10%) → Strong → Average → Weak → Avoid (bottom 10%) — ranked within category">Signal <span class="mfe-si">↕</span></th>
+                                <th class="mfe-th mfe-th-sort" onclick="mfeSortBy('cagr')" id="mfe-cagr-header" title="Compounded Annual Growth Rate for selected period">CAGR <span class="mfe-si">↕</span></th>
+                                <th class="mfe-th mfe-th-sort" onclick="mfeSortBy('nav')" title="Latest NAV from AMFI">NAV ₹ <span class="mfe-si">↕</span></th>
+                                <th class="mfe-th mfe-th-sort" onclick="mfeSortBy('rollingHit')" title="Rolling Hit Rate — % of all 3Y windows with positive return. Higher = more consistent">Roll Hit% <span class="mfe-si">↕</span></th>
+                                <th class="mfe-th mfe-th-sort" onclick="mfeSortBy('rollingAvg')" title="Rolling Avg Return — average annualised 3Y return across all rolling windows">Roll Avg <span class="mfe-si">↕</span></th>
+                                <th class="mfe-th mfe-th-sort" onclick="mfeSortBy('expenseRatio')" title="Expense Ratio (TER) — annual cost deducted from NAV. Lower = more stays with you">Exp Ratio <span class="mfe-si">↕</span></th>
+                                <th class="mfe-th" title="3Y Annualised Std Dev — lower is more stable. Benchmark-independent — reliable.">Std Dev</th>
+                                <th class="mfe-th" title="Beta vs category proxy benchmark — 1.0 = moves in lockstep. Approximate: each fund's actual benchmark may differ from our category proxy.">Beta ~</th>
+                                <th class="mfe-th" title="Alpha — estimated excess return vs category proxy benchmark. Approximate: fund's true alpha vs its SEBI-mandated benchmark may differ. Use for relative comparison only.">Alpha ~</th>
+                                <th class="mfe-th" title="Sharpe Ratio — estimated return per unit of total risk vs proxy benchmark. Approximate estimate.">Sharpe ~</th>
+                                <th class="mfe-th" title="Sortino Ratio — estimated return per unit of downside risk vs proxy benchmark. Approximate estimate.">Sortino ~</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mfe-tbody"></tbody>
+                    </table>
+                </div>
+                <div class="px-4 py-3 border-t border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                    <span class="text-xs text-slate-500 font-bold" id="mfe-row-count"></span>
+                    <div id="mfe-pagination" class="flex items-center gap-2 flex-wrap"></div>
+                    <span class="text-[10px] text-slate-300 hidden sm:block">Source: AMFI via mfapi.in · Category-proxy benchmarks (not actual indices) · Alpha/Beta/Sharpe/Sortino are approximate estimates · Informational only</span>
+                </div>
+            </div>
+
+            <!-- Rating methodology -->
+            <div class="bg-white rounded-2xl border border-[#f5c842]/30 p-4">
+                <h3 class="text-xs font-black text-slate-700 uppercase tracking-wider mb-3">📶 Signal Strength Methodology</h3>
+                <div class="flex items-center gap-4 mb-3 flex-wrap">
+                    <span class="flex items-center gap-2">
+                        <span class="mfe-sig mfe-sig-5" style="gap:2px;">
+                            <span class="mfe-sig-bar on" style="height:5px;"></span><span class="mfe-sig-bar on" style="height:8px;"></span><span class="mfe-sig-bar on" style="height:12px;"></span><span class="mfe-sig-bar on" style="height:16px;"></span><span class="mfe-sig-bar on" style="height:20px;"></span>
+                        </span>
+                        <span class="text-xs font-black text-violet-700">Elite</span><span class="text-xs text-slate-500 ml-1">Top 10% of category</span>
+                    </span>
+                    <span class="flex items-center gap-2">
+                        <span class="mfe-sig mfe-sig-4" style="gap:2px;">
+                            <span class="mfe-sig-bar on" style="height:5px;"></span><span class="mfe-sig-bar on" style="height:8px;"></span><span class="mfe-sig-bar on" style="height:12px;"></span><span class="mfe-sig-bar on" style="height:16px;"></span><span class="mfe-sig-bar off" style="height:20px;"></span>
+                        </span>
+                        <span class="text-xs font-black text-teal-700">Strong</span><span class="text-xs text-slate-500 ml-1">Next 22.5%</span>
+                    </span>
+                    <span class="flex items-center gap-2">
+                        <span class="mfe-sig mfe-sig-3" style="gap:2px;">
+                            <span class="mfe-sig-bar on" style="height:5px;"></span><span class="mfe-sig-bar on" style="height:8px;"></span><span class="mfe-sig-bar on" style="height:12px;"></span><span class="mfe-sig-bar off" style="height:16px;"></span><span class="mfe-sig-bar off" style="height:20px;"></span>
+                        </span>
+                        <span class="text-xs font-black text-slate-500">Average</span><span class="text-xs text-slate-500 ml-1">Middle 35%</span>
+                    </span>
+                    <span class="flex items-center gap-2">
+                        <span class="mfe-sig mfe-sig-2" style="gap:2px;">
+                            <span class="mfe-sig-bar on" style="height:5px;"></span><span class="mfe-sig-bar on" style="height:8px;"></span><span class="mfe-sig-bar off" style="height:12px;"></span><span class="mfe-sig-bar off" style="height:16px;"></span><span class="mfe-sig-bar off" style="height:20px;"></span>
+                        </span>
+                        <span class="text-xs font-black text-amber-700">Weak</span><span class="text-xs text-slate-500 ml-1">Next 22.5%</span>
+                    </span>
+                    <span class="flex items-center gap-2">
+                        <span class="mfe-sig mfe-sig-1" style="gap:2px;">
+                            <span class="mfe-sig-bar on" style="height:5px;"></span><span class="mfe-sig-bar off" style="height:8px;"></span><span class="mfe-sig-bar off" style="height:12px;"></span><span class="mfe-sig-bar off" style="height:16px;"></span><span class="mfe-sig-bar off" style="height:20px;"></span>
+                        </span>
+                        <span class="text-xs font-black text-red-700">Avoid</span><span class="text-xs text-slate-500 ml-1">Bottom 10%</span>
+                    </span>
+                </div>
+                <p class="text-[10px] text-slate-500 mb-3">Funds are ranked by composite score, then bucketed into 5 signal tiers by percentile — within category only. Each bar represents a score dimension; taller = stronger signal.</p>
+                <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
+                    <div class="rounded-xl p-2.5 text-center" style="background:#ecfdf5;border:1px solid #6ee7b7;"><div class="text-base font-black text-emerald-600">25%</div><div class="text-[10px] font-bold text-slate-700">Roll Hit%</div><div class="text-[9px] text-slate-400">Consistency</div></div>
+                    <div class="rounded-xl p-2.5 text-center" style="background:#f0fdfa;border:1px solid #99f6e4;"><div class="text-base font-black text-teal-600">20%</div><div class="text-[10px] font-bold text-slate-700">Sharpe</div><div class="text-[9px] text-slate-400">Risk-adj return</div></div>
+                    <div class="rounded-xl p-2.5 text-center" style="background:#eff6ff;border:1px solid #bfdbfe;"><div class="text-base font-black text-blue-600">20%</div><div class="text-[10px] font-bold text-slate-700">Alpha</div><div class="text-[9px] text-slate-400">Beats benchmark</div></div>
+                    <div class="rounded-xl p-2.5 text-center" style="background:#f0fdf4;border:1px solid #86efac;"><div class="text-base font-black text-green-600">15%</div><div class="text-[10px] font-bold text-slate-700">Roll Avg</div><div class="text-[9px] text-slate-400">Return magnitude</div></div>
+                    <div class="rounded-xl p-2.5 text-center" style="background:#fdf4ff;border:1px solid #e9d5ff;"><div class="text-base font-black text-purple-600">10%</div><div class="text-[10px] font-bold text-slate-700">Sortino</div><div class="text-[9px] text-slate-400">Downside prot.</div></div>
+                    <div class="rounded-xl p-2.5 text-center" style="background:#fff7ed;border:1px solid #fed7aa;"><div class="text-base font-black text-orange-600">7%</div><div class="text-[10px] font-bold text-slate-700">Std Dev</div><div class="text-[9px] text-slate-400">NAV stability</div></div>
+                    <div class="rounded-xl p-2.5 text-center" style="background:#fef9c3;border:1px solid #fde68a;"><div class="text-base font-black text-yellow-600">3%</div><div class="text-[10px] font-bold text-slate-700">Beta</div><div class="text-[9px] text-slate-400">Mkt sensitivity</div></div>
+                </div>
+                <p class="text-[10px] text-slate-400 mt-2.5 leading-relaxed">All comparisons are within-category only. Rolling returns use monthly 3Y windows across full NAV history. Expense Ratio is informational only — not included in score (already reflected in NAV). Shows — when data is insufficient.</p>
+                <!-- Benchmark methodology disclaimer -->
+                <div class="mt-3 rounded-xl p-3" style="background:#fffbeb;border:1px solid #fde68a;">
+                    <div class="text-[10px] font-black text-amber-700 uppercase tracking-wider mb-1.5">⚠️ Benchmark Methodology — Please Read</div>
+                    <div class="space-y-1.5 text-[10px] text-amber-800 leading-relaxed">
+                        <p><strong>What we use:</strong> Alpha, Beta, Sharpe, and Sortino are calculated against a <em>category-appropriate index fund NAV</em> (e.g., Nippon Nifty 100 for Large Cap, Nifty 500 proxy for Large &amp; Mid Cap, Motilal Nifty Midcap 150 for Mid Cap). We use fund NAVs because the AMFI data API does not expose raw index levels directly.</p>
+                        <p><strong>Why this matters:</strong> Every fund has a SEBI-mandated benchmark that may differ from our category proxy. A Large Cap fund benchmarked to Nifty 50 will show higher alpha vs our Nifty 100 proxy; vice versa for funds benchmarked to Nifty 100. The proxy introduces a small tracking error (typically ±0.05–0.30% p.a.) that can shift alpha by ±0.1–0.5%. Gilt funds currently use an overnight proxy — this is a known gap; alpha figures for Gilt funds are not meaningful.</p>
+                        <p><strong>Most reliable metrics:</strong> Rolling Hit Rate and Rolling Avg Return are <em>benchmark-independent</em> — they measure a fund's absolute consistency and are the most reliable signals here. CAGR and Std Dev are also unaffected by benchmark choice.</p>
+                        <p><strong>Before investing:</strong> Always verify Alpha and Sharpe against the fund's own factsheet (benchmarked to its SEBI-mandated index). This tool is for relative screening and comparison — not a substitute for the fund's official performance disclosure.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===================== FUND COMPARATOR ===================== -->
+            <div class="bg-white rounded-2xl border border-[#f5c842]/30 shadow-sm" id="mfc-section">
+
+                <!-- Header -->
+                <div class="mfc-header-wrap px-5 py-4 flex items-center justify-between gap-3 flex-wrap shine-header"
+                     style="background:linear-gradient(135deg,#1e3a5f 0%,#1a5276 40%,#0e6655 100%);">
+                    <div>
+                        <h3 class="text-white font-black text-base flex items-center gap-2">⚖️ Fund Comparator</h3>
+                        <p class="text-blue-200 text-xs mt-0.5">Add up to 5 funds · side-by-side metrics · best value highlighted</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] text-blue-300 font-medium" id="mfc-fund-count"></span>
+                        <button onclick="waShare('fundcompare')" class="wa-share-btn shine-btn" title="Share on WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5 flex-shrink-0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.557 4.133 1.535 5.876L.057 23.43a.75.75 0 00.918.924l5.688-1.493A11.946 11.946 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.907 0-3.7-.512-5.241-1.403l-.375-.22-3.877 1.018 1.01-3.769-.234-.389A9.953 9.953 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>Share</button>
+                        <button onclick="mfcClearAll()" class="text-[10px] font-bold px-2.5 py-1.5 rounded-lg transition-all"
+                                style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.7);">
+                            Clear all
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Search row -->
+                <div class="px-4 pt-3 pb-2 border-b border-slate-100">
+                    <div class="relative" id="mfc-search-wrap">
+                        <svg class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5 flex-shrink-0"
+                             xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                        </svg>
+                        <input id="mfc-search" type="text" autocomplete="off"
+                               placeholder="Search any fund name or AMC to add…"
+                               class="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-teal-400 transition-all"
+                               oninput="mfcOnSearch()" onkeydown="mfcKeyNav(event)">
+                        <!-- Autocomplete dropdown -->
+                        <div id="mfc-autocomplete"
+                             class="hidden absolute left-0 right-0 top-full mt-1 bg-white rounded-xl border border-slate-200 shadow-lg z-50 overflow-hidden"
+                             style="max-height:260px;overflow-y:auto;"></div>
+                    </div>
+                    <!-- Selected chips -->
+                    <div id="mfc-chips" class="flex flex-wrap gap-2 mt-2 empty:mt-0 empty:hidden"></div>
+                </div>
+
+                <!-- Empty state -->
+                <div id="mfc-empty" class="py-12 flex flex-col items-center gap-2 text-slate-400">
+                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".4">
+                        <path d="M9 7H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-4"/>
+                        <path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/>
+                        <line x1="10" y1="14" x2="14" y2="14"/>
+                    </svg>
+                    <p class="text-xs font-semibold">Search and add funds above to start comparing</p>
+                </div>
+
+                <!-- Loading state -->
+                <div id="mfc-loading" class="hidden py-8 flex flex-col items-center gap-3">
+                    <div class="mfe-spinner"></div>
+                    <p class="text-xs font-bold text-slate-500" id="mfc-loading-text">Fetching fund data…</p>
+                </div>
+
+                <!-- Comparison grid -->
+                <div id="mfc-grid" class="hidden" style="overflow-x:auto;overflow-y:visible;-webkit-overflow-scrolling:touch;border-radius:0 0 1rem 1rem;">
+                    <table id="mfc-table" class="w-full border-collapse" style="min-width:520px;"></table>
+                </div>
+
+                <p class="text-[10px] text-slate-300 px-4 pb-3 text-right hidden sm:block">
+                    Data from AMFI via mfapi.in · Alpha/Beta/Sharpe/Sortino use category proxy benchmarks (approximate) · Informational only
+                </p>
+            </div>
+            <!-- =================== END FUND COMPARATOR =================== -->
+
+        </div>

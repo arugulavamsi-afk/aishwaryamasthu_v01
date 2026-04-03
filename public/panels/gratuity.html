@@ -1,0 +1,179 @@
+<div id="gratuity-panel" class="hidden w-full flex flex-col gap-3">
+
+            <!-- HEADER -->
+            <div class="rounded-2xl px-4 py-3 text-white flex items-center justify-between gap-3 flex-wrap shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:2px solid rgba(245,200,66,0.4);box-shadow:0 4px 18px rgba(0,0,0,0.25);">
+                <div>
+                    <h2 class="text-base font-black flex items-center gap-2" data-i18n="page.gratuity.h">🏅 Gratuity Calculator</h2>
+                    <p class="text-blue-200 text-[11px] mt-0.5">Formula: 15/26 × Basic Salary × Years of Service · Tax-free up to ₹25L · Partial years &gt;6 months count as full year.</p>
+                </div>
+                <button onclick="resetGratuity()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h5M20 20v-5h-5M4 9a9 9 0 0115-3M20 15a9 9 0 01-15 3"/></svg>Reset
+                </button>
+            </div>
+
+            <!-- MAIN GRID -->
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-3">
+
+                <!-- INPUTS -->
+                <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
+                    <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">Your Employment Details</div>
+                    <div class="grid grid-cols-2 gap-x-3 gap-y-2">
+
+                        <div class="col-span-2">
+                            <label class="epf-label">Last Drawn Basic + DA Salary (₹/mo)</label>
+                            <div class="relative"><span class="epf-prefix">₹</span>
+                            <input id="grat-basic" type="text" inputmode="numeric" value="50,000" class="epf-input pl-7 text-slate-400"
+                                oninput="gratFormat(this);gratCalc();this.classList.remove('text-slate-400');"
+                                onfocus="if(this.value==='50,000'){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                                onblur="if(!this.value){this.value='50,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                            </div>
+                            <div class="text-[9px] text-slate-400 mt-0.5">Gratuity uses Basic + DA only — not HRA or allowances</div>
+                        </div>
+
+                        <div>
+                            <label class="epf-label">Years of Service</label>
+                            <input id="grat-years" type="number" min="0" max="50" value="7" class="epf-input text-slate-400"
+                                oninput="gratCalc();this.classList.remove('text-slate-400');"
+                                onfocus="if(this.value==='7'){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                                onblur="if(!this.value){this.value='7';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                            <div class="text-[9px] text-slate-400 mt-0.5">Completed full years</div>
+                        </div>
+
+                        <div>
+                            <label class="epf-label">Extra Months</label>
+                            <input id="grat-months" type="number" min="0" max="11" value="0" class="epf-input text-slate-400"
+                                oninput="gratCalc();this.classList.remove('text-slate-400');"
+                                onfocus="if(this.value==='0'){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                                onblur="if(!this.value){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                            <div class="text-[9px] text-slate-400 mt-0.5">&gt;6 months = +1 full year</div>
+                        </div>
+
+                        <div class="col-span-2">
+                            <label class="epf-label">Employer Type</label>
+                            <select id="grat-type" class="epf-input" onchange="gratCalc();">
+                                <option value="covered">Covered under Gratuity Act (10+ employees)</option>
+                                <option value="notcovered">Not covered (ex-gratia — employer discretion)</option>
+                            </select>
+                            <div class="text-[9px] text-slate-400 mt-0.5">Act applies to firms with ≥10 employees at any time</div>
+                        </div>
+
+                        <div class="col-span-2">
+                            <label class="epf-label">Tax Regime</label>
+                            <select id="grat-regime" class="epf-input" onchange="_regimeChange('grat-regime','grat-slab',gratCalc)">
+                                <option value="new" selected>New Regime</option>
+                                <option value="old">Old Regime</option>
+                            </select>
+                        </div>
+
+                        <div class="col-span-2">
+                            <label class="epf-label">Tax Slab (on excess above ₹25L)</label>
+                            <select id="grat-slab" class="epf-input" onchange="gratCalc();">
+                                <option value="0">0% — taxable income ≤ ₹12L (87A rebate)</option>
+                                <option value="15">15% — taxable income ₹12L–₹16L</option>
+                                <option value="20" selected>20% — taxable income ₹16L–₹20L</option>
+                                <option value="25">25% — taxable income ₹20L–₹24L</option>
+                                <option value="30">30% — taxable income above ₹24L</option>
+                            </select>
+                            <div class="text-[9px] text-slate-400 mt-0.5">Only applies on amount above ₹25L tax-free limit · regime doesn't change the formula</div>
+                        </div>
+
+                    </div>
+
+                    <!-- Presets -->
+                    <div class="mt-3">
+                        <div class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1.5">Quick Scenarios</div>
+                        <div class="flex flex-wrap gap-1">
+                            <button onclick="gratPreset(30000,5,0,'covered',20)"  class="grat-preset">₹30K · 5 yrs</button>
+                            <button onclick="gratPreset(50000,7,8,'covered',20)"  class="grat-preset">₹50K · 7yr 8mo</button>
+                            <button onclick="gratPreset(100000,15,0,'covered',30)" class="grat-preset">₹1L · 15 yrs</button>
+                            <button onclick="gratPreset(150000,25,6,'covered',30)" class="grat-preset">₹1.5L · 25yr 6mo</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RESULTS -->
+                <div class="lg:col-span-3 flex flex-col gap-2">
+
+                    <!-- Big result card -->
+                    <div class="rounded-2xl px-4 py-3 shine-header" style="background:linear-gradient(135deg,#0c2340,#1a4a7a);border:2px solid rgba(245,200,66,0.35);">
+                        <div class="grid grid-cols-3 gap-3">
+                            <div>
+                                <div class="text-[9px] font-black text-blue-200 uppercase tracking-wider">Gross Gratuity</div>
+                                <div id="grat-gross" class="text-2xl font-black text-white mt-0.5">—</div>
+                                <div class="text-[9px] text-blue-300 mt-0.5">before tax</div>
+                            </div>
+                            <div>
+                                <div class="text-[9px] font-black text-blue-200 uppercase tracking-wider">Tax-Free Amount</div>
+                                <div id="grat-taxfree" class="text-2xl font-black text-white mt-0.5">—</div>
+                                <div class="text-[9px] text-blue-300 mt-0.5">u/s 10(10) exemption</div>
+                            </div>
+                            <div>
+                                <div class="text-[9px] font-black text-blue-200 uppercase tracking-wider">Net In-Hand</div>
+                                <div id="grat-net" class="text-2xl font-black text-white mt-0.5">—</div>
+                                <div class="text-[9px] text-blue-300 mt-0.5">after any tax</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4 stat pills -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                        <div class="rounded-xl p-2 text-center" style="background:#f0fdf4;border:1px solid #86efac;">
+                            <div class="text-[9px] font-black text-emerald-700 uppercase">Service Counted</div>
+                            <div id="grat-service-counted" class="text-sm font-black text-emerald-800">—</div>
+                            <div class="text-[8px] text-emerald-600">after rounding rule</div>
+                        </div>
+                        <div class="rounded-xl p-2 text-center" style="background:#fef9c3;border:1px solid #fde047;">
+                            <div class="text-[9px] font-black text-yellow-700 uppercase">Tax on Excess</div>
+                            <div id="grat-tax" class="text-sm font-black text-yellow-800">—</div>
+                            <div class="text-[8px] text-yellow-600">above ₹25L limit</div>
+                        </div>
+                        <div class="rounded-xl p-2 text-center" style="background:#f0f9ff;border:1px solid #bae6fd;">
+                            <div class="text-[9px] font-black text-sky-700 uppercase">Per Year Value</div>
+                            <div id="grat-per-year" class="text-sm font-black text-sky-800">—</div>
+                            <div class="text-[8px] text-sky-600">gratuity earned/yr</div>
+                        </div>
+                        <div class="rounded-xl p-2 text-center" style="background:#fdf4ff;border:1px solid #e9d5ff;">
+                            <div class="text-[9px] font-black text-purple-700 uppercase">% of Annual CTC</div>
+                            <div id="grat-pct" class="text-sm font-black text-purple-800">—</div>
+                            <div class="text-[8px] text-purple-600">effective payout rate</div>
+                        </div>
+                    </div>
+
+                    <!-- Step-by-step workings -->
+                    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-3">
+                        <div class="text-[10px] font-black text-slate-500 uppercase tracking-wider mb-2">📐 Calculation Workings</div>
+                        <div id="grat-workings" class="text-[10px] text-slate-600 leading-relaxed space-y-0.5"></div>
+                    </div>
+
+                    <!-- Insight -->
+                    <div id="grat-insight" class="hidden rounded-xl px-3 py-2 text-[11px] leading-relaxed" style="background:#f0f9ff;border:1px solid #bae6fd;color:#0c4a6e;"></div>
+
+                    <!-- WhatsApp share -->
+                    <div><button onclick="waShare('gratuity')" class="wa-share-btn shine-btn"><svg viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5 flex-shrink-0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.557 4.133 1.535 5.876L.057 23.43a.75.75 0 00.918.924l5.688-1.493A11.946 11.946 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.907 0-3.7-.512-5.241-1.403l-.375-.22-3.877 1.018 1.01-3.769-.234-.389A9.953 9.953 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>Share on WhatsApp</button></div>
+                </div>
+            </div>
+
+            <!-- KEY RULES -->
+            <div class="rounded-2xl p-3" style="background:#f8fafc;border:1px solid #e2e8f0;">
+                <div class="text-[9px] font-black text-slate-500 uppercase tracking-wider mb-2">📌 Gratuity Rules Every Employee Must Know</div>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10px]">
+                    <div class="rounded-xl p-2" style="background:#f0fdf4;border:1px solid #86efac;">
+                        <div class="font-black text-emerald-800 mb-0.5">✅ Eligibility</div>
+                        <div class="text-emerald-700">Minimum 5 years of continuous service with the same employer. Gratuity is legally mandatory under Payment of Gratuity Act, 1972.</div>
+                    </div>
+                    <div class="rounded-xl p-2" style="background:#eff6ff;border:1px solid #93c5fd;">
+                        <div class="font-black text-blue-800 mb-0.5">📅 Partial Year Rule</div>
+                        <div class="text-blue-700">If you've worked &gt;6 months in the final year, it counts as a full year. E.g. 7 years 8 months → treated as 8 years for gratuity calculation.</div>
+                    </div>
+                    <div class="rounded-xl p-2" style="background:#fef9c3;border:1px solid #fde047;">
+                        <div class="font-black text-yellow-800 mb-0.5">🧾 Tax Exemption</div>
+                        <div class="text-yellow-700">Gratuity up to ₹25L is fully tax-free u/s 10(10) for private sector employees. Any amount above ₹25L is taxable at your income-tax slab rate.</div>
+                    </div>
+                    <div class="rounded-xl p-2" style="background:#fdf4ff;border:1px solid #e9d5ff;">
+                        <div class="font-black text-purple-800 mb-0.5">⏰ Payment Timeline</div>
+                        <div class="text-purple-700">Employer must pay within 30 days of leaving. If delayed, they owe simple interest at 10% p.a. from the due date. You can file a complaint with Labour Commissioner.</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>

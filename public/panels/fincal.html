@@ -1,0 +1,193 @@
+<div id="fincal-panel" class="hidden w-full flex flex-col gap-3">
+
+            <!-- HEADER -->
+            <div class="rounded-2xl px-4 py-3 text-white flex items-center justify-between gap-3 flex-wrap shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:2px solid rgba(245,200,66,0.4);box-shadow:0 4px 18px rgba(0,0,0,0.25);">
+                <div>
+                    <h2 class="text-base font-black flex items-center gap-2" data-i18n="page.fincal.h">📅 Financial Calendar &amp; Smart Reminders</h2>
+                    <p class="text-blue-200 text-[11px] mt-0.5">Indians lose crores in avoidable late fees &amp; missed windows. Every deadline, every window — in one place. Personalised to your profile.</p>
+                </div>
+                <button onclick="resetFinCal()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h5M20 20v-5h-5M4 9a9 9 0 0115-3M20 15a9 9 0 01-15 3"/></svg>Reset
+                </button>
+            </div>
+
+            <!-- PROFILE INPUTS + UPCOMING STRIP -->
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-3">
+
+                <!-- YOUR PROFILE -->
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
+                    <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">Your Financial Profile</div>
+                    <div class="space-y-2">
+
+                        <div>
+                            <label class="epf-label">Tax Regime</label>
+                            <select id="fc-regime" class="epf-input" onchange="finCalRender();">
+                                <option value="new" selected>New Regime</option>
+                                <option value="old">Old Regime (80C/HRA deductions)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="epf-label">Annual Income (₹)</label>
+                            <div class="relative"><span class="epf-prefix">₹</span>
+                            <input id="fc-income" type="text" inputmode="numeric" placeholder="12,00,000"
+                                class="epf-input pl-7 text-slate-400"
+                                onfocus="if(this.classList.contains('text-slate-400')){this.value='';this.classList.remove('text-slate-400');}"
+                                onblur="if(!this.value){this.value='12,00,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                                oninput="fcFmt(this);finCalRender();">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="epf-label">Have PPF Account?</label>
+                            <select id="fc-ppf" class="epf-input" onchange="finCalRender();">
+                                <option value="yes" selected>Yes</option>
+                                <option value="no">No</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="epf-label">Have ELSS / Tax-saving MF?</label>
+                            <select id="fc-elss" class="epf-input" onchange="finCalRender();">
+                                <option value="yes" selected>Yes</option>
+                                <option value="no">No</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="epf-label">Credit Card Statement Date</label>
+                            <input id="fc-cc-date" type="number" min="1" max="28" placeholder="5"
+                                class="epf-input text-slate-400"
+                                onfocus="if(this.classList.contains('text-slate-400')){this.value='';this.classList.remove('text-slate-400');}"
+                                onblur="if(!this.value){this.value='5';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                                oninput="this.classList.remove('text-slate-400');finCalRender();">
+                            <div class="text-[9px] text-slate-400 mt-0.5">Day of month your statement generates</div>
+                        </div>
+
+                        <div>
+                            <label class="epf-label">EPF Member?</label>
+                            <select id="fc-epf" class="epf-input" onchange="finCalRender();">
+                                <option value="yes" selected>Yes</option>
+                                <option value="no">No</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="epf-label">Invest in SGB / Gold ETF?</label>
+                            <select id="fc-sgb" class="epf-input" onchange="finCalRender();">
+                                <option value="yes" selected>Yes</option>
+                                <option value="no">No</option>
+                            </select>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- UPCOMING DEADLINES — next 30 days -->
+                <div class="lg:col-span-3 flex flex-col gap-2">
+
+                    <!-- Urgency strip -->
+                    <div class="grid grid-cols-3 gap-2">
+                        <div id="fc-stat-critical" class="rounded-xl px-3 py-2 text-center" style="background:linear-gradient(135deg,#7f1d1d,#991b1b);border:1px solid #fca5a5;">
+                            <div class="text-[8px] font-black text-red-200 uppercase tracking-wider">🔴 Critical (≤7 days)</div>
+                            <div id="fc-count-critical" class="text-2xl font-black text-white">0</div>
+                        </div>
+                        <div id="fc-stat-soon" class="rounded-xl px-3 py-2 text-center" style="background:linear-gradient(135deg,#78350f,#92400e);border:1px solid #fde68a;">
+                            <div class="text-[8px] font-black text-amber-200 uppercase tracking-wider">🟡 Soon (8–30 days)</div>
+                            <div id="fc-count-soon" class="text-2xl font-black text-white">0</div>
+                        </div>
+                        <div id="fc-stat-upcoming" class="rounded-xl px-3 py-2 text-center" style="background:linear-gradient(135deg,#1e3a5f,#1a5276);border:1px solid #93c5fd;">
+                            <div class="text-[8px] font-black text-blue-200 uppercase tracking-wider">🔵 Upcoming (31–90 days)</div>
+                            <div id="fc-count-upcoming" class="text-2xl font-black text-white">0</div>
+                        </div>
+                    </div>
+
+                    <!-- Next deadline banner -->
+                    <div id="fc-next-banner" class="rounded-xl px-4 py-2.5 flex items-center gap-3" style="background:linear-gradient(90deg,#064e3b,#065f46);border:1px solid rgba(16,185,129,0.4);">
+                        <span class="text-2xl flex-shrink-0" id="fc-next-icon">📅</span>
+                        <div class="flex-1 min-w-0">
+                            <div class="text-[9px] font-black text-emerald-200 uppercase tracking-wider">Next Upcoming Deadline</div>
+                            <div id="fc-next-title" class="text-sm font-black text-white truncate">—</div>
+                        </div>
+                        <div class="text-right flex-shrink-0">
+                            <div id="fc-next-days" class="text-xl font-black text-emerald-300">—</div>
+                            <div class="text-[8px] text-emerald-400">days away</div>
+                        </div>
+                    </div>
+
+                    <!-- Events list -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider">All Events — Current Financial Year</div>
+                            <div class="flex gap-1">
+                                <button onclick="fcFilter('all')"      id="fc-btn-all"      class="fc-filter-btn fc-filter-active">All</button>
+                                <button onclick="fcFilter('tax')"      id="fc-btn-tax"      class="fc-filter-btn">Tax</button>
+                                <button onclick="fcFilter('invest')"   id="fc-btn-invest"   class="fc-filter-btn">Invest</button>
+                                <button onclick="fcFilter('credit')"   id="fc-btn-credit"   class="fc-filter-btn">Credit</button>
+                                <button onclick="fcFilter('epf')"      id="fc-btn-epf"      class="fc-filter-btn">EPF/PF</button>
+                            </div>
+                        </div>
+                        <div id="fc-events-list" class="space-y-1.5 max-h-72 overflow-y-auto pr-1">
+                            <!-- Filled by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MONTHLY CALENDAR GRID -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
+                <div class="flex items-center justify-between mb-2 flex-wrap gap-2">
+                    <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Monthly Calendar View</div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="fcMonthNav(-1)" class="w-6 h-6 rounded-lg flex items-center justify-center text-slate-500 hover:bg-slate-100 transition-all text-sm font-black">‹</button>
+                        <span id="fc-month-label" class="text-[11px] font-black text-slate-700 w-28 text-center">—</span>
+                        <button onclick="fcMonthNav(+1)" class="w-6 h-6 rounded-lg flex items-center justify-center text-slate-500 hover:bg-slate-100 transition-all text-sm font-black">›</button>
+                    </div>
+                </div>
+                <!-- Day headers -->
+                <div class="grid grid-cols-7 gap-0.5 mb-1">
+                    <div class="text-[8px] font-black text-slate-400 text-center">MON</div>
+                    <div class="text-[8px] font-black text-slate-400 text-center">TUE</div>
+                    <div class="text-[8px] font-black text-slate-400 text-center">WED</div>
+                    <div class="text-[8px] font-black text-slate-400 text-center">THU</div>
+                    <div class="text-[8px] font-black text-slate-400 text-center">FRI</div>
+                    <div class="text-[8px] font-black text-slate-400 text-center">SAT</div>
+                    <div class="text-[8px] font-black text-slate-400 text-center">SUN</div>
+                </div>
+                <div id="fc-cal-grid" class="grid grid-cols-7 gap-0.5">
+                    <!-- Filled by JS -->
+                </div>
+                <!-- Legend -->
+                <div class="flex flex-wrap gap-3 mt-2 pt-2 border-t border-slate-100">
+                    <div class="flex items-center gap-1"><div class="w-2.5 h-2.5 rounded-sm" style="background:#ef4444;"></div><span class="text-[9px] text-slate-500">Tax deadline</span></div>
+                    <div class="flex items-center gap-1"><div class="w-2.5 h-2.5 rounded-sm" style="background:#f59e0b;"></div><span class="text-[9px] text-slate-500">Investment window</span></div>
+                    <div class="flex items-center gap-1"><div class="w-2.5 h-2.5 rounded-sm" style="background:#3b82f6;"></div><span class="text-[9px] text-slate-500">Credit / bank</span></div>
+                    <div class="flex items-center gap-1"><div class="w-2.5 h-2.5 rounded-sm" style="background:#8b5cf6;"></div><span class="text-[9px] text-slate-500">EPF / PF</span></div>
+                    <div class="flex items-center gap-1"><div class="w-2.5 h-2.5 rounded-sm" style="background:#10b981;"></div><span class="text-[9px] text-slate-500">General</span></div>
+                </div>
+            </div>
+
+            <!-- EDUCATION CARDS -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <div class="rounded-xl p-2.5" style="background:#fef2f2;border:1px solid #fecaca;">
+                    <div class="text-[10px] font-black text-red-800 mb-1">💸 Advance Tax: Cost of Missing</div>
+                    <div class="text-[9px] text-red-700 leading-relaxed">Miss an advance tax instalment? You owe <strong>1% interest per month</strong> under Sec 234B/234C. On ₹1L tax liability, that's ₹12,000 extra per year — for no reason. Pay quarterly: Jun 15, Sep 15, Dec 15, Mar 15.</div>
+                </div>
+                <div class="rounded-xl p-2.5" style="background:#fff7ed;border:1px solid #fed7aa;">
+                    <div class="text-[10px] font-black text-orange-800 mb-1">📋 ITR: Beyond the Deadline</div>
+                    <div class="text-[9px] text-orange-700 leading-relaxed">Miss Jul 31? You can file a belated return by Dec 31, but you'll pay <strong>₹1,000–₹5,000 late fee</strong> (₹5,000 if income above ₹5L) + 1% interest/month on unpaid tax. Losses also <strong>cannot be carried forward</strong>.</div>
+                </div>
+                <div class="rounded-xl p-2.5" style="background:#f0fdf4;border:1px solid #86efac;">
+                    <div class="text-[10px] font-black text-emerald-800 mb-1">🏛️ PPF: The April Rule</div>
+                    <div class="text-[9px] text-emerald-700 leading-relaxed">Deposit before <strong>5th of each month</strong> to earn interest for that month. Deposit before April 5 to earn interest for the entire April — a free month of 7.1% p.a. on up to ₹1.5L. Most people miss this.</div>
+                </div>
+                <div class="rounded-xl p-2.5" style="background:#eff6ff;border:1px solid #93c5fd;">
+                    <div class="text-[10px] font-black text-blue-800 mb-1">📈 ELSS: The March Trap</div>
+                    <div class="text-[9px] text-blue-700 leading-relaxed">Invest in ELSS <strong>before March 31</strong> to claim 80C for that FY. But March mutual fund servers crash — payment fails but units aren't allotted in time. Invest in Jan–Feb. Rushed March investments cause ₹1,000s in lost deductions.</div>
+                </div>
+            </div>
+
+            <!-- WA Share -->
+            <div><button onclick="waShare('fincal')" class="wa-share-btn shine-btn"><svg viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5 flex-shrink-0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.557 4.133 1.535 5.876L.057 23.43a.75.75 0 00.918.924l5.688-1.493A11.946 11.946 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.907 0-3.7-.512-5.241-1.403l-.375-.22-3.877 1.018 1.01-3.769-.234-.389A9.953 9.953 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>Share on WhatsApp</button></div>
+
+        </div>

@@ -1,0 +1,101 @@
+<div id="debtplan-panel" class="hidden w-full flex flex-col gap-3">
+
+            <!-- HEADER -->
+            <div class="rounded-2xl px-4 py-3 text-white flex items-center justify-between gap-3 flex-wrap shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:2px solid rgba(245,200,66,0.4);box-shadow:0 4px 18px rgba(0,0,0,0.25);">
+                <div>
+                    <h2 class="text-base font-black flex items-center gap-2" data-i18n="page.debt.h">⚡ Loan Prepayment Planner</h2>
+                    <p class="text-blue-200 text-[11px] mt-0.5">🔥 Avalanche = pay highest rate first (saves most interest) · ❄️ Snowball = clear smallest balance first (quick wins)</p>
+                </div>
+                <button onclick="resetDebtPlan()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h5M20 20v-5h-5M4 9a9 9 0 0115-3M20 15a9 9 0 01-15 3"/></svg>Reset
+                </button>
+            </div>
+
+            <!-- METHOD TABS -->
+            <div class="flex gap-2">
+                <button id="debt-tab-avalanche" onclick="debtTab('avalanche')" class="flex-1 py-1.5 rounded-xl text-[11px] font-black transition-all" style="background:#fef2f2;color:#991b1b;border:2px solid #fca5a5;">🔥 Avalanche — Lowest Interest Cost</button>
+                <button id="debt-tab-snowball"  onclick="debtTab('snowball')"  class="flex-1 py-1.5 rounded-xl text-[11px] font-black transition-all" style="background:#f8fafc;color:#64748b;border:2px solid #e2e8f0;">❄️ Snowball — Fastest Wins</button>
+            </div>
+
+            <!-- MAIN GRID -->
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-3">
+
+                <!-- INPUTS -->
+                <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm p-3 flex flex-col gap-2">
+
+                    <!-- Column headers -->
+                    <div class="grid gap-1" style="grid-template-columns:1fr 90px 50px 90px 20px;">
+                        <div class="text-[9px] font-black text-slate-400 uppercase">Loan Name</div>
+                        <div class="text-[9px] font-black text-slate-400 uppercase">Balance</div>
+                        <div class="text-[9px] font-black text-slate-400 uppercase">Rate%</div>
+                        <div class="text-[9px] font-black text-slate-400 uppercase">EMI/mo</div>
+                        <div></div>
+                    </div>
+
+                    <!-- Loan rows container -->
+                    <div id="debt-loans-container" class="flex flex-col gap-1.5"></div>
+
+                    <!-- Add loan -->
+                    <button onclick="debtAddLoan()" class="w-full py-1.5 rounded-xl text-[10px] font-black border-2 border-dashed border-slate-300 text-slate-400 hover:border-blue-400 hover:text-blue-600 transition-all">+ Add Loan</button>
+
+                    <!-- Extra prepayment -->
+                    <div class="pt-1 border-t border-slate-100">
+                        <label class="epf-label">Extra Monthly Prepayment (₹)</label>
+                        <div class="relative"><span class="epf-prefix">₹</span>
+                        <input id="debt-extra" type="text" inputmode="numeric" value="5,000" class="epf-input pl-7 text-slate-400"
+                            oninput="debtFormat(this);debtCalc();this.classList.remove('text-slate-400');"
+                            onfocus="if(this.value==='5,000'){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                            onblur="if(!this.value){this.value='5,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                        </div>
+                        <div class="text-[9px] text-slate-400 mt-0.5">Rupees you can throw at debt above EMIs each month</div>
+                    </div>
+
+                    <!-- Quick scenarios -->
+                    <div class="pt-1 border-t border-slate-100">
+                        <div class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1">Quick Scenarios</div>
+                        <div class="flex flex-wrap gap-1">
+                            <button onclick="debtScenario('typical')"  class="debt-preset">Typical Indian</button>
+                            <button onclick="debtScenario('heavy')"    class="debt-preset">Heavy Debt</button>
+                            <button onclick="debtScenario('cc')"       class="debt-preset">Credit Card Crisis</button>
+                            <button onclick="debtScenario('homeloan')" class="debt-preset">Home + Car</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RESULTS -->
+                <div class="lg:col-span-3 flex flex-col gap-2">
+
+                    <!-- 3 headline cards -->
+                    <div class="grid grid-cols-3 gap-2">
+                        <div class="rounded-2xl p-2.5 text-center shine-header" style="background:linear-gradient(135deg,#0c2340,#1a4a7a);border:2px solid rgba(245,200,66,0.3);">
+                            <div class="text-[9px] font-black text-blue-200 uppercase">Total Debt</div>
+                            <div id="debt-total-bal" class="text-xl font-black text-white mt-0.5">—</div>
+                            <div class="text-[9px] text-blue-300">outstanding</div>
+                        </div>
+                        <div class="rounded-2xl p-2.5 text-center shine-header" style="background:linear-gradient(135deg,#7f1d1d,#991b1b);border:2px solid #fca5a5;">
+                            <div class="text-[9px] font-black text-red-200 uppercase">Interest Saved</div>
+                            <div id="debt-interest-saved" class="text-xl font-black text-white mt-0.5">—</div>
+                            <div class="text-[9px] text-red-300">vs min payments</div>
+                        </div>
+                        <div class="rounded-2xl p-2.5 text-center shine-header" style="background:linear-gradient(135deg,#14532d,#166534);border:2px solid #22c55e;">
+                            <div class="text-[9px] font-black text-emerald-200 uppercase">Debt-Free In</div>
+                            <div id="debt-payoff-months" class="text-xl font-black text-white mt-0.5">—</div>
+                            <div class="text-[9px] text-emerald-300">with prepayment</div>
+                        </div>
+                    </div>
+
+                    <!-- Priority list -->
+                    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-3 flex-1">
+                        <div class="text-[10px] font-black text-slate-500 uppercase tracking-wider mb-2" id="debt-priority-label">🎯 Repayment Priority Order</div>
+                        <div id="debt-priority-list" class="flex flex-col gap-1.5"></div>
+                    </div>
+
+                    <!-- Insight -->
+                    <div id="debt-insight" class="hidden rounded-xl px-3 py-2 text-[11px] leading-relaxed" style="background:#f0f9ff;border:1px solid #bae6fd;color:#0c4a6e;"></div>
+
+                    <!-- WhatsApp -->
+                    <div><button onclick="waShare('debtplan')" class="wa-share-btn shine-btn"><svg viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5 flex-shrink-0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.557 4.133 1.535 5.876L.057 23.43a.75.75 0 00.918.924l5.688-1.493A11.946 11.946 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.907 0-3.7-.512-5.241-1.403l-.375-.22-3.877 1.018 1.01-3.769-.234-.389A9.953 9.953 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>Share on WhatsApp</button></div>
+                </div>
+            </div>
+
+        </div>

@@ -1,0 +1,358 @@
+<div id="mfkit-panel" class="hidden w-full flex flex-col gap-5">
+
+            <!-- Header -->
+            <div class="rounded-2xl px-5 py-4 text-white shine-header" style="background: linear-gradient(135deg, #1e3a5f 0%, #1a5276 40%, #0e6655 100%); border: 2px solid rgba(245,200,66,0.45); box-shadow: 0 4px 18px rgba(0,0,0,0.25);">
+                <h2 class="text-lg font-black flex items-center gap-2" data-i18n="page.mfkit.h">💼 Mutual Fund Kit</h2>
+                <p class="text-blue-200 text-xs mt-1" data-i18n="page.mfkit.sub">Tap any fund type to learn what it is, when to use it, and see a real-world Indian example.</p>
+            </div>
+            <!-- Filter pills — own row, full width, scrollable -->
+            <div class="pill-scroll-wrap dark-ctx" id="mf-filter-wrap" style="background:linear-gradient(135deg,#1e3a5f,#0e6655);border-radius:14px;padding:8px 6px;">
+                <button class="pill-arrow pill-arrow-left" onclick="pillScroll('mf-filter-btns',-1)" aria-label="Scroll left">‹</button>
+                <div class="mfe-cat-scroll" id="mf-filter-btns" style="padding:0 4px;">
+                    <button onclick="filterMF('all')" id="mf-f-all" class="mf-filter-active text-xs font-bold px-3 py-1.5 rounded-full transition-all flex-shrink-0" data-i18n="mfk.filter.all">All</button>
+                    <button onclick="filterMF('equity')" id="mf-f-equity" class="mf-filter-inactive text-xs font-bold px-3 py-1.5 rounded-full transition-all flex-shrink-0" data-i18n="mfk.filter.equity">Equity</button>
+                    <button onclick="filterMF('debt')" id="mf-f-debt" class="mf-filter-inactive text-xs font-bold px-3 py-1.5 rounded-full transition-all flex-shrink-0" data-i18n="mfk.filter.debt">Debt</button>
+                    <button onclick="filterMF('hybrid')" id="mf-f-hybrid" class="mf-filter-inactive text-xs font-bold px-3 py-1.5 rounded-full transition-all flex-shrink-0" data-i18n="mfk.filter.hybrid">Hybrid</button>
+                    <button onclick="filterMF('tax')" id="mf-f-tax" class="mf-filter-inactive text-xs font-bold px-3 py-1.5 rounded-full transition-all flex-shrink-0" data-i18n="mfk.filter.tax">Tax Saving</button>
+                    <button onclick="filterMF('passive')" id="mf-f-passive" class="mf-filter-inactive text-xs font-bold px-3 py-1.5 rounded-full transition-all flex-shrink-0" data-i18n="mfk.filter.passive">Passive</button>
+                    <button onclick="filterMF('others')" id="mf-f-others" class="mf-filter-inactive text-xs font-bold px-3 py-1.5 rounded-full transition-all flex-shrink-0" data-i18n="mfk.filter.others">Others</button>
+                </div>
+                <button class="pill-arrow pill-arrow-right" onclick="pillScroll('mf-filter-btns',1)" aria-label="Scroll right">›</button>
+            </div>
+
+            <!-- Fund Tiles Grid -->
+            <div id="mf-tiles-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3"></div>
+
+            <!-- ===== EXAMPLE FUND COMPARISON TABLE ===== -->
+            <div class="bg-white rounded-2xl border border-[#f5c842]/30 shadow-sm overflow-hidden">
+                <!-- Table Header -->
+                <div class="px-5 py-4 border-b border-slate-100" style="background: linear-gradient(135deg, #0e346012 0%, #11796512 100%);">
+                    <div class="flex items-start gap-3">
+                        <span class="text-xl">📊</span>
+                        <div>
+                            <div class="text-sm font-black text-slate-800">Live Example: How to Compare & Select a Fund</div>
+                            <div class="text-[11px] text-slate-500 font-medium mt-0.5">Below are 4 hypothetical Large Cap funds evaluated on all key parameters. Read across each row to see what each metric tells you, and see the final verdict at the right.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Legend Pills -->
+                <div class="px-5 pt-3 pb-1 flex flex-wrap gap-2">
+                    <span class="inline-flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>Excellent / Strong
+                    </span>
+                    <span class="inline-flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-1 rounded-full bg-amber-100 text-amber-700">
+                        <span class="w-2 h-2 rounded-full bg-amber-400 inline-block"></span>Average / Okay
+                    </span>
+                    <span class="inline-flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-1 rounded-full bg-rose-100 text-rose-700">
+                        <span class="w-2 h-2 rounded-full bg-rose-500 inline-block"></span>Weak / Risky
+                    </span>
+                    <span class="inline-flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-500">
+                        <span class="w-2 h-2 rounded-full bg-slate-400 inline-block"></span>Neutral / Context needed
+                    </span>
+                </div>
+
+                <!-- Scrollable Table -->
+                <div class="overflow-x-auto px-3 pb-5 pt-2">
+                    <table class="w-full min-w-[720px] text-xs border-separate border-spacing-y-1">
+                        <thead>
+                            <tr>
+                                <td class="py-2 px-3 font-black text-[10px] text-slate-400 uppercase tracking-wider w-44">Parameter</td>
+                                <td class="py-2 px-3 text-center">
+                                    <div class="font-black text-slate-700 text-[11px]">Fund A</div>
+                                    <div class="text-[9px] text-slate-400 font-medium">Alpha Fund Largecap</div>
+                                </td>
+                                <td class="py-2 px-3 text-center">
+                                    <div class="font-black text-slate-700 text-[11px]">Fund B</div>
+                                    <div class="text-[9px] text-slate-400 font-medium">Beta Bluechip Growth</div>
+                                </td>
+                                <td class="py-2 px-3 text-center">
+                                    <div class="font-black text-slate-700 text-[11px]">Fund C</div>
+                                    <div class="text-[9px] text-slate-400 font-medium">Gamma Equity Leader</div>
+                                </td>
+                                <td class="py-2 px-3 text-center">
+                                    <div class="font-black text-slate-700 text-[11px]">Fund D</div>
+                                    <div class="text-[9px] text-slate-400 font-medium">Delta Nifty 50 Index</div>
+                                </td>
+                                <td class="py-2 px-3 font-black text-[10px] text-slate-400 uppercase tracking-wider text-center w-28">What to look for</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            <!-- CAGR 5Y -->
+                            <tr>
+                                <td class="py-2.5 px-3 rounded-l-xl bg-slate-50 border border-r-0 border-slate-100">
+                                    <div class="font-black text-slate-700">5Y CAGR</div>
+                                    <div class="text-[9px] text-slate-400 font-medium mt-0.5">Annualised return over 5 years</div>
+                                </td>
+                                <td class="py-2.5 px-3 bg-slate-50 border-y border-slate-100 text-center">
+                                    <span class="inline-block px-2.5 py-1 rounded-lg font-black text-emerald-700 bg-emerald-100">17.2%</span>
+                                </td>
+                                <td class="py-2.5 px-3 bg-slate-50 border-y border-slate-100 text-center">
+                                    <span class="inline-block px-2.5 py-1 rounded-lg font-black text-amber-700 bg-amber-100">13.8%</span>
+                                </td>
+                                <td class="py-2.5 px-3 bg-slate-50 border-y border-slate-100 text-center">
+                                    <span class="inline-block px-2.5 py-1 rounded-lg font-black text-rose-700 bg-rose-100">10.1%</span>
+                                </td>
+                                <td class="py-2.5 px-3 bg-slate-50 border-y border-slate-100 text-center">
+                                    <span class="inline-block px-2.5 py-1 rounded-lg font-black text-slate-600 bg-slate-200">14.5%</span>
+                                </td>
+                                <td class="py-2.5 px-3 rounded-r-xl bg-slate-50 border border-l-0 border-slate-100 text-[10px] text-slate-500 font-medium text-center leading-tight">
+                                    Higher = better. Must beat its benchmark (e.g. Nifty 50).
+                                </td>
+                            </tr>
+
+                            <!-- Alpha -->
+                            <tr>
+                                <td class="py-2.5 px-3 rounded-l-xl bg-white border border-r-0 border-slate-100">
+                                    <div class="font-black text-slate-700">Alpha (α)</div>
+                                    <div class="text-[9px] text-slate-400 font-medium mt-0.5">Excess return over benchmark</div>
+                                </td>
+                                <td class="py-2.5 px-3 bg-white border-y border-slate-100 text-center">
+                                    <span class="inline-block px-2.5 py-1 rounded-lg font-black text-emerald-700 bg-emerald-100">+2.7</span>
+                                </td>
+                                <td class="py-2.5 px-3 bg-white border-y border-slate-100 text-center">
+                                    <span class="inline-block px-2.5 py-1 rounded-lg font-black text-amber-700 bg-amber-100">-0.7</span>
+                                </td>
+                                <td class="py-2.5 px-3 bg-white border-y border-slate-100 text-center">
+                                    <span class="inline-block px-2.5 py-1 rounded-lg font-black text-rose-700 bg-rose-100">-4.4</span>
+                                </td>
+                                <td class="py-2.5 px-3 bg-white border-y border-slate-100 text-center">
+                                    <span class="inline-block px-2.5 py-1 rounded-lg font-black text-slate-600 bg-slate-200">0.0</span>
+                                </td>
+                                <td class="py-2.5 px-3 rounded-r-xl bg-white border border-l-0 border-slate-100 text-[10px] text-slate-500 font-medium text-center leading-tight">
+                                    Positive = fund beat the market. Negative = underperformed.
+                                </td>
+                            </tr>
+
+                            <!-- Beta -->
+                            <tr>
+                                <td class="py-2.5 px-3 rounded-l-xl bg-slate-50 border border-r-0 border-slate-100">
+                                    <div class="font-black text-slate-700">Beta (β)</div>
+                                    <div class="text-[9px] text-slate-400 font-medium mt-0.5">Sensitivity to market moves</div>
+                                </td>
+                                <td class="py-2.5 px-3 bg-slate-50 border-y border-slate-100 text-center">
+                                    <span class="inline-block px-2.5 py-1 rounded-lg font-black text-emerald-700 bg-emerald-100">0.91</span>
+                                </td>
+                                <td class="py-2.5 px-3 bg-slate-50 border-y border-slate-100 text-center">
+                                    <span class="inline-block px-2.5 py-1 rounded-lg font-black text-slate-600 bg-slate-200">1.02</span>
+                                </td>
+                                <td class="py-2.5 px-3 bg-slate-50 border-y border-slate-100 text-center">
+                                    <span class="inline-block px-2.5 py-1 rounded-lg font-black text-rose-700 bg-rose-100">1.28</span>
+                                </td>
+                                <td class="py-2.5 px-3 bg-slate-50 border-y border-slate-100 text-center">
+                                    <span class="inline-block px-2.5 py-1 rounded-lg font-black text-slate-600 bg-slate-200">1.00</span>
+                                </td>
+                                <td class="py-2.5 px-3 rounded-r-xl bg-slate-50 border border-l-0 border-slate-100 text-[10px] text-slate-500 font-medium text-center leading-tight">
+                                    &lt;1 = less volatile than market. &gt;1 = amplifies swings.
+                                </td>
+                            </tr>
+
+                            <!-- Sharpe Ratio -->
+                            <tr>
+                                <td class="py-2.5 px-3 rounded-l-xl bg-white border border-r-0 border-slate-100">
+                                    <div class="font-black text-slate-700">Sharpe Ratio</div>
+                                    <div class="text-[9px] text-slate-400 font-medium mt-0.5">Return earned per unit of total risk</div>
+                                </td>
+                                <td class="py-2.5 px-3 bg-white border-y border-slate-100 text-center">
+                                    <span class="inline-block px-2.5 py-1 rounded-lg font-black text-emerald-700 bg-emerald-100">1.42</span>
+                                </td>
+                                <td class="py-2.5 px-3 bg-white border-y border-slate-100 text-center">
+                                    <span class="inline-block px-2.5 py-1 rounded-lg font-black text-amber-700 bg-amber-100">0.88</span>
+                                </td>
+                                <td class="py-2.5 px-3 bg-white border-y border-slate-100 text-center">
+                                    <span class="inline-block px-2.5 py-1 rounded-lg font-black text-rose-700 bg-rose-100">0.41</span>
+                                </td>
+                                <td class="py-2.5 px-3 bg-white border-y border-slate-100 text-center">
+                                    <span class="inline-block px-2.5 py-1 rounded-lg font-black text-amber-700 bg-amber-100">0.95</span>
+                                </td>
+                                <td class="py-2.5 px-3 rounded-r-xl bg-white border border-l-0 border-slate-100 text-[10px] text-slate-500 font-medium text-center leading-tight">
+                                    &gt;1 = good. &gt;2 = excellent. Higher is always better.
+                                </td>
+                            </tr>
+
+                            <!-- Sortino Ratio -->
+                            <tr>
+                                <td class="py-2.5 px-3 rounded-l-xl bg-slate-50 border border-r-0 border-slate-100">
+                                    <div class="font-black text-slate-700">Sortino Ratio</div>
+                                    <div class="text-[9px] text-slate-400 font-medium mt-0.5">Return per unit of downside risk only</div>
+                                </td>
+                                <td class="py-2.5 px-3 bg-slate-50 border-y border-slate-100 text-center">
+                                    <span class="inline-block px-2.5 py-1 rounded-lg font-black text-emerald-700 bg-emerald-100">2.10</span>
+                                </td>
+                                <td class="py-2.5 px-3 bg-slate-50 border-y border-slate-100 text-center">
+                                    <span class="inline-block px-2.5 py-1 rounded-lg font-black text-amber-700 bg-amber-100">1.20</span>
+                                </td>
+                                <td class="py-2.5 px-3 bg-slate-50 border-y border-slate-100 text-center">
+                                    <span class="inline-block px-2.5 py-1 rounded-lg font-black text-rose-700 bg-rose-100">0.55</span>
+                                </td>
+                                <td class="py-2.5 px-3 bg-slate-50 border-y border-slate-100 text-center">
+                                    <span class="inline-block px-2.5 py-1 rounded-lg font-black text-amber-700 bg-amber-100">1.30</span>
+                                </td>
+                                <td class="py-2.5 px-3 rounded-r-xl bg-slate-50 border border-l-0 border-slate-100 text-[10px] text-slate-500 font-medium text-center leading-tight">
+                                    Better than Sharpe for conservative investors. Higher is better.
+                                </td>
+                            </tr>
+
+                            <!-- Standard Deviation -->
+                            <tr>
+                                <td class="py-2.5 px-3 rounded-l-xl bg-white border border-r-0 border-slate-100">
+                                    <div class="font-black text-slate-700">Std. Deviation</div>
+                                    <div class="text-[9px] text-slate-400 font-medium mt-0.5">Volatility / how much returns swing</div>
+                                </td>
+                                <td class="py-2.5 px-3 bg-white border-y border-slate-100 text-center">
+                                    <span class="inline-block px-2.5 py-1 rounded-lg font-black text-emerald-700 bg-emerald-100">12.1%</span>
+                                </td>
+                                <td class="py-2.5 px-3 bg-white border-y border-slate-100 text-center">
+                                    <span class="inline-block px-2.5 py-1 rounded-lg font-black text-amber-700 bg-amber-100">15.4%</span>
+                                </td>
+                                <td class="py-2.5 px-3 bg-white border-y border-slate-100 text-center">
+                                    <span class="inline-block px-2.5 py-1 rounded-lg font-black text-rose-700 bg-rose-100">22.7%</span>
+                                </td>
+                                <td class="py-2.5 px-3 bg-white border-y border-slate-100 text-center">
+                                    <span class="inline-block px-2.5 py-1 rounded-lg font-black text-amber-700 bg-amber-100">14.8%</span>
+                                </td>
+                                <td class="py-2.5 px-3 rounded-r-xl bg-white border border-l-0 border-slate-100 text-[10px] text-slate-500 font-medium text-center leading-tight">
+                                    Lower = smoother ride. Prefer lower SD for same return.
+                                </td>
+                            </tr>
+
+                            <!-- Expense Ratio -->
+                            <tr>
+                                <td class="py-2.5 px-3 rounded-l-xl bg-slate-50 border border-r-0 border-slate-100">
+                                    <div class="font-black text-slate-700">Expense Ratio</div>
+                                    <div class="text-[9px] text-slate-400 font-medium mt-0.5">Annual fee charged by the fund</div>
+                                </td>
+                                <td class="py-2.5 px-3 bg-slate-50 border-y border-slate-100 text-center">
+                                    <span class="inline-block px-2.5 py-1 rounded-lg font-black text-emerald-700 bg-emerald-100">0.68%</span>
+                                </td>
+                                <td class="py-2.5 px-3 bg-slate-50 border-y border-slate-100 text-center">
+                                    <span class="inline-block px-2.5 py-1 rounded-lg font-black text-amber-700 bg-amber-100">1.45%</span>
+                                </td>
+                                <td class="py-2.5 px-3 bg-slate-50 border-y border-slate-100 text-center">
+                                    <span class="inline-block px-2.5 py-1 rounded-lg font-black text-rose-700 bg-rose-100">1.90%</span>
+                                </td>
+                                <td class="py-2.5 px-3 bg-slate-50 border-y border-slate-100 text-center">
+                                    <span class="inline-block px-2.5 py-1 rounded-lg font-black text-emerald-700 bg-emerald-100">0.10%</span>
+                                </td>
+                                <td class="py-2.5 px-3 rounded-r-xl bg-slate-50 border border-l-0 border-slate-100 text-[10px] text-slate-500 font-medium text-center leading-tight">
+                                    Always lower the better. Index funds should be &lt;0.25%.
+                                </td>
+                            </tr>
+
+                            <!-- AUM -->
+                            <tr>
+                                <td class="py-2.5 px-3 rounded-l-xl bg-white border border-r-0 border-slate-100">
+                                    <div class="font-black text-slate-700">AUM</div>
+                                    <div class="text-[9px] text-slate-400 font-medium mt-0.5">Assets under management</div>
+                                </td>
+                                <td class="py-2.5 px-3 bg-white border-y border-slate-100 text-center">
+                                    <span class="inline-block px-2.5 py-1 rounded-lg font-black text-emerald-700 bg-emerald-100">₹32,400 Cr</span>
+                                </td>
+                                <td class="py-2.5 px-3 bg-white border-y border-slate-100 text-center">
+                                    <span class="inline-block px-2.5 py-1 rounded-lg font-black text-emerald-700 bg-emerald-100">₹18,700 Cr</span>
+                                </td>
+                                <td class="py-2.5 px-3 bg-white border-y border-slate-100 text-center">
+                                    <span class="inline-block px-2.5 py-1 rounded-lg font-black text-amber-700 bg-amber-100">₹3,200 Cr</span>
+                                </td>
+                                <td class="py-2.5 px-3 bg-white border-y border-slate-100 text-center">
+                                    <span class="inline-block px-2.5 py-1 rounded-lg font-black text-emerald-700 bg-emerald-100">₹26,100 Cr</span>
+                                </td>
+                                <td class="py-2.5 px-3 rounded-r-xl bg-white border border-l-0 border-slate-100 text-[10px] text-slate-500 font-medium text-center leading-tight">
+                                    Larger AUM = more trust, stable. Very small AUM = liquidity risk.
+                                </td>
+                            </tr>
+
+                            <!-- Fund Age -->
+                            <tr>
+                                <td class="py-2.5 px-3 rounded-l-xl bg-slate-50 border border-r-0 border-slate-100">
+                                    <div class="font-black text-slate-700">Fund Age</div>
+                                    <div class="text-[9px] text-slate-400 font-medium mt-0.5">Track record length</div>
+                                </td>
+                                <td class="py-2.5 px-3 bg-slate-50 border-y border-slate-100 text-center">
+                                    <span class="inline-block px-2.5 py-1 rounded-lg font-black text-emerald-700 bg-emerald-100">16 yrs</span>
+                                </td>
+                                <td class="py-2.5 px-3 bg-slate-50 border-y border-slate-100 text-center">
+                                    <span class="inline-block px-2.5 py-1 rounded-lg font-black text-emerald-700 bg-emerald-100">11 yrs</span>
+                                </td>
+                                <td class="py-2.5 px-3 bg-slate-50 border-y border-slate-100 text-center">
+                                    <span class="inline-block px-2.5 py-1 rounded-lg font-black text-amber-700 bg-amber-100">4 yrs</span>
+                                </td>
+                                <td class="py-2.5 px-3 bg-slate-50 border-y border-slate-100 text-center">
+                                    <span class="inline-block px-2.5 py-1 rounded-lg font-black text-emerald-700 bg-emerald-100">14 yrs</span>
+                                </td>
+                                <td class="py-2.5 px-3 rounded-r-xl bg-slate-50 border border-l-0 border-slate-100 text-[10px] text-slate-500 font-medium text-center leading-tight">
+                                    Prefer funds with 7+ years. Has survived a full market cycle.
+                                </td>
+                            </tr>
+
+                            <!-- Verdict Row -->
+                            <tr>
+                                <td class="py-3 px-3 rounded-l-xl border border-r-0 border-slate-200 font-black text-slate-800 text-[11px]" style="background: linear-gradient(135deg, #f8fafc, #f0fdfa);">
+                                    🏁 Verdict
+                                </td>
+                                <td class="py-3 px-3 border-y border-slate-200 text-center" style="background: linear-gradient(135deg, #f0fdf4, #dcfce7);">
+                                    <div class="inline-flex flex-col items-center gap-1">
+                                        <span class="text-lg">🥇</span>
+                                        <span class="font-black text-emerald-700 text-[11px] block">Strong Buy</span>
+                                        <span class="text-[9px] text-emerald-600 font-medium leading-tight">Best risk-adjusted returns + low cost</span>
+                                    </div>
+                                </td>
+                                <td class="py-3 px-3 border-y border-slate-200 text-center" style="background: linear-gradient(135deg, #fffbeb, #fef3c7);">
+                                    <div class="inline-flex flex-col items-center gap-1">
+                                        <span class="text-lg">🤔</span>
+                                        <span class="font-black text-amber-700 text-[11px] block">Consider</span>
+                                        <span class="text-[9px] text-amber-600 font-medium leading-tight">Decent fund, but high cost drags returns</span>
+                                    </div>
+                                </td>
+                                <td class="py-3 px-3 border-y border-slate-200 text-center" style="background: linear-gradient(135deg, #fff1f2, #fecdd3);">
+                                    <div class="inline-flex flex-col items-center gap-1">
+                                        <span class="text-lg">🚫</span>
+                                        <span class="font-black text-rose-700 text-[11px] block">Avoid</span>
+                                        <span class="text-[9px] text-rose-600 font-medium leading-tight">High risk, negative alpha, underperforms</span>
+                                    </div>
+                                </td>
+                                <td class="py-3 px-3 border-y border-slate-200 text-center" style="background: linear-gradient(135deg, #f8fafc, #f1f5f9);">
+                                    <div class="inline-flex flex-col items-center gap-1">
+                                        <span class="text-lg">👍</span>
+                                        <span class="font-black text-slate-600 text-[11px] block">Good Passive</span>
+                                        <span class="text-[9px] text-slate-500 font-medium leading-tight">Low cost, tracks market, great for SIP</span>
+                                    </div>
+                                </td>
+                                <td class="py-3 px-3 rounded-r-xl border border-l-0 border-slate-200 text-[10px] text-slate-500 font-medium text-center leading-tight" style="background: linear-gradient(135deg, #f8fafc, #f0fdfa);">
+                                    Compare all metrics together — no single ratio is enough.
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Key Takeaways Strip -->
+                <div class="mx-4 mb-4 p-4 rounded-xl" style="background: linear-gradient(135deg, #0e346010 0%, #11796510 100%); border: 1px solid #0d94881a;">
+                    <div class="text-[10px] font-black text-slate-500 uppercase tracking-wider mb-2">📌 Key Takeaways from This Example</div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div class="flex items-start gap-2 text-[11px] text-slate-600 font-medium">
+                            <span class="text-emerald-500 font-black mt-px flex-shrink-0">✓</span>
+                            Fund A wins on every active metric — high alpha, low beta, top Sharpe/Sortino, and a low expense ratio.
+                        </div>
+                        <div class="flex items-start gap-2 text-[11px] text-slate-600 font-medium">
+                            <span class="text-emerald-500 font-black mt-px flex-shrink-0">✓</span>
+                            Fund D (Index) has zero alpha (expected) but ultra-low cost makes it ideal for passive SIP investors.
+                        </div>
+                        <div class="flex items-start gap-2 text-[11px] text-slate-600 font-medium">
+                            <span class="text-rose-500 font-black mt-px flex-shrink-0">✗</span>
+                            Fund C's 10% CAGR looks okay in isolation, but its -4.4 alpha shows it massively underperformed its benchmark while taking the most risk.
+                        </div>
+                        <div class="flex items-start gap-2 text-[11px] text-slate-600 font-medium">
+                            <span class="text-amber-500 font-black mt-px flex-shrink-0">!</span>
+                            Fund B has an acceptable Sharpe but its 1.45% expense ratio silently eats ~0.77% in alpha annually — always check the cost.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- ===== END EXAMPLE FUND COMPARISON TABLE ===== -->
+
+            <!-- ===== END FUND PICKER GUIDE ===== -->
+
+        </div>

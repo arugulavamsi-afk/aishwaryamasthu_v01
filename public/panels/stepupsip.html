@@ -1,0 +1,160 @@
+<div id="stepupsip-panel" class="hidden w-full flex flex-col gap-3">
+
+            <!-- ── COMPACT HEADER ── -->
+            <div class="rounded-2xl px-4 py-3 text-white flex items-center justify-between gap-3 flex-wrap shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:2px solid rgba(245,200,66,0.4);box-shadow:0 4px 18px rgba(0,0,0,0.25);">
+                <div>
+                    <h2 class="text-base font-black flex items-center gap-2" data-i18n="page.su.h">📈 Step-Up SIP Calculator</h2>
+                    <p class="text-blue-200 text-[11px] mt-0.5" data-i18n="page.su.sub">Increase your SIP 10–15% every year. See the corpus gap it creates.</p>
+                </div>
+                <button onclick="resetStepUpSIP()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h5M20 20v-5h-5M4 9a9 9 0 0115-3M20 15a9 9 0 01-15 3"/></svg>Reset
+                </button>
+            </div>
+
+            <!-- ── TOP ROW: inputs (left) + hero numbers (right) ── -->
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-3">
+
+                <!-- INPUTS — compact 2-col grid inside -->
+                <div class="lg:col-span-2 bg-white rounded-2xl border border-amber-200 shadow-sm p-3">
+                    <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2" data-i18n="ssh.params">Parameters</div>
+                    <div class="grid grid-cols-2 gap-x-3 gap-y-2">
+
+                        <div>
+                            <label class="su-label" data-i18n="lbl.su.amount">Monthly SIP (₹)</label>
+                            <div class="relative">
+                                <span class="su-prefix">₹</span>
+                                <input id="su-amount" type="text" inputmode="numeric" value="5,000" class="su-input pl-7 text-slate-400"
+                                    oninput="suFormat(this); stepUpCalc();"
+                                    onfocus="if(this.value==='5,000'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                                    onblur="if(this.value===''||this.value==='5,000'){this.value='5,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="su-label" data-i18n="lbl.su.rate">Annual Return (%)</label>
+                            <input id="su-rate" type="number" min="4" max="30" step="0.5" value="12" class="su-input text-slate-400"
+                                oninput="stepUpCalc(); this.classList.remove('text-slate-400');"
+                                onfocus="if(this.value==='12'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                                onblur="if(this.value===''||this.value==='12'){this.value='12';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                        </div>
+
+                        <div>
+                            <label class="su-label" data-i18n="lbl.su.years">Period (Years)</label>
+                            <input id="su-years" type="number" min="3" max="40" step="1" value="20" class="su-input text-slate-400"
+                                oninput="stepUpCalc(); this.classList.remove('text-slate-400');"
+                                onfocus="if(this.value==='20'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                                onblur="if(this.value===''||this.value==='20'){this.value='20';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                        </div>
+
+                        <div>
+                            <label class="su-label" data-i18n="lbl.su.stepup">Step-Up (%/yr)</label>
+                            <input id="su-stepup" type="number" min="0" max="25" step="1" value="10" class="su-input text-slate-400"
+                                oninput="stepUpCalc(); this.classList.remove('text-slate-400');"
+                                onfocus="if(this.value==='10'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                                onblur="if(this.value===''||this.value==='10'){this.value='10';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                        </div>
+                    </div>
+
+                    <!-- Quick presets -->
+                    <div class="mt-3">
+                        <div class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1.5" data-i18n="common.presets">Quick Presets</div>
+                        <div class="flex flex-wrap gap-1">
+                            <button onclick="suPreset(5000,12,20,10)"  class="su-preset">₹5K·10%</button>
+                            <button onclick="suPreset(10000,12,20,10)" class="su-preset">₹10K·10%</button>
+                            <button onclick="suPreset(5000,12,30,15)"  class="su-preset">₹5K·15%·30yr</button>
+                            <button onclick="suPreset(2000,12,25,10)"  class="su-preset">₹2K starter</button>
+                        </div>
+                    </div>
+
+                    <!-- LTCG Tax checkbox -->
+                    <div class="mt-3 pt-2.5 border-t border-amber-100">
+                        <label class="flex items-center gap-2 cursor-pointer select-none">
+                            <input type="checkbox" id="su-ltcg-toggle" class="w-4 h-4 rounded cursor-pointer flex-shrink-0" style="accent-color:#059669;" onchange="stepUpCalc()">
+                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider leading-snug">Adjust for LTCG Tax <span class="text-[9px] font-medium text-slate-400 normal-case">(Equity MF · 12.5% on gains &gt;₹1.25L/yr)</span></span>
+                        </label>
+                        <div id="su-ltcg-note" class="hidden mt-1.5 px-2 py-1 rounded-lg text-[9px] leading-relaxed" style="background:#f0fdf4;border:1px solid #86efac;color:#166534;">Post-tax corpus shown. ₹1.25L/yr exempt. Gains above threshold taxed at 12.5% on redemption.</div>
+                    </div>
+                </div>
+                <div class="lg:col-span-3 flex flex-col gap-2">
+
+                    <!-- 2 corpus cards side by side -->
+                    <div class="grid grid-cols-2 gap-2">
+                        <div class="rounded-2xl p-3 text-center shine-header" style="background:linear-gradient(135deg,#f1f5f9,#e2e8f0);border:2px solid #cbd5e1;">
+                            <div class="text-[9px] font-black text-slate-500 uppercase tracking-wider" data-i18n="res.su.flat">📉 Flat SIP Corpus</div>
+                            <div id="su-flat-corpus" class="text-xl font-black text-slate-700 mt-0.5">—</div>
+                            <div class="text-[9px] text-slate-400 mt-0.5">Invested <span id="su-flat-invested" class="font-bold">—</span> · Gains <span id="su-flat-gains" class="text-emerald-600 font-bold">—</span></div>
+                        </div>
+                        <div class="rounded-2xl p-3 text-center shine-header" style="background:linear-gradient(135deg,#fffbeb,#fef3c7);border:2px solid #f59e0b;">
+                            <div class="text-[9px] font-black text-amber-700 uppercase tracking-wider" data-i18n="res.su.stepup">⚡ Step-Up Corpus</div>
+                            <div id="su-stepup-corpus" class="text-xl font-black text-amber-700 mt-0.5">—</div>
+                            <div class="text-[9px] text-amber-500 mt-0.5">Invested <span id="su-stepup-invested" class="font-bold">—</span> · Gains <span id="su-stepup-gains" class="text-emerald-600 font-bold">—</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Extra wealth banner -->
+                    <div class="rounded-2xl px-4 py-2.5 flex items-center justify-between gap-2 flex-wrap shine-header" style="background:linear-gradient(135deg,#065f46,#047857);border:2px solid #10b981;">
+                        <div>
+                            <div class="text-[9px] font-black text-emerald-200 uppercase tracking-wider" data-i18n="res.su.extra">Extra Wealth from Step-Up</div>
+                            <div id="su-extra-wealth" class="text-2xl font-black text-white leading-tight">—</div>
+                        </div>
+                        <div class="text-right">
+                            <div id="su-multiplier" class="text-sm font-black text-emerald-300">—</div>
+                            <div class="text-[9px] text-emerald-400">vs flat SIP</div>
+                        </div>
+                    </div>
+
+                    <div class="mb-1"><button onclick="waShare('stepupsip')" class="wa-share-btn shine-btn"><svg viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5 flex-shrink-0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.557 4.133 1.535 5.876L.057 23.43a.75.75 0 00.918.924l5.688-1.493A11.946 11.946 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.907 0-3.7-.512-5.241-1.403l-.375-.22-3.877 1.018 1.01-3.769-.234-.389A9.953 9.953 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>Share on WhatsApp</button></div>
+                    <!-- 3 stat pills -->
+                    <div class="grid grid-cols-3 gap-2">
+                        <div class="rounded-xl p-2 text-center" style="background:#f0fdf4;border:1px solid #86efac;">
+                            <div class="text-[9px] font-black text-emerald-700 uppercase" data-i18n="res.su.extrainv">Extra Invested</div>
+                            <div id="su-extra-invested" class="text-sm font-black text-emerald-800">—</div>
+                        </div>
+                        <div class="rounded-xl p-2 text-center" style="background:#eff6ff;border:1px solid #bfdbfe;">
+                            <div class="text-[9px] font-black text-blue-700 uppercase" data-i18n="res.su.finalsip">Final SIP/mo</div>
+                            <div id="su-final-sip" class="text-sm font-black text-blue-800">—</div>
+                        </div>
+                        <div class="rounded-xl p-2 text-center" style="background:#fdf4ff;border:1px solid #e9d5ff;">
+                            <div class="text-[9px] font-black text-purple-700 uppercase" data-i18n="res.su.mult">Corpus Multiplier</div>
+                            <div id="su-xirr" class="text-sm font-black text-purple-800">—</div>
+                        </div>
+                    </div>
+
+                    <!-- Insight -->
+                    <div id="su-insight" class="rounded-xl px-3 py-2 text-[11px] leading-relaxed hidden" style="background:#fefce8;border:1px solid #fde047;color:#713f12;"></div>
+                </div>
+            </div>
+
+            <!-- ── INTERACTIVE CHART ── -->
+            <div class="bg-white rounded-2xl border border-amber-100 shadow-sm p-3">
+                <div class="text-[10px] font-black text-slate-500 uppercase tracking-wider mb-2">📊 Corpus Growth — Flat vs Step-Up SIP <span class="text-amber-500 font-bold normal-case">(hover for details)</span></div>
+                <div style="position:relative;height:260px;">
+                    <canvas id="su-chart-canvas"></canvas>
+                </div>
+            </div>
+
+            <!-- ── YEAR-BY-YEAR TABLE ── -->
+            <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-3">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="text-[10px] font-black text-slate-500 uppercase tracking-wider">Year-by-Year Breakdown</div>
+                    <button id="su-table-btn" onclick="suToggleTable()" class="text-[10px] font-bold text-slate-400 hover:text-amber-600 transition-all">Show ▾</button>
+                </div>
+                <div id="su-table-wrap" class="hidden overflow-x-auto">
+                    <table class="w-full text-[10px]" style="min-width:580px;">
+                        <thead>
+                            <tr style="background:#fef3c7;">
+                                <th class="px-2 py-1.5 text-left font-black text-amber-800">Yr</th>
+                                <th class="px-2 py-1.5 text-right font-black text-amber-800">SIP/mo</th>
+                                <th class="px-2 py-1.5 text-right font-black text-slate-600">Flat Invested</th>
+                                <th class="px-2 py-1.5 text-right font-black text-slate-600">Flat Corpus</th>
+                                <th class="px-2 py-1.5 text-right font-black text-amber-700">Step-Up Invested</th>
+                                <th class="px-2 py-1.5 text-right font-black text-amber-700">Step-Up Corpus</th>
+                                <th class="px-2 py-1.5 text-right font-black text-emerald-700">Gap</th>
+                            </tr>
+                        </thead>
+                        <tbody id="su-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>

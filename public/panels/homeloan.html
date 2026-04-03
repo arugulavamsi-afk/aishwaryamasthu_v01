@@ -1,0 +1,295 @@
+<div id="homeloan-panel" class="hidden w-full flex flex-col gap-4">
+
+            <!-- Header -->
+            <div class="rounded-2xl px-5 py-4 text-white shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 50%,#0e5c3a 100%);border:2px solid rgba(245,200,66,0.4);box-shadow:0 4px 18px rgba(0,0,0,0.25);">
+                <h2 class="text-lg font-black flex items-center gap-2" data-i18n="page.hl.h">🏠 Home Loan Advisor</h2>
+                <p class="text-blue-200 text-xs mt-1 max-w-lg" data-i18n="page.hl.sub">EMI Calculator · Prepayment Benefit · Rent vs Buy · Section 24(b) Tax Saving</p>
+            </div>
+
+            <!-- ── TABS ── -->
+            <div class="flex gap-2 flex-wrap" id="hl-tabs">
+                <button onclick="hlTab('emi')"      id="hl-tab-emi"      class="hl-tab-active   px-4 py-2 rounded-xl text-xs font-black transition-all">📊 EMI Calculator</button>
+                <button onclick="hlTab('prepay')"   id="hl-tab-prepay"   class="hl-tab-inactive px-4 py-2 rounded-xl text-xs font-black transition-all">💰 Prepayment Benefit</button>
+                <button onclick="hlTab('rentvsbuy')" id="hl-tab-rentvsbuy" class="hl-tab-inactive px-4 py-2 rounded-xl text-xs font-black transition-all">⚖️ Rent vs Buy</button>
+                <button onclick="hlTab('tax')"      id="hl-tab-tax"      class="hl-tab-inactive px-4 py-2 rounded-xl text-xs font-black transition-all">🧾 Tax Saving 24(b)</button>
+            </div>
+
+            <!-- ── EMI CALCULATOR ── -->
+            <div id="hl-section-emi" class="flex flex-col gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="bg-white rounded-2xl border border-[#f5c842]/30 shadow-sm p-4 space-y-3">
+                    <div class="text-xs font-black text-slate-600 uppercase tracking-wider mb-1">Loan Details</div>
+                    <div>
+                        <label class="hl-label" data-i18n="lbl.hl.amount">Loan Amount (₹)</label>
+                        <div class="relative"><span class="hl-prefix">₹</span>
+                        <input id="hl-amount" type="text" inputmode="numeric" placeholder="e.g. 50,00,000" class="hl-input pl-7"
+                            oninput="hlFormat(this); this.classList.remove('text-slate-400'); hlEmiCalc()"
+                            onfocus="if(this.value==='0'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                            onblur="if(this.value===''||this.value==='0'){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"></div>
+                    </div>
+                    <div>
+                        <label class="hl-label" data-i18n="lbl.hl.rate">Annual Interest Rate (%)</label>
+                        <div class="relative">
+                        <input id="hl-rate" type="number" step="0.05" min="5" max="20" placeholder="e.g. 8.5" class="hl-input text-slate-400"
+                            oninput="hlEmiCalc(); this.classList.remove('text-slate-400');" value="8.5" onfocus="if(this.value==='8.5'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}" onblur="if(this.value===''||this.value==='8.5'){this.value='8.5';this.classList.add('text-slate-400');}"></div>
+                        <div class="text-[9px] text-slate-400 mt-1">Current SBI home loan: ~8.5% · HDFC: ~8.75%</div>
+                    </div>
+                    <div>
+                        <label class="hl-label" data-i18n="lbl.hl.tenure">Loan Tenure (Years)</label>
+                        <input id="hl-tenure" type="number" min="1" max="30" placeholder="e.g. 20" class="hl-input text-slate-400"
+                            oninput="hlEmiCalc(); this.classList.remove('text-slate-400');" value="20" onfocus="if(this.value==='20'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}" onblur="if(this.value===''||this.value==='20'){this.value='20';this.classList.add('text-slate-400');}">
+                    </div>
+                    <div>
+                        <label class="hl-label" data-i18n="lbl.hl.month">Start Month (optional)</label>
+                        <div class="flex gap-2">
+                            <select id="hl-start-month" class="hl-input flex-1" onchange="hlEmiCalc()" style="color:#94a3b8;">
+                                <option value="" disabled selected style="color:#94a3b8;">Month</option>
+                                <option value="1">January</option><option value="2">February</option>
+                                <option value="3">March</option><option value="4">April</option>
+                                <option value="5">May</option><option value="6">June</option>
+                                <option value="7">July</option><option value="8">August</option>
+                                <option value="9">September</option><option value="10">October</option>
+                                <option value="11">November</option><option value="12">December</option>
+                            </select>
+                            <select id="hl-start-year" class="hl-input" style="width:90px;color:#94a3b8;" onchange="hlEmiCalc()">
+                                <option value="" disabled selected style="color:#94a3b8;">Year</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <div class="mb-2"><button onclick="waShare('homeloan')" class="wa-share-btn shine-btn"><svg viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5 flex-shrink-0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.557 4.133 1.535 5.876L.057 23.43a.75.75 0 00.918.924l5.688-1.493A11.946 11.946 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.907 0-3.7-.512-5.241-1.403l-.375-.22-3.877 1.018 1.01-3.769-.234-.389A9.953 9.953 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>Share on WhatsApp</button></div>
+            <div id="hl-emi-result" class="bg-white rounded-2xl border border-[#f5c842]/30 shadow-sm p-4">
+                        <p class="text-xs text-slate-400 text-center font-semibold py-4">Enter loan details to see EMI</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Amortisation Summary — full width below both cards -->
+            <div id="hl-emi-amort-wrap" class="hidden bg-white rounded-2xl border border-[#f5c842]/30 shadow-sm overflow-hidden">
+                <div class="px-4 py-2.5 flex items-center justify-between" style="background:#f8fafc;border-bottom:1px solid #e2e8f0;">
+                    <span class="text-[10px] font-black text-slate-600 uppercase tracking-wider">📅 Amortisation Summary</span>
+                    <button onclick="hlToggleAmort()" id="hl-amort-btn" class="text-[10px] font-bold text-indigo-500 underline">Show year-by-year</button>
+                </div>
+                <div id="hl-amort-table" class="hidden overflow-x-auto">
+                    <table class="w-full text-[10px]" style="min-width:380px;">
+                        <thead><tr style="background:#f1f5f9;">
+                            <th class="px-3 py-2 text-left font-black text-slate-500">Year</th>
+                            <th class="px-3 py-2 text-right font-black text-slate-500">Principal Paid</th>
+                            <th class="px-3 py-2 text-right font-black text-slate-500">Interest Paid</th>
+                            <th class="px-3 py-2 text-right font-black text-slate-500">Balance</th>
+                        </tr></thead>
+                        <tbody id="hl-amort-body"></tbody>
+                    </table>
+                </div>
+            </div>
+            </div>
+
+            <!-- ── PREPAYMENT BENEFIT ── -->
+            <div id="hl-section-prepay" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div class="bg-white rounded-2xl border border-[#f5c842]/30 shadow-sm p-6 space-y-5">
+                    <div class="text-xs font-black text-slate-600 uppercase tracking-wider">Loan + Prepayment Details</div>
+                    <div>
+                        <label class="hl-label" data-i18n="lbl.hl.origamt">Original Loan Amount (₹)</label>
+                        <div class="relative mt-1"><span class="hl-prefix">₹</span>
+                        <input id="pp-amount" type="text" inputmode="numeric" placeholder="e.g. 50,00,000" class="hl-input pl-7"
+                            oninput="hlFormat(this); this.classList.remove('text-slate-400'); hlPrepayCalc()"
+                            onfocus="if(this.value==='0'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}" onblur="if(this.value===''||this.value==='0'){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"></div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="hl-label" data-i18n="lbl.hl.ratepа">Interest Rate (% p.a.)</label>
+                            <input id="pp-rate" type="number" step="0.05" min="5" max="20" value="8.5" class="hl-input text-slate-400 mt-1" oninput="hlPrepayCalc(); this.classList.remove('text-slate-400');" onfocus="if(this.value==='8.5'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}" onblur="if(this.value===''||this.value==='8.5'){this.value='8.5';this.classList.add('text-slate-400');}">
+                        </div>
+                        <div>
+                            <label class="hl-label" data-i18n="lbl.hl.origten">Original Tenure (Years)</label>
+                            <input id="pp-tenure" type="number" min="1" max="30" value="20" class="hl-input text-slate-400 mt-1" oninput="hlPrepayCalc(); this.classList.remove('text-slate-400');" onfocus="if(this.value==='20'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}" onblur="if(this.value===''||this.value==='20'){this.value='20';this.classList.add('text-slate-400');}">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="hl-label" data-i18n="lbl.hl.prepay">Lump-sum Prepayment Amount (₹)</label>
+                        <div class="relative mt-1"><span class="hl-prefix">₹</span>
+                        <input id="pp-lump" type="text" inputmode="numeric" placeholder="e.g. 5,00,000" class="hl-input pl-7"
+                            oninput="hlFormat(this); this.classList.remove('text-slate-400'); hlPrepayCalc()"
+                            onfocus="if(this.value==='0'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}" onblur="if(this.value===''||this.value==='0'){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"></div>
+                    </div>
+                    <div>
+                        <label class="hl-label" data-i18n="lbl.hl.prepayafter">Prepayment After (Years into loan)</label>
+                        <input id="pp-after" type="number" min="1" max="29" value="3" class="hl-input text-slate-400 mt-1" oninput="hlPrepayCalc(); this.classList.remove('text-slate-400');" onfocus="if(this.value==='3'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}" onblur="if(this.value===''||this.value==='3'){this.value='3';this.classList.add('text-slate-400');}">
+                    </div>
+                    <div class="rounded-xl bg-slate-50 border border-slate-200 p-3 flex gap-5">
+                        <label class="flex items-center gap-2 text-sm font-semibold text-slate-600 cursor-pointer">
+                            <input type="radio" name="pp-choice" value="reduce_emi" onchange="hlPrepayCalc()" class="accent-indigo-500 w-4 h-4"> Reduce EMI
+                        </label>
+                        <label class="flex items-center gap-2 text-sm font-semibold text-slate-600 cursor-pointer">
+                            <input type="radio" name="pp-choice" value="reduce_tenure" onchange="hlPrepayCalc()" checked class="accent-indigo-500 w-4 h-4"> Reduce Tenure
+                        </label>
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <div class="mb-2"><button onclick="waShare('prepay')" class="wa-share-btn shine-btn" title="Share on WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5 flex-shrink-0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.557 4.133 1.535 5.876L.057 23.43a.75.75 0 00.918.924l5.688-1.493A11.946 11.946 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.907 0-3.7-.512-5.241-1.403l-.375-.22-3.877 1.018 1.01-3.769-.234-.389A9.953 9.953 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>Share on WhatsApp</button></div>
+                    <div id="hl-prepay-result" class="bg-white rounded-2xl border border-[#f5c842]/30 shadow-sm p-4">
+                        <p class="text-xs text-slate-400 text-center font-semibold py-4">Enter details to see prepayment benefit</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── RENT VS BUY ── -->
+            <div id="hl-section-rentvsbuy" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="bg-white rounded-2xl border border-[#f5c842]/30 shadow-sm p-4 space-y-3">
+                    <div class="text-xs font-black text-slate-600 uppercase tracking-wider mb-1">Your Situation</div>
+                    <div class="rounded-xl p-3" style="background:#eff6ff;border:1px solid #bfdbfe;">
+                        <div class="text-[10px] font-black text-blue-600 uppercase tracking-wider mb-2">🏦 If You Buy</div>
+                        <div class="space-y-2">
+                            <div><label class="hl-label" data-i18n="lbl.hl.proprice">Property Price (₹)</label>
+                                <div class="relative"><span class="hl-prefix">₹</span>
+                                <input id="rvb-price" type="text" inputmode="numeric" placeholder="e.g. 80,00,000" class="hl-input pl-7"
+                                    oninput="hlFormat(this); this.classList.remove('text-slate-400'); hlRvbCalc()"
+                                    onfocus="if(this.value==='0'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}" onblur="if(this.value===''||this.value==='0'){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"></div>
+                            </div>
+                            <div><label class="hl-label" data-i18n="lbl.hl.down">Down Payment (₹)</label>
+                                <div class="relative"><span class="hl-prefix">₹</span>
+                                <input id="rvb-down" type="text" inputmode="numeric" placeholder="e.g. 20,00,000" class="hl-input pl-7"
+                                    oninput="hlFormat(this); this.classList.remove('text-slate-400'); hlRvbCalc()"
+                                    onfocus="if(this.value==='0'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}" onblur="if(this.value===''||this.value==='0'){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"></div>
+                            </div>
+                            <div><label class="hl-label" data-i18n="lbl.hl.loanrate">Loan Interest Rate (% p.a.)</label>
+                                <input id="rvb-rate" type="number" step="0.05" value="8.5" class="hl-input text-slate-400" oninput="hlRvbCalc(); this.classList.remove('text-slate-400');" onfocus="if(this.value==='8.5'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}" onblur="if(this.value===''||this.value==='8.5'){this.value='8.5';this.classList.add('text-slate-400');}"></div>
+                            <div><label class="hl-label">Loan Tenure (Years)</label>
+                                <input id="rvb-tenure" type="number" value="20" class="hl-input text-slate-400" oninput="hlRvbCalc(); this.classList.remove('text-slate-400');" onfocus="if(this.value==='20'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}" onblur="if(this.value===''||this.value==='20'){this.value='20';this.classList.add('text-slate-400');}"></div>
+                            <div><label class="hl-label" data-i18n="lbl.hl.propapp">Property Appreciation (% p.a.)</label>
+                                <input id="rvb-apprec" type="number" step="0.5" value="7" class="hl-input text-slate-400" oninput="hlRvbCalc(); this.classList.remove('text-slate-400');" onfocus="if(this.value==='7'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}" onblur="if(this.value===''||this.value==='7'){this.value='7';this.classList.add('text-slate-400');}">
+                                <div class="text-[9px] text-slate-400 mt-0.5">Historical India average: 6–9% p.a.</div></div>
+                            <div><label class="hl-label" data-i18n="lbl.hl.maint">Annual Property Tax (₹)</label>
+                                <div class="relative"><span class="hl-prefix">₹</span>
+                                <input id="rvb-maint" type="text" inputmode="numeric" placeholder="e.g. 12,000" class="hl-input pl-7"
+                                    oninput="hlFormat(this); this.classList.remove('text-slate-400'); hlRvbCalc()"
+                                    onfocus="if(this.value==='0'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}" onblur="if(this.value===''||this.value==='0'){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"></div>
+                            </div>
+                            <div><label class="hl-label">Society Maintenance (₹/month)</label>
+                                <div class="relative"><span class="hl-prefix">₹</span>
+                                <input id="rvb-society" type="text" inputmode="numeric" placeholder="e.g. 5,000" class="hl-input pl-7"
+                                    oninput="hlFormat(this); this.classList.remove('text-slate-400'); hlRvbCalc()"
+                                    onfocus="if(this.value==='0'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}" onblur="if(this.value===''||this.value==='0'){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                                </div>
+                                <div class="text-[9px] text-slate-400 mt-0.5">Apartment complex: ₹3,000–₹15,000/month</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Upfront Buying Costs (stamp duty, GST, legal) -->
+                    <div class="rounded-xl p-3" style="background:#fff7ed;border:1px solid #fed7aa;">
+                        <div class="text-[10px] font-black text-orange-700 uppercase tracking-wider mb-2">📋 Upfront Buying Costs <span class="text-[9px] font-medium text-orange-500 normal-case">(added to buy-side cost)</span></div>
+                        <div class="space-y-2">
+                            <div><label class="hl-label">Stamp Duty + Registration (%)</label>
+                                <input id="rvb-stamp" type="number" step="0.5" value="7" class="hl-input text-slate-400"
+                                    oninput="hlRvbCalc(); this.classList.remove('text-slate-400');"
+                                    onfocus="if(this.value==='7'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                                    onblur="if(this.value===''||this.value==='7'){this.value='7';this.classList.add('text-slate-400');}">
+                                <div class="text-[9px] text-slate-400 mt-0.5">Varies by state: Telangana 7.5% · Maharashtra 6% · Karnataka 5.6%</div>
+                            </div>
+                            <div><label class="hl-label">GST — Under-construction only (%) <span class="text-[9px] font-medium text-orange-500">0 if ready-to-move</span></label>
+                                <input id="rvb-gst" type="number" step="0.5" value="0" min="0" max="12" class="hl-input text-slate-400"
+                                    oninput="hlRvbCalc(); this.classList.remove('text-slate-400');"
+                                    onfocus="if(this.value==='0'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                                    onblur="if(this.value===''||this.value==='0'){this.value='0';this.classList.add('text-slate-400');}">
+                                <div class="text-[9px] text-slate-400 mt-0.5">Under-construction: 5% GST on property value (no ITC). Ready-to-move: 0%</div>
+                            </div>
+                            <div><label class="hl-label">MODT + Legal Charges (₹)</label>
+                                <div class="relative"><span class="hl-prefix">₹</span>
+                                <input id="rvb-modt" type="text" inputmode="numeric" placeholder="e.g. 20,000" class="hl-input pl-7"
+                                    oninput="hlFormat(this); this.classList.remove('text-slate-400'); hlRvbCalc()"
+                                    onfocus="if(this.value==='0'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}" onblur="if(this.value===''||this.value==='0'){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                                </div>
+                                <div class="text-[9px] text-slate-400 mt-0.5">MODT registration + lawyer + franking: typically ₹15,000–₹30,000</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="rounded-xl p-3" style="background:#f0fdf4;border:1px solid #86efac;">
+                        <div class="text-[10px] font-black text-emerald-700 uppercase tracking-wider mb-2">🏘️ If You Rent</div>
+                        <div class="space-y-2">
+                            <div><label class="hl-label" data-i18n="lbl.hl.rent">Monthly Rent (₹)</label>
+                                <div class="relative"><span class="hl-prefix">₹</span>
+                                <input id="rvb-rent" type="text" inputmode="numeric" placeholder="e.g. 25,000" class="hl-input pl-7"
+                                    oninput="hlFormat(this); this.classList.remove('text-slate-400'); hlRvbCalc()"
+                                    onfocus="if(this.value==='0'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}" onblur="if(this.value===''||this.value==='0'){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"></div>
+                            </div>
+                            <div><label class="hl-label" data-i18n="lbl.hl.rentinc">Annual Rent Increase (%)</label>
+                                <input id="rvb-rent-incr" type="number" step="0.5" value="5" class="hl-input text-slate-400" oninput="hlRvbCalc(); this.classList.remove('text-slate-400');" onfocus="if(this.value==='5'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}" onblur="if(this.value===''||this.value==='5'){this.value='5';this.classList.add('text-slate-400');}">
+                                <div class="text-[9px] text-slate-400 mt-0.5">Typical: 5–10% p.a.</div></div>
+                            <div><label class="hl-label" data-i18n="lbl.hl.investret">Investment Return on Saved Capital (% p.a.)</label>
+                                <input id="rvb-inv-return" type="number" step="0.5" value="12" class="hl-input text-slate-400" oninput="hlRvbCalc(); this.classList.remove('text-slate-400');" onfocus="if(this.value==='12'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}" onblur="if(this.value===''||this.value==='12'){this.value='12';this.classList.add('text-slate-400');}">
+                                <div class="text-[9px] text-slate-400 mt-0.5">What down payment + monthly diff earns if invested in equity MF</div></div>
+                        </div>
+                    </div>
+                    <div><label class="hl-label" data-i18n="lbl.hl.horizon">Comparison Horizon (Years)</label>
+                        <input id="rvb-years" type="number" min="5" max="30" value="20" class="hl-input text-slate-400" oninput="hlRvbCalc(); this.classList.remove('text-slate-400');" onfocus="if(this.value==='20'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}" onblur="if(this.value===''||this.value==='20'){this.value='20';this.classList.add('text-slate-400');}"></div>
+                </div>
+                <div class="space-y-3">
+                    <div class="mb-2"><button onclick="waShare('rentvsbuy')" class="wa-share-btn shine-btn" title="Share on WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5 flex-shrink-0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.557 4.133 1.535 5.876L.057 23.43a.75.75 0 00.918.924l5.688-1.493A11.946 11.946 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.907 0-3.7-.512-5.241-1.403l-.375-.22-3.877 1.018 1.01-3.769-.234-.389A9.953 9.953 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>Share on WhatsApp</button></div>
+                    <div id="hl-rvb-result" class="bg-white rounded-2xl border border-[#f5c842]/30 shadow-sm p-4">
+                        <p class="text-xs text-slate-400 text-center font-semibold py-4">Enter details to see Rent vs Buy analysis</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── TAX SAVING 24(b) ── -->
+            <div id="hl-section-tax" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="bg-white rounded-2xl border border-[#f5c842]/30 shadow-sm p-4 space-y-3">
+                    <div class="text-xs font-black text-slate-600 uppercase tracking-wider mb-1">Loan + Income Details</div>
+                    <div>
+                        <label class="hl-label" data-i18n="lbl.hl.taxamt">Home Loan Amount (₹)</label>
+                        <div class="relative"><span class="hl-prefix">₹</span>
+                        <input id="tx-amount" type="text" inputmode="numeric" placeholder="e.g. 50,00,000" class="hl-input pl-7"
+                            oninput="hlFormat(this); this.classList.remove('text-slate-400'); hlTaxCalc()"
+                            onfocus="if(this.value==='0'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}" onblur="if(this.value===''||this.value==='0'){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"></div>
+                    </div>
+                    <div>
+                        <label class="hl-label">Interest Rate (% p.a.)</label>
+                        <input id="tx-rate" type="number" step="0.05" value="8.5" class="hl-input text-slate-400" oninput="hlTaxCalc(); this.classList.remove('text-slate-400');" onfocus="if(this.value==='8.5'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}" onblur="if(this.value===''||this.value==='8.5'){this.value='8.5';this.classList.add('text-slate-400');}">
+                    </div>
+                    <div>
+                        <label class="hl-label">Loan Tenure (Years)</label>
+                        <input id="tx-tenure" type="number" value="20" class="hl-input text-slate-400" oninput="hlTaxCalc(); this.classList.remove('text-slate-400');" onfocus="if(this.value==='20'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}" onblur="if(this.value===''||this.value==='20'){this.value='20';this.classList.add('text-slate-400');}">
+                    </div>
+                    <div>
+                        <label class="hl-label" data-i18n="lbl.hl.taxslab">Tax Regime</label>
+                        <select id="tx-regime" class="hl-input" onchange="_regimeChange('tx-regime','tx-slab',hlTaxCalc)">
+                            <option value="new" selected>New Regime</option>
+                            <option value="old">Old Regime</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="hl-label">Your Tax Slab</label>
+                        <select id="tx-slab" class="hl-input" onchange="hlTaxCalc()">
+                            <option value="0">0% — taxable income ≤ ₹12L (87A rebate, zero tax)</option>
+                            <option value="15">15% — taxable income ₹12L–₹16L</option>
+                            <option value="20" selected>20% — taxable income ₹16L–₹20L</option>
+                            <option value="25">25% — taxable income ₹20L–₹24L</option>
+                            <option value="30">30% — taxable income above ₹24L</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="hl-label" data-i18n="lbl.hl.proptype">Property Type</label>
+                        <select id="tx-type" class="hl-input" onchange="hlTaxCalc()">
+                            <option value="self">Self-occupied (max deduction ₹2L/yr)</option>
+                            <option value="letout">Let-out / Rented (full interest deductible)</option>
+                        </select>
+                    </div>
+                    <div class="rounded-xl p-3 text-[10px] text-blue-800 leading-relaxed" style="background:#eff6ff;border:1px solid #bfdbfe;">
+                        <strong>Section 24(b):</strong> Deduct home loan interest from taxable income. Self-occupied: max ₹2L/yr. Let-out: full interest deductible (no cap). Construction must be complete within 5 years of loan.
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <div class="mb-2"><button onclick="waShare('tax24b')" class="wa-share-btn shine-btn" title="Share on WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5 flex-shrink-0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.557 4.133 1.535 5.876L.057 23.43a.75.75 0 00.918.924l5.688-1.493A11.946 11.946 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.907 0-3.7-.512-5.241-1.403l-.375-.22-3.877 1.018 1.01-3.769-.234-.389A9.953 9.953 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>Share on WhatsApp</button></div>
+                    <div id="hl-tax-result" class="bg-white rounded-2xl border border-[#f5c842]/30 shadow-sm p-4">
+                        <p class="text-xs text-slate-400 text-center font-semibold py-4">Enter details to see tax saving</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reset button -->
+            <button onclick="resetHomeLoan()" class="mt-3 w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-slate-200 text-slate-500 hover:border-rose-300 hover:text-rose-500 hover:bg-rose-50 font-semibold text-sm transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                Reset Home Loan Advisor
+            </button>
+
+        </div>

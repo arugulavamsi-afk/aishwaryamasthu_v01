@@ -1,0 +1,405 @@
+<div id="taxguide-panel" class="hidden w-full flex flex-col gap-4">
+
+            <!-- Header -->
+            <div class="rounded-2xl px-5 py-4 text-white shine-header" style="background:linear-gradient(135deg,#1e1b4b 0%,#3730a3 45%,#065f46 100%);border:2px solid rgba(245,200,66,0.4);box-shadow:0 4px 18px rgba(0,0,0,0.25);">
+                <h2 class="text-lg font-black flex items-center gap-2" data-i18n="page.tg.h">🧾 Indian Tax Guide</h2>
+                <p class="text-indigo-200 text-xs mt-1 max-w-lg" data-i18n="page.tg.sub">Old vs New Regime · MF Capital Gains · Crypto Tax · ELSS · Small Savings — rates kept current</p>
+            </div>
+
+            <!-- ── TAX OPTIMIZER ── -->
+            <div class="bg-white rounded-2xl border border-[#f5c842]/30 shadow-sm overflow-hidden">
+                <!-- Header -->
+                <div class="px-5 py-3.5 flex items-center gap-3 flex-wrap" style="background:linear-gradient(135deg,#1e1b4b,#312e81,#1e3a5f);">
+                    <div>
+                        <div class="text-white font-black text-sm flex items-center gap-2" data-i18n="tg.opt.title">⚖️ Old Regime vs New Regime Tax Optimizer</div>
+                        <div class="text-indigo-300 text-[10px] mt-0.5" data-i18n="tg.opt.sub">Enter income + deductions → instantly see which regime saves more + investable surplus</div>
+                    </div>
+                    <span class="ml-auto text-[10px] font-bold px-2 py-1 rounded-full" data-i18n="tg.opt.badge" style="background:rgba(245,200,66,0.2);color:#f5c842;">FY 2025-26 rates</span>
+                </div>
+
+                <div class="p-4 space-y-4">
+
+                    <!-- Profile autofill banner -->
+                    <div id="up-banner-taxguide" class="up-banner hidden">
+                        <span class="text-[11px] font-bold text-sky-700">👤 Fill from My Profile?</span>
+                        <button class="up-apply-btn" onclick="upApply('taxguide')" data-i18n="up.apply">↙ Apply Profile</button>
+                    </div>
+
+                    <!-- ── Income ── -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-500 uppercase tracking-wider mb-1" data-i18n="tg.lbl.salary">Annual Gross Salary / CTC (₹)</label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold">₹</span>
+                                <input id="tg-income" type="text" inputmode="numeric" placeholder="e.g. 12,00,000"
+                                    class="w-full pl-7 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-400"
+                                    oninput="tgFormat(this); tgCalc()">
+                            </div>
+                            <div id="tg-income-monthly" class="text-[9px] text-slate-400 mt-0.5 font-semibold"></div>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-500 uppercase tracking-wider mb-1" data-i18n="tg.lbl.other">Other Income (FD interest, rent…)</label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold">₹</span>
+                                <input id="tg-other-income" type="text" inputmode="numeric" placeholder="0"
+                                    class="w-full pl-7 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-400 text-slate-400"
+                                    oninput="tgFormat(this); this.classList.remove('text-slate-400'); tgCalc()"
+                                    onfocus="if(this.value==='0'||this.value===''){this.value='';this.classList.remove('text-slate-400');}"
+                                    onblur="if(this.value===''||this.value==='0'){this.value='0';this.classList.add('text-slate-400');}"
+                                    value="0">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ── 80CCD(2) Employer NPS — valid in BOTH regimes ── -->
+                    <div class="rounded-xl px-3 py-2.5" style="background:#eff6ff;border:1px solid #bfdbfe;">
+                        <div class="flex items-center justify-between flex-wrap gap-1 mb-1.5">
+                            <label class="block text-[10px] font-black text-blue-700 uppercase tracking-wider" data-i18n="tg.lbl.empnps">Employer NPS Contribution 80CCD(2) <span class="normal-case font-semibold text-blue-400 text-[9px]">(10% of basic — deductible in BOTH regimes)</span></label>
+                            <span class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-blue-700 text-white">Both Regimes</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="relative flex-1">
+                                <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold">₹</span>
+                                <input id="tg-emp-nps" type="text" inputmode="numeric" placeholder="0"
+                                    class="w-full pl-6 pr-2 py-2 bg-white border border-blue-200 rounded-lg text-xs font-bold text-slate-700 text-slate-400 outline-none focus:ring-2 focus:ring-blue-300"
+                                    oninput="tgFormat(this); this.classList.remove('text-slate-400'); tgCalc()"
+                                    onfocus="if(this.value==='0'||this.value===''){this.value='';this.classList.remove('text-slate-400');}"
+                                    onblur="if(this.value===''||this.value==='0'){this.value='0';this.classList.add('text-slate-400');}" value="0">
+                            </div>
+                            <div class="text-[9px] text-blue-600 font-semibold leading-snug flex-1" data-i18n="tg.hint.empnps">Your employer's NPS contribution (up to 10% of basic). Deductible u/s 80CCD(2) — not limited by the ₹1.5L 80C cap.</div>
+                        </div>
+                    </div>
+
+                    <!-- ── Old Regime Deductions ── -->
+                    <div>
+                        <div class="text-[10px] font-black text-slate-500 uppercase tracking-wider mb-2" data-i18n="tg.lbl.oldded">Old Regime Deductions <span class="normal-case font-semibold text-slate-400" data-i18n="tg.lbl.oldded.note">(only relevant if old regime wins)</span></div>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                            <div>
+                                <label class="block text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1" data-i18n="tg.lbl.80c">80C <span class="normal-case font-semibold text-slate-400">(max ₹1.5L)</span></label>
+                                <div class="relative">
+                                    <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold">₹</span>
+                                    <input id="tg-80c" type="text" inputmode="numeric" placeholder="0"
+                                        class="w-full pl-6 pr-2 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-700 text-slate-400 outline-none focus:ring-2 focus:ring-indigo-300"
+                                        oninput="tgFormat(this); this.classList.remove('text-slate-400'); tgCalc()"
+                                    onfocus="if(this.value==='0'||this.value===''){this.value='';this.classList.remove('text-slate-400');}"
+                                    onblur="if(this.value===''||this.value==='0'){this.value='0';this.classList.add('text-slate-400');}" value="1,50,000">
+                                </div>
+                                <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="tg.hint.80c">ELSS, PPF, LIC, EPF</div>
+                            </div>
+                            <div>
+                                <label class="block text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1" data-i18n="tg.lbl.hra">HRA Exemption</label>
+                                <div class="relative">
+                                    <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold">₹</span>
+                                    <input id="tg-hra" type="text" inputmode="numeric" placeholder="0"
+                                        class="w-full pl-6 pr-2 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-700 text-slate-400 outline-none focus:ring-2 focus:ring-indigo-300"
+                                        oninput="tgFormat(this); this.classList.remove('text-slate-400'); tgCalc()"
+                                    onfocus="if(this.value==='0'||this.value===''){this.value='';this.classList.remove('text-slate-400');}"
+                                    onblur="if(this.value===''||this.value==='0'){this.value='0';this.classList.add('text-slate-400');}" value="0">
+                                </div>
+                                <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="tg.hint.hra">Metro 50%, Non-metro 40%</div>
+                            </div>
+                            <div>
+                                <label class="block text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1" data-i18n="tg.lbl.nps">NPS 80CCD(1B) <span class="normal-case font-semibold text-slate-400">(max ₹50K)</span></label>
+                                <div class="relative">
+                                    <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold">₹</span>
+                                    <input id="tg-nps" type="text" inputmode="numeric" placeholder="0"
+                                        class="w-full pl-6 pr-2 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-700 text-slate-400 outline-none focus:ring-2 focus:ring-indigo-300"
+                                        oninput="tgFormat(this); this.classList.remove('text-slate-400'); tgCalc()"
+                                    onfocus="if(this.value==='0'||this.value===''){this.value='';this.classList.remove('text-slate-400');}"
+                                    onblur="if(this.value===''||this.value==='0'){this.value='0';this.classList.add('text-slate-400');}" value="0">
+                                </div>
+                                <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="tg.hint.nps">Extra ₹50K beyond 80C</div>
+                            </div>
+                            <div>
+                                <label class="block text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1" data-i18n="tg.lbl.hl">Home Loan 24(b) <span class="normal-case font-semibold text-slate-400">(max ₹2L)</span></label>
+                                <div class="relative">
+                                    <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold">₹</span>
+                                    <input id="tg-homeloan" type="text" inputmode="numeric" placeholder="0"
+                                        class="w-full pl-6 pr-2 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-700 text-slate-400 outline-none focus:ring-2 focus:ring-indigo-300"
+                                        oninput="tgFormat(this); this.classList.remove('text-slate-400'); tgCalc()"
+                                    onfocus="if(this.value==='0'||this.value===''){this.value='';this.classList.remove('text-slate-400');}"
+                                    onblur="if(this.value===''||this.value==='0'){this.value='0';this.classList.add('text-slate-400');}" value="0">
+                                </div>
+                                <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="tg.hint.hl">Self-occupied property</div>
+                            </div>
+                            <div>
+                                <label class="block text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1" data-i18n="tg.lbl.80d">80D Health Ins. <span class="normal-case font-semibold text-slate-400">(max ₹75K)</span></label>
+                                <div class="relative">
+                                    <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold">₹</span>
+                                    <input id="tg-80d" type="text" inputmode="numeric" placeholder="0"
+                                        class="w-full pl-6 pr-2 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-700 text-slate-400 outline-none focus:ring-2 focus:ring-indigo-300"
+                                        oninput="tgFormat(this); this.classList.remove('text-slate-400'); tgCalc()"
+                                    onfocus="if(this.value==='0'||this.value===''){this.value='';this.classList.remove('text-slate-400');}"
+                                    onblur="if(this.value===''||this.value==='0'){this.value='0';this.classList.add('text-slate-400');}" value="0">
+                                </div>
+                                <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="tg.hint.80d">Self ₹25K + Parents ₹50K</div>
+                            </div>
+                            <div>
+                                <label class="block text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1" data-i18n="tg.lbl.otherded">Other Deductions</label>
+                                <div class="relative">
+                                    <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold">₹</span>
+                                    <input id="tg-other-deduct" type="text" inputmode="numeric" placeholder="0"
+                                        class="w-full pl-6 pr-2 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-700 text-slate-400 outline-none focus:ring-2 focus:ring-indigo-300"
+                                        oninput="tgFormat(this); this.classList.remove('text-slate-400'); tgCalc()"
+                                    onfocus="if(this.value==='0'||this.value===''){this.value='';this.classList.remove('text-slate-400');}"
+                                    onblur="if(this.value===''||this.value==='0'){this.value='0';this.classList.add('text-slate-400');}" value="0">
+                                </div>
+                                <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="tg.hint.otherded">LTA, Prof Tax, 80E, 80G…</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ── Monthly Expenses (for surplus calc) ── -->
+                    <div class="rounded-xl p-3" style="background:#f0fdf4;border:1px solid #86efac;">
+                        <label class="block text-[10px] font-black text-emerald-700 uppercase tracking-wider mb-1.5" data-i18n="tg.lbl.exp">Monthly Living Expenses (₹) <span class="normal-case font-semibold text-emerald-500" data-i18n="tg.lbl.exp.note">— for surplus calculation</span></label>
+                        <div class="relative">
+                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold">₹</span>
+                            <input id="tg-expenses" type="text" inputmode="numeric" placeholder="e.g. 50,000"
+                                class="w-full pl-7 pr-3 py-2.5 bg-white border border-emerald-200 rounded-xl text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-emerald-400"
+                                oninput="tgFormat(this); tgCalc()">
+                        </div>
+                        <div class="text-[9px] text-emerald-600 mt-1" data-i18n="tg.hint.exp">Rent + groceries + EMIs + lifestyle — enter to see exactly how much you can invest each month</div>
+
+                        <!-- EPF deduction -->
+                        <div class="mt-2.5 pt-2.5 border-t border-emerald-100">
+                            <label class="block text-[10px] font-black text-emerald-700 uppercase tracking-wider mb-1" data-i18n="tg.lbl.epf">Monthly Basic Salary (₹) <span class="normal-case font-semibold text-emerald-500" data-i18n="tg.lbl.epf.note">— for EPF deduction</span></label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold">₹</span>
+                                <input id="tg-epf-basic" type="text" inputmode="numeric" placeholder="e.g. 40,000 (leave blank if not applicable)"
+                                    class="w-full pl-7 pr-3 py-2 bg-white border border-emerald-200 rounded-xl text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-emerald-400"
+                                    oninput="tgFormat(this); tgCalc()">
+                            </div>
+                            <div id="tg-epf-note" class="hidden text-[9px] text-emerald-600 mt-1 font-semibold"></div>
+                            <div class="text-[9px] text-slate-400 mt-1" data-i18n="tg.hint.epf">Employee EPF = 12% of basic, deducted from take-home. EPS (pension) is part of employer's 12% — not deducted from your salary.</div>
+                        </div>
+                    </div>
+
+                    <!-- ── Results ── -->
+                    <div id="tg-results">
+                        <p class="text-xs text-slate-400 text-center font-semibold py-4" data-i18n="tg.placeholder">Enter your salary above to see the comparison</p>
+                    </div>
+
+                    <!-- ── Slab Breakdown ── -->
+                    <div id="tg-slab-card" class="hidden rounded-xl overflow-hidden" style="border:1px solid #e2e8f0;">
+                        <div class="px-3 py-2 text-[10px] font-black text-slate-600 uppercase tracking-wider" data-i18n="tg.slab.title" style="background:#f8fafc;">📊 Tax Slab Breakdown (Winning Regime)</div>
+                        <div id="tg-slab-content" class="px-3 py-2 space-y-0.5"></div>
+                    </div>
+
+                    <!-- ── Investable Surplus ── -->
+                    <div class="mt-3 mb-1"><button onclick="waShare('taxguide')" class="wa-share-btn shine-btn"><svg viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5 flex-shrink-0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.557 4.133 1.535 5.876L.057 23.43a.75.75 0 00.918.924l5.688-1.493A11.946 11.946 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.907 0-3.7-.512-5.241-1.403l-.375-.22-3.877 1.018 1.01-3.769-.234-.389A9.953 9.953 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>Share on WhatsApp</button></div>
+                    <div id="tg-surplus-card" class="hidden rounded-2xl overflow-hidden" style="border:1.5px solid #6ee7b7;">
+                        <div class="px-4 py-2.5 text-[10px] font-black text-emerald-700 uppercase tracking-wider" data-i18n="tg.surplus.title" style="background:#f0fdf4;">💰 Your Investable Surplus</div>
+                        <div id="tg-surplus-content" class="p-4"></div>
+                        <div class="px-4 pb-4">
+                            <button onclick="tgSendToFinPlan()" class="w-full shine-btn py-2.5 rounded-xl text-xs font-black text-white shine-header" style="background:linear-gradient(135deg,#059669,#065f46);">
+                                <span data-i18n="tg.btn.sendplan">→ Send Surplus to Financial Plan as Monthly Investment</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <p class="text-[10px] text-slate-400 leading-relaxed" data-i18n="tg.disclaimer">* Std deduction ₹75K (new) / ₹50K (old). 4% cess included. 87A rebate applied. Surcharge not shown. Estimate only — consult a CA before filing.</p>
+                    <div class="mt-2 px-3 py-2 rounded-lg text-[10px] leading-relaxed" style="background:#f0fdf4;border:1px solid #86efac;">
+                        <div class="font-black text-emerald-700 mb-1">📈 Capital Gains not included above — applies separately</div>
+                        <div class="grid grid-cols-2 gap-x-4 gap-y-0.5 text-slate-600">
+                            <div>• Equity MF / ETF (>1 yr): <strong>LTCG 12.5%</strong> on gains above ₹1.25L</div>
+                            <div>• Equity MF / ETF (&lt;1 yr): <strong>STCG 20%</strong> flat</div>
+                            <div>• Debt MF / FoF (any): <strong>Slab rate</strong> (same as salary)</div>
+                            <div>• ELSS after 3-yr lock-in: <strong>LTCG 12.5%</strong></div>
+                            <div>• Gold ETF / Gold FoF: <strong>LTCG 12.5%</strong> (>1 yr)</div>
+                            <div>• Crypto / VDA: <strong>30% flat</strong>, no set-off allowed</div>
+                        </div>
+                        <div class="text-slate-400 mt-1">Your total tax = salary tax (above) + capital gains tax. For MF investors, add your LTCG and STCG liability separately while filing.</div>
+                    </div>
+                </div>
+            </div>
+
+                        <!-- ── MF CAPITAL GAINS QUICK REFERENCE ── -->
+            <div class="bg-white rounded-2xl border border-[#f5c842]/30 shadow-sm overflow-hidden">
+                <div class="px-5 py-3" style="background:linear-gradient(90deg,#064e3b,#065f46);">
+                    <span class="text-white font-black text-sm" data-i18n="tg.cg.title">📊 MF Capital Gains — Current Rates</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs" style="min-width:500px;">
+                        <thead>
+                            <tr style="background:#f1f5f9;">
+                                <th class="px-4 py-2.5 text-left font-black text-slate-600 uppercase tracking-wider text-[10px]" data-i18n="tg.tbl.type">Fund Type</th>
+                                <th class="px-4 py-2.5 text-center font-black text-slate-600 uppercase tracking-wider text-[10px]" data-i18n="tg.tbl.holding">Holding Period</th>
+                                <th class="px-4 py-2.5 text-center font-black text-slate-600 uppercase tracking-wider text-[10px]" data-i18n="tg.tbl.taxtype">Tax Type</th>
+                                <th class="px-4 py-2.5 text-center font-black text-slate-600 uppercase tracking-wider text-[10px]" data-i18n="tg.tbl.rate">Rate</th>
+                                <th class="px-4 py-2.5 text-center font-black text-slate-600 uppercase tracking-wider text-[10px]" data-i18n="tg.tbl.exempt">Exemption</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-t border-slate-100">
+                                <td class="px-4 py-2.5 font-bold text-slate-700" data-i18n="tg.fund.equity">Equity MF / ETF</td>
+                                <td class="px-4 py-2.5 text-center text-slate-500" data-i18n="tg.hold.gt1">&gt; 1 year</td>
+                                <td class="px-4 py-2.5 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700">LTCG</span></td>
+                                <td class="px-4 py-2.5 text-center font-black text-emerald-700">12.5%</td>
+                                <td class="px-4 py-2.5 text-center text-slate-500 text-[10px]" data-i18n="tg.tbl.exempt125">₹1.25L/year exempt</td>
+                            </tr>
+                            <tr class="border-t border-slate-100" style="background:#fefce8;">
+                                <td class="px-4 py-2.5 font-bold text-slate-700" data-i18n="tg.fund.equity">Equity MF / ETF</td>
+                                <td class="px-4 py-2.5 text-center text-slate-500" data-i18n="tg.hold.lt1">&lt; 1 year</td>
+                                <td class="px-4 py-2.5 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-700">STCG</span></td>
+                                <td class="px-4 py-2.5 text-center font-black text-rose-700">20% <span class="text-[9px] text-rose-400">(was 15%)</span></td>
+                                <td class="px-4 py-2.5 text-center text-slate-500 text-[10px]" data-i18n="tg.tbl.noexempt">No exemption</td>
+                            </tr>
+                            <tr class="border-t border-slate-100">
+                                <td class="px-4 py-2.5 font-bold text-slate-700" data-i18n="tg.fund.elss">ELSS</td>
+                                <td class="px-4 py-2.5 text-center text-slate-500" data-i18n="tg.tbl.lockinyrs">3 yr lock-in</td>
+                                <td class="px-4 py-2.5 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700">LTCG</span></td>
+                                <td class="px-4 py-2.5 text-center font-black text-emerald-700">12.5%</td>
+                                <td class="px-4 py-2.5 text-center text-slate-500 text-[10px]" data-i18n="tg.tbl.exempt125">₹1.25L/year exempt</td>
+                            </tr>
+                            <tr class="border-t border-slate-100" style="background:#f0fdf4;">
+                                <td class="px-4 py-2.5 font-bold text-slate-700" data-i18n="tg.fund.arb">Arbitrage Fund</td>
+                                <td class="px-4 py-2.5 text-center text-slate-500" data-i18n="tg.hold.gt1">&gt; 1 year</td>
+                                <td class="px-4 py-2.5 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700">LTCG</span></td>
+                                <td class="px-4 py-2.5 text-center font-black text-emerald-700">12.5%</td>
+                                <td class="px-4 py-2.5 text-center text-slate-500 text-[10px]" data-i18n="tg.tbl.exempt125">₹1.25L/year exempt</td>
+                            </tr>
+                            <tr class="border-t border-slate-100" style="background:#f0fdf4;">
+                                <td class="px-4 py-2.5 font-bold text-slate-700" data-i18n="tg.fund.arb">Arbitrage Fund</td>
+                                <td class="px-4 py-2.5 text-center text-slate-500" data-i18n="tg.hold.lt1">&lt; 1 year</td>
+                                <td class="px-4 py-2.5 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-700">STCG</span></td>
+                                <td class="px-4 py-2.5 text-center font-black text-rose-700">20%</td>
+                                <td class="px-4 py-2.5 text-center text-slate-500 text-[10px]" data-i18n="tg.tbl.noexempt">No exemption</td>
+                            </tr>
+                            <tr class="border-t border-slate-100" style="background:#fff7ed;">
+                                <td class="px-4 py-2.5 font-bold text-slate-700" data-i18n="tg.fund.debt">Debt MF / FoF</td>
+                                <td class="px-4 py-2.5 text-center text-slate-500" data-i18n="tg.hold.any">Any</td>
+                                <td class="px-4 py-2.5 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-orange-100 text-orange-700">Slab</span></td>
+                                <td class="px-4 py-2.5 text-center font-black text-orange-700">Slab rate</td>
+                                <td class="px-4 py-2.5 text-center text-slate-500 text-[10px]" data-i18n="tg.tbl.nobenefit">No benefit. Same as FD.</td>
+                            </tr>
+                            <tr class="border-t border-slate-100" style="background:#fff7ed;">
+                                <td class="px-4 py-2.5 font-bold text-slate-700" data-i18n="tg.fund.liquid">Liquid / Ultra-Short</td>
+                                <td class="px-4 py-2.5 text-center text-slate-500" data-i18n="tg.hold.any">Any</td>
+                                <td class="px-4 py-2.5 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-orange-100 text-orange-700">Slab</span></td>
+                                <td class="px-4 py-2.5 text-center font-black text-orange-700">Slab rate</td>
+                                <td class="px-4 py-2.5 text-center text-slate-500 text-[10px]" data-i18n="tg.tbl.nobenefit2">No benefit</td>
+                            </tr>
+                            <tr class="border-t border-slate-100">
+                                <td class="px-4 py-2.5 font-bold text-slate-700" data-i18n="tg.fund.gold">Gold ETF / Gold FoF</td>
+                                <td class="px-4 py-2.5 text-center text-slate-500" data-i18n="tg.hold.gt1">&gt; 1 year</td>
+                                <td class="px-4 py-2.5 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-yellow-100 text-yellow-700">LTCG</span></td>
+                                <td class="px-4 py-2.5 text-center font-black text-yellow-700">12.5%</td>
+                                <td class="px-4 py-2.5 text-center text-slate-500 text-[10px]" data-i18n="tg.tbl.noexempt">No exemption</td>
+                            </tr>
+                            <tr class="border-t border-slate-100">
+                                <td class="px-4 py-2.5 font-bold text-slate-700" data-i18n="tg.fund.intl">International Fund</td>
+                                <td class="px-4 py-2.5 text-center text-slate-500" data-i18n="tg.hold.any">Any</td>
+                                <td class="px-4 py-2.5 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-orange-100 text-orange-700">Slab</span></td>
+                                <td class="px-4 py-2.5 text-center font-black text-orange-700">Slab rate</td>
+                                <td class="px-4 py-2.5 text-center text-slate-500 text-[10px]" data-i18n="tg.tbl.intl">Treated as debt post-2023</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="px-4 py-3 bg-amber-50 border-t border-amber-100 flex gap-2">
+                    <span class="text-amber-500 flex-shrink-0">⚠️</span>
+                    <p class="text-[11px] text-amber-800 font-semibold leading-relaxed" data-i18n="tg.cg.note">Finance Act 2023 removed indexation for debt MFs entirely. Finance Act 2024 raised STCG to 20% and LTCG to 12.5% while raising the LTCG exemption threshold from ₹1L to ₹1.25L. Always verify current rates before filing.</p>
+                </div>
+                <!-- Post-Tax Return Calculator -->
+                <div class="px-4 py-4 border-t border-slate-100">
+                    <div class="text-[10px] font-black text-slate-600 uppercase tracking-wider mb-3">🧮 Post-Tax Return Calculator</div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-1">Pre-Tax Return (%)</label>
+                            <input id="ptc-return" type="number" min="1" max="50" value="12" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-300" oninput="ptcCalc()">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-1">Fund Type</label>
+                            <select id="ptc-type" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-300" onchange="ptcCalc()">
+                                <option value="equity-lt">Equity MF — Held &gt;1yr (LTCG 12.5%)</option>
+                                <option value="equity-st">Equity MF — Held &lt;1yr (STCG 20%)</option>
+                                <option value="elss">ELSS — 3yr lock-in (LTCG 12.5%)</option>
+                                <option value="debt">Debt MF / FoF (Slab rate)</option>
+                                <option value="liquid">Liquid / Ultra-Short (Slab rate)</option>
+                                <option value="intl">International Fund (Slab rate)</option>
+                                <option value="fd">Fixed Deposit (Slab rate)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-1">Your Tax Slab</label>
+                            <select id="ptc-slab" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-300" onchange="ptcCalc()">
+                                <option value="0">0% (Up to ₹4L — FY25-26)</option>
+                                <option value="5">5% (₹4L–₹8L)</option>
+                                <option value="10" selected>10% (₹8L–₹12L)</option>
+                                <option value="15">15% (₹12L–₹16L)</option>
+                                <option value="20">20% (₹16L–₹20L)</option>
+                                <option value="25">25% (₹20L–₹24L)</option>
+                                <option value="30">30% (Above ₹24L)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="ptc-result" class="rounded-xl p-3 text-[10px]" style="background:#f8fafc;border:1px solid #e2e8f0;">
+                        <span class="text-slate-400">Enter values above to see post-tax return</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── CRYPTO TAXATION ── -->
+            <div class="bg-white rounded-2xl border border-[#f5c842]/30 shadow-sm overflow-hidden">
+                <div class="px-5 py-3" style="background:linear-gradient(90deg,#7c2d12,#b45309);">
+                    <span class="text-white font-black text-sm" data-i18n="tg.crypto.title">₿ Crypto / VDA Taxation — Budget 2022 Rules</span>
+                </div>
+                <div class="p-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div class="rounded-2xl p-3.5" style="background:#fef2f2;border:1px solid #fecaca;">
+                        <div class="text-2xl font-black text-red-700 mb-1">30%</div>
+                        <div class="text-xs font-black text-red-800" data-i18n="tg.crypto.flat">Flat Tax on ALL Gains</div>
+                        <div class="text-[10px] text-red-600 mt-1 leading-relaxed" data-i18n="tg.crypto.flat.desc">No holding period benefit. Gains taxed at 30% regardless of short-term or long-term. No basic exemption limit applies to VDA income.</div>
+                    </div>
+                    <div class="rounded-2xl p-3.5" style="background:#fff7ed;border:1px solid #fed7aa;">
+                        <div class="text-2xl font-black text-orange-700 mb-1">1% TDS</div>
+                        <div class="text-xs font-black text-orange-800" data-i18n="tg.crypto.tds">Deducted on Every Trade</div>
+                        <div class="text-[10px] text-orange-600 mt-1 leading-relaxed" data-i18n="tg.crypto.tds.desc">1% TDS deducted at source on every crypto transaction above ₹10,000 (₹50,000 for specified persons). TDS can be claimed as credit while filing.</div>
+                    </div>
+                    <div class="rounded-2xl p-3.5" style="background:#faf5ff;border:1px solid #e9d5ff;">
+                        <div class="text-2xl font-black text-purple-700 mb-1">No Offset</div>
+                        <div class="text-xs font-black text-purple-800" data-i18n="tg.crypto.nooffset">Losses Cannot Be Set Off</div>
+                        <div class="text-[10px] text-purple-600 mt-1 leading-relaxed" data-i18n="tg.crypto.nooffset.desc">Crypto losses cannot be set off against any other income — not even other crypto gains. Each VDA is treated separately. No carry-forward of losses either.</div>
+                    </div>
+                </div>
+                <div class="px-4 pb-4">
+                    <div class="rounded-xl p-3" style="background:#fef3c7;border:1px solid #fde68a;">
+                        <p class="text-[11px] text-amber-900 font-semibold leading-relaxed">
+                            <strong>Example:</strong> You bought Bitcoin at ₹30L and sold at ₹45L — gain of ₹15L. Tax = ₹4,50,000 (30%). Plus 1% TDS = ₹45,000 deducted by the exchange. If you separately lost ₹5L on Ethereum, that loss <em>cannot</em> reduce your Bitcoin tax. This is fundamentally different from equity — factor this into any crypto allocation decision.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── KEY TAX DATES & TIPS ── -->
+            <div class="bg-white rounded-2xl border border-[#f5c842]/30 p-4">
+                <h3 class="text-xs font-black text-slate-700 uppercase tracking-wider mb-3" data-i18n="tg.dates.title">📅 Key Tax Dates & Tips for Investors</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="rounded-xl p-3" style="background:#eff6ff;border:1px solid #bfdbfe;">
+                        <div class="text-[10px] font-black text-blue-600 uppercase tracking-wider mb-1.5" data-i18n="tg.dates.deadlines">Tax Saving Deadlines</div>
+                        <div class="space-y-1 text-[11px] text-slate-600 leading-relaxed">
+                            <div data-i18n-html="tg.date1">📌 <strong>31 Mar</strong> — Last date to invest for 80C deductions this FY</div>
+                            <div data-i18n-html="tg.date2">📌 <strong>31 Jul</strong> — ITR filing deadline (salaried, no audit)</div>
+                            <div data-i18n-html="tg.date3">📌 <strong>15 Mar</strong> — Advance tax 4th instalment due</div>
+                            <div data-i18n-html="tg.date4">📌 <strong>31 Oct</strong> — ITR with audit, or revised return deadline</div>
+                        </div>
+                    </div>
+                    <div class="rounded-xl p-3" style="background:#f0fdf4;border:1px solid #86efac;">
+                        <div class="text-[10px] font-black text-emerald-600 uppercase tracking-wider mb-1.5" data-i18n="tg.dates.smartmoves">Smart Tax Moves</div>
+                        <div class="space-y-1 text-[11px] text-slate-600 leading-relaxed">
+                            <div data-i18n="tg.tip1">✅ Book ₹1.25L LTCG every year tax-free (equity MF)</div>
+                            <div data-i18n="tg.tip2">✅ Use ELSS for 80C — shortest lock-in + equity returns</div>
+                            <div data-i18n="tg.tip3">✅ NPS adds ₹50K extra deduction under 80CCD(1B)</div>
+                            <div data-i18n="tg.tip4">✅ Arbitrage funds: 12.5% LTCG vs 30% on FD interest</div>
+                            <div data-i18n="tg.tip5">✅ Rebate u/s 87A: Zero tax up to ₹12L under new regime (Latest Budget)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reset button -->
+            <button onclick="resetTaxGuide()" class="mt-3 w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-slate-200 text-slate-500 hover:border-rose-300 hover:text-rose-500 hover:bg-rose-50 font-semibold text-sm transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                <span data-i18n="tg.btn.reset">Reset Tax Guide</span>
+            </button>
+
+        </div>

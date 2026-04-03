@@ -1,0 +1,40 @@
+<div id="coffeecan-panel" class="hidden w-full flex flex-col gap-4" style="max-width:820px;margin:0 auto;">
+            <!-- Header -->
+            <div class="rounded-2xl px-5 py-4 text-white shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a5276 45%,#0e4d3e 100%);border:2px solid rgba(245,200,66,0.4);box-shadow:0 4px 18px rgba(0,0,0,0.25);">
+                <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                    <div>
+                        <h2 class="text-lg font-black flex items-center gap-2">☕ The Coffee Can</h2>
+                        <p class="text-blue-200 text-xs mt-1 max-w-lg">Quality compounders · Buy &amp; hold 10+ years · Based on Saurabh Mukherjea / Marcellus framework</p>
+                        <span class="inline-flex items-center gap-1 mt-2 px-2 py-0.5 rounded-full text-[9px] font-bold" style="background:rgba(245,200,66,0.18);color:#f5c842;border:1px solid rgba(245,200,66,0.35);">🗓 Data as of FY 2024–25 · Last updated Mar 2025</span>
+                    </div>
+                    <button onclick="switchMode('dashcat-mf')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold flex-shrink-0 transition-all" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">⬅ Back</button>
+                </div>
+            </div>
+            <!-- What is Coffee Can investing? -->
+            <div class="rounded-2xl px-4 py-3" style="background:rgba(255,253,240,0.95);border:1.5px solid rgba(245,200,66,0.3);">
+                <div class="text-[10px] font-black uppercase tracking-wider mb-1.5" style="color:#7c4a00;">📖 What is Coffee Can Investing?</div>
+                <p class="text-[11px] leading-relaxed text-slate-600">Coined by Robert Kirby (1984) and popularised in India by <strong>Saurabh Mukherjea (Marcellus Investment Managers)</strong>: lock high-quality businesses in a "coffee can" and forget them for 10 years. The philosophy demands companies with <strong>≥10% revenue CAGR</strong>, <strong>≥15% ROCE</strong> consistently over a decade, negligible debt, positive free cash flow every year, and stable promoter holdings — moat businesses that compound wealth without active management.</p>
+                <div class="mt-2 grid grid-cols-3 gap-2">
+                    <div class="rounded-xl px-2 py-1.5 text-center" style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);">
+                        <div class="text-[13px] font-black" style="color:#065f46;">Rev CAGR</div>
+                        <div class="text-[9px] text-slate-400 font-semibold">≥ 10% / 10 yr</div>
+                    </div>
+                    <div class="rounded-xl px-2 py-1.5 text-center" style="background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.2);">
+                        <div class="text-[13px] font-black" style="color:#3730a3;">ROCE</div>
+                        <div class="text-[9px] text-slate-400 font-semibold">≥ 15% avg</div>
+                    </div>
+                    <div class="rounded-xl px-2 py-1.5 text-center" style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);">
+                        <div class="text-[13px] font-black" style="color:#92400e;">D/E</div>
+                        <div class="text-[9px] text-slate-400 font-semibold">≤ 1× preferred</div>
+                    </div>
+                </div>
+            </div>
+            <!-- Controls (sector filter + sort) -->
+            <div id="cc-controls" class="px-1"></div>
+            <!-- Company list -->
+            <div id="cc-list" class="flex flex-col gap-0"></div>
+            <!-- Disclaimer -->
+            <div class="rounded-2xl px-4 py-3 text-[10px] leading-relaxed text-slate-400" style="background:rgba(248,250,252,0.8);border:1px solid #e2e8f0;">
+                ⚠ <strong>Disclaimer:</strong> This screener is for educational purposes only. All data is manually curated from publicly available annual reports and is approximate. This is not SEBI-registered investment advice. Past performance of companies does not guarantee future returns. Please consult a registered financial advisor before investing.
+            </div>
+        </div>

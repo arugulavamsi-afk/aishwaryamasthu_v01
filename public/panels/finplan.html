@@ -1,0 +1,436 @@
+<div id="finplan-panel" class="hidden w-full flex flex-col gap-5">
+
+            <!-- Header Banner -->
+            <div class="rounded-2xl overflow-hidden shine-header" style="background:linear-gradient(135deg,#1e3a5f 0%,#1a5276 40%,#0e6655 100%); border: 2px solid rgba(245,200,66,0.45); box-shadow: 0 4px 18px rgba(0,0,0,0.25), 0 0 0 1px rgba(245,200,66,0.15);">
+                <div class="px-6 py-5 relative overflow-hidden">
+                    
+                    <div class="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        <div>
+                            <h2 class="text-white font-black text-xl flex items-center gap-2" data-i18n="page.fp.h">Financial Plan Builder</h2>
+                            <p class="text-slate-300 text-xs mt-1" data-i18n="page.fp.sub">Answer a few questions. Get a personalised portfolio allocation built for you.</p>
+                        </div>
+                        <!-- Step badge dots (hidden on mobile, used for desktop sync) -->
+                        <div id="fp-step-badge" class="hidden">
+                            <div class="fp-step-dot fp-dot-active" data-s="1">1</div>
+                            <div class="fp-step-line"></div>
+                            <div class="fp-step-dot fp-dot-inactive" data-s="2">2</div>
+                            <div class="fp-step-line"></div>
+                            <div class="fp-step-dot fp-dot-inactive" data-s="3">3</div>
+                            <div class="fp-step-line"></div>
+                            <div class="fp-step-dot fp-dot-inactive" data-s="4">4</div>
+                        </div>
+                    </div>
+                    <!-- Tab Navigation Bar -->
+                    <div class="flex items-center gap-1 mt-3 flex-wrap" id="fp-tab-nav">
+                        <button onclick="fpNavTab(1)" id="fp-tab-1" class="fp-tab-btn fp-tab-active-pill flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold transition-all">
+                            <span class="fp-tab-dot w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-black bg-white/30">1</span>
+                            <span data-i18n="fp.tab.profile">Personal Profile</span>
+                        </button>
+                        <span class="text-white/25 font-bold text-xs">›</span>
+                        <button onclick="fpNavTab(2)" id="fp-tab-2" class="fp-tab-btn fp-tab-inactive-pill flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold transition-all">
+                            <span class="fp-tab-dot w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-black bg-white/20">2</span>
+                            <span data-i18n="fp.tab.goals">Your Goals</span>
+                        </button>
+                        <span class="text-white/25 font-bold text-xs">›</span>
+                        <button onclick="fpNavTab(3)" id="fp-tab-3" class="fp-tab-btn fp-tab-inactive-pill flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold transition-all">
+                            <span class="fp-tab-dot w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-black bg-white/20">3</span>
+                            <span data-i18n="fp.tab.risk">Risk Profile</span>
+                        </button>
+                        <span class="text-white/25 font-bold text-xs">›</span>
+                        <button onclick="fpNavTab(4)" id="fp-tab-4" class="fp-tab-btn fp-tab-inactive-pill flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold transition-all">
+                            <span class="fp-tab-dot w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-black bg-white/20">🧭</span>
+                            <span data-i18n="fp.tab.generate">Generate Plan</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step Cards Wrapper -->
+            <div class="flex flex-col lg:flex-row gap-5" id="fp-columns-wrapper">
+
+                <!-- LEFT: Step Form -->
+                <div class="w-full lg:w-1/2" id="fp-left-col">
+
+                    <!-- STEP 1: Personal Profile -->
+                    <div id="fp-step-1" class="bg-white rounded-2xl shadow-sm border border-[#f5c842]/30 overflow-hidden">
+                        <div class="px-5 py-4 border-b border-slate-100 flex items-center gap-3" style="background:linear-gradient(90deg,#f0fdf4,#fff);">
+                            <div class="w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center font-black text-sm">1</div>
+                            <div>
+                                <div class="font-black text-slate-800 text-sm" data-i18n="fp.step1.title">Personal Profile</div>
+                                <div class="text-[11px] text-slate-400" data-i18n="fp.step1.sub">Tell us about yourself</div>
+                            </div>
+                        </div>
+                        <div class="p-5 space-y-4">
+                            <!-- Profile autofill banner -->
+                            <div id="up-banner-finplan" class="up-banner hidden">
+                                <span class="text-[11px] font-bold text-sky-700">👤 Fill from My Profile?</span>
+                                <button class="up-apply-btn" onclick="upApply('finplan')" data-i18n="up.apply">↙ Apply Profile</button>
+                            </div>
+                            <div>
+                                <label class="fp-label" data-i18n="fp.lbl.name">Your Name</label>
+                                <input type="text" id="fp-name" placeholder="e.g. Arjun" class="fp-input" oninput="fpLiveUpdate()">
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="fp-label" data-i18n="fp.lbl.age">Current Age</label>
+                                    <div class="relative">
+                                        <input type="number" id="fp-age" min="18" max="80" placeholder="e.g. 30" class="fp-input pr-10" oninput="fpLiveUpdate()">
+                                        <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 font-semibold" data-i18n="fp.lbl.yrs">yrs</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="fp-label" data-i18n="fp.lbl.retire">Retirement Age Goal</label>
+                                    <div class="relative">
+                                        <input type="number" id="fp-retire-age" min="40" max="80" placeholder="e.g. 60" class="fp-input pr-10" oninput="fpLiveUpdate()">
+                                        <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 font-semibold" data-i18n="fp.lbl.yrs">yrs</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="fp-label" data-i18n="fp.lbl.income">Monthly Take-Home Income</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm" style="pointer-events:none;">₹</span>
+                                    <input type="text" id="fp-income" inputmode="numeric" placeholder="e.g. 1,00,000" class="fp-input" style="padding-left:2rem;" oninput="fpFormatMoney(this,'fp-income-words'); fpLiveUpdate()">
+                                </div>
+                                <div class="flex items-center justify-between mt-1">
+                                <div id="fp-income-words" class="num-word">-</div>
+                                <button onclick="tgPrefillFromFP()" class="text-[9px] text-indigo-500 font-bold underline hover:text-indigo-700" title="Open Tax Optimizer with your salary pre-filled">⚖️ Find post-tax take-home →</button>
+                            </div>
+                            </div>
+                            <div>
+                                <label class="fp-label" data-i18n="fp.lbl.invest">Monthly Amount You Can Invest</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm" style="pointer-events:none;">₹</span>
+                                    <input type="text" id="fp-invest-amt" inputmode="numeric" placeholder="e.g. 25,000" class="fp-input" style="padding-left:2rem;" oninput="fpFormatMoney(this,'fp-invest-words'); fpLiveUpdate()">
+                                </div>
+                                <div id="fp-invest-words" class="num-word">-</div>
+                            </div>
+                            <button onclick="fpGoStep(2)" class="fp-next-btn" data-i18n="fp.btn.next.goals">Next: Your Goals →</button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 2: Goals -->
+                    <div id="fp-step-2" class="hidden bg-white rounded-2xl shadow-sm border border-[#f5c842]/30 overflow-hidden">
+                        <div class="px-5 py-4 border-b border-slate-100 flex items-center gap-3" style="background:linear-gradient(90deg,#eff6ff,#fff);">
+                            <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-black text-sm">2</div>
+                            <div>
+                                <div class="font-black text-slate-800 text-sm" data-i18n="fp.step2.title">Your Financial Goals</div>
+                                <div class="text-[11px] text-slate-400" data-i18n="fp.step2.sub">Select all that apply — add a target amount &amp; timeline for each</div>
+                            </div>
+                        </div>
+                        <div class="p-5 space-y-4">
+
+                            <!-- Saved goals from Goal Planner -->
+                            <div id="fp-saved-goals-banner" class="hidden rounded-xl px-3 py-2.5" style="background:#fffbeb;border:1.5px solid #fde68a;"></div>
+
+                            <!-- Goal tiles picker -->
+                            <div>
+                                <label class="fp-label"><span data-i18n="fp.goal.select">Select Your Goals</span> <span class="normal-case font-medium text-slate-400" data-i18n="fp.goal.select.sub">(pick one or more)</span></label>
+                                <div class="grid grid-cols-3 gap-2" id="fp-goals-grid">
+                                    <button onclick="fpToggleGoalTile(this,'retirement','🏖️','Retirement')" class="fp-goal-tile" data-goal="retirement">
+                                        <span class="text-xl">🏖️</span><span class="text-[11px] font-bold text-slate-600 mt-1 leading-tight" data-i18n="fp.goal.retirement">Retirement</span>
+                                    </button>
+                                    <button onclick="fpToggleGoalTile(this,'home','🏠','Buy a Home')" class="fp-goal-tile" data-goal="home">
+                                        <span class="text-xl">🏠</span><span class="text-[11px] font-bold text-slate-600 mt-1 leading-tight" data-i18n="fp.goal.home">Buy a Home</span>
+                                    </button>
+                                    <button onclick="fpToggleGoalTile(this,'education','🎓','Child\'s Education')" class="fp-goal-tile" data-goal="education">
+                                        <span class="text-xl">🎓</span><span class="text-[11px] font-bold text-slate-600 mt-1 leading-tight" data-i18n="fp.goal.education">Education</span>
+                                    </button>
+                                    <button onclick="fpToggleGoalTile(this,'wealth','💰','Wealth Creation')" class="fp-goal-tile" data-goal="wealth">
+                                        <span class="text-xl">💰</span><span class="text-[11px] font-bold text-slate-600 mt-1 leading-tight" data-i18n="fp.goal.wealth">Wealth Creation</span>
+                                    </button>
+                                    <button onclick="fpToggleGoalTile(this,'marriage','💍','Marriage')" class="fp-goal-tile" data-goal="marriage">
+                                        <span class="text-xl">💍</span><span class="text-[11px] font-bold text-slate-600 mt-1 leading-tight" data-i18n="fp.goal.marriage">Marriage</span>
+                                    </button>
+                                    <button onclick="fpToggleGoalTile(this,'travel','✈️','Travel / Break')" class="fp-goal-tile" data-goal="travel">
+                                        <span class="text-xl">✈️</span><span class="text-[11px] font-bold text-slate-600 mt-1 leading-tight" data-i18n="fp.goal.travel">Travel / Break</span>
+                                    </button>
+                                    <button onclick="fpToggleGoalTile(this,'emergency','🛡️','Emergency Fund')" class="fp-goal-tile" data-goal="emergency">
+                                        <span class="text-xl">🛡️</span><span class="text-[11px] font-bold text-slate-600 mt-1 leading-tight" data-i18n="fp.goal.emergency">Emergency Fund</span>
+                                    </button>
+                                    <button onclick="fpToggleGoalTile(this,'business','🚀','Start a Business')" class="fp-goal-tile" data-goal="business">
+                                        <span class="text-xl">🚀</span><span class="text-[11px] font-bold text-slate-600 mt-1 leading-tight" data-i18n="fp.goal.business">Start Business</span>
+                                    </button>
+                                    <button onclick="fpToggleGoalTile(this,'custom','✏️','Custom Goal')" class="fp-goal-tile" data-goal="custom">
+                                        <span class="text-xl">✏️</span><span class="text-[11px] font-bold text-slate-600 mt-1 leading-tight" data-i18n="fp.goal.custom">Custom</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Dynamic goal detail cards -->
+                            <div id="fp-goal-details" class="space-y-3 hidden">
+                                <label class="fp-label">Goal Details <span class="normal-case font-medium text-slate-400">(optional but improves your plan)</span></label>
+                                <div id="fp-goal-cards"></div>
+                            </div>
+
+                            <!-- Existing investments -->
+                            <div>
+                                <label class="fp-label">Any existing investments? <span class="normal-case font-medium text-slate-400">(optional — add amounts to improve your plan)</span></label>
+                                <div class="grid grid-cols-3 gap-2" id="fp-existing-grid">
+                                    <button onclick="fpToggleExisting(this,'epf')"         class="fp-existing-btn" id="fp-existing-epf-btn">🏢 EPF / PF</button>
+                                    <button onclick="fpToggleExisting(this,'ppf')"         class="fp-existing-btn">🔒 PPF</button>
+                                    <button onclick="fpToggleExisting(this,'nps')"         class="fp-existing-btn">🛡️ NPS</button>
+                                    <button onclick="fpToggleExisting(this,'mf')"          class="fp-existing-btn">📊 Mutual Funds</button>
+                                    <button onclick="fpToggleExisting(this,'fd')"          class="fp-existing-btn">🏦 FD/RD</button>
+                                    <button onclick="fpToggleExisting(this,'stocks')"      class="fp-existing-btn">📈 Stocks</button>
+                                    <button onclick="fpToggleExisting(this,'gold')"        class="fp-existing-btn">🥇 Gold</button>
+                                    <button onclick="fpToggleExisting(this,'real_estate')" class="fp-existing-btn">🏘️ Real Estate</button>
+                                    <button onclick="fpCryptoToggle(this)"      class="fp-existing-btn" id="fp-existing-crypto-btn">₿ Crypto</button>
+                                    <button onclick="fpToggleExisting(this,'scss')"         class="fp-existing-btn">👴 SCSS</button>
+                                    <button onclick="fpToggleExisting(this,'pomis')"        class="fp-existing-btn">📬 POMIS</button>
+                                    <button onclick="fpToggleExisting(this,'kvp')"          class="fp-existing-btn">🌾 KVP</button>
+                                    <button onclick="fpToggleExisting(this,'rbi_frb')"      class="fp-existing-btn">🏛️ RBI FRB</button>
+                                    <button onclick="fpToggleExisting(this,'nsc')"          class="fp-existing-btn">📜 NSC</button>
+                                    <button onclick="fpToggleExisting(this,'custom_inv')"  class="fp-existing-btn" id="fp-existing-custom-btn">✏️ Custom</button>
+                                </div>
+                                <!-- EPF expanded panel — shown when EPF toggled on -->
+                                <div id="fp-epf-panel" class="hidden mt-3 rounded-2xl p-3.5" style="background:#eff6ff;border:1.5px solid #bfdbfe;">
+                                    <div class="flex items-center gap-2 mb-2.5">
+                                        <span class="text-base">🏢</span>
+                                        <span class="text-xs font-black text-blue-700">EPF / PF Details</span>
+                                        <span class="ml-auto text-[9px] text-blue-400 font-semibold">Largest retirement corpus for salaried employees</span>
+                                    </div>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                        <div>
+                                            <label class="block text-[10px] font-black text-blue-600 uppercase tracking-wider mb-1">Current EPF Balance (₹)</label>
+                                            <div class="relative">
+                                                <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold pointer-events-none">₹</span>
+                                                <input type="text" id="fp-epf-balance" inputmode="numeric" placeholder="Check EPFO passbook / UAN portal"
+                                                    class="fp-mini-input pl-6 w-full text-left" style="padding:8px 10px 8px 22px;"
+                                                    oninput="fpFormatEpfInput(this); fpEpfSync()">
+                                            </div>
+                                            <div class="text-[9px] text-blue-500 mt-1">From UMANG app or epfindia.gov.in</div>
+                                        </div>
+                                        <div>
+                                            <label class="block text-[10px] font-black text-blue-600 uppercase tracking-wider mb-1">Monthly Basic Salary (₹) <span class="font-normal normal-case">(optional)</span></label>
+                                            <div class="relative">
+                                                <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold pointer-events-none">₹</span>
+                                                <input type="text" id="fp-epf-basic" inputmode="numeric" placeholder="e.g. 40,000"
+                                                    class="fp-mini-input pl-6 w-full text-left" style="padding:8px 10px 8px 22px;"
+                                                    oninput="fpFormatEpfInput(this); fpEpfSync()">
+                                            </div>
+                                            <div class="text-[9px] text-blue-500 mt-1">Used to show ongoing monthly EPF contribution</div>
+                                        </div>
+                                    </div>
+                                    <div id="fp-epf-summary" class="hidden mt-2.5 rounded-xl px-3 py-2 text-[10px] leading-relaxed" style="background:#dbeafe;color:#1e40af;"></div>
+                                    <div class="mt-2 text-[9px] text-blue-400 leading-relaxed">
+                                        <strong>EPS note:</strong> Of employer's 12%, ₹1,250/mo goes to EPS (pension). Only the rest builds your EPF balance. 
+                                        EPF earns 8.25% p.a. (FY24). Fully tax-free at maturity after 5 yrs service.
+                                    </div>
+                                </div>
+                                <!-- Crypto risk warning panel — shown when crypto toggled on -->
+                                <!-- Crypto active indicator — shown inline after confirmation -->
+                                <div id="fp-crypto-active" class="hidden mt-2 rounded-xl px-3 py-2" style="background:#fff5f5;border:1px solid #fecaca;">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-sm">₿</span>
+                                        <span class="text-xs font-black text-red-700">Crypto / VDA added</span>
+                                        <span class="ml-auto text-[9px] text-red-400 font-semibold">30% tax · ~10.5% effective</span>
+                                    </div>
+                                </div>
+
+                                <!-- Dynamic amount inputs rendered here -->
+                                <div id="fp-existing-amounts" class="hidden mt-3 space-y-2.5">
+                                    <p class="text-[10px] text-slate-400 font-semibold uppercase tracking-wide">Current value of each investment ↓</p>
+                                </div>
+                                <div id="fp-existing-custom-input" class="hidden mt-2">
+                                    <input type="text" id="fp-existing-custom-text" placeholder="e.g. ULIP, Chit Fund, Bonds…" class="fp-mini-input w-full" style="padding:9px 12px;"
+                                        oninput="fpState.existingCustom = this.value; fpLiveUpdate()">
+                                </div>
+                            </div>
+
+                            <div class="flex gap-2">
+                                <button onclick="fpGoStep(1)" class="fp-back-btn">← Back</button>
+                                <button onclick="fpGoStep(3)" class="fp-next-btn flex-1">Next: Risk Profile →</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STEP 3: Risk Questions -->
+                    <div id="fp-step-3" class="hidden bg-white rounded-2xl shadow-sm border border-[#f5c842]/30 overflow-hidden">
+                        <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between gap-3" style="background:linear-gradient(90deg,#fff7ed,#fff);">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-orange-500 text-white flex items-center justify-center font-black text-sm">3</div>
+                                <div>
+                                    <div class="font-black text-slate-800 text-sm" data-i18n="fp.step3.title">Risk Appetite Assessment</div>
+                                    <div class="text-[11px] text-slate-400" id="fp-risk-header-sub" data-i18n="fp.step3.sub">5 quick questions to understand your comfort with risk</div>
+                                </div>
+                            </div>
+                            <!-- Edit toggle — only visible when saved risk exists -->
+                            <button id="fp-risk-edit-toggle-btn" onclick="fpToggleRiskEdit()" class="fp-risk-edit-btn hidden">✏️ Edit</button>
+                        </div>
+
+                        <!-- SAVED RISK PROFILE SUMMARY (shown when score is stored) -->
+                        <div id="fp-risk-saved-view" class="hidden p-5">
+                            <div class="fp-risk-saved-card">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div>
+                                        <div class="text-[10px] font-black text-emerald-600 uppercase tracking-wider mb-1">✅ Risk Profile Saved</div>
+                                        <div class="text-base font-black text-slate-800" id="fp-saved-profile-label">—</div>
+                                        <div class="text-xs text-slate-500 mt-0.5" id="fp-saved-profile-sub">—</div>
+                                    </div>
+                                    <div class="text-center flex-shrink-0">
+                                        <div class="text-2xl font-black text-emerald-600" id="fp-saved-score-display">—</div>
+                                        <div class="text-[10px] text-slate-400 font-semibold">/ 15 pts</div>
+                                    </div>
+                                </div>
+                                <!-- Mini score bar -->
+                                <div class="mt-3">
+                                    <div class="h-2 rounded-full bg-slate-100 overflow-hidden">
+                                        <div id="fp-saved-score-bar" class="h-full rounded-full transition-all duration-700" style="width:0%;background:linear-gradient(90deg,#10b981,#059669);"></div>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-slate-500 mt-2.5 leading-relaxed">
+                                    ✅ Risk profile saved to your account — available on all devices. You can generate your plan directly, or re-take the assessment if your financial situation has changed.
+                                </p>
+                                <div class="text-[9px] text-emerald-500 font-semibold mt-1" id="fp-risk-saved-date"></div>
+                                <div class="flex gap-2 mt-3">
+                                    <button onclick="fpToggleRiskEdit()" class="fp-risk-edit-btn flex-1 text-center">✏️ Re-take Assessment</button>
+                                    <button onclick="fpCalculatePlan()" class="fp-next-btn flex-1" style="background:linear-gradient(135deg,#f97316,#ef4444); padding:8px 14px;">🧭 Generate Plan →</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- QUESTIONNAIRE (shown on first visit or when editing) -->
+                        <div id="fp-risk-questions-view">
+                            <div class="p-5 space-y-5" id="fp-questions-container">
+                                <!-- Dynamically rendered -->
+                            </div>
+                            <div class="px-5 pb-5 flex gap-2">
+                                <button onclick="fpGoStep(2)" class="fp-back-btn">← Back</button>
+                                <button onclick="fpCalculatePlan()" class="fp-next-btn flex-1" style="background:linear-gradient(135deg,#f97316,#ef4444);">🧭 Generate My Financial Plan →</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STEP 4 MOBILE: just triggers scroll to results on mobile -->
+                </div>
+
+                <!-- RIGHT: Live Snapshot + Results -->
+                <div class="w-full lg:w-1/2 flex flex-col gap-4" id="fp-right-col">
+
+                    <!-- Live Profile Snapshot (steps 1-3) -->
+                    <div id="fp-snapshot-card" class="bg-white rounded-2xl shadow-sm border border-[#f5c842]/30 p-5">
+                        <h3 class="text-xs font-black text-slate-400 uppercase tracking-wider mb-3">📋 Your Profile Snapshot</h3>
+                        <div class="space-y-2.5">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-slate-500 font-medium">Name</span>
+                                <span id="fp-snap-name" class="text-xs font-black text-slate-700">—</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-slate-500 font-medium">Age</span>
+                                <span id="fp-snap-age" class="text-xs font-black text-slate-700">—</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-slate-500 font-medium">Retirement Target</span>
+                                <span id="fp-snap-retire" class="text-xs font-black text-slate-700">—</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-slate-500 font-medium">Monthly Income</span>
+                                <span id="fp-snap-income" class="text-xs font-black text-emerald-600">—</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-slate-500 font-medium">Investable / Month</span>
+                                <span id="fp-snap-invest" class="text-xs font-black text-blue-600">—</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-slate-500 font-medium">Primary Goal</span>
+                                <span id="fp-snap-goal" class="text-xs font-black text-violet-600">—</span>
+                            </div>
+                            <div class="flex items-start justify-between gap-2">
+                                <span class="text-xs text-slate-500 font-medium flex-shrink-0">All Goals</span>
+                                <div id="fp-snap-goals-list" class="text-right space-y-0.5">
+                                    <span class="text-xs text-slate-400 italic">None selected yet</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-slate-500 font-medium">Horizon</span>
+                                <span id="fp-snap-horizon" class="text-xs font-black text-slate-700">—</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- RESULTS CARD (Step 4 output) -->
+                    <div id="fp-results-card" class="hidden bg-white rounded-2xl shadow-sm border border-[#f5c842]/30 overflow-hidden">
+                        <!-- Profile Badge -->
+                        <div id="fp-result-header" class="px-5 py-5 text-white relative overflow-hidden">
+                            
+                            <div class="relative z-10">
+                                <div class="text-xs font-bold uppercase tracking-widest opacity-80 mb-1" id="fp-result-greeting"></div>
+                                <div class="text-2xl font-black mb-0.5" id="fp-result-profile-label"></div>
+                                <div class="text-xs opacity-80" id="fp-result-profile-sub"></div>
+                                <div class="mt-3 flex items-center gap-2">
+                                    <div class="fp-risk-bar-bg w-40 h-2 rounded-full overflow-hidden">
+                                        <div id="fp-risk-bar-fill" class="h-full rounded-full transition-all duration-700"></div>
+                                    </div>
+                                    <span id="fp-risk-score-label" class="text-xs font-black opacity-90"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Portfolio Donut + Legend -->
+                        <div class="p-5">
+                            <h3 class="text-xs font-black text-slate-400 uppercase tracking-wider mb-3">📊 Recommended Portfolio Allocation</h3>
+                            <div class="flex flex-col sm:flex-row items-center gap-4">
+                                <div class="relative flex-shrink-0" style="width:180px;height:180px;">
+                                    <canvas id="fp-donut-chart"></canvas>
+                                    <div id="fp-donut-center" class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                                        <div class="text-lg font-black text-slate-800" id="fp-center-pct"></div>
+                                        <div class="text-[10px] text-slate-400 font-semibold text-center leading-tight" id="fp-center-label"></div>
+                                    </div>
+                                </div>
+                                <div class="flex-1 space-y-2 w-full" id="fp-legend"></div>
+                            </div>
+                        </div>
+
+                        <!-- SIP Breakdown -->
+                        <div class="px-5 pb-3">
+                            <h3 class="text-xs font-black text-slate-400 uppercase tracking-wider mb-2">💸 Monthly SIP Breakdown</h3>
+                            <div id="fp-sip-breakdown" class="space-y-1.5"></div>
+                        </div>
+
+                        <!-- Goal Corpus Projections -->
+                        <div class="px-5 pb-3" id="fp-corpus-section" style="display:none">
+                            <h3 class="text-xs font-black text-slate-400 uppercase tracking-wider mb-2">🎯 Goal Corpus Projections</h3>
+                            <div id="fp-corpus-cards" class="space-y-3"></div>
+                            <div class="mt-3 px-3 py-2.5 rounded-xl border border-amber-100 text-[10px] text-amber-700 leading-relaxed" style="background:#fffbeb;">
+                                ⚠️ <strong>Disclaimer:</strong> Projections use a blended expected return based on your risk profile. Actual returns will vary — equity is not guaranteed. Use these as directional estimates to course-correct, not as guarantees.
+                            </div>
+                        </div>
+
+                        <!-- Redemption Guide -->
+                        <div class="px-5 pb-3" id="fp-redemption-section" style="display:none">
+                            <h3 class="text-xs font-black text-slate-400 uppercase tracking-wider mb-2">🏦 When &amp; What to Redeem</h3>
+                            <p class="text-[11px] text-slate-400 mb-3 leading-relaxed">For each goal, redeem in the order shown — most liquid first, equity last. This protects your compounding and avoids selling equity at a bad time.</p>
+                            <div id="fp-redemption-cards" class="space-y-3"></div>
+                        </div>
+
+                        <!-- Action Roadmap -->
+                        <div class="px-5 pb-5 mt-2">
+                            <h3 class="text-xs font-black text-slate-400 uppercase tracking-wider mb-2">🚀 Your Action Roadmap</h3>
+                            <div id="fp-roadmap" class="space-y-2"></div>
+                        </div>
+
+                        <!-- Edit + Reset -->
+                        <div class="px-5 pb-5 flex flex-col gap-2">
+                            <button onclick="fpEditPlan()" class="w-full py-2.5 rounded-xl border border-indigo-200 text-indigo-600 hover:border-indigo-400 hover:bg-indigo-50 font-semibold text-sm transition-all flex items-center justify-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                Edit My Responses
+                            </button>
+                            <button onclick="fpReset()" class="w-full py-2.5 rounded-xl border border-slate-200 text-slate-500 hover:border-rose-300 hover:text-rose-500 hover:bg-rose-50 font-semibold text-sm transition-all flex items-center justify-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                                Start Over
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Placeholder when no results yet -->
+                    <div class="mb-2 px-1"><button onclick="waShare('finplan')" class="wa-share-btn shine-btn"><svg viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5 flex-shrink-0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.557 4.133 1.535 5.876L.057 23.43a.75.75 0 00.918.924l5.688-1.493A11.946 11.946 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.907 0-3.7-.512-5.241-1.403l-.375-.22-3.877 1.018 1.01-3.769-.234-.389A9.953 9.953 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>Share on WhatsApp</button></div>
+                    <div id="fp-results-placeholder" class="bg-white rounded-2xl shadow-sm border border-[#f5c842]/30 p-8 flex flex-col items-center justify-center text-center">
+                        <div class="text-5xl mb-3">📐</div>
+                        <p class="text-sm font-bold text-slate-600 mb-1">Your Plan Will Appear Here</p>
+                        <p class="text-xs text-slate-400">Complete the 3 steps on the left to generate your personalized portfolio strategy.</p>
+                    </div>
+
+                </div>
+            </div>
+        </div>

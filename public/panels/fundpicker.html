@@ -1,0 +1,74 @@
+<div id="fundpicker-panel" class="hidden w-full flex flex-col gap-5">
+
+            <!-- Header — matches MF Kit header style exactly -->
+            <div class="rounded-2xl px-5 py-4 text-white shine-header" style="background: linear-gradient(135deg, #0e3460 0%, #1a5276 50%, #117a65 100%); border: 2px solid rgba(245,200,66,0.45); box-shadow: 0 4px 18px rgba(0,0,0,0.25);">
+                <h2 class="text-lg font-black flex items-center gap-2" data-i18n="page.funder.h">🔬 How to Pick a Quality Mutual Fund</h2>
+                <p class="text-blue-200 text-xs mt-1" data-i18n="page.funder.sub">These metrics tell you if a fund is doing its job well. Use them before putting your money in.</p>
+            </div>
+            <!-- Filter pills — own row, full width, scrollable -->
+            <div class="pill-scroll-wrap dark-ctx" id="picker-filter-wrap" style="background:linear-gradient(135deg,#0e3460,#117a65);border-radius:14px;padding:8px 6px;">
+                <button class="pill-arrow pill-arrow-left" onclick="pillScroll('picker-filter-btns',-1)" aria-label="Scroll left">‹</button>
+                <div class="mfe-cat-scroll" id="picker-filter-btns" style="padding:0 4px;">
+                    <button onclick="filterPickerMetrics('all')" id="picker-f-all" class="mf-filter-active text-xs font-bold px-3 py-1.5 rounded-full transition-all flex-shrink-0">All Metrics</button>
+                    <button onclick="filterPickerMetrics('returns')" id="picker-f-returns" class="mf-filter-inactive text-xs font-bold px-3 py-1.5 rounded-full transition-all flex-shrink-0">Returns</button>
+                    <button onclick="filterPickerMetrics('risk')" id="picker-f-risk" class="mf-filter-inactive text-xs font-bold px-3 py-1.5 rounded-full transition-all flex-shrink-0">Risk Metrics</button>
+                    <button onclick="filterPickerMetrics('cost')" id="picker-f-cost" class="mf-filter-inactive text-xs font-bold px-3 py-1.5 rounded-full transition-all flex-shrink-0">Cost &amp; Tax</button>
+                    <button onclick="filterPickerMetrics('structure')" id="picker-f-structure" class="mf-filter-inactive text-xs font-bold px-3 py-1.5 rounded-full transition-all flex-shrink-0">Fund Structure</button>
+                </div>
+                <button class="pill-arrow pill-arrow-right" onclick="pillScroll('picker-filter-btns',1)" aria-label="Scroll right">›</button>
+            </div>
+
+            <!-- Metric Cards Grid — rendered by JS -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4" id="picker-metric-cards"></div>
+
+            <!-- Checklist Section -->
+            <div class="bg-white rounded-2xl border border-[#f5c842]/30 shadow-sm overflow-hidden">
+                <div class="px-5 py-4 border-b border-slate-100 flex items-center gap-2" style="background: linear-gradient(135deg, #0e346008 0%, #11796508 100%);">
+                    <span class="text-lg">✅</span>
+                    <div>
+                        <div class="text-sm font-black text-slate-800">Quick 6-Point Evaluation Checklist</div>
+                        <div class="text-[11px] text-slate-400 font-medium">Before investing, run any fund through these questions</div>
+                    </div>
+                </div>
+                <div class="p-5 grid grid-cols-1 sm:grid-cols-2 gap-3 items-stretch" id="picker-checklist"></div>
+            </div>
+
+            <!-- Benchmark Tip -->
+            <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5 flex gap-4">
+                <div class="text-2xl flex-shrink-0">💡</div>
+                <div>
+                    <div class="font-black text-amber-900 text-sm mb-2">Always Compare Against the Right Benchmark</div>
+                    <p class="text-xs text-amber-800 leading-relaxed">A Large Cap fund must be benchmarked against the Nifty 100 — not Nifty 50 which covers only the top 50 stocks. A fund adding 2% Alpha over its benchmark is excellent. But if a fund picks a weak benchmark to inflate numbers, the metrics look misleadingly good. Always check the benchmark listed in the fund's factsheet before trusting any metric.</p>
+                    <div class="mt-3 flex flex-wrap gap-2">
+                        <span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-amber-100 text-amber-800">Large Cap → Nifty 100 (top 100)</span>
+                        <span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-amber-100 text-amber-800">Large &amp; Mid Cap → Nifty LargeMidcap 250</span>
+                        <span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-amber-100 text-amber-800">Mid Cap → Nifty Midcap 150</span>
+                        <span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-amber-100 text-amber-800">Multi Cap → Nifty 500 Multicap 50:25:25</span>
+                        <span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-amber-100 text-amber-800">Flexi Cap → Nifty 500</span>
+                        <span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-amber-100 text-amber-800">Gilt → Long G-Sec Index</span>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Fund Comparison Table — identical to MF Kit table -->
+            <div class="bg-white rounded-2xl border border-[#f5c842]/30 shadow-sm overflow-hidden">
+                <div class="px-5 py-4 border-b border-slate-100" style="background: linear-gradient(135deg, #0e346012 0%, #11796512 100%);">
+                    <div class="flex items-start gap-3">
+                        <span class="text-xl">📊</span>
+                        <div>
+                            <div class="text-sm font-black text-slate-800">Live Example: How to Compare &amp; Select a Fund</div>
+                            <div class="text-[11px] text-slate-500 font-medium mt-0.5">4 hypothetical Large Cap funds evaluated on all key parameters. Read across each row to see what each metric tells you.</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="px-5 pt-3 pb-1 flex flex-wrap gap-2">
+                    <span class="inline-flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700"><span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>Excellent / Strong</span>
+                    <span class="inline-flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-1 rounded-full bg-amber-100 text-amber-700"><span class="w-2 h-2 rounded-full bg-amber-400 inline-block"></span>Average / Okay</span>
+                    <span class="inline-flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-1 rounded-full bg-rose-100 text-rose-700"><span class="w-2 h-2 rounded-full bg-rose-500 inline-block"></span>Weak / Risky</span>
+                    <span class="inline-flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-500"><span class="w-2 h-2 rounded-full bg-slate-400 inline-block"></span>Neutral / Context needed</span>
+                </div>
+                <div id="picker-comparison-table-wrap"></div>
+            </div>
+
+        </div>

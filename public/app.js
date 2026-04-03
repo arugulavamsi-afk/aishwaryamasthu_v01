@@ -384,6 +384,24 @@
             // Retirement Drawdown is now part of Retirement Hub
             if (mode === 'drawdown') mode = 'retirementhub';
 
+            // Lazy-load panel HTML if it hasn't been injected yet
+            var _pendingPanel = document.getElementById(mode + '-panel');
+            if (_pendingPanel && _pendingPanel.dataset.panelSrc && !_pendingPanel.dataset.loaded) {
+                var _src = _pendingPanel.dataset.panelSrc;
+                _pendingPanel.dataset.loaded = 'loading';
+                fetch(_src)
+                    .then(function(r) { return r.text(); })
+                    .then(function(html) {
+                        var _tmp = document.createElement('div');
+                        _tmp.innerHTML = html.trim();
+                        var _newPanel = _tmp.firstElementChild;
+                        if (_newPanel) _pendingPanel.replaceWith(_newPanel);
+                        switchMode(mode);
+                    })
+                    .catch(function() { switchMode(mode); }); // fallback: proceed anyway
+                return;
+            }
+
             // Always scroll to top on any mode switch
             window.scrollTo({ top: 0, behavior: 'instant' });
 

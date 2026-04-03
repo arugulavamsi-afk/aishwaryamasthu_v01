@@ -1,0 +1,318 @@
+<div id="insure-panel" class="hidden w-full flex flex-col gap-3">
+
+            <!-- HEADER -->
+            <div class="rounded-2xl px-4 py-3 text-white flex items-center justify-between gap-3 flex-wrap shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:2px solid rgba(245,200,66,0.4);box-shadow:0 4px 18px rgba(0,0,0,0.25);">
+                <div>
+                    <h2 class="text-base font-black flex items-center gap-2" data-i18n="page.insure.h">🛡️ Insurance Adequacy Calculator</h2>
+                    <p class="text-blue-200 text-[11px] mt-0.5">HLV method (assets-netted) · Health ₹35L+ · Critical Illness ₹25–50L · Disability income · Senior parent floater · Stop India's #1 vulnerability — underinsurance.</p>
+                </div>
+                <button onclick="resetInsure()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h5M20 20v-5h-5M4 9a9 9 0 0115-3M20 15a9 9 0 01-15 3"/></svg>Reset
+                </button>
+            </div>
+
+            <!-- MAIN GRID -->
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-3">
+
+                <!-- INPUTS -->
+                <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
+                    <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">Your Profile</div>
+                    <div class="grid grid-cols-2 gap-x-3 gap-y-2">
+
+                        <div>
+                            <label class="epf-label">Annual Income (₹)</label>
+                            <div class="relative"><span class="epf-prefix">₹</span>
+                            <input id="ins-income" type="text" inputmode="numeric" value="12,00,000" class="epf-input pl-7 text-slate-400"
+                                oninput="insFormat(this);insureCalc();this.classList.remove('text-slate-400');"
+                                onfocus="if(this.value==='12,00,000'){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                                onblur="if(!this.value){this.value='12,00,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                            </div>
+                            <div class="text-[9px] text-slate-400 mt-0.5">Gross annual income</div>
+                        </div>
+
+                        <div>
+                            <label class="epf-label">Age (yrs)</label>
+                            <input id="ins-age" type="number" min="18" max="65" value="30" class="epf-input text-slate-400"
+                                oninput="insureCalc();this.classList.remove('text-slate-400');"
+                                onfocus="if(this.value==='30'){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                                onblur="if(!this.value){this.value='30';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                            <div class="text-[9px] text-slate-400 mt-0.5">Your current age</div>
+                        </div>
+
+                        <div>
+                            <label class="epf-label">Dependents</label>
+                            <input id="ins-dependents" type="number" min="0" max="10" value="2" class="epf-input text-slate-400"
+                                oninput="insureCalc();this.classList.remove('text-slate-400');"
+                                onfocus="if(this.value==='2'){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                                onblur="if(!this.value){this.value='2';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                            <div class="text-[9px] text-slate-400 mt-0.5">Spouse + children + parents</div>
+                        </div>
+
+                        <div>
+                            <label class="epf-label">Outstanding Loans (₹)</label>
+                            <div class="relative"><span class="epf-prefix">₹</span>
+                            <input id="ins-loans" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                oninput="insFormat(this);insureCalc();this.classList.remove('text-slate-400');"
+                                onfocus="if(this.value==='0'){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                                onblur="if(!this.value){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                            </div>
+                            <div class="text-[9px] text-slate-400 mt-0.5">Home loan + car + personal</div>
+                        </div>
+
+                        <div>
+                            <label class="epf-label">Current Term Cover (₹)</label>
+                            <div class="relative"><span class="epf-prefix">₹</span>
+                            <input id="ins-term-current" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                oninput="insFormat(this);insureCalc();this.classList.remove('text-slate-400');"
+                                onfocus="if(this.value==='0'){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                                onblur="if(!this.value){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                            </div>
+                            <div class="text-[9px] text-slate-400 mt-0.5">Existing term insurance</div>
+                        </div>
+
+                        <div>
+                            <label class="epf-label">Current Health Cover (₹)</label>
+                            <div class="relative"><span class="epf-prefix">₹</span>
+                            <input id="ins-health-current" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                oninput="insFormat(this);insureCalc();this.classList.remove('text-slate-400');"
+                                onfocus="if(this.value==='0'){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                                onblur="if(!this.value){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                            </div>
+                            <div class="text-[9px] text-slate-400 mt-0.5">Floater + any employer cover</div>
+                        </div>
+
+                        <div>
+                            <label class="epf-label">Monthly Expenses (₹)</label>
+                            <div class="relative"><span class="epf-prefix">₹</span>
+                            <input id="ins-monthly-exp" type="text" inputmode="numeric" value="50,000" class="epf-input pl-7 text-slate-400"
+                                oninput="insFormat(this);insureCalc();this.classList.remove('text-slate-400');"
+                                onfocus="if(this.value==='50,000'){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                                onblur="if(!this.value){this.value='50,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                            </div>
+                            <div id="ins-exp-annual-hint" class="text-[9px] text-slate-400 mt-0.5">= ₹6,00,000/yr</div>
+                        </div>
+
+                        <div>
+                            <label class="epf-label">Family Size (health)</label>
+                            <input id="ins-family" type="number" min="1" max="20" value="2" class="epf-input text-slate-400"
+                                oninput="insureCalc();this.classList.remove('text-slate-400');"
+                                onfocus="if(this.value==='2'){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                                onblur="if(!this.value||Number(this.value)<1){this.value='2';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                            <div class="text-[9px] text-slate-400 mt-0.5">Total members incl. self</div>
+                        </div>
+
+                    </div>
+                    <!-- Advanced coverage section -->
+                    <div class="text-[9px] font-black text-slate-400 uppercase tracking-wider mt-3 mb-1.5">Critical Illness · Disability · Parents</div>
+                    <div class="grid grid-cols-2 gap-x-3 gap-y-2">
+
+                        <div>
+                            <label class="epf-label">Liquid Assets (₹)</label>
+                            <div class="relative"><span class="epf-prefix">₹</span>
+                            <input id="ins-assets" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                oninput="insFormat(this);insureCalc();this.classList.remove('text-slate-400');"
+                                onfocus="if(this.value==='0'){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                                onblur="if(!this.value){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                            </div>
+                            <div class="text-[9px] text-slate-400 mt-0.5">FD + MF + savings (nets HLV)</div>
+                        </div>
+
+                        <div>
+                            <label class="epf-label">Current CI Cover (₹)</label>
+                            <div class="relative"><span class="epf-prefix">₹</span>
+                            <input id="ins-ci-current" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                oninput="insFormat(this);insureCalc();this.classList.remove('text-slate-400');"
+                                onfocus="if(this.value==='0'){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                                onblur="if(!this.value){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                            </div>
+                            <div class="text-[9px] text-slate-400 mt-0.5">Critical illness lump sum</div>
+                        </div>
+
+                        <div>
+                            <label class="epf-label">Disability Cover (₹)</label>
+                            <div class="relative"><span class="epf-prefix">₹</span>
+                            <input id="ins-disability-current" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                oninput="insFormat(this);insureCalc();this.classList.remove('text-slate-400');"
+                                onfocus="if(this.value==='0'){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                                onblur="if(!this.value){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                            </div>
+                            <div class="text-[9px] text-slate-400 mt-0.5">Income replacement corpus</div>
+                        </div>
+
+                        <div>
+                            <label class="epf-label">Parents' Health Cover (₹)</label>
+                            <div class="relative"><span class="epf-prefix">₹</span>
+                            <input id="ins-parents-cover" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                oninput="insFormat(this);insureCalc();this.classList.remove('text-slate-400');"
+                                onfocus="if(this.value==='0'){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                                onblur="if(!this.value){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                            </div>
+                            <div class="text-[9px] text-slate-400 mt-0.5">Existing senior floater</div>
+                        </div>
+
+                        <div>
+                            <label class="epf-label">Parent 1 Age (yrs)</label>
+                            <input id="ins-parents-age1" type="number" min="40" max="95" value="55" class="epf-input text-slate-400"
+                                oninput="insureCalc();this.classList.remove('text-slate-400');"
+                                onfocus="if(this.value==='55'){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                                onblur="if(!this.value){this.value='55';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                            <div class="text-[9px] text-slate-400 mt-0.5">Father or mother age</div>
+                        </div>
+
+                        <div>
+                            <label class="epf-label">Parent 2 Age (yrs)</label>
+                            <input id="ins-parents-age2" type="number" min="0" max="95" value="52" class="epf-input text-slate-400"
+                                oninput="insureCalc();this.classList.remove('text-slate-400');"
+                                onfocus="if(this.value==='52'){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                                onblur="if(!this.value){this.value='52';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                            <div class="text-[9px] text-slate-400 mt-0.5">0 if no second parent</div>
+                        </div>
+
+                    </div>
+                    <!-- Presets -->
+                    <div class="mt-3">
+                        <div class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1.5">Quick Scenarios</div>
+                        <div class="flex flex-wrap gap-1">
+                            <button onclick="insPreset(600000,28,1,0,0,0,300000,2)"   class="ins-preset">₹6L · 28yr</button>
+                            <button onclick="insPreset(1200000,32,2,2500000,0,0,600000,2)" class="ins-preset">₹12L · 32yr · home loan</button>
+                            <button onclick="insPreset(2000000,38,3,0,5000000,500000,1000000,3)" class="ins-preset">₹20L · 38yr · some cover</button>
+                            <button onclick="insPreset(3500000,45,4,0,10000000,1000000,1500000,4)" class="ins-preset">₹35L · 45yr · HNI</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RESULTS -->
+                <div class="lg:col-span-3 flex flex-col gap-2">
+
+                    <!-- Term insurance result -->
+                    <div class="grid grid-cols-2 gap-2">
+                        <div class="rounded-2xl p-3 shine-header" style="background:linear-gradient(135deg,#0c2340,#1a4a7a);border:2px solid rgba(245,200,66,0.35);">
+                            <div class="text-[9px] font-black text-blue-200 uppercase tracking-wider">Required Term Cover</div>
+                            <div id="ins-term-needed" class="text-2xl font-black text-white mt-0.5">—</div>
+                            <div id="ins-term-gap" class="text-[10px] mt-0.5 font-black">—</div>
+                            <div class="text-[9px] text-blue-300 mt-1">HLV method · 10–15× income + loans − assets</div>
+                        </div>
+                        <div class="rounded-2xl p-3 shine-header" style="background:linear-gradient(135deg,#14532d,#166534);border:2px solid #22c55e;">
+                            <div class="text-[9px] font-black text-emerald-200 uppercase tracking-wider">Required Health Cover</div>
+                            <div id="ins-health-needed" class="text-2xl font-black text-white mt-0.5">—</div>
+                            <div id="ins-health-gap" class="text-[10px] mt-0.5 font-black">—</div>
+                            <div class="text-[9px] text-emerald-300 mt-1">₹10L base floater + ₹25L super top-up</div>
+                        </div>
+                    </div>
+
+                    <!-- CI + Disability + Parents result cards -->
+                    <div class="grid grid-cols-3 gap-2">
+                        <div class="rounded-2xl p-3 shine-header" style="background:linear-gradient(135deg,#431407,#7c2d12);border:2px solid rgba(251,146,60,0.5);">
+                            <div class="text-[9px] font-black text-orange-200 uppercase tracking-wider">Critical Illness</div>
+                            <div id="ins-ci-needed" class="text-lg font-black text-white mt-0.5">—</div>
+                            <div id="ins-ci-gap" class="text-[10px] mt-0.5 font-black">—</div>
+                            <div class="text-[9px] text-orange-300 mt-1">Lump sum · cancer/heart</div>
+                        </div>
+                        <div class="rounded-2xl p-3 shine-header" style="background:linear-gradient(135deg,#450a0a,#991b1b);border:2px solid rgba(248,113,113,0.5);">
+                            <div class="text-[9px] font-black text-red-200 uppercase tracking-wider">Disability Cover</div>
+                            <div id="ins-disability-needed" class="text-lg font-black text-white mt-0.5">—</div>
+                            <div id="ins-disability-gap" class="text-[10px] mt-0.5 font-black">—</div>
+                            <div class="text-[9px] text-red-300 mt-1">Income replacement · 10×</div>
+                        </div>
+                        <div class="rounded-2xl p-3 shine-header" style="background:linear-gradient(135deg,#042f2e,#0f766e);border:2px solid rgba(45,212,191,0.4);">
+                            <div class="text-[9px] font-black text-teal-200 uppercase tracking-wider">Parents Health</div>
+                            <div id="ins-parents-needed" class="text-lg font-black text-white mt-0.5">—</div>
+                            <div id="ins-parents-gap" class="text-[10px] mt-0.5 font-black">—</div>
+                            <div class="text-[9px] text-teal-300 mt-1">Senior floater + top-up</div>
+                        </div>
+                    </div>
+
+                    <!-- 6 stat pills -->
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
+                        <div class="rounded-xl p-2 text-center" style="background:#f0f9ff;border:1px solid #bae6fd;">
+                            <div class="text-[9px] font-black text-sky-700 uppercase">HLV Multiple</div>
+                            <div id="ins-hlv-multiple" class="text-sm font-black text-sky-800">—</div>
+                            <div class="text-[8px] text-sky-600">income × years left</div>
+                        </div>
+                        <div class="rounded-xl p-2 text-center" style="background:#fef9c3;border:1px solid #fde047;">
+                            <div class="text-[9px] font-black text-yellow-700 uppercase">Term Gap</div>
+                            <div id="ins-term-gap-pill" class="text-sm font-black text-yellow-800">—</div>
+                            <div class="text-[8px] text-yellow-600">additional cover needed</div>
+                        </div>
+                        <div class="rounded-xl p-2 text-center" style="background:#f0fdf4;border:1px solid #86efac;">
+                            <div class="text-[9px] font-black text-emerald-700 uppercase">Health Gap</div>
+                            <div id="ins-health-gap-pill" class="text-sm font-black text-emerald-800">—</div>
+                            <div class="text-[8px] text-emerald-600">additional needed</div>
+                        </div>
+                        <div class="rounded-xl p-2 text-center" style="background:#fdf4ff;border:1px solid #e9d5ff;">
+                            <div class="text-[9px] font-black text-purple-700 uppercase">Est. Term Premium</div>
+                            <div id="ins-term-premium" class="text-sm font-black text-purple-800">—</div>
+                            <div class="text-[8px] text-purple-600">approx annual cost</div>
+                        </div>
+                        <div class="rounded-xl p-2 text-center" style="background:#fff7ed;border:1px solid #fdba74;">
+                            <div class="text-[9px] font-black text-orange-700 uppercase">CI Gap</div>
+                            <div id="ins-ci-gap-pill" class="text-sm font-black text-orange-800">—</div>
+                            <div class="text-[8px] text-orange-600">critical illness gap</div>
+                        </div>
+                        <div class="rounded-xl p-2 text-center" style="background:#f0fdfa;border:1px solid #5eead4;">
+                            <div class="text-[9px] font-black text-teal-700 uppercase">Parents Premium</div>
+                            <div id="ins-parents-premium" class="text-sm font-black text-teal-800">—</div>
+                            <div class="text-[8px] text-teal-600">est. annual floater cost</div>
+                        </div>
+                    </div>
+
+                    <!-- Insight -->
+                    <div id="ins-insight" class="hidden rounded-xl px-3 py-2 text-[11px] leading-relaxed" style="background:#f0f9ff;border:1px solid #bae6fd;color:#0c4a6e;"></div>
+
+                    <!-- WhatsApp share -->
+                    <div><button onclick="waShare('insure')" class="wa-share-btn shine-btn"><svg viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5 flex-shrink-0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.557 4.133 1.535 5.876L.057 23.43a.75.75 0 00.918.924l5.688-1.493A11.946 11.946 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.907 0-3.7-.512-5.241-1.403l-.375-.22-3.877 1.018 1.01-3.769-.234-.389A9.953 9.953 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>Share on WhatsApp</button></div>
+                </div>
+            </div>
+
+            <!-- EXPLAINER WORKINGS -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-3">
+                    <div class="text-[10px] font-black text-slate-500 uppercase tracking-wider mb-2">📐 How Your Term Cover Is Calculated</div>
+                    <div id="ins-term-workings" class="text-[10px] text-slate-600 leading-relaxed space-y-1"></div>
+                </div>
+                <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-3">
+                    <div class="text-[10px] font-black text-slate-500 uppercase tracking-wider mb-2">🏥 Health Cover Breakdown</div>
+                    <div id="ins-health-workings" class="text-[10px] text-slate-600 leading-relaxed space-y-1"></div>
+                </div>
+                <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-3">
+                    <div class="text-[10px] font-black text-slate-500 uppercase tracking-wider mb-2">🎗️ Critical Illness + Disability</div>
+                    <div id="ins-ci-workings" class="text-[10px] text-slate-600 leading-relaxed space-y-1"></div>
+                </div>
+                <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-3">
+                    <div class="text-[10px] font-black text-slate-500 uppercase tracking-wider mb-2">👴 Parents' Health Cover</div>
+                    <div id="ins-parents-workings" class="text-[10px] text-slate-600 leading-relaxed space-y-1"></div>
+                </div>
+            </div>
+
+            <!-- KEY RULES -->
+            <div class="rounded-2xl p-3" style="background:#f8fafc;border:1px solid #e2e8f0;">
+                <div class="text-[9px] font-black text-slate-500 uppercase tracking-wider mb-2">📌 India Insurance Adequacy Rules (Post-COVID Baseline)</div>
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 text-[10px]">
+                    <div class="rounded-xl p-2" style="background:#eff6ff;border:1px solid #93c5fd;">
+                        <div class="font-black text-blue-800 mb-0.5">🎯 HLV for Term</div>
+                        <div class="text-blue-700">10–15× income minus liquid assets. Your savings reduce the gap — family already holds that wealth.</div>
+                    </div>
+                    <div class="rounded-xl p-2" style="background:#f0fdf4;border:1px solid #86efac;">
+                        <div class="font-black text-emerald-800 mb-0.5">🏥 Base Floater</div>
+                        <div class="text-emerald-700">Min ₹10L family floater. Don't rely on employer cover — it ends when you leave. Separate policy is essential.</div>
+                    </div>
+                    <div class="rounded-xl p-2" style="background:#fef9c3;border:1px solid #fde047;">
+                        <div class="font-black text-yellow-800 mb-0.5">⭐ Super Top-Up</div>
+                        <div class="text-yellow-700">Add ₹25L super top-up above ₹5L deductible. ICU post-COVID: ₹50K/day. Target total: ₹35L+.</div>
+                    </div>
+                    <div class="rounded-xl p-2" style="background:#fff7ed;border:1px solid #fdba74;">
+                        <div class="font-black text-orange-800 mb-0.5">🎗️ Critical Illness</div>
+                        <div class="text-orange-700">India: 14L new cancer cases/year. CI pays a lump sum — hospital bills + lost income + recovery. Target ₹25–50L.</div>
+                    </div>
+                    <div class="rounded-xl p-2" style="background:#fff1f2;border:1px solid #fda4af;">
+                        <div class="font-black text-rose-800 mb-0.5">♿ Disability</div>
+                        <div class="text-rose-700">1-in-4 chance of disability before 65. Income replacement corpus = 10× annual income. Most Indians have zero cover.</div>
+                    </div>
+                    <div class="rounded-xl p-2" style="background:#f0fdfa;border:1px solid #5eead4;">
+                        <div class="font-black text-teal-800 mb-0.5">👴 Parent Floater</div>
+                        <div class="text-teal-700">Senior citizen floaters cost ₹25K–65K/yr. Target ₹5L floater + ₹20L top-up for each parent pair.</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>

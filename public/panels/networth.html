@@ -1,0 +1,348 @@
+<div id="networth-panel" class="hidden w-full flex flex-col gap-3">
+
+            <!-- HEADER -->
+            <div class="rounded-2xl px-4 py-3 text-white flex items-center justify-between gap-3 flex-wrap shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:2px solid rgba(245,200,66,0.4);box-shadow:0 4px 18px rgba(0,0,0,0.25);">
+                <div>
+                    <h2 class="text-base font-black flex items-center gap-2">⚖️ Net Worth Tracker</h2>
+                    <p class="text-blue-200 text-[11px] mt-0.5">Your complete financial snapshot — Assets vs Liabilities = Net Worth. A financial plan without a balance sheet is astrology, not planning.</p>
+                </div>
+                <button onclick="resetNetWorth()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h5M20 20v-5h-5M4 9a9 9 0 0115-3M20 15a9 9 0 01-15 3"/></svg>Reset
+                </button>
+            </div>
+
+            <!-- MAIN GRID -->
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-3">
+
+                <!-- INPUTS (left, 2 cols) -->
+                <div class="lg:col-span-2 flex flex-col gap-2">
+
+                    <!-- ASSETS CARD -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
+                        <div class="text-[10px] font-black text-emerald-600 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                            <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;"></span>ASSETS — What You Own
+                        </div>
+
+                        <!-- Liquid -->
+                        <div class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1 mt-1">💵 Liquid</div>
+                        <div class="grid grid-cols-2 gap-x-3 gap-y-2 mb-2">
+                            <div>
+                                <label class="epf-label">Savings / Bank (₹)</label>
+                                <div class="relative"><span class="epf-prefix">₹</span>
+                                <input id="nw-savings" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                    oninput="nwFmtInput(this);nwCalc();"
+                                    onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                                    onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                                </div>
+                                <div class="text-[9px] text-slate-400 mt-0.5">All bank accounts combined</div>
+                            </div>
+                            <div>
+                                <label class="epf-label">Fixed Deposits (₹)</label>
+                                <div class="relative"><span class="epf-prefix">₹</span>
+                                <input id="nw-fd" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                    oninput="nwFmtInput(this);nwCalc();"
+                                    onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                                    onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                                </div>
+                                <div class="text-[9px] text-slate-400 mt-0.5">All bank FDs (current value)</div>
+                            </div>
+                        </div>
+
+                        <!-- Equity -->
+                        <div class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1">📈 Equity</div>
+                        <div class="grid grid-cols-2 gap-x-3 gap-y-2 mb-2">
+                            <div>
+                                <label class="epf-label">Direct Stocks (₹)</label>
+                                <div class="relative"><span class="epf-prefix">₹</span>
+                                <input id="nw-stocks" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                    oninput="nwFmtInput(this);nwCalc();"
+                                    onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                                    onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                                </div>
+                                <div class="text-[9px] text-slate-400 mt-0.5">Demat portfolio value</div>
+                            </div>
+                            <div>
+                                <label class="epf-label">Equity Mutual Funds (₹)</label>
+                                <div class="relative"><span class="epf-prefix">₹</span>
+                                <input id="nw-eq-mf" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                    oninput="nwFmtInput(this);nwCalc();"
+                                    onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                                    onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                                </div>
+                                <div class="text-[9px] text-slate-400 mt-0.5">Current NAV × units</div>
+                            </div>
+                        </div>
+
+                        <!-- Retirement & Debt -->
+                        <div class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1">🔒 Retirement & Fixed Income</div>
+                        <div class="grid grid-cols-2 gap-x-3 gap-y-2 mb-2">
+                            <div>
+                                <label class="epf-label">EPF Balance (₹)</label>
+                                <div class="relative"><span class="epf-prefix">₹</span>
+                                <input id="nw-epf" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                    oninput="nwFmtInput(this);nwCalc();"
+                                    onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                                    onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                                </div>
+                                <div class="text-[9px] text-slate-400 mt-0.5">EPFO passbook / UAN</div>
+                            </div>
+                            <div>
+                                <label class="epf-label">PPF Balance (₹)</label>
+                                <div class="relative"><span class="epf-prefix">₹</span>
+                                <input id="nw-ppf" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                    oninput="nwFmtInput(this);nwCalc();"
+                                    onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                                    onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                                </div>
+                                <div class="text-[9px] text-slate-400 mt-0.5">PPF passbook balance</div>
+                            </div>
+                            <div>
+                                <label class="epf-label">NPS Balance (₹)</label>
+                                <div class="relative"><span class="epf-prefix">₹</span>
+                                <input id="nw-nps" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                    oninput="nwFmtInput(this);nwCalc();"
+                                    onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                                    onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                                </div>
+                                <div class="text-[9px] text-slate-400 mt-0.5">Tier I + Tier II combined</div>
+                            </div>
+                            <div>
+                                <label class="epf-label">Debt MF / Bonds (₹)</label>
+                                <div class="relative"><span class="epf-prefix">₹</span>
+                                <input id="nw-debt-mf" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                    oninput="nwFmtInput(this);nwCalc();"
+                                    onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                                    onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                                </div>
+                                <div class="text-[9px] text-slate-400 mt-0.5">NSC / KVP / Debt funds</div>
+                            </div>
+                        </div>
+
+                        <!-- Real Estate -->
+                        <div class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1">🏠 Real Estate</div>
+                        <div class="grid grid-cols-2 gap-x-3 gap-y-2 mb-2">
+                            <div>
+                                <label class="epf-label">Primary Home (₹)</label>
+                                <div class="relative"><span class="epf-prefix">₹</span>
+                                <input id="nw-home" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                    oninput="nwFmtInput(this);nwCalc();"
+                                    onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                                    onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                                </div>
+                                <div class="text-[9px] text-slate-400 mt-0.5">Current market value</div>
+                            </div>
+                            <div>
+                                <label class="epf-label">Other Property (₹)</label>
+                                <div class="relative"><span class="epf-prefix">₹</span>
+                                <input id="nw-property" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                    oninput="nwFmtInput(this);nwCalc();"
+                                    onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                                    onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                                </div>
+                                <div class="text-[9px] text-slate-400 mt-0.5">Land / plots / rental property</div>
+                            </div>
+                        </div>
+
+                        <!-- Gold & Other -->
+                        <div class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1">🥇 Gold & Other</div>
+                        <div class="grid grid-cols-2 gap-x-3 gap-y-2">
+                            <div>
+                                <label class="epf-label">Physical Gold (₹)</label>
+                                <div class="relative"><span class="epf-prefix">₹</span>
+                                <input id="nw-gold-phys" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                    oninput="nwFmtInput(this);nwCalc();"
+                                    onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                                    onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                                </div>
+                                <div class="text-[9px] text-slate-400 mt-0.5">Jewellery + coins at market price</div>
+                            </div>
+                            <div>
+                                <label class="epf-label">Gold ETF / SGB / MF (₹)</label>
+                                <div class="relative"><span class="epf-prefix">₹</span>
+                                <input id="nw-gold-paper" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                    oninput="nwFmtInput(this);nwCalc();"
+                                    onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                                    onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                                </div>
+                                <div class="text-[9px] text-slate-400 mt-0.5">Current NAV value</div>
+                            </div>
+                            <div>
+                                <label class="epf-label">Cryptocurrency (₹)</label>
+                                <div class="relative"><span class="epf-prefix">₹</span>
+                                <input id="nw-crypto" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                    oninput="nwFmtInput(this);nwCalc();"
+                                    onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                                    onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                                </div>
+                                <div class="text-[9px] text-slate-400 mt-0.5">30% flat tax on gains in India</div>
+                            </div>
+                            <div>
+                                <label class="epf-label">LIC / ULIP Surr. Value (₹)</label>
+                                <div class="relative"><span class="epf-prefix">₹</span>
+                                <input id="nw-ins-sv" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                    oninput="nwFmtInput(this);nwCalc();"
+                                    onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                                    onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                                </div>
+                                <div class="text-[9px] text-slate-400 mt-0.5">Check policy bond / app</div>
+                            </div>
+                            <div class="col-span-2">
+                                <label class="epf-label">Vehicles + Other Assets (₹)</label>
+                                <div class="relative"><span class="epf-prefix">₹</span>
+                                <input id="nw-other-assets" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                    oninput="nwFmtInput(this);nwCalc();"
+                                    onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                                    onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                                </div>
+                                <div class="text-[9px] text-slate-400 mt-0.5">Car resale value + business ownership + any other assets</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- LIABILITIES CARD -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
+                        <div class="text-[10px] font-black text-red-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                            <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#ef4444;"></span>LIABILITIES — What You Owe
+                        </div>
+                        <div class="grid grid-cols-2 gap-x-3 gap-y-2">
+                            <div>
+                                <label class="epf-label">Home Loan (₹)</label>
+                                <div class="relative"><span class="epf-prefix">₹</span>
+                                <input id="nw-liab-home" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                    oninput="nwFmtInput(this);nwCalc();"
+                                    onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                                    onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                                </div>
+                                <div class="text-[9px] text-slate-400 mt-0.5">Outstanding principal</div>
+                            </div>
+                            <div>
+                                <label class="epf-label">Car Loan (₹)</label>
+                                <div class="relative"><span class="epf-prefix">₹</span>
+                                <input id="nw-liab-car" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                    oninput="nwFmtInput(this);nwCalc();"
+                                    onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                                    onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                                </div>
+                                <div class="text-[9px] text-slate-400 mt-0.5">Outstanding principal</div>
+                            </div>
+                            <div>
+                                <label class="epf-label">Personal Loan (₹)</label>
+                                <div class="relative"><span class="epf-prefix">₹</span>
+                                <input id="nw-liab-pl" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                    oninput="nwFmtInput(this);nwCalc();"
+                                    onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                                    onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="epf-label">Education Loan (₹)</label>
+                                <div class="relative"><span class="epf-prefix">₹</span>
+                                <input id="nw-liab-edu" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                    oninput="nwFmtInput(this);nwCalc();"
+                                    onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                                    onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="epf-label">Credit Card Dues (₹)</label>
+                                <div class="relative"><span class="epf-prefix">₹</span>
+                                <input id="nw-liab-cc" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                    oninput="nwFmtInput(this);nwCalc();"
+                                    onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                                    onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                                </div>
+                                <div class="text-[9px] text-red-400 mt-0.5 font-semibold">36% APR — pay first!</div>
+                            </div>
+                            <div>
+                                <label class="epf-label">Business / Other Loans (₹)</label>
+                                <div class="relative"><span class="epf-prefix">₹</span>
+                                <input id="nw-liab-other" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                    oninput="nwFmtInput(this);nwCalc();"
+                                    onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                                    onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div><!-- end inputs col -->
+
+                <!-- RESULTS (right, 3 cols) -->
+                <div class="lg:col-span-3 flex flex-col gap-2">
+
+                    <!-- Net Worth Hero Card -->
+                    <div class="rounded-2xl p-4 text-center shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:2px solid rgba(245,200,66,0.4);">
+                        <div class="text-[10px] font-black text-blue-200 uppercase tracking-wider mb-1">Your Net Worth</div>
+                        <div id="nw-net-worth" class="text-4xl font-black" style="color:#10b981;">₹0</div>
+                        <div class="text-[10px] text-blue-300 mt-1">Total Assets − Total Liabilities</div>
+                    </div>
+
+                    <!-- Assets & Liabilities Cards -->
+                    <div class="grid grid-cols-2 gap-2">
+                        <div class="rounded-2xl p-3 text-center shine-header" style="background:linear-gradient(135deg,#14532d,#166534);border:2px solid #22c55e;">
+                            <div class="text-[9px] font-black text-emerald-200 uppercase tracking-wider">Total Assets</div>
+                            <div id="nw-total-assets" class="text-xl font-black text-white mt-0.5">₹0</div>
+                            <div class="text-[9px] text-emerald-300 mt-0.5">What you own</div>
+                        </div>
+                        <div class="rounded-2xl p-3 text-center shine-header" style="background:linear-gradient(135deg,#450a0a,#7f1d1d);border:2px solid #ef4444;">
+                            <div class="text-[9px] font-black text-red-200 uppercase tracking-wider">Total Liabilities</div>
+                            <div id="nw-total-liab" class="text-xl font-black text-white mt-0.5">₹0</div>
+                            <div class="text-[9px] text-red-300 mt-0.5">What you owe</div>
+                        </div>
+                    </div>
+
+                    <!-- WhatsApp share -->
+                    <div><button onclick="waShare('networth')" class="wa-share-btn shine-btn"><svg viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5 flex-shrink-0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.557 4.133 1.535 5.876L.057 23.43a.75.75 0 00.918.924l5.688-1.493A11.946 11.946 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.907 0-3.7-.512-5.241-1.403l-.375-.22-3.877 1.018 1.01-3.769-.234-.389A9.953 9.953 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>Share on WhatsApp</button></div>
+
+                    <!-- Key Ratios -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
+                        <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">Key Financial Ratios</div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="rounded-xl p-2 text-center" style="background:#f0fdf4;border:1px solid #bbf7d0;">
+                                <div class="text-[9px] font-black text-emerald-700 uppercase">Debt / Asset</div>
+                                <div id="nw-dtar" class="text-lg font-black" style="color:#10b981;">0%</div>
+                                <div class="text-[8px] text-emerald-600 mt-0.5">Target: &lt;30%</div>
+                            </div>
+                            <div class="rounded-xl p-2 text-center" style="background:#eff6ff;border:1px solid #bfdbfe;">
+                                <div class="text-[9px] font-black text-blue-700 uppercase">Invested</div>
+                                <div id="nw-inv-ratio" class="text-lg font-black text-blue-700">0%</div>
+                                <div class="text-[8px] text-blue-600 mt-0.5">Target: &gt;40%</div>
+                            </div>
+                            <div class="rounded-xl p-2 text-center" style="background:#fefce8;border:1px solid #fde68a;">
+                                <div class="text-[9px] font-black text-amber-700 uppercase">Liquid</div>
+                                <div id="nw-liq-ratio" class="text-lg font-black text-amber-700">0%</div>
+                                <div class="text-[8px] text-amber-600 mt-0.5">Target: 5–20%</div>
+                            </div>
+                        </div>
+                        <div class="mt-2 text-[9px] text-slate-400 leading-relaxed">
+                            <strong>Debt/Asset</strong> = Liabilities ÷ Assets (keep below 30%) &nbsp;·&nbsp;
+                            <strong>Invested</strong> = Equity + Retirement ÷ Total Assets &nbsp;·&nbsp;
+                            <strong>Liquid</strong> = Cash + FD ÷ Total Assets
+                        </div>
+                    </div>
+
+                    <!-- Asset Allocation Chart -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
+                        <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">Asset Allocation</div>
+                        <div style="height:180px;position:relative;">
+                            <canvas id="nw-chart-canvas"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Breakdown -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
+                        <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">Asset Breakdown</div>
+                        <div id="nw-breakdown">
+                            <div class="text-[10px] text-slate-400 text-center py-4">Enter your assets above to see breakdown</div>
+                        </div>
+                    </div>
+
+                    <!-- Insight Box -->
+                    <div id="nw-insight" class="hidden rounded-2xl px-4 py-3 text-[10px] leading-relaxed" style="background:#f0fdf4;border:1.5px solid #86efac;color:#14532d;">
+                    </div>
+
+                </div><!-- end results col -->
+
+            </div><!-- end main grid -->
+
+        </div>
