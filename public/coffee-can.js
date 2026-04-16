@@ -635,6 +635,16 @@
             '">' + label + (active ? (_ccDir === -1 ? ' ↓' : ' ↑') : '') + '</button>';
     }
 
+    /* ─── BASE RATE REALITY TOGGLE ────────────────────────────────── */
+    function ccToggleBaseRate() {
+        var detail = document.getElementById('cc-baserate-detail');
+        var arrow  = document.getElementById('cc-br-arrow');
+        if (!detail) return;
+        var open = detail.style.display !== 'none';
+        detail.style.display = open ? 'none' : 'block';
+        if (arrow) arrow.textContent = open ? '▼ Show' : '▲ Hide';
+    }
+
     /* ─── MAIN INIT ─────────────────────────────────────────────────── */
     function initCoffeeCan() {
         if (_ccReady) { ccRenderControls(); ccRenderList(); return; }

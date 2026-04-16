@@ -56,14 +56,42 @@
     function upSave() {
         var existing = window._userProfile || {};
         var p = {
-            name:         document.getElementById('up-name')?.value.trim()  || '',
-            age:          document.getElementById('up-age')?.value           || '',
-            occupation:   document.getElementById('up-occupation')?.value    || '',
-            income:       document.getElementById('up-income')?.value        || '',
-            expenses:     document.getElementById('up-expenses')?.value      || '',
-            regime:       document.getElementById('up-regime')?.value        || 'new',
-            city:         document.getElementById('up-city')?.value          || 'metro',
-            profileGoals: existing.profileGoals || []
+            name:           document.getElementById('up-name')?.value.trim()      || '',
+            age:            document.getElementById('up-age')?.value              || '',
+            occupation:     document.getElementById('up-occupation')?.value       || '',
+            income:         document.getElementById('up-income')?.value           || '',
+            annualIncome:   document.getElementById('up-annual-income')?.value    || '',
+            expenses:       document.getElementById('up-expenses')?.value         || '',
+            regime:         document.getElementById('up-regime')?.value           || 'new',
+            city:           document.getElementById('up-city')?.value             || 'metro',
+            // Assets
+            assetsBank:     document.getElementById('up-assets-bank')?.value      || '0',
+            assetsMf:       document.getElementById('up-assets-mf')?.value        || '0',
+            assetsStocks:   document.getElementById('up-assets-stocks')?.value    || '0',
+            assetsRe:       document.getElementById('up-assets-re')?.value        || '0',
+            assetsPpf:      document.getElementById('up-assets-ppf')?.value       || '0',
+            assetsGold:     document.getElementById('up-assets-gold')?.value      || '0',
+            assetsOther:    document.getElementById('up-assets-other')?.value     || '0',
+            // Liabilities
+            liabHome:       document.getElementById('up-liab-home')?.value        || '0',
+            liabCar:        document.getElementById('up-liab-car')?.value         || '0',
+            liabPersonal:   document.getElementById('up-liab-personal')?.value    || '0',
+            liabCc:         document.getElementById('up-liab-cc')?.value          || '0',
+            liabOther:      document.getElementById('up-liab-other')?.value       || '0',
+            // Health Insurance
+            healthInsurer:  document.getElementById('up-health-insurer')?.value   || '',
+            healthCoverage: document.getElementById('up-health-coverage')?.value  || '0',
+            healthPremium:  document.getElementById('up-health-premium')?.value   || '0',
+            healthType:     document.getElementById('up-health-type')?.value      || 'individual',
+            healthPolicyNo: document.getElementById('up-health-policyno')?.value  || '',
+            // Term Insurance
+            termInsurer:    document.getElementById('up-term-insurer')?.value     || '',
+            termAssured:    document.getElementById('up-term-assured')?.value     || '0',
+            termPremium:    document.getElementById('up-term-premium')?.value     || '0',
+            termNominee:    document.getElementById('up-term-nominee')?.value     || '',
+            termNomineeRel: document.getElementById('up-term-nominee-rel')?.value || '',
+            termPolicyNo:   document.getElementById('up-term-policyno')?.value    || '',
+            profileGoals:   existing.profileGoals || []
         };
         window._userProfile = p;
         upUpdateSummary();
@@ -74,10 +102,84 @@
     function upLoad(p) {
         if (!p) return;
         window._userProfile = p;
-        ['name','age','occupation','income','expenses','regime','city'].forEach(function(k) {
+        // Basic fields
+        ['name','age','occupation','expenses','regime','city'].forEach(function(k) {
             var el = document.getElementById('up-' + k);
             if (el && p[k] !== undefined) el.value = p[k];
         });
+        // Income (text field — strip commas not needed, value already formatted)
+        var incEl = document.getElementById('up-income');
+        if (incEl && p.income) incEl.value = p.income;
+
+        // Annual Income
+        var annEl = document.getElementById('up-annual-income');
+        if (annEl) {
+            if (p.annualIncome && p.annualIncome !== '0') {
+                annEl.value = p.annualIncome;
+                annEl.classList.remove('text-slate-400');
+            } else {
+                annEl.value = '0';
+                annEl.classList.add('text-slate-400');
+            }
+        }
+
+        // Assets
+        var assetMap = { assetsBank:'up-assets-bank', assetsMf:'up-assets-mf', assetsStocks:'up-assets-stocks',
+                         assetsRe:'up-assets-re', assetsPpf:'up-assets-ppf', assetsGold:'up-assets-gold', assetsOther:'up-assets-other' };
+        Object.keys(assetMap).forEach(function(k) {
+            var el = document.getElementById(assetMap[k]);
+            if (!el) return;
+            var val = p[k] || '0';
+            el.value = val;
+            if (val === '0' || !val) el.classList.add('text-slate-400'); else el.classList.remove('text-slate-400');
+        });
+
+        // Liabilities
+        var liabMap = { liabHome:'up-liab-home', liabCar:'up-liab-car', liabPersonal:'up-liab-personal',
+                        liabCc:'up-liab-cc', liabOther:'up-liab-other' };
+        Object.keys(liabMap).forEach(function(k) {
+            var el = document.getElementById(liabMap[k]);
+            if (!el) return;
+            var val = p[k] || '0';
+            el.value = val;
+            if (val === '0' || !val) el.classList.add('text-slate-400'); else el.classList.remove('text-slate-400');
+        });
+
+        // Health Insurance
+        var healthTextMap = { healthInsurer:'up-health-insurer', healthPolicyNo:'up-health-policyno' };
+        Object.keys(healthTextMap).forEach(function(k) {
+            var el = document.getElementById(healthTextMap[k]);
+            if (el && p[k]) el.value = p[k];
+        });
+        var healthMoneyMap = { healthCoverage:'up-health-coverage', healthPremium:'up-health-premium' };
+        Object.keys(healthMoneyMap).forEach(function(k) {
+            var el = document.getElementById(healthMoneyMap[k]);
+            if (!el) return;
+            var val = p[k] || '0';
+            el.value = val;
+            if (val === '0' || !val) el.classList.add('text-slate-400'); else el.classList.remove('text-slate-400');
+        });
+        var htEl = document.getElementById('up-health-type');
+        if (htEl && p.healthType) htEl.value = p.healthType;
+
+        // Term Insurance
+        var termTextMap = { termInsurer:'up-term-insurer', termNominee:'up-term-nominee', termPolicyNo:'up-term-policyno' };
+        Object.keys(termTextMap).forEach(function(k) {
+            var el = document.getElementById(termTextMap[k]);
+            if (el && p[k]) el.value = p[k];
+        });
+        var termMoneyMap = { termAssured:'up-term-assured', termPremium:'up-term-premium' };
+        Object.keys(termMoneyMap).forEach(function(k) {
+            var el = document.getElementById(termMoneyMap[k]);
+            if (!el) return;
+            var val = p[k] || '0';
+            el.value = val;
+            if (val === '0' || !val) el.classList.add('text-slate-400'); else el.classList.remove('text-slate-400');
+        });
+        var tnrEl = document.getElementById('up-term-nominee-rel');
+        if (tnrEl && p.termNomineeRel) tnrEl.value = p.termNomineeRel;
+
+        upCalcTotals();
         upUpdateSummary();
         upRefreshBanners();
         upRefreshRiskDisplay();
@@ -85,22 +187,160 @@
     }
 
     function upToggle() {
-        var body    = document.getElementById('up-body');
-        var chevron = document.getElementById('up-chevron');
-        if (!body) return;
-        var open = !body.classList.contains('hidden');
-        body.classList.toggle('hidden', open);
-        if (chevron) chevron.style.transform = open ? '' : 'rotate(180deg)';
+        // Old accordion card removed — tile now navigates to myprofile page
+        if (typeof switchMode === 'function') switchMode('myprofile');
+    }
+
+    function upAutoFillAnnual() {
+        var monthly = parseFloat((document.getElementById('up-income')?.value || '').replace(/,/g,'')) || 0;
+        var annualEl = document.getElementById('up-annual-income');
+        if (!annualEl) return;
+        var isBlank = annualEl.classList.contains('text-slate-400') || annualEl.value === '0' || !annualEl.value;
+        if (isBlank && monthly > 0) {
+            annualEl.value = (monthly * 12).toLocaleString('en-IN');
+            annualEl.classList.remove('text-slate-400');
+        }
+        var hintEl = document.getElementById('up-annual-hint');
+        if (hintEl && monthly > 0) hintEl.textContent = '≈ ₹' + (monthly * 12).toLocaleString('en-IN') + ' / yr';
+        else if (hintEl) hintEl.textContent = '';
+    }
+
+    function upCalcTotals() {
+        function _v(id) { return parseFloat((document.getElementById(id)?.value || '0').replace(/,/g,'')) || 0; }
+        var totalAssets = _v('up-assets-bank') + _v('up-assets-mf') + _v('up-assets-stocks') +
+                          _v('up-assets-re') + _v('up-assets-ppf') + _v('up-assets-gold') + _v('up-assets-other');
+        var totalLiab   = _v('up-liab-home') + _v('up-liab-car') + _v('up-liab-personal') +
+                          _v('up-liab-cc') + _v('up-liab-other');
+        var netWorth    = totalAssets - totalLiab;
+
+        var aEl = document.getElementById('up-assets-total');
+        var lEl = document.getElementById('up-liab-total');
+        var nEl = document.getElementById('up-networth-val');
+        var nBar= document.getElementById('up-networth-bar');
+        if (aEl) aEl.textContent = '₹' + totalAssets.toLocaleString('en-IN');
+        if (lEl) lEl.textContent = '₹' + totalLiab.toLocaleString('en-IN');
+        if (nEl) {
+            nEl.textContent = (netWorth < 0 ? '−₹' : '₹') + Math.abs(netWorth).toLocaleString('en-IN');
+            nEl.style.color = netWorth >= 0 ? '#059669' : '#dc2626';
+        }
+        if (nBar) {
+            if (netWorth < 0) {
+                nBar.style.background = 'rgba(239,68,68,0.07)';
+                nBar.style.border     = '1px solid rgba(239,68,68,0.22)';
+                var lbl = nBar.querySelector('span:first-child');
+                if (lbl) lbl.style.color = '#dc2626';
+            } else {
+                nBar.style.background = 'rgba(245,200,66,0.10)';
+                nBar.style.border     = '1px solid rgba(245,200,66,0.35)';
+                var lbl2 = nBar.querySelector('span:first-child');
+                if (lbl2) lbl2.style.color = '#7c5c0a';
+            }
+        }
+    }
+
+    function upShareWhatsApp() {
+        var p = window._userProfile || {};
+        function fmt(v) {
+            var n = parseFloat((v || '0').replace(/,/g,'')) || 0;
+            return n > 0 ? '₹' + n.toLocaleString('en-IN') : '—';
+        }
+        var occMap = { salaried:'Salaried', 'self-employed':'Self-Employed', business:'Business Owner', retired:'Retired', student:'Student' };
+        var typeMap = { individual:'Individual', family:'Family Floater', corporate:'Corporate/Group' };
+        var relMap  = { spouse:'Spouse', child:'Child', parent:'Parent', sibling:'Sibling', other:'Other' };
+
+        var totalAssets = ['assetsBank','assetsMf','assetsStocks','assetsRe','assetsPpf','assetsGold','assetsOther']
+            .reduce(function(s,k){ return s + (parseFloat((p[k]||'0').replace(/,/g,''))||0); }, 0);
+        var totalLiab = ['liabHome','liabCar','liabPersonal','liabCc','liabOther']
+            .reduce(function(s,k){ return s + (parseFloat((p[k]||'0').replace(/,/g,''))||0); }, 0);
+        var netWorth = totalAssets - totalLiab;
+
+        var riskText = '—';
+        var cache = window._fpRiskCache;
+        if (cache && cache.score !== undefined) {
+            var age = parseInt(p.age || '30', 10);
+            var rKey = typeof window.fpGetRiskProfile === 'function'
+                ? window.fpGetRiskProfile(cache.score, age)
+                : (cache.score <= 4 ? 'conservative' : cache.score <= 8 ? 'moderate' : cache.score <= 11 ? 'moderateAggressive' : 'aggressive');
+            riskText = _upRiskLabel(rKey) + ' (Score ' + cache.score + '/15)';
+        }
+
+        var lines = [
+            '👤 *My Financial Profile*',
+            '━━━━━━━━━━━━━━━━━━━',
+            '',
+            '*📋 Personal Details*',
+            '• Name: ' + (p.name || '—'),
+            '• Age: ' + (p.age ? p.age + ' years' : '—'),
+            '• Occupation: ' + (occMap[p.occupation] || p.occupation || '—'),
+            '',
+            '*💰 Income & Tax*',
+            '• Monthly In-Hand: ' + fmt(p.income),
+            '• Annual Income: ' + fmt(p.annualIncome),
+            '• Tax Regime: ' + (p.regime === 'old' ? 'Old Regime' : 'New Regime'),
+            '• City Type: ' + (p.city === 'metro' ? 'Metro' : 'Non-Metro'),
+            '',
+            '*📈 Current Assets*',
+            '  Bank / Savings:    ' + fmt(p.assetsBank),
+            '  Mutual Funds:      ' + fmt(p.assetsMf),
+            '  Stocks / Shares:   ' + fmt(p.assetsStocks),
+            '  Real Estate:       ' + fmt(p.assetsRe),
+            '  PPF / EPF:         ' + fmt(p.assetsPpf),
+            '  Gold & Jewellery:  ' + fmt(p.assetsGold),
+            '  Other Assets:      ' + fmt(p.assetsOther),
+            '  ─────────────────',
+            '  *Total Assets:     ₹' + totalAssets.toLocaleString('en-IN') + '*',
+            '',
+            '*📉 Current Liabilities*',
+            '  Home Loan:         ' + fmt(p.liabHome),
+            '  Car / Vehicle:     ' + fmt(p.liabCar),
+            '  Personal Loan:     ' + fmt(p.liabPersonal),
+            '  Credit Card Dues:  ' + fmt(p.liabCc),
+            '  Other:             ' + fmt(p.liabOther),
+            '  ─────────────────',
+            '  *Total Liabilities: ₹' + totalLiab.toLocaleString('en-IN') + '*',
+            '',
+            '*⚖️ Net Worth: ' + (netWorth < 0 ? '−₹' : '₹') + Math.abs(netWorth).toLocaleString('en-IN') + '*',
+            '',
+            '*🏥 Health Insurance*',
+            '  Insurer:   ' + (p.healthInsurer || '—'),
+            '  Coverage:  ' + fmt(p.healthCoverage),
+            '  Premium:   ' + fmt(p.healthPremium) + '/yr',
+            '  Type:      ' + (typeMap[p.healthType] || '—'),
+            (p.healthPolicyNo ? '  Policy No: ' + p.healthPolicyNo : ''),
+            '',
+            '*🛡️ Term Insurance*',
+            '  Insurer:   ' + (p.termInsurer || '—'),
+            '  Sum Assured: ' + fmt(p.termAssured),
+            '  Premium:   ' + fmt(p.termPremium) + '/yr',
+            '  Nominee:   ' + (p.termNominee || '—') + (p.termNomineeRel ? ' (' + (relMap[p.termNomineeRel] || p.termNomineeRel) + ')' : ''),
+            (p.termPolicyNo ? '  Policy No: ' + p.termPolicyNo : ''),
+            '',
+            '*🎯 Risk Appetite*',
+            '  ' + riskText,
+            '',
+            '─────────────────────',
+            '_Shared from AishwaryaMasthu Finance App_'
+        ].filter(function(l){ return l !== undefined && l !== null; }).join('\n');
+
+        window.open('https://wa.me/?text=' + encodeURIComponent(lines), '_blank');
+    }
+
+    function initMyProfile() {
+        var p = window._userProfile;
+        if (p) upLoad(p);
+        upCalcTotals();
+        upRefreshRiskDisplay();
+        upRenderProfileGoals();
     }
 
     function upUpdateSummary() {
-        var el  = document.getElementById('up-summary');
+        var el = document.getElementById('up-tile-summary');
         if (!el) return;
-        var p   = window._userProfile;
+        var p  = window._userProfile;
         var parts = [];
         if (p.name)       parts.push(p.name.split(' ')[0]);
         if (p.age)        parts.push(p.age + 'y');
-        if (p.occupation) parts.push({ salaried:_t('up.occ.s'), 'self-employed':_t('up.occ.se'), business:_t('up.occ.b'), retired:_t('up.occ.r'), student:_t('up.occ.st') }[p.occupation] || p.occupation);
+        if (p.occupation) parts.push({ salaried:'Salaried', 'self-employed':'Self-Employed', business:'Business Owner', retired:'Retired', student:'Student' }[p.occupation] || p.occupation);
         if (p.income)     parts.push('₹' + p.income + '/mo');
         el.textContent = parts.length ? parts.join(' · ') : 'Set your details once — auto-fill any tool instantly';
     }
@@ -242,7 +482,7 @@
         var profileKey = typeof window.fpGetRiskProfile === 'function'
             ? window.fpGetRiskProfile(score, age)
             : (score <= 4 ? 'conservative' : score <= 8 ? 'moderate' : score <= 11 ? 'moderateAggressive' : 'aggressive');
-        var label      = _upRiskLabels[profileKey] || '⚖️ Moderate';
+        var label      = _upRiskLabel(profileKey) || '⚖️ Moderate';
         var inner = document.getElementById('up-risk-quiz-inner');
         if (inner) {
             inner.innerHTML = '<div class="p-5 text-center">'

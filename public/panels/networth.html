@@ -3,11 +3,11 @@
             <!-- HEADER -->
             <div class="rounded-2xl px-4 py-3 text-white flex items-center justify-between gap-3 flex-wrap shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:2px solid rgba(245,200,66,0.4);box-shadow:0 4px 18px rgba(0,0,0,0.25);">
                 <div>
-                    <h2 class="text-base font-black flex items-center gap-2">⚖️ Net Worth Tracker</h2>
+                    <h2 class="text-base font-black flex items-center gap-2" data-i18n="page.nw.h">⚖️ Net Worth Tracker</h2>
                     <p class="text-blue-200 text-[11px] mt-0.5">Your complete financial snapshot — Assets vs Liabilities = Net Worth. A financial plan without a balance sheet is astrology, not planning.</p>
                 </div>
                 <button onclick="resetNetWorth()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h5M20 20v-5h-5M4 9a9 9 0 0115-3M20 15a9 9 0 01-15 3"/></svg>Reset
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h5M20 20v-5h-5M4 9a9 9 0 0115-3M20 15a9 9 0 01-15 3"/></svg><span data-i18n="common.reset">Reset</span>
                 </button>
             </div>
 
@@ -20,14 +20,14 @@
                     <!-- ASSETS CARD -->
                     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
                         <div class="text-[10px] font-black text-emerald-600 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                            <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;"></span>ASSETS — What You Own
+                            <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;"></span><span data-i18n="nw.sec.assets">ASSETS — What You Own</span>
                         </div>
 
                         <!-- Liquid -->
-                        <div class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1 mt-1">💵 Liquid</div>
+                        <div class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1 mt-1" data-i18n="nw.sec.liquid">💵 Liquid</div>
                         <div class="grid grid-cols-2 gap-x-3 gap-y-2 mb-2">
                             <div>
-                                <label class="epf-label">Savings / Bank (₹)</label>
+                                <label class="epf-label" data-i18n="lbl.nw.savings">Savings / Bank (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
                                 <input id="nw-savings" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="nwFmtInput(this);nwCalc();"
@@ -37,7 +37,7 @@
                                 <div class="text-[9px] text-slate-400 mt-0.5">All bank accounts combined</div>
                             </div>
                             <div>
-                                <label class="epf-label">Fixed Deposits (₹)</label>
+                                <label class="epf-label" data-i18n="lbl.nw.fd">Fixed Deposits (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
                                 <input id="nw-fd" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="nwFmtInput(this);nwCalc();"
@@ -49,10 +49,10 @@
                         </div>
 
                         <!-- Equity -->
-                        <div class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1">📈 Equity</div>
+                        <div class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1" data-i18n="nw.sec.equity">📈 Equity</div>
                         <div class="grid grid-cols-2 gap-x-3 gap-y-2 mb-2">
                             <div>
-                                <label class="epf-label">Direct Stocks (₹)</label>
+                                <label class="epf-label" data-i18n="lbl.nw.stocks">Direct Stocks (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
                                 <input id="nw-stocks" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="nwFmtInput(this);nwCalc();"
@@ -62,7 +62,7 @@
                                 <div class="text-[9px] text-slate-400 mt-0.5">Demat portfolio value</div>
                             </div>
                             <div>
-                                <label class="epf-label">Equity Mutual Funds (₹)</label>
+                                <label class="epf-label" data-i18n="lbl.nw.eq_mf">Equity Mutual Funds (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
                                 <input id="nw-eq-mf" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="nwFmtInput(this);nwCalc();"
@@ -77,7 +77,7 @@
                         <div class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1">🔒 Retirement & Fixed Income</div>
                         <div class="grid grid-cols-2 gap-x-3 gap-y-2 mb-2">
                             <div>
-                                <label class="epf-label">EPF Balance (₹)</label>
+                                <label class="epf-label" data-i18n="lbl.nw.epf">EPF Balance (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
                                 <input id="nw-epf" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="nwFmtInput(this);nwCalc();"
@@ -87,7 +87,7 @@
                                 <div class="text-[9px] text-slate-400 mt-0.5">EPFO passbook / UAN</div>
                             </div>
                             <div>
-                                <label class="epf-label">PPF Balance (₹)</label>
+                                <label class="epf-label" data-i18n="lbl.nw.ppf">PPF Balance (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
                                 <input id="nw-ppf" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="nwFmtInput(this);nwCalc();"
@@ -97,7 +97,7 @@
                                 <div class="text-[9px] text-slate-400 mt-0.5">PPF passbook balance</div>
                             </div>
                             <div>
-                                <label class="epf-label">NPS Balance (₹)</label>
+                                <label class="epf-label" data-i18n="lbl.nw.nps">NPS Balance (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
                                 <input id="nw-nps" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="nwFmtInput(this);nwCalc();"
@@ -119,7 +119,7 @@
                         </div>
 
                         <!-- Real Estate -->
-                        <div class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1">🏠 Real Estate</div>
+                        <div class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1" data-i18n="nw.sec.realestate">🏠 Real Estate</div>
                         <div class="grid grid-cols-2 gap-x-3 gap-y-2 mb-2">
                             <div>
                                 <label class="epf-label">Primary Home (₹)</label>
@@ -132,7 +132,7 @@
                                 <div class="text-[9px] text-slate-400 mt-0.5">Current market value</div>
                             </div>
                             <div>
-                                <label class="epf-label">Other Property (₹)</label>
+                                <label class="epf-label" data-i18n="lbl.nw.property">Other Property (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
                                 <input id="nw-property" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="nwFmtInput(this);nwCalc();"
@@ -147,7 +147,7 @@
                         <div class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1">🥇 Gold & Other</div>
                         <div class="grid grid-cols-2 gap-x-3 gap-y-2">
                             <div>
-                                <label class="epf-label">Physical Gold (₹)</label>
+                                <label class="epf-label" data-i18n="lbl.nw.gold_phys">Physical Gold (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
                                 <input id="nw-gold-phys" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="nwFmtInput(this);nwCalc();"
@@ -167,7 +167,7 @@
                                 <div class="text-[9px] text-slate-400 mt-0.5">Current NAV value</div>
                             </div>
                             <div>
-                                <label class="epf-label">Cryptocurrency (₹)</label>
+                                <label class="epf-label" data-i18n="lbl.nw.crypto">Cryptocurrency (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
                                 <input id="nw-crypto" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="nwFmtInput(this);nwCalc();"
@@ -202,7 +202,7 @@
                     <!-- LIABILITIES CARD -->
                     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
                         <div class="text-[10px] font-black text-red-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                            <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#ef4444;"></span>LIABILITIES — What You Owe
+                            <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#ef4444;"></span><span data-i18n="nw.sec.liabilities">LIABILITIES — What You Owe</span>
                         </div>
                         <div class="grid grid-cols-2 gap-x-3 gap-y-2">
                             <div>
@@ -216,7 +216,7 @@
                                 <div class="text-[9px] text-slate-400 mt-0.5">Outstanding principal</div>
                             </div>
                             <div>
-                                <label class="epf-label">Car Loan (₹)</label>
+                                <label class="epf-label" data-i18n="lbl.nw.car_loan">Car Loan (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
                                 <input id="nw-liab-car" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="nwFmtInput(this);nwCalc();"
@@ -226,7 +226,7 @@
                                 <div class="text-[9px] text-slate-400 mt-0.5">Outstanding principal</div>
                             </div>
                             <div>
-                                <label class="epf-label">Personal Loan (₹)</label>
+                                <label class="epf-label" data-i18n="lbl.nw.pl">Personal Loan (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
                                 <input id="nw-liab-pl" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="nwFmtInput(this);nwCalc();"
@@ -235,7 +235,7 @@
                                 </div>
                             </div>
                             <div>
-                                <label class="epf-label">Education Loan (₹)</label>
+                                <label class="epf-label" data-i18n="lbl.nw.edu_loan">Education Loan (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
                                 <input id="nw-liab-edu" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="nwFmtInput(this);nwCalc();"
@@ -344,5 +344,20 @@
                 </div><!-- end results col -->
 
             </div><!-- end main grid -->
+
+            <!-- NET WORTH HISTORY -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
+                <div class="flex items-center justify-between mb-1">
+                    <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider">📈 Net Worth History</div>
+                    <div class="text-[9px] text-slate-400">Snapshots saved automatically · up to 3 years</div>
+                </div>
+                <div id="nw-trend-section">
+                    <div class="flex flex-col items-center justify-center py-8 gap-2">
+                        <div class="text-3xl">📆</div>
+                        <div class="text-xs font-semibold text-slate-500">No history yet</div>
+                        <div class="text-[10px] text-slate-400 text-center max-w-xs leading-relaxed">Enter your assets and liabilities above — your net worth will be recorded here automatically each month.</div>
+                    </div>
+                </div>
+            </div>
 
         </div>

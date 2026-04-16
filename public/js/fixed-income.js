@@ -36,7 +36,8 @@
             scss:  [['fi-scss-regime', 'fi-scss-slab'], ['fi-pomis-regime','fi-pomis-slab']],
             pomis: [['fi-pomis-regime','fi-pomis-slab']],
             nsc:   [['fi-nsc-regime',  'fi-nsc-slab']],
-            elss:  [['fi-cmp-regime',  'fi-cmp-slab']]
+            elss:  [['fi-cmp-regime',  'fi-cmp-slab']],
+            rd:    [['fi-rd-regime',   'fi-rd-slab']]
         };
         (pairs[tab] || []).forEach(function(pair) {
             var regEl = document.getElementById(pair[0]);
@@ -49,6 +50,7 @@
         if (tab === 'pomis') { fiCalcPOMIS(); }
         if (tab === 'nsc')   { fiCalcNSC(); }
         if (tab === 'elss')  fiCalcELSS();
+        if (tab === 'rd')    fiCalcRD();
         if (typeof saveUserData === 'function') saveUserData();
     }
 
@@ -74,7 +76,7 @@
     }
 
     function fiTab(tab) {
-        ['fd','scss','nsc','elss'].forEach(function(t) {
+        ['fd','scss','nsc','elss','rd'].forEach(function(t) {
             var pane = document.getElementById('fi-pane-' + t);
             var btn  = document.getElementById('fi-btn-' + t);
             if (!pane || !btn) return;
@@ -93,13 +95,14 @@
         if (tab === 'scss') { fiCalcSCSS(); fiCalcPOMIS(); }
         if (tab === 'nsc')  { fiCalcNSC(); fiCalcKVP(); }
         if (tab === 'elss') fiCalcELSS();
+        if (tab === 'rd')   fiCalcRD();
     }
 
     function initFixedIncome() {
         // Populate all slab dropdowns and clear grey from all selects
         [['fi-fd-regime','fi-fd-slab'],['fi-scss-regime','fi-scss-slab'],
          ['fi-pomis-regime','fi-pomis-slab'],['fi-nsc-regime','fi-nsc-slab'],
-         ['fi-cmp-regime','fi-cmp-slab']].forEach(function(pair) {
+         ['fi-cmp-regime','fi-cmp-slab'],['fi-rd-regime','fi-rd-slab']].forEach(function(pair) {
             var regEl = document.getElementById(pair[0]);
             if (regEl) regEl.classList.remove('text-slate-400');
             var regime = regEl?.value || 'new';
@@ -115,21 +118,22 @@
             'fi-fd-principal': '1,00,000', 'fi-fd-rate': '7.0', 'fi-fd-tenure': '12',
             'fi-scss-principal': '10,00,000', 'fi-pomis-principal': '5,00,000',
             'fi-nsc-principal': '1,00,000', 'fi-kvp-principal': '1,00,000',
-            'fi-cmp-principal': '1,50,000', 'fi-cmp-fd-rate': '7.0', 'fi-cmp-elss-return': '12.0'
+            'fi-cmp-principal': '1,50,000', 'fi-cmp-fd-rate': '7.0', 'fi-cmp-elss-return': '12.0',
+            'fi-rd-deposit': '5,000', 'fi-rd-rate': '6.5', 'fi-rd-tenure': '12'
         };
         Object.entries(defs).forEach(function([id, v]) {
             var el = document.getElementById(id); if (!el) return;
             el.value = v; el.classList.add('text-slate-400');
         });
         // Reset regime selects to new
-        ['fi-fd-regime','fi-scss-regime','fi-pomis-regime','fi-nsc-regime','fi-cmp-regime'].forEach(function(id) {
+        ['fi-fd-regime','fi-scss-regime','fi-pomis-regime','fi-nsc-regime','fi-cmp-regime','fi-rd-regime'].forEach(function(id) {
             var el = document.getElementById(id); if (el) el.value = 'new';
         });
         document.getElementById('fi-fd-type').selectedIndex = 0;
         // Repopulate slabs after regime reset
         [['fi-fd-regime','fi-fd-slab'],['fi-scss-regime','fi-scss-slab'],
          ['fi-pomis-regime','fi-pomis-slab'],['fi-nsc-regime','fi-nsc-slab'],
-         ['fi-cmp-regime','fi-cmp-slab']].forEach(function(pair) {
+         ['fi-cmp-regime','fi-cmp-slab'],['fi-rd-regime','fi-rd-slab']].forEach(function(pair) {
             fiSetSlabOptions(pair[1], 'new');
             var sl = document.getElementById(pair[1]); if (sl) sl.value = '30';
         });
@@ -363,6 +367,60 @@
             '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>Gross maturity</span><span class="font-bold">' + fiFmt(elssMat5) + '</span></div>' +
             '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>LTCG tax (10% above ₹1L)</span><span class="font-bold text-red-600">−' + (ltcgTax > 0 ? fiFmt(ltcgTax) : '0') + '</span></div>' +
             '<div class="flex justify-between py-1 font-black text-emerald-700"><span>ELSS post-tax maturity</span><span>' + fiFmt(elssNet5) + '</span></div>';
+
+        if (typeof saveUserData === 'function') saveUserData();
+    }
+
+    // ── Recurring Deposit Calculator ─────────────────────────
+    function fiCalcRD() {
+        var R    = fiNum('fi-rd-deposit');
+        var rate = fiPct('fi-rd-rate', 6.5);
+        var N    = fiNum('fi-rd-tenure') || 12;
+        var slab = parseFloat(fiSel('fi-rd-slab', '0')) / 100;
+        if (!R) return;
+
+        // Quarterly compounding (standard for Indian bank RDs)
+        // Each monthly deposit earns for its remaining months at quarterly compounding
+        var qRate = rate / 400; // quarterly rate as decimal
+        var grossMat = 0;
+        for (var k = 1; k <= N; k++) {
+            var remainingMonths = N - k;
+            grossMat += R * Math.pow(1 + qRate, remainingMonths / 3);
+        }
+
+        var totalDep = R * N;
+        var grossInt = grossMat - totalDep;
+        var taxAmt   = grossInt * slab;
+        var netMat   = grossMat - taxAmt;
+        var yrs      = N / 12;
+        var effYield = yrs > 0 ? (Math.pow(netMat / totalDep, 1 / yrs) - 1) * 100 : 0;
+
+        var annInt   = grossInt / (yrs || 1);
+        var tdsNote  = annInt > 40000
+            ? '⚠ TDS @ 10% applies (annual interest > ₹40K). Submit Form 15G/H if total income < taxable limit.'
+            : '✅ No TDS (annual interest ≤ ₹40K). For senior citizens threshold is ₹50K.';
+
+        function $s(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; }
+        $s('fi-rd-gross-mat',  fiFmt(grossMat));
+        $s('fi-rd-net-mat',    fiFmt(netMat));
+        $s('fi-rd-total-dep',  fiFmt(totalDep));
+        $s('fi-rd-gross-int',  fiFmt(grossInt));
+        $s('fi-rd-tax-amt',    slab > 0 ? fiFmt(taxAmt) : '—');
+        $s('fi-rd-yield',      effYield.toFixed(2) + '%');
+
+        var tdsEl = document.getElementById('fi-rd-tds');
+        if (tdsEl) { tdsEl.textContent = tdsNote; tdsEl.classList.remove('hidden'); }
+
+        var tw = document.getElementById('fi-rd-workings');
+        if (tw) tw.innerHTML =
+            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>Monthly deposit</span><span class="font-bold">' + fiFmt(R) + '</span></div>' +
+            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>Rate · Tenure</span><span class="font-bold">' + rate + '% · ' + N + ' mo</span></div>' +
+            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>Total deposited</span><span class="font-bold">' + fiFmt(totalDep) + '</span></div>' +
+            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>Gross interest</span><span class="font-bold">' + fiFmt(grossInt) + '</span></div>' +
+            (slab > 0 ? '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>Tax @ ' + (slab * 100).toFixed(0) + '%</span><span class="font-bold text-red-600">−' + fiFmt(taxAmt) + '</span></div>' : '') +
+            '<div class="flex justify-between py-1 font-black text-blue-700"><span>Net maturity</span><span>' + fiFmt(netMat) + '</span></div>' +
+            '<div class="flex justify-between py-0.5"><span class="text-[9px] text-slate-400">Post-tax yield</span><span class="font-bold text-emerald-600">' + effYield.toFixed(2) + '% p.a.</span></div>' +
+            '<div class="text-[9px] text-slate-400 mt-1">Quarterly compounding (as per Indian bank RD standard)</div>';
 
         if (typeof saveUserData === 'function') saveUserData();
     }

@@ -12,11 +12,12 @@
     }
 
     var _rhDefs = {
-        'rh-age':'30','rh-ret-age':'60','rh-life-exp':'85',
+        'rh-age':'30','rh-ret-age':'60','rh-life-exp':'90',
         'rh-inflation':'6','rh-ret-return':'7','rh-expenses':'60,000',
+        'rh-medical-expenses':'5,000','rh-medical-inflation':'12',
         'rh-epf-balance':'2,00,000','rh-epf-basic':'50,000',
         'rh-ppf-balance':'0','rh-ppf-annual':'1,50,000','rh-ppf-years-done':'0',
-        'rh-nps-balance':'0','rh-nps-monthly':'5,000','rh-nps-return':'10','rh-nps-annuity':'6',
+        'rh-nps-balance':'0','rh-nps-monthly':'5,000','rh-nps-return':'10','rh-nps-annuity':'6','rh-nps-lumpsum-pct':'60',
         'rh-sip-monthly':'10,000','rh-sip-return':'12',
         'rh-other-corpus':'0','rh-other-return':'7'
     };
@@ -42,7 +43,7 @@
     function retHubCalc() {
         var age       = Math.round(rhNum('rh-age')) || 30;
         var retAge    = Math.round(rhNum('rh-ret-age')) || 60;
-        var lifeExp   = Math.round(rhNum('rh-life-exp')) || 85;
+        var lifeExp   = Math.round(rhNum('rh-life-exp')) || 90;
         var inflation = (rhNum('rh-inflation') || 6) / 100;
         var retReturn = (rhNum('rh-ret-return') || 7) / 100;
         var yrs       = Math.max(0, retAge - age);
@@ -85,10 +86,11 @@
         var npsSipFV    = (npsMonthly > 0 && yrs > 0 && nmr > 0)
             ? npsMonthly * ((Math.pow(1 + nmr, yrs * 12) - 1) / nmr) * (1 + nmr)
             : 0;
-        var npsTotalC   = Math.round(npsBalFV + npsSipFV);
-        var npsLumpsum  = Math.round(npsTotalC * 0.6);
-        var npsAnnPool  = Math.round(npsTotalC * 0.4);
-        var npsPension  = Math.round((npsAnnPool * npsAnnuity) / 12);
+        var npsTotalC      = Math.round(npsBalFV + npsSipFV);
+        var npsLumpsumPct  = Math.min(100, Math.max(0, rhNum('rh-nps-lumpsum-pct') || 60)) / 100;
+        var npsLumpsum     = Math.round(npsTotalC * npsLumpsumPct);
+        var npsAnnPool     = Math.round(npsTotalC * (1 - npsLumpsumPct));
+        var npsPension     = Math.round((npsAnnPool * npsAnnuity) / 12);
 
         // ── SIP ───────────────────────────────────────────────────────────
         var sipMonthly = rhNum('rh-sip-monthly');
@@ -116,13 +118,17 @@
         var totalIncome = swp + npsPension;
 
         // ── Expenses at retirement ─────────────────────────────────────────
-        var expToday    = rhNum('rh-expenses');
-        var expInflated = Math.round(expToday * Math.pow(1 + inflation, yrs));
-        var gap         = totalIncome - expInflated;
+        var expToday         = rhNum('rh-expenses');
+        var expInflated      = Math.round(expToday * Math.pow(1 + inflation, yrs));
+        var medExpToday      = rhNum('rh-medical-expenses');
+        var medInflation     = (rhNum('rh-medical-inflation') || 12) / 100;
+        var medInflated      = Math.round(medExpToday * Math.pow(1 + medInflation, yrs));
+        var totalExpInflated = expInflated + medInflated;
+        var gap              = totalIncome - totalExpInflated;
 
         // ── Corpus depletion simulation ────────────────────────────────────
         var depletionAge = null;
-        var needMo = Math.max(0, expInflated - npsPension);
+        var needMo = Math.max(0, totalExpInflated - npsPension);
         if (needMo > 0 && totalCorpus > 0) {
             var bal = totalCorpus;
             for (var mo = 1; mo <= 60 * 12; mo++) {
@@ -136,15 +142,15 @@
         function pct(part)  { return totalCorpus > 0 ? Math.round(part / totalCorpus * 100) : 0; }
 
         set('rh-total-corpus',  rhFmt(totalCorpus));
-        set('rh-ret-age-disp',  'Age ' + retAge);
-        set('rh-yrs-disp',      yrs + ' years to go');
-        set('rh-draw-yrs-disp', drawYrs + '-yr drawdown');
+        set('rh-ret-age-disp',  _t('rh.age.prefix') + retAge);
+        set('rh-yrs-disp',      _t('rh.yrs.togo').replace('{n}', yrs));
+        set('rh-draw-yrs-disp', _t('rh.yr.drawdown').replace('{n}', drawYrs));
         set('rh-epf-result',    rhFmt(epfCorpus));
         set('rh-ppf-result',    rhFmt(ppfCorpus));
         set('rh-nps-result',    rhFmt(npsLumpsum));
         set('rh-sip-result',    rhFmt(sipCorpus));
         set('rh-other-result',  rhFmt(otherFV));
-        set('rh-nps-total-note', '40% annuity pool: ' + rhFmt(npsAnnPool));
+        set('rh-nps-total-note', '(' + Math.round(npsLumpsumPct * 100) + '% lumpsum · annuity pool ' + rhFmt(npsAnnPool) + ')');
 
         var items = { epf: epfCorpus, ppf: ppfCorpus, nps: npsLumpsum, sip: sipCorpus, other: otherFV };
         Object.keys(items).forEach(function(k) {
@@ -158,8 +164,8 @@
         set('rh-swp',           rhFmt(swp) + '/mo');
         set('rh-nps-pension-d', rhFmt(npsPension) + '/mo');
         set('rh-total-income',  rhFmt(totalIncome) + '/mo');
-        set('rh-exp-inflated',  rhFmt(expInflated) + '/mo');
-        set('rh-exp-note',      'Today ₹' + Math.round(expToday).toLocaleString('en-IN') + ' → inflated at ' + (inflation * 100).toFixed(0) + '% p.a.');
+        set('rh-exp-inflated',  rhFmt(totalExpInflated) + '/mo');
+        set('rh-exp-note',      'General ₹' + expInflated.toLocaleString('en-IN') + ' + Medical ₹' + medInflated.toLocaleString('en-IN') + ' (at ' + (medInflation * 100).toFixed(0) + '% p.a.)');
 
         var gapEl = document.getElementById('rh-gap');
         if (gapEl) {
@@ -168,7 +174,7 @@
         }
         var gapLabelEl = document.getElementById('rh-gap-label');
         if (gapLabelEl) {
-            gapLabelEl.textContent = gap >= 0 ? 'Monthly Surplus' : 'Monthly Shortfall';
+            gapLabelEl.textContent = gap >= 0 ? _t('rh.surplus') : _t('rh.shortfall');
             gapLabelEl.style.color = gap >= 0 ? '#6ee7b7' : '#fca5a5';
         }
 
@@ -179,14 +185,14 @@
             lines.push('At <strong>age ' + retAge + '</strong>, your total withdrawable corpus is <strong>' + rhFmt(totalCorpus) + '</strong>. ' +
                 'This supports <strong>' + rhFmt(swp) + '/mo</strong> via SWP for ' + drawYrs + ' years at ' + (retReturn * 100).toFixed(0) + '% post-retirement return.');
             if (npsPension > 0)
-                lines.push('NPS annuity (40% of corpus = ' + rhFmt(npsAnnPool) + ') adds <strong>' + rhFmt(npsPension) + '/mo</strong> guaranteed pension on top — total <strong>' + rhFmt(totalIncome) + '/mo</strong>.');
+                lines.push('NPS: ' + Math.round(npsLumpsumPct * 100) + '% lumpsum (' + rhFmt(npsLumpsum) + ') + annuity pool ' + rhFmt(npsAnnPool) + ' adds <strong>' + rhFmt(npsPension) + '/mo</strong> pension — total income <strong>' + rhFmt(totalIncome) + '/mo</strong>.');
             if (gap >= 0)
-                lines.push('<span style="color:#065f46;font-weight:700">✅ Surplus: ' + rhFmt(gap) + '/mo</span> — retirement income exceeds projected expenses of ' + rhFmt(expInflated) + '/mo. You\'re on track.');
+                lines.push('<span style="color:#065f46;font-weight:700">✅ Surplus: ' + rhFmt(gap) + '/mo</span> — retirement income exceeds projected expenses of ' + rhFmt(totalExpInflated) + '/mo (general ' + rhFmt(expInflated) + ' + medical ' + rhFmt(medInflated) + '). You\'re on track.');
             else {
                 var shortfall = -gap;
-                lines.push('<span style="color:#991b1b;font-weight:700">⚠️ Shortfall: ' + rhFmt(shortfall) + '/mo</span> vs projected expenses of ' + rhFmt(expInflated) + '/mo at retirement.');
+                lines.push('<span style="color:#991b1b;font-weight:700">⚠️ Shortfall: ' + rhFmt(shortfall) + '/mo</span> vs projected expenses of ' + rhFmt(totalExpInflated) + '/mo at retirement (general ' + rhFmt(expInflated) + ' + medical ' + rhFmt(medInflated) + ' at ' + (medInflation * 100).toFixed(0) + '% p.a.).');
                 if (sipMonthly > 0 && yrs > 0 && smr > 0 && rMo > 0) {
-                    var corpusNeeded = (expInflated - npsPension) * (1 - Math.pow(1 + rMo, -n)) / rMo;
+                    var corpusNeeded = (totalExpInflated - npsPension) * (1 - Math.pow(1 + rMo, -n)) / rMo;
                     var corpusGap    = Math.max(0, corpusNeeded - totalCorpus);
                     var addlSip      = corpusGap * smr / ((Math.pow(1 + smr, yrs * 12) - 1) * (1 + smr));
                     if (addlSip > 500)
@@ -197,6 +203,8 @@
                 lines.push('<span style="color:#92400e;font-weight:700">⚠️ Warning:</span> Corpus depletes at <strong>age ' + depletionAge + '</strong> — ' + (lifeExp - depletionAge) + ' years short of life expectancy (' + lifeExp + ').');
             else if (!depletionAge && totalCorpus > 0)
                 lines.push('✅ Corpus <strong>outlasts life expectancy</strong> (age ' + lifeExp + '). Strong retirement foundation.');
+            if (medExpToday > 0)
+                lines.push('<span style="color:#be123c;font-weight:700">🏥 Healthcare note:</span> Medical costs projected at <strong>' + (medInflation * 100).toFixed(0) + '% p.a.</strong> (vs ' + (inflation * 100).toFixed(0) + '% general inflation). Today\'s ₹' + medExpToday.toLocaleString('en-IN') + '/mo medical spend inflates to <strong>' + rhFmt(medInflated) + '/mo</strong> by retirement — included in the numbers above.');
             insEl.innerHTML = lines.map(function(l) { return '<p style="margin-bottom:4px">' + l + '</p>'; }).join('');
         }
 

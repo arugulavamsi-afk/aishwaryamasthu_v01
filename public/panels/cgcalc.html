@@ -1,0 +1,152 @@
+<div id="cgcalc-panel" class="hidden w-full flex flex-col gap-3">
+
+    <!-- HEADER -->
+    <div class="rounded-2xl px-4 py-3 text-white flex items-center justify-between gap-3 flex-wrap shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:2px solid rgba(245,200,66,0.4);box-shadow:0 4px 18px rgba(0,0,0,0.25);">
+        <div>
+            <h2 class="text-base font-black flex items-center gap-2">💹 Capital Gains Tax Calculator</h2>
+            <p class="text-blue-200 text-[11px] mt-0.5">Post-Budget 2024 rates · Equity · Debt MF · Gold · Property · SGB · Unlisted Shares</p>
+        </div>
+        <button onclick="resetCgCalc()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h5M20 20v-5h-5M4 9a9 9 0 0115-3M20 15a9 9 0 01-15 3"/></svg>Reset
+        </button>
+    </div>
+
+    <!-- MAIN GRID -->
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-3">
+
+        <!-- INPUTS -->
+        <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm p-3 flex flex-col gap-2.5">
+
+            <!-- Asset Type -->
+            <div>
+                <label class="epf-label">Asset Type</label>
+                <select id="cg-asset" onchange="cgCalc()" class="epf-input" style="padding-left:0.75rem;">
+                    <option value="equity">📈 Equity / Equity MF / ETF</option>
+                    <option value="debt-new">📄 Debt / Intl MF (bought after Apr 1, 2023)</option>
+                    <option value="debt-old">📄 Debt MF — Grandfathered (pre Apr 1, 2023)</option>
+                    <option value="gold">🥇 Physical Gold / Gold ETF / Gold MF</option>
+                    <option value="realestate">🏠 Real Estate / Property</option>
+                    <option value="unlisted">🔒 Unlisted Shares / Pre-IPO</option>
+                    <option value="sgb">🏅 Sovereign Gold Bond (SGB)</option>
+                </select>
+            </div>
+
+            <!-- Buy / Sell Dates -->
+            <div class="grid grid-cols-2 gap-2">
+                <div>
+                    <label class="epf-label">Purchase Date</label>
+                    <input id="cg-buy-date" type="date" class="epf-input" style="padding-left:0.5rem;" onchange="cgCalc()">
+                </div>
+                <div>
+                    <label class="epf-label">Sale Date</label>
+                    <input id="cg-sell-date" type="date" class="epf-input" style="padding-left:0.5rem;" onchange="cgCalc()">
+                </div>
+            </div>
+
+            <!-- Cost / Sale Price -->
+            <div class="grid grid-cols-2 gap-2">
+                <div>
+                    <label class="epf-label">Purchase Cost (₹)</label>
+                    <div class="relative"><span class="epf-prefix">₹</span>
+                    <input id="cg-cost" type="text" inputmode="numeric" value="1,00,000" class="epf-input pl-7 text-slate-400"
+                        oninput="cgFmt(this);cgCalc();this.classList.remove('text-slate-400');"
+                        onfocus="if(this.value==='1,00,000'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                        onblur="if(!this.value){this.value='1,00,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                    </div>
+                </div>
+                <div>
+                    <label class="epf-label">Sale Price (₹)</label>
+                    <div class="relative"><span class="epf-prefix">₹</span>
+                    <input id="cg-sale" type="text" inputmode="numeric" value="1,50,000" class="epf-input pl-7 text-slate-400"
+                        oninput="cgFmt(this);cgCalc();this.classList.remove('text-slate-400');"
+                        onfocus="if(this.value==='1,50,000'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                        onblur="if(!this.value){this.value='1,50,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tax Regime -->
+            <div class="pt-1 border-t border-slate-100">
+                <label class="epf-label">Tax Regime</label>
+                <div class="flex gap-1.5">
+                    <button id="cg-regime-new" onclick="cgSetRegime('new')" class="flex-1 py-1.5 rounded-xl text-[10px] font-black transition-all" style="background:#eff6ff;color:#1d4ed8;border:2px solid #3b82f6;">🆕 New (FY 2025-26)</button>
+                    <button id="cg-regime-old" onclick="cgSetRegime('old')" class="flex-1 py-1.5 rounded-xl text-[10px] font-black transition-all" style="background:#f8fafc;color:#64748b;border:2px solid #e2e8f0;">📜 Old Regime</button>
+                </div>
+                <input type="hidden" id="cg-regime" value="new">
+            </div>
+
+            <!-- Annual Taxable Income -->
+            <div>
+                <label class="epf-label">Annual Taxable Income <span class="text-slate-300 font-normal">excl. capital gains</span></label>
+                <div class="relative"><span class="epf-prefix">₹</span>
+                <input id="cg-income" type="text" inputmode="numeric" value="12,00,000" class="epf-input pl-7 text-slate-400"
+                    oninput="cgFmt(this);cgCalc();this.classList.remove('text-slate-400');"
+                    onfocus="if(this.value==='12,00,000'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                    onblur="if(!this.value){this.value='12,00,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                </div>
+                <!-- Computed slab badge -->
+                <div id="cg-slab-badge" class="mt-1 flex items-center gap-1.5">
+                    <span class="text-[9px] text-slate-400">Marginal slab for STCG / slab-rate gains:</span>
+                    <span id="cg-slab-display" class="px-2 py-0.5 rounded-full text-[9px] font-black" style="background:#fef2f2;color:#dc2626;border:1px solid #fca5a5;">30%</span>
+                </div>
+                <!-- Regime slab table -->
+                <div id="cg-regime-table" class="mt-1.5 rounded-lg overflow-hidden border border-slate-100">
+                    <!-- populated by JS -->
+                </div>
+            </div>
+
+            <!-- LTCG already used -->
+            <div>
+                <label class="epf-label">LTCG Exemption Already Used This Year (₹) <span class="text-slate-300 font-normal">— Equity / SGB</span></label>
+                <div class="relative"><span class="epf-prefix">₹</span>
+                <input id="cg-ltcg-used" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                    oninput="cgFmt(this);cgCalc();this.classList.remove('text-slate-400');"
+                    onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                    onblur="if(!this.value){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                </div>
+                <div class="text-[9px] text-slate-400 mt-0.5">₹1.25L/yr exemption (post Jul 23, 2024) · ₹1L/yr (pre Jul 23, 2024) · Track prior redemptions</div>
+            </div>
+
+            <!-- Quick Ref Table -->
+            <div class="pt-1 border-t border-slate-100">
+                <div class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1.5">Post-Budget 2024 Rate Quick Reference</div>
+                <table class="w-full text-[9px] border-collapse">
+                    <thead>
+                        <tr style="background:#f8fafc;">
+                            <th class="text-left px-1.5 py-1 text-slate-500 font-black border border-slate-100">Asset</th>
+                            <th class="text-center px-1 py-1 text-slate-500 font-black border border-slate-100">Hold</th>
+                            <th class="text-center px-1 py-1 text-slate-500 font-black border border-slate-100">STCG</th>
+                            <th class="text-center px-1 py-1 text-slate-500 font-black border border-slate-100">LTCG</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="px-1.5 py-0.5 border border-slate-100 text-slate-600">Equity / MF</td><td class="text-center px-1 py-0.5 border border-slate-100 text-slate-500">12 mo</td><td class="text-center px-1 py-0.5 border border-slate-100 text-red-600 font-bold">20%</td><td class="text-center px-1 py-0.5 border border-slate-100 text-emerald-700 font-bold">12.5%*</td></tr>
+                        <tr style="background:#fafafa;"><td class="px-1.5 py-0.5 border border-slate-100 text-slate-600">Gold / RE / Unlisted</td><td class="text-center px-1 py-0.5 border border-slate-100 text-slate-500">24 mo</td><td class="text-center px-1 py-0.5 border border-slate-100 text-red-600 font-bold">Slab</td><td class="text-center px-1 py-0.5 border border-slate-100 text-emerald-700 font-bold">12.5%</td></tr>
+                        <tr><td class="px-1.5 py-0.5 border border-slate-100 text-slate-600">Debt MF (post Apr'23)</td><td class="text-center px-1 py-0.5 border border-slate-100 text-slate-500">—</td><td class="text-center px-1 py-0.5 border border-slate-100 text-red-600 font-bold">Slab</td><td class="text-center px-1 py-0.5 border border-slate-100 text-slate-400">Slab</td></tr>
+                        <tr style="background:#fafafa;"><td class="px-1.5 py-0.5 border border-slate-100 text-slate-600">Debt MF (pre Apr'23)</td><td class="text-center px-1 py-0.5 border border-slate-100 text-slate-500">36 mo</td><td class="text-center px-1 py-0.5 border border-slate-100 text-red-600 font-bold">Slab</td><td class="text-center px-1 py-0.5 border border-slate-100 text-emerald-700 font-bold">20%+idx</td></tr>
+                        <tr><td class="px-1.5 py-0.5 border border-slate-100 text-slate-600">SGB (maturity 8yr)</td><td class="text-center px-1 py-0.5 border border-slate-100 text-slate-500">8 yr</td><td class="text-center px-1 py-0.5 border border-slate-100 text-slate-400">—</td><td class="text-center px-1 py-0.5 border border-slate-100 text-emerald-700 font-bold">Exempt</td></tr>
+                    </tbody>
+                </table>
+                <div class="text-[8px] text-slate-400 mt-0.5">*₹1.25L/yr exemption. +4% cess on all taxes. Pre-Jul 23, 2024 purchases: choice of 12.5% or 20%+indexation for gold/RE.</div>
+            </div>
+        </div>
+
+        <!-- RESULTS -->
+        <div class="lg:col-span-3 flex flex-col gap-2">
+
+            <!-- Result area — rendered by cgCalc() -->
+            <div id="cg-result" class="bg-white rounded-2xl border border-slate-100 shadow-sm p-3 flex-1">
+                <p class="text-[11px] text-slate-400 text-center py-6 font-semibold">Fill in all fields to calculate your capital gains tax</p>
+            </div>
+
+            <!-- SEBI Disclaimer -->
+            <div class="rounded-xl px-3 py-2 text-[9px] leading-relaxed text-slate-400" style="background:rgba(248,250,252,0.9);border:1px solid #e2e8f0;">
+                ⚠ <strong>Disclaimer:</strong> This calculator is for <strong>educational purposes only</strong> and does not constitute investment or tax advice. Tax rules are based on Finance Act 2024 (effective Jul 23, 2024) and Finance Act 2023. Surcharge, marginal relief, treaty provisions, and other deductions are not modelled. Consult a SEBI-Registered Investment Adviser (RIA) or Chartered Accountant before filing your ITR.
+            </div>
+
+            <!-- WhatsApp -->
+            <div><button onclick="waShare('cgcalc')" class="wa-share-btn shine-btn"><svg viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5 flex-shrink-0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.557 4.133 1.535 5.876L.057 23.43a.75.75 0 00.918.924l5.688-1.493A11.946 11.946 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.907 0-3.7-.512-5.241-1.403l-.375-.22-3.877 1.018 1.01-3.769-.234-.389A9.953 9.953 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>Share on WhatsApp</button></div>
+        </div>
+    </div>
+
+</div>

@@ -7,7 +7,7 @@
                     <p class="text-blue-200 text-[11px] mt-0.5">Score 750+ saves ₹6L+ on a home loan · See exactly how each factor impacts your score · Build a 90-day action plan</p>
                 </div>
                 <button onclick="resetCibil()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h5M20 20v-5h-5M4 9a9 9 0 0115-3M20 15a9 9 0 01-15 3"/></svg>Reset
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h5M20 20v-5h-5M4 9a9 9 0 0115-3M20 15a9 9 0 01-15 3"/></svg><span data-i18n="common.reset">Reset</span>
                 </button>
             </div>
 
@@ -16,11 +16,11 @@
 
                 <!-- LEFT: YOUR PROFILE -->
                 <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
-                    <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">Your Credit Profile</div>
+                    <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2" data-i18n="cibil.sec.profile">Your Credit Profile</div>
                     <div class="grid grid-cols-2 gap-x-3 gap-y-2">
 
                         <div class="col-span-2">
-                            <label class="epf-label">Current CIBIL / Credit Score</label>
+                            <label class="epf-label" data-i18n="lbl.cibil.score">Current CIBIL / Credit Score</label>
                             <input id="cibil-score" type="number" min="300" max="900" placeholder="720"
                                 class="epf-input text-slate-400"
                                 onfocus="if(this.classList.contains('text-slate-400')){this.value='';this.classList.remove('text-slate-400');}"
@@ -30,7 +30,7 @@
                         </div>
 
                         <div>
-                            <label class="epf-label">Credit Utilisation (%)</label>
+                            <label class="epf-label" data-i18n="lbl.cibil.util">Credit Utilisation (%)</label>
                             <input id="cibil-util" type="number" min="0" max="100" placeholder="35"
                                 class="epf-input text-slate-400"
                                 onfocus="if(this.classList.contains('text-slate-400')){this.value='';this.classList.remove('text-slate-400');}"
@@ -40,7 +40,7 @@
                         </div>
 
                         <div>
-                            <label class="epf-label">Missed EMIs (last 2 yrs)</label>
+                            <label class="epf-label" data-i18n="lbl.cibil.missed">Missed EMIs (last 2 yrs)</label>
                             <input id="cibil-missed" type="number" min="0" max="24" placeholder="0"
                                 class="epf-input text-slate-400"
                                 onfocus="if(this.classList.contains('text-slate-400')){this.value='';this.classList.remove('text-slate-400');}"
@@ -50,7 +50,7 @@
                         </div>
 
                         <div>
-                            <label class="epf-label">Credit Age (years)</label>
+                            <label class="epf-label" data-i18n="lbl.cibil.age">Credit Age (years)</label>
                             <input id="cibil-age" type="number" min="0" max="40" placeholder="4"
                                 class="epf-input text-slate-400"
                                 onfocus="if(this.classList.contains('text-slate-400')){this.value='';this.classList.remove('text-slate-400');}"
@@ -60,7 +60,7 @@
                         </div>
 
                         <div>
-                            <label class="epf-label">Active Credit Cards</label>
+                            <label class="epf-label" data-i18n="lbl.cibil.cards">Active Credit Cards</label>
                             <input id="cibil-cards" type="number" min="0" max="20" placeholder="2"
                                 class="epf-input text-slate-400"
                                 onfocus="if(this.classList.contains('text-slate-400')){this.value='';this.classList.remove('text-slate-400');}"
@@ -69,7 +69,7 @@
                         </div>
 
                         <div>
-                            <label class="epf-label">Hard Enquiries (6 mo)</label>
+                            <label class="epf-label" data-i18n="lbl.cibil.enquiries">Hard Enquiries (6 mo)</label>
                             <input id="cibil-enquiries" type="number" min="0" max="20" placeholder="1"
                                 class="epf-input text-slate-400"
                                 onfocus="if(this.classList.contains('text-slate-400')){this.value='';this.classList.remove('text-slate-400');}"
@@ -79,7 +79,7 @@
                         </div>
 
                         <div class="col-span-2">
-                            <label class="epf-label">Loan Amount Seeking (₹) — for EMI savings calc</label>
+                            <label class="epf-label" data-i18n="lbl.cibil.loan_amt">Loan Amount Seeking (₹) — for EMI savings calc</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
                             <input id="cibil-loan-amt" type="text" inputmode="numeric" placeholder="50,00,000"
                                 class="epf-input pl-7 text-slate-400"
@@ -90,7 +90,7 @@
                         </div>
 
                         <div class="col-span-2">
-                            <label class="epf-label">Loan Tenure (Years)</label>
+                            <label class="epf-label" data-i18n="lbl.cibil.loan_tenure">Loan Tenure (Years)</label>
                             <input id="cibil-loan-tenure" type="number" min="1" max="30" placeholder="20"
                                 class="epf-input text-slate-400"
                                 onfocus="if(this.classList.contains('text-slate-400')){this.value='';this.classList.remove('text-slate-400');}"
@@ -101,7 +101,7 @@
 
                     <!-- Quick presets -->
                     <div class="mt-3 pt-2 border-t border-slate-100">
-                        <div class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1.5">Quick Scenarios</div>
+                        <div class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1.5" data-i18n="common.quickscen">Quick Scenarios</div>
                         <div class="flex flex-wrap gap-1">
                             <button onclick="cibilPreset('poor')"    class="grat-preset">😟 Poor (580)</button>
                             <button onclick="cibilPreset('fair')"    class="grat-preset">😐 Fair (650)</button>
@@ -162,7 +162,7 @@
                     <!-- Total interest savings banner -->
                     <div id="cibil-savings-banner" class="rounded-xl px-3 py-2 flex items-center justify-between gap-2" style="background:linear-gradient(90deg,#064e3b,#065f46);border:1px solid rgba(16,185,129,0.4);">
                         <div>
-                            <div class="text-[9px] font-black text-emerald-200 uppercase tracking-wider">Total Interest Saved (Lifetime)</div>
+                            <div class="text-[9px] font-black text-emerald-200 uppercase tracking-wider" data-i18n="res.cibil.total_saved">Total Interest Saved (Lifetime)</div>
                             <div id="cibil-total-saved" class="text-xl font-black text-white">—</div>
                         </div>
                         <div class="text-[9px] text-emerald-300 text-right leading-relaxed max-w-[140px]">By improving your score to 750+ before applying for your loan</div>
@@ -170,7 +170,7 @@
 
                     <!-- Factor breakdown bars -->
                     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
-                        <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">Score Factor Analysis</div>
+                        <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2" data-i18n="cibil.sec.factors">Score Factor Analysis</div>
                         <div class="space-y-2" id="cibil-factors">
                             <!-- Filled by JS -->
                         </div>
@@ -183,7 +183,7 @@
 
                 <!-- 90-DAY ACTION PLAN -->
                 <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
-                    <div class="text-[10px] font-black text-slate-500 uppercase tracking-wider mb-2">🗓️ Your 90-Day Action Plan</div>
+                    <div class="text-[10px] font-black text-slate-500 uppercase tracking-wider mb-2" data-i18n="cibil.sec.action">🗓️ Your 90-Day Action Plan</div>
                     <div id="cibil-action-plan" class="space-y-1.5 text-[10px]">
                         <!-- Filled by JS -->
                     </div>
@@ -191,7 +191,7 @@
 
                 <!-- CIBIL EDUCATION: KEY RULES -->
                 <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
-                    <div class="text-[10px] font-black text-slate-500 uppercase tracking-wider mb-2">📚 What Moves Your Score</div>
+                    <div class="text-[10px] font-black text-slate-500 uppercase tracking-wider mb-2" data-i18n="cibil.sec.education">📚 What Moves Your Score</div>
                     <div class="space-y-1.5">
                         <div class="rounded-xl p-2" style="background:#f0fdf4;border:1px solid #86efac;">
                             <div class="flex justify-between items-center mb-0.5">
@@ -239,7 +239,7 @@
                 <!-- HOW TO DISPUTE + INSIGHT -->
                 <div class="flex flex-col gap-2">
                     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
-                        <div class="text-[10px] font-black text-slate-500 uppercase tracking-wider mb-2">🛡️ How to Dispute CIBIL Errors</div>
+                        <div class="text-[10px] font-black text-slate-500 uppercase tracking-wider mb-2" data-i18n="cibil.sec.dispute">🛡️ How to Dispute CIBIL Errors</div>
                         <div class="space-y-1.5 text-[10px] text-slate-600 leading-relaxed">
                             <div class="flex gap-2"><span class="font-black text-slate-700 w-4 flex-shrink-0">1.</span><span>Download your free CIBIL report at <strong>cibil.com</strong> (1 free/year). Also check Experian, CRIF, and Equifax — errors may differ.</span></div>
                             <div class="flex gap-2"><span class="font-black text-slate-700 w-4 flex-shrink-0">2.</span><span>Look for: wrong personal details, accounts you don't recognise, closed accounts showing as open, incorrect loan amounts, duplicate entries.</span></div>
@@ -263,7 +263,7 @@
 
             <!-- SCORE BAND COMPARISON TABLE -->
             <div class="rounded-2xl p-3" style="background:#f8fafc;border:1px solid #e2e8f0;">
-                <div class="text-[9px] font-black text-slate-500 uppercase tracking-wider mb-2">📊 Score Band Impact — ₹50L Home Loan, 20 Years</div>
+                <div class="text-[9px] font-black text-slate-500 uppercase tracking-wider mb-2" data-i18n="cibil.sec.table">📊 Score Band Impact — ₹50L Home Loan, 20 Years</div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-[10px]">
                         <thead>

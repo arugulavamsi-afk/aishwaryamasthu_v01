@@ -9,12 +9,17 @@
         return parseInt((document.getElementById(id)?.value||'').replace(/[^0-9]/g,'')) || 0;
     }
 
-    function tgTaxOld(taxable) {
-        if (taxable <= 250000) return 0;
-        var t = 0;
+    function tgTaxOld(taxable, exemption) {
+        // exemption: 250000 general | 300000 senior (60-80) | 500000 super senior (80+)
+        exemption = exemption || 250000;
+        if (taxable <= exemption) return 0;
+        var orig = taxable, t = 0;
         if (taxable > 1000000) { t += (taxable - 1000000) * 0.30; taxable = 1000000; }
         if (taxable > 500000)  { t += (taxable - 500000)  * 0.20; taxable = 500000; }
-        if (taxable > 250000)  { t += (taxable - 250000)  * 0.05; }
+        // 5% slab: from exemption up to ₹5L (super seniors have exemption=5L, so this adds 0)
+        if (taxable > exemption) { t += (taxable - exemption) * 0.05; }
+        // 87A rebate: full rebate (up to ₹12,500) if total taxable income ≤ ₹5L
+        if (orig <= 500000) t = 0;
         return t;
     }
 
@@ -93,13 +98,17 @@
         return tax * rate;
     }
 
-    function tgSlabBreakdown(taxable, regime) {
+    function tgSlabBreakdown(taxable, regime, exemption) {
+        exemption = exemption || 250000;
+        var exLabel = exemption === 500000 ? '5L' : exemption === 300000 ? '3L' : '2.5L';
         var result = [];
-        var slabs = regime === 'old'
-            ? [ {label:'Up to 2.5L', floor:0,       ceil:250000,  rate:0},
-                {label:'2.5L-5L',    floor:250000,  ceil:500000,  rate:0.05},
-                {label:'5L-10L',     floor:500000,  ceil:1000000, rate:0.20},
-                {label:'Above 10L',  floor:1000000, ceil:Infinity,rate:0.30} ]
+        var oldSlabs = [ {label:'Up to \u20b9' + exLabel, floor:0, ceil:exemption, rate:0} ];
+        if (exemption < 500000) {
+            oldSlabs.push({label:'\u20b9' + exLabel + '\u2013\u20b95L', floor:exemption, ceil:500000, rate:0.05});
+        }
+        oldSlabs.push({label:'\u20b95L\u201310L', floor:500000, ceil:1000000, rate:0.20});
+        oldSlabs.push({label:'Above \u20b910L',   floor:1000000, ceil:Infinity,  rate:0.30});
+        var slabs = regime === 'old' ? oldSlabs
             : [ {label:'Up to 4L',   floor:0,       ceil:400000,  rate:0},
                 {label:'4L-8L',      floor:400000,  ceil:800000,  rate:0.05},
                 {label:'8L-12L',     floor:800000,  ceil:1200000, rate:0.10},
@@ -211,12 +220,15 @@
         var expenses = tgNum('tg-expenses');
         var fmt = function(n){ return 'Rs.' + Math.round(n).toLocaleString('en-IN'); };
 
+        // Taxpayer category → old regime basic exemption limit
+        var category   = (document.getElementById('tg-category')?.value) || 'general';
+        var oldExempt  = category === 'superssenior' ? 500000 : category === 'senior' ? 300000 : 250000;
+
         // OLD REGIME
         var stdOld       = 50000;
         var oldDeductions = stdOld + c80 + c80d + hra + nps + homeloan + otherD + empNps;
         var oldTaxable    = Math.max(0, gross - oldDeductions);
-        var oldTax        = tgTaxOld(oldTaxable);
-        if (oldTaxable <= 500000) oldTax = Math.max(0, oldTax - 12500);
+        var oldTax        = tgTaxOld(oldTaxable, oldExempt);
         var oldSurc      = tgSurcharge(oldTax, oldTaxable, 'old');
         var oldCess      = (oldTax + oldSurc) * 0.04;
         var oldTotal     = oldTax + oldSurc + oldCess;
@@ -289,7 +301,7 @@
             })() : '')
 
         // Slab breakdown
-        var breakdown = tgSlabBreakdown(bestTaxable, winner === 'new' ? 'new' : 'old');
+        var breakdown = tgSlabBreakdown(bestTaxable, winner === 'new' ? 'new' : 'old', oldExempt);
         var rateCol = {0:'#94a3b8',0.05:'#22c55e',0.10:'#84cc16',0.15:'#eab308',0.20:'#f97316',0.25:'#ef4444',0.30:'#dc2626'};
         var slabHtml = '';
         breakdown.forEach(function(s) {
@@ -303,6 +315,9 @@
         });
         if (bestTaxable <= 1200000 && winner === 'new') {
             slabHtml += '<div class="text-[9px] text-emerald-600 font-bold mt-1">' + _t('tg.res.rebate87a') + '</div>';
+        }
+        if (bestTaxable <= 500000 && winner !== 'new') {
+            slabHtml += '<div class="text-[9px] text-emerald-600 font-bold mt-1">87A Rebate: Full tax waived — taxable income \u2264 \u20b95L (old regime limit \u20b912,500)</div>';
         }
         var slabCard = document.getElementById('tg-slab-card');
         var slabContent = document.getElementById('tg-slab-content');
@@ -466,6 +481,8 @@
             el.classList.add('text-slate-400');
         });
         // Reset selects
+        var cat = document.getElementById('tg-category');
+        if (cat) cat.value = 'general';
         var r = document.getElementById('tg-results');
         if (r) r.innerHTML = '<p class="text-xs text-slate-400 text-center font-semibold">' + _t('tg.placeholder') + '</p>';
         var sc = document.getElementById('tg-surplus-card');

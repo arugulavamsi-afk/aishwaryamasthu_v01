@@ -1,0 +1,517 @@
+<div id="nomtrack-panel" class="hidden w-full flex flex-col gap-3">
+
+    <!-- HEADER -->
+    <div class="rounded-2xl px-4 py-3 text-white flex items-center justify-between gap-3 flex-wrap shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:2px solid rgba(245,200,66,0.4);box-shadow:0 4px 18px rgba(0,0,0,0.25);">
+        <div>
+            <h2 class="text-base font-black flex items-center gap-2">📜 Nomination Tracker &amp; Will Awareness</h2>
+            <p class="text-blue-200 text-[11px] mt-0.5">~30% EPF accounts in India have no nominee · The most common financial catastrophe: families unable to access wealth after death</p>
+        </div>
+        <button onclick="resetNomTrack()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h5M20 20v-5h-5M4 9a9 9 0 0115-3M20 15a9 9 0 01-15 3"/></svg><span>Reset</span>
+        </button>
+    </div>
+
+    <!-- MAIN GRID -->
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-3">
+
+        <!-- LEFT: CHECKLISTS — 3 cols -->
+        <div class="lg:col-span-3 flex flex-col gap-2">
+
+            <!-- Asset Nominations -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
+                <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">🏦 Financial Account Nominations</div>
+
+                <!-- Column headers -->
+                <div class="grid grid-cols-12 gap-1 px-1 mb-1.5">
+                    <div class="col-span-4 text-[9px] font-black text-slate-400 uppercase">Asset</div>
+                    <div class="col-span-3 text-[9px] font-black text-slate-400 uppercase">Status</div>
+                    <div class="col-span-3 text-[9px] font-black text-slate-400 uppercase">Nominee</div>
+                    <div class="col-span-2 text-[9px] font-black text-slate-400 uppercase">Updated</div>
+                </div>
+
+                <!-- Row: Bank Accounts -->
+                <div class="grid grid-cols-12 gap-1 items-center py-1.5 border-t border-slate-100">
+                    <div class="col-span-4 flex items-center gap-1.5">
+                        <span id="nt-bank-dot" class="text-sm flex-shrink-0">⏳</span>
+                        <div><div class="text-[11px] font-bold text-slate-700">Bank Accounts</div><div class="text-[9px] text-slate-400 leading-tight">Savings · FD · RD</div></div>
+                    </div>
+                    <div class="col-span-3">
+                        <select id="nt-bank-status" class="epf-input text-[10px] py-1.5" style="padding-left:6px;" onchange="nomRender()">
+                            <option value="pending">⏳ Pending</option>
+                            <option value="done">✅ Done</option>
+                            <option value="na">➖ N/A</option>
+                        </select>
+                    </div>
+                    <div class="col-span-3">
+                        <input id="nt-bank-nominee" type="text" class="epf-input text-[10px] py-1.5" placeholder="Nominee name" oninput="nomRender()">
+                    </div>
+                    <div class="col-span-2">
+                        <input id="nt-bank-date" type="date" class="epf-input text-[9px] py-1.5" style="padding-left:4px;" onchange="nomRender()">
+                    </div>
+                </div>
+
+                <!-- Row: Mutual Funds -->
+                <div class="grid grid-cols-12 gap-1 items-center py-1.5 border-t border-slate-100">
+                    <div class="col-span-4 flex items-center gap-1.5">
+                        <span id="nt-mf-dot" class="text-sm flex-shrink-0">⏳</span>
+                        <div><div class="text-[11px] font-bold text-slate-700">Mutual Funds</div><div class="text-[9px] text-slate-400 leading-tight">CAMS · KFintech</div></div>
+                    </div>
+                    <div class="col-span-3">
+                        <select id="nt-mf-status" class="epf-input text-[10px] py-1.5" style="padding-left:6px;" onchange="nomRender()">
+                            <option value="pending">⏳ Pending</option>
+                            <option value="done">✅ Done</option>
+                            <option value="na">➖ N/A</option>
+                        </select>
+                    </div>
+                    <div class="col-span-3">
+                        <input id="nt-mf-nominee" type="text" class="epf-input text-[10px] py-1.5" placeholder="Nominee name" oninput="nomRender()">
+                    </div>
+                    <div class="col-span-2">
+                        <input id="nt-mf-date" type="date" class="epf-input text-[9px] py-1.5" style="padding-left:4px;" onchange="nomRender()">
+                    </div>
+                </div>
+
+                <!-- Row: Life Insurance -->
+                <div class="grid grid-cols-12 gap-1 items-center py-1.5 border-t border-slate-100">
+                    <div class="col-span-4 flex items-center gap-1.5">
+                        <span id="nt-life-dot" class="text-sm flex-shrink-0">⏳</span>
+                        <div><div class="text-[11px] font-bold text-slate-700">Life Insurance</div><div class="text-[9px] text-slate-400 leading-tight">Term · ULIP · LIC</div></div>
+                    </div>
+                    <div class="col-span-3">
+                        <select id="nt-life-status" class="epf-input text-[10px] py-1.5" style="padding-left:6px;" onchange="nomRender()">
+                            <option value="pending">⏳ Pending</option>
+                            <option value="done">✅ Done</option>
+                            <option value="na">➖ N/A</option>
+                        </select>
+                    </div>
+                    <div class="col-span-3">
+                        <input id="nt-life-nominee" type="text" class="epf-input text-[10px] py-1.5" placeholder="Nominee name" oninput="nomRender()">
+                    </div>
+                    <div class="col-span-2">
+                        <input id="nt-life-date" type="date" class="epf-input text-[9px] py-1.5" style="padding-left:4px;" onchange="nomRender()">
+                    </div>
+                </div>
+
+                <!-- Row: EPF (highlighted - critical) -->
+                <div class="grid grid-cols-12 gap-1 items-center py-1.5 border-t border-slate-100" style="background:rgba(239,68,68,0.03);border-radius:8px;">
+                    <div class="col-span-4 flex items-center gap-1.5">
+                        <span id="nt-epf-dot" class="text-sm flex-shrink-0">⏳</span>
+                        <div><div class="text-[11px] font-bold text-slate-700">EPF Account</div><div class="text-[9px] text-red-400 leading-tight font-bold">30% no nominee!</div></div>
+                    </div>
+                    <div class="col-span-3">
+                        <select id="nt-epf-status" class="epf-input text-[10px] py-1.5" style="padding-left:6px;" onchange="nomRender()">
+                            <option value="pending">⏳ Pending</option>
+                            <option value="done">✅ Done</option>
+                            <option value="na">➖ N/A</option>
+                        </select>
+                    </div>
+                    <div class="col-span-3">
+                        <input id="nt-epf-nominee" type="text" class="epf-input text-[10px] py-1.5" placeholder="Nominee name" oninput="nomRender()">
+                    </div>
+                    <div class="col-span-2">
+                        <input id="nt-epf-date" type="date" class="epf-input text-[9px] py-1.5" style="padding-left:4px;" onchange="nomRender()">
+                    </div>
+                </div>
+
+                <!-- Row: PPF -->
+                <div class="grid grid-cols-12 gap-1 items-center py-1.5 border-t border-slate-100">
+                    <div class="col-span-4 flex items-center gap-1.5">
+                        <span id="nt-ppf-dot" class="text-sm flex-shrink-0">⏳</span>
+                        <div><div class="text-[11px] font-bold text-slate-700">PPF Account</div><div class="text-[9px] text-slate-400 leading-tight">Bank · Post Office</div></div>
+                    </div>
+                    <div class="col-span-3">
+                        <select id="nt-ppf-status" class="epf-input text-[10px] py-1.5" style="padding-left:6px;" onchange="nomRender()">
+                            <option value="pending">⏳ Pending</option>
+                            <option value="done">✅ Done</option>
+                            <option value="na">➖ N/A</option>
+                        </select>
+                    </div>
+                    <div class="col-span-3">
+                        <input id="nt-ppf-nominee" type="text" class="epf-input text-[10px] py-1.5" placeholder="Nominee name" oninput="nomRender()">
+                    </div>
+                    <div class="col-span-2">
+                        <input id="nt-ppf-date" type="date" class="epf-input text-[9px] py-1.5" style="padding-left:4px;" onchange="nomRender()">
+                    </div>
+                </div>
+
+                <!-- Row: NPS -->
+                <div class="grid grid-cols-12 gap-1 items-center py-1.5 border-t border-slate-100">
+                    <div class="col-span-4 flex items-center gap-1.5">
+                        <span id="nt-nps-dot" class="text-sm flex-shrink-0">⏳</span>
+                        <div><div class="text-[11px] font-bold text-slate-700">NPS Account</div><div class="text-[9px] text-slate-400 leading-tight">NPS Trust · CRA</div></div>
+                    </div>
+                    <div class="col-span-3">
+                        <select id="nt-nps-status" class="epf-input text-[10px] py-1.5" style="padding-left:6px;" onchange="nomRender()">
+                            <option value="pending">⏳ Pending</option>
+                            <option value="done">✅ Done</option>
+                            <option value="na">➖ N/A</option>
+                        </select>
+                    </div>
+                    <div class="col-span-3">
+                        <input id="nt-nps-nominee" type="text" class="epf-input text-[10px] py-1.5" placeholder="Nominee name" oninput="nomRender()">
+                    </div>
+                    <div class="col-span-2">
+                        <input id="nt-nps-date" type="date" class="epf-input text-[9px] py-1.5" style="padding-left:4px;" onchange="nomRender()">
+                    </div>
+                </div>
+
+                <!-- Row: Demat -->
+                <div class="grid grid-cols-12 gap-1 items-center py-1.5 border-t border-slate-100">
+                    <div class="col-span-4 flex items-center gap-1.5">
+                        <span id="nt-demat-dot" class="text-sm flex-shrink-0">⏳</span>
+                        <div><div class="text-[11px] font-bold text-slate-700">Demat / Shares</div><div class="text-[9px] text-slate-400 leading-tight">CDSL · NSDL</div></div>
+                    </div>
+                    <div class="col-span-3">
+                        <select id="nt-demat-status" class="epf-input text-[10px] py-1.5" style="padding-left:6px;" onchange="nomRender()">
+                            <option value="pending">⏳ Pending</option>
+                            <option value="done">✅ Done</option>
+                            <option value="na">➖ N/A</option>
+                        </select>
+                    </div>
+                    <div class="col-span-3">
+                        <input id="nt-demat-nominee" type="text" class="epf-input text-[10px] py-1.5" placeholder="Nominee name" oninput="nomRender()">
+                    </div>
+                    <div class="col-span-2">
+                        <input id="nt-demat-date" type="date" class="epf-input text-[9px] py-1.5" style="padding-left:4px;" onchange="nomRender()">
+                    </div>
+                </div>
+
+                <!-- Row: Health Insurance -->
+                <div class="grid grid-cols-12 gap-1 items-center py-1.5 border-t border-slate-100">
+                    <div class="col-span-4 flex items-center gap-1.5">
+                        <span id="nt-health-dot" class="text-sm flex-shrink-0">⏳</span>
+                        <div><div class="text-[11px] font-bold text-slate-700">Health Insurance</div><div class="text-[9px] text-slate-400 leading-tight">Insurer · TPA portal</div></div>
+                    </div>
+                    <div class="col-span-3">
+                        <select id="nt-health-status" class="epf-input text-[10px] py-1.5" style="padding-left:6px;" onchange="nomRender()">
+                            <option value="pending">⏳ Pending</option>
+                            <option value="done">✅ Done</option>
+                            <option value="na">➖ N/A</option>
+                        </select>
+                    </div>
+                    <div class="col-span-3">
+                        <input id="nt-health-nominee" type="text" class="epf-input text-[10px] py-1.5" placeholder="Nominee name" oninput="nomRender()">
+                    </div>
+                    <div class="col-span-2">
+                        <input id="nt-health-date" type="date" class="epf-input text-[9px] py-1.5" style="padding-left:4px;" onchange="nomRender()">
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Will & Estate Section -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
+                <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">📋 Will &amp; Estate Readiness</div>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+
+                    <div>
+                        <label class="epf-label">Will Status</label>
+                        <select id="nt-will-status" class="epf-input" onchange="nomRender()">
+                            <option value="none">❌ No Will</option>
+                            <option value="unregistered">📄 Unregistered</option>
+                            <option value="registered">✅ Registered</option>
+                        </select>
+                        <div class="text-[9px] text-slate-400 mt-0.5">Registered = Sub-Registrar stamped</div>
+                    </div>
+
+                    <div>
+                        <label class="epf-label">Executor Named?</label>
+                        <select id="nt-exec-status" class="epf-input" onchange="nomRender()">
+                            <option value="no">❌ No</option>
+                            <option value="yes">✅ Yes</option>
+                        </select>
+                        <div class="text-[9px] text-slate-400 mt-0.5">Person responsible for executing Will</div>
+                    </div>
+
+                    <div>
+                        <label class="epf-label">Family Aware?</label>
+                        <select id="nt-fam-status" class="epf-input" onchange="nomRender()">
+                            <option value="no">❌ No</option>
+                            <option value="yes">✅ Yes</option>
+                        </select>
+                        <div class="text-[9px] text-slate-400 mt-0.5">Family knows Will &amp; doc location</div>
+                    </div>
+
+                    <div>
+                        <label class="epf-label">Digital Assets?</label>
+                        <select id="nt-digital-status" class="epf-input" onchange="nomRender()">
+                            <option value="no">❌ Not Covered</option>
+                            <option value="yes">✅ Covered</option>
+                        </select>
+                        <div class="text-[9px] text-slate-400 mt-0.5">Passwords / UPI / crypto covered</div>
+                    </div>
+
+                </div>
+
+                <!-- Notes -->
+                <div class="mt-2">
+                    <label class="epf-label">Notes — Lawyer contact, Will location, locker number, etc.</label>
+                    <textarea id="nt-notes" rows="2" class="epf-input resize-none text-[11px]" style="padding-top:6px;" placeholder="e.g. Will registered at SRO Banjara Hills, Hyderabad · Lawyer: Adv. Ramesh 98490-XXXXX · Safe locker: SBI Main Branch" oninput="nomRender()"></textarea>
+                </div>
+            </div>
+
+            <!-- Quick Guide -->
+            <div class="rounded-2xl p-3" style="background:#f8fafc;border:1px solid #e2e8f0;">
+                <div class="text-[10px] font-black text-slate-500 uppercase tracking-wider mb-2">📌 Quick How-To Guide</div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                    <div class="rounded-xl px-2.5 py-2" style="background:#eff6ff;border:1px solid #bfdbfe;">
+                        <div class="text-[10px] font-black text-blue-800 mb-0.5">🏛️ EPF Nomination</div>
+                        <div class="text-[9px] text-blue-700 leading-relaxed">Login → EPFO Unified Portal → e-Nomination → Add family member → Submit. Free &amp; takes 5 min.</div>
+                    </div>
+                    <div class="rounded-xl px-2.5 py-2" style="background:#f0fdf4;border:1px solid #86efac;">
+                        <div class="text-[10px] font-black text-emerald-800 mb-0.5">📊 MF Nomination</div>
+                        <div class="text-[9px] text-emerald-700 leading-relaxed">CAMS Online or KFintech portal → Account Services → Nomination. Valid across all MF folios in one go.</div>
+                    </div>
+                    <div class="rounded-xl px-2.5 py-2" style="background:#fef9c3;border:1px solid #fde047;">
+                        <div class="text-[10px] font-black text-yellow-800 mb-0.5">📋 Writing a Will</div>
+                        <div class="text-[9px] text-yellow-700 leading-relaxed">Typed or handwritten. Sign in presence of 2 witnesses (not beneficiaries). Register at Sub-Registrar. ~₹200–₹500 stamp duty.</div>
+                    </div>
+                    <div class="rounded-xl px-2.5 py-2" style="background:#fdf4ff;border:1px solid #e9d5ff;">
+                        <div class="text-[10px] font-black text-purple-800 mb-0.5">🔄 When to Review</div>
+                        <div class="text-[9px] text-purple-700 leading-relaxed">After marriage · Divorce · Birth of child · Death of nominee · Major asset purchase. Review every 3–5 years minimum.</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- RIGHT: SCORE + ALERTS — 2 cols -->
+        <div class="lg:col-span-2 flex flex-col gap-2">
+
+            <!-- Score Card -->
+            <div class="rounded-2xl px-4 py-4 shine-header" style="background:linear-gradient(135deg,#0c2340,#1a4a7a);border:2px solid rgba(245,200,66,0.35);">
+                <div class="text-[9px] font-black text-blue-200 uppercase tracking-wider mb-1">Estate Readiness Score</div>
+                <div class="flex items-end gap-2 mb-2">
+                    <div id="nt-score-val" class="text-4xl font-black text-white">0/12</div>
+                    <div id="nt-score-pct" class="text-lg font-black text-blue-300 mb-1">0%</div>
+                </div>
+                <!-- Progress bar -->
+                <div class="h-2.5 rounded-full mb-2" style="background:rgba(255,255,255,0.12);">
+                    <div id="nt-score-bar" class="h-2.5 rounded-full transition-all duration-500" style="width:0%;background:#ef4444;"></div>
+                </div>
+                <div id="nt-score-badge" class="inline-block px-3 py-1 rounded-full text-[10px] font-black" style="background:#fee2e2;color:#991b1b;">🔴 Critical Risk</div>
+                <div class="text-[9px] text-blue-300 mt-2 leading-relaxed">8 nominations + Will + Executor + Family aware + Digital = 12 points</div>
+            </div>
+
+            <!-- Alerts -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3 flex-1">
+                <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">⚠️ Action Items</div>
+                <div id="nt-alerts" class="text-[10px] text-slate-600 leading-relaxed">
+                    <div class="text-[11px] text-slate-400 text-center py-4">Update statuses above to see your action plan</div>
+                </div>
+            </div>
+
+            <!-- Why This Matters -->
+            <div class="rounded-2xl p-3" style="background:linear-gradient(135deg,#fef3c7,#fffbeb);border:1px solid #fde68a;">
+                <div class="text-[10px] font-black text-amber-800 uppercase tracking-wider mb-1.5">💡 Why This Matters</div>
+                <div class="space-y-1.5">
+                    <div class="flex gap-1.5"><span class="text-amber-600 font-black text-xs flex-shrink-0">→</span><div class="text-[10px] text-amber-800 leading-relaxed">EPF nomination ensures your family gets the corpus <strong>without court orders</strong> — nominee overrides legal heir in EPF.</div></div>
+                    <div class="flex gap-1.5"><span class="text-amber-600 font-black text-xs flex-shrink-0">→</span><div class="text-[10px] text-amber-800 leading-relaxed">MF nominee can claim units <strong>within 30 days</strong>. Without one: 6–18 months of legal paperwork.</div></div>
+                    <div class="flex gap-1.5"><span class="text-amber-600 font-black text-xs flex-shrink-0">→</span><div class="text-[10px] text-amber-800 leading-relaxed">A registered Will prevents Succession Certificate battles — saves your family ₹1L–₹5L+ in legal fees.</div></div>
+                    <div class="flex gap-1.5"><span class="text-amber-600 font-black text-xs flex-shrink-0">→</span><div class="text-[10px] text-amber-800 leading-relaxed">SEBI made Demat nomination mandatory — penalty of account freeze for non-compliance.</div></div>
+                </div>
+            </div>
+
+            <!-- WhatsApp Share -->
+            <div>
+                <button onclick="waShare('nomtrack')" class="wa-share-btn shine-btn"><svg viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5 flex-shrink-0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.557 4.133 1.535 5.876L.057 23.43a.75.75 0 00.918.924l5.688-1.493A11.946 11.946 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.907 0-3.7-.512-5.241-1.403l-.375-.22-3.877 1.018 1.01-3.769-.234-.389A9.953 9.953 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>Share on WhatsApp</button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ══ GENERATE WILL SECTION ══════════════════════════════════════ -->
+    <div class="rounded-2xl overflow-hidden" style="border:2px solid rgba(139,92,246,0.35);box-shadow:0 4px 18px rgba(0,0,0,0.1);">
+
+        <!-- Collapsible header -->
+        <button onclick="ntToggleWill()" class="w-full flex items-center justify-between px-4 py-3 text-white shine-header" style="background:linear-gradient(135deg,#1e0a3c 0%,#4c1d95 50%,#1e3a5f 100%);">
+            <div class="flex items-center gap-2">
+                <span class="text-lg">⚖️</span>
+                <div class="text-left">
+                    <div class="text-sm font-black">Generate My Will Document</div>
+                    <div class="text-[10px] text-purple-200">Fill in your details and download a formal Last Will &amp; Testament PDF</div>
+                </div>
+            </div>
+            <span id="nt-will-chevron" class="text-purple-300 transition-transform duration-300">▼</span>
+        </button>
+
+        <!-- Collapsible body -->
+        <div id="nt-will-form" class="hidden bg-white p-4 flex flex-col gap-4">
+
+            <!-- Disclaimer banner -->
+            <div class="rounded-xl px-3 py-2.5 flex gap-2" style="background:#fef9c3;border:1px solid #fde047;">
+                <span class="text-yellow-600 text-sm flex-shrink-0">⚠️</span>
+                <div class="text-[10px] text-yellow-800 leading-relaxed">
+                    <strong>Important:</strong> This document is a <strong>personal draft template</strong> for reference purposes only. It is <em>not</em> a legally executed Will. To make it legally valid, print it, sign in the presence of two independent witnesses, and optionally register it at your Sub-Registrar's office. Consult a qualified advocate for complex estates.
+                </div>
+            </div>
+
+            <!-- Row 1: Personal Details -->
+            <div>
+                <div class="text-[10px] font-black text-purple-700 uppercase tracking-wider mb-2">👤 Testator Details (You)</div>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    <div>
+                        <label class="epf-label">Full Legal Name <span class="text-red-500">*</span></label>
+                        <input id="wg-name" type="text" class="epf-input" placeholder="As per PAN / Aadhaar">
+                    </div>
+                    <div>
+                        <label class="epf-label">Age</label>
+                        <input id="wg-age" type="number" class="epf-input" placeholder="e.g. 45" min="18" max="120">
+                    </div>
+                    <div>
+                        <label class="epf-label">Son/Daughter/Spouse of</label>
+                        <input id="wg-parent" type="text" class="epf-input" placeholder="Father's / spouse's name">
+                    </div>
+                    <div>
+                        <label class="epf-label">Religion</label>
+                        <select id="wg-religion" class="epf-input">
+                            <option value="Hindu">Hindu</option>
+                            <option value="Muslim">Muslim</option>
+                            <option value="Christian">Christian</option>
+                            <option value="Sikh">Sikh</option>
+                            <option value="Jain">Jain</option>
+                            <option value="Parsi">Parsi</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
+                    <div class="sm:col-span-2">
+                        <label class="epf-label">Residential Address <span class="text-red-500">*</span></label>
+                        <textarea id="wg-address" rows="2" class="epf-input resize-none text-[11px]" style="padding-top:6px;" placeholder="Door No., Street, City, State, PIN"></textarea>
+                    </div>
+                    <div>
+                        <label class="epf-label">Date of This Will</label>
+                        <input id="wg-date" type="date" class="epf-input">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 2: Beneficiaries -->
+            <div>
+                <div class="text-[10px] font-black text-purple-700 uppercase tracking-wider mb-2">🎁 Beneficiaries &amp; Asset Distribution</div>
+                <div class="text-[9px] text-slate-500 mb-2">List who inherits what. Share % must total 100 for financial assets. You may also describe specific assets (e.g. "Flat at XYZ" or "Gold jewellery").</div>
+
+                <!-- Beneficiary header -->
+                <div class="grid grid-cols-12 gap-1 px-1 mb-1">
+                    <div class="col-span-3 text-[9px] font-black text-slate-400 uppercase">Full Name</div>
+                    <div class="col-span-2 text-[9px] font-black text-slate-400 uppercase">Relation</div>
+                    <div class="col-span-5 text-[9px] font-black text-slate-400 uppercase">What they inherit / Share %</div>
+                    <div class="col-span-2 text-[9px] font-black text-slate-400 uppercase">Contingency*</div>
+                </div>
+
+                <!-- 4 beneficiary rows -->
+                <div id="wg-bene-rows" class="flex flex-col gap-1">
+                    <div class="grid grid-cols-12 gap-1 items-center">
+                        <div class="col-span-3"><input type="text" class="wg-bene-name epf-input text-[10px] py-1.5" placeholder="Beneficiary name"></div>
+                        <div class="col-span-2"><input type="text" class="wg-bene-rel epf-input text-[10px] py-1.5" placeholder="e.g. Wife"></div>
+                        <div class="col-span-5"><input type="text" class="wg-bene-share epf-input text-[10px] py-1.5" placeholder="e.g. 50% of all financial assets"></div>
+                        <div class="col-span-2"><input type="text" class="wg-bene-cont epf-input text-[10px] py-1.5" placeholder="If predeceases me…"></div>
+                    </div>
+                    <div class="grid grid-cols-12 gap-1 items-center">
+                        <div class="col-span-3"><input type="text" class="wg-bene-name epf-input text-[10px] py-1.5" placeholder="Beneficiary name"></div>
+                        <div class="col-span-2"><input type="text" class="wg-bene-rel epf-input text-[10px] py-1.5" placeholder="e.g. Son"></div>
+                        <div class="col-span-5"><input type="text" class="wg-bene-share epf-input text-[10px] py-1.5" placeholder="e.g. 25% + Flat at ABC Colony"></div>
+                        <div class="col-span-2"><input type="text" class="wg-bene-cont epf-input text-[10px] py-1.5" placeholder="If predeceases me…"></div>
+                    </div>
+                    <div class="grid grid-cols-12 gap-1 items-center">
+                        <div class="col-span-3"><input type="text" class="wg-bene-name epf-input text-[10px] py-1.5" placeholder="Beneficiary name"></div>
+                        <div class="col-span-2"><input type="text" class="wg-bene-rel epf-input text-[10px] py-1.5" placeholder="e.g. Daughter"></div>
+                        <div class="col-span-5"><input type="text" class="wg-bene-share epf-input text-[10px] py-1.5" placeholder="e.g. 25% of all financial assets"></div>
+                        <div class="col-span-2"><input type="text" class="wg-bene-cont epf-input text-[10px] py-1.5" placeholder="If predeceases me…"></div>
+                    </div>
+                    <div class="grid grid-cols-12 gap-1 items-center">
+                        <div class="col-span-3"><input type="text" class="wg-bene-name epf-input text-[10px] py-1.5" placeholder="Beneficiary name"></div>
+                        <div class="col-span-2"><input type="text" class="wg-bene-rel epf-input text-[10px] py-1.5" placeholder="e.g. Charity"></div>
+                        <div class="col-span-5"><input type="text" class="wg-bene-share epf-input text-[10px] py-1.5" placeholder="e.g. Gold jewellery"></div>
+                        <div class="col-span-2"><input type="text" class="wg-bene-cont epf-input text-[10px] py-1.5" placeholder="If predeceases me…"></div>
+                    </div>
+                </div>
+                <div class="text-[8.5px] text-slate-400 mt-1">* Contingency: what happens to that share if the beneficiary passes away before you (e.g. "passes to their children equally")</div>
+            </div>
+
+            <!-- Row 3: Executor + Witnesses -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+
+                <!-- Executor -->
+                <div>
+                    <div class="text-[10px] font-black text-purple-700 uppercase tracking-wider mb-2">🧑‍⚖️ Executor</div>
+                    <div class="flex flex-col gap-2">
+                        <div>
+                            <label class="epf-label">Executor's Full Name <span class="text-red-500">*</span></label>
+                            <input id="wg-exec-name" type="text" class="epf-input" placeholder="Name of executor">
+                        </div>
+                        <div>
+                            <label class="epf-label">Relationship</label>
+                            <input id="wg-exec-rel" type="text" class="epf-input" placeholder="e.g. Elder son, Friend">
+                        </div>
+                        <div>
+                            <label class="epf-label">Address</label>
+                            <textarea id="wg-exec-addr" rows="2" class="epf-input resize-none text-[11px]" style="padding-top:6px;" placeholder="Executor's address"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Witness 1 -->
+                <div>
+                    <div class="text-[10px] font-black text-purple-700 uppercase tracking-wider mb-2">✍️ Witness 1</div>
+                    <div class="flex flex-col gap-2">
+                        <div>
+                            <label class="epf-label">Full Name <span class="text-red-500">*</span></label>
+                            <input id="wg-w1-name" type="text" class="epf-input" placeholder="Must not be a beneficiary">
+                        </div>
+                        <div>
+                            <label class="epf-label">Occupation</label>
+                            <input id="wg-w1-occ" type="text" class="epf-input" placeholder="e.g. Software Engineer">
+                        </div>
+                        <div>
+                            <label class="epf-label">Address</label>
+                            <textarea id="wg-w1-addr" rows="2" class="epf-input resize-none text-[11px]" style="padding-top:6px;" placeholder="Witness 1 address"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Witness 2 -->
+                <div>
+                    <div class="text-[10px] font-black text-purple-700 uppercase tracking-wider mb-2">✍️ Witness 2</div>
+                    <div class="flex flex-col gap-2">
+                        <div>
+                            <label class="epf-label">Full Name <span class="text-red-500">*</span></label>
+                            <input id="wg-w2-name" type="text" class="epf-input" placeholder="Must not be a beneficiary">
+                        </div>
+                        <div>
+                            <label class="epf-label">Occupation</label>
+                            <input id="wg-w2-occ" type="text" class="epf-input" placeholder="e.g. Teacher">
+                        </div>
+                        <div>
+                            <label class="epf-label">Address</label>
+                            <textarea id="wg-w2-addr" rows="2" class="epf-input resize-none text-[11px]" style="padding-top:6px;" placeholder="Witness 2 address"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Special instructions -->
+            <div>
+                <label class="epf-label">Special Instructions / Specific Bequests (optional)</label>
+                <textarea id="wg-special" rows="2" class="epf-input resize-none text-[11px]" style="padding-top:6px;" placeholder="e.g. My wife shall have the right to reside in the family home for her lifetime. Gold ornaments to be divided equally between daughters. My library to son Arjun."></textarea>
+            </div>
+
+            <!-- Generate button -->
+            <div class="flex items-center gap-3 flex-wrap">
+                <button onclick="ntGenerateWillPdf(false)" class="flex items-center gap-2 px-5 py-2.5 rounded-xl font-black text-sm text-white shine-btn transition-all" style="background:linear-gradient(135deg,#4c1d95,#7c3aed);border:1px solid rgba(167,139,250,0.4);box-shadow:0 4px 12px rgba(124,58,237,0.35);">
+                    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    Download Will (PDF)
+                </button>
+                <button onclick="ntGenerateWillPdf(true)" class="flex items-center gap-2 px-5 py-2.5 rounded-xl font-black text-sm text-white shine-btn transition-all" style="background:linear-gradient(135deg,#075e54,#25d366);border:1px solid rgba(37,211,102,0.4);box-shadow:0 4px 12px rgba(37,211,102,0.3);">
+                    <svg viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 flex-shrink-0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.557 4.133 1.535 5.876L.057 23.43a.75.75 0 00.918.924l5.688-1.493A11.946 11.946 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.907 0-3.7-.512-5.241-1.403l-.375-.22-3.877 1.018 1.01-3.769-.234-.389A9.953 9.953 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+                    Share Will on WhatsApp
+                </button>
+                <div class="text-[9px] text-slate-400 leading-relaxed">Fields marked <span class="text-red-500 font-bold">*</span> are required. Your data is never uploaded — PDF is generated entirely on your device.</div>
+            </div>
+
+        </div>
+    </div>
+
+</div>

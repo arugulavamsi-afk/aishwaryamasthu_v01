@@ -205,7 +205,7 @@
                 '<td class="px-2 py-1 text-right text-slate-500">' + ddFmt(d.annualW) + '</td>' +
                 '<td class="px-2 py-1 text-right text-emerald-600">' + (d.otherInc > 0 ? ddFmt(d.otherInc) : '—') + '</td>' +
                 '<td class="px-2 py-1 text-right text-emerald-700 font-bold">' + ddFmt(d.returns) + '</td>' +
-                '<td class="px-2 py-1 text-right font-black" style="' + clr + '">' + (d.closeBal > 0 ? ddFmt(d.closeBal) : '₹0 (depleted)') + '</td>' +
+                '<td class="px-2 py-1 text-right font-black" style="' + clr + '">' + (d.closeBal > 0 ? ddFmt(d.closeBal) : _t('dd.depleted')) + '</td>' +
             '</tr>';
         });
         document.getElementById('dd-table-body').innerHTML = rows;
@@ -218,25 +218,30 @@
         if (!yearData || yearData.length === 0) return;
         var canvas = document.getElementById('dd-chart-canvas');
         if (!canvas) return;
+        // Defer if the canvas has no layout width yet (panel was just un-hidden)
+        if (canvas.offsetWidth === 0) {
+            requestAnimationFrame(function() { ddRenderChart(yearData); });
+            return;
+        }
         if (_ddChart) { try { _ddChart.destroy(); } catch(e){} _ddChart = null; }
         var isCorpus = (_ddView === 'corpus');
-        var labels   = yearData.map(function(d){ return 'Age ' + d.age; });
+        var labels   = yearData.map(function(d){ return _t('rh.age.prefix') + d.age; });
         var datasets;
         if (isCorpus) {
             datasets = [
-                { label:'Corpus Balance', data: yearData.map(function(d){ return d.closeBal; }),
+                { label: _t('dd.chart.corpus'), data: yearData.map(function(d){ return d.closeBal; }),
                   borderColor:'#ea580c', backgroundColor:'rgba(234,88,12,0.12)', borderWidth:2.5,
                   fill:true, tension:0.35, pointRadius: yearData.length > 35 ? 0 : 3, pointHoverRadius:5 },
-                { label:'Annual Returns', data: yearData.map(function(d){ return d.returns; }),
+                { label: _t('dd.chart.returns'), data: yearData.map(function(d){ return d.returns; }),
                   borderColor:'#16a34a', backgroundColor:'rgba(22,163,74,0.08)', borderWidth:1.5,
                   fill:false, tension:0.3, pointRadius:0, pointHoverRadius:4 }
             ];
         } else {
             datasets = [
-                { label:'Monthly SWP (Net)', data: yearData.map(function(d){ return d.netMonthly; }),
+                { label: _t('dd.chart.swp'), data: yearData.map(function(d){ return d.netMonthly; }),
                   borderColor:'#ea580c', backgroundColor:'rgba(234,88,12,0.15)', borderWidth:2.5,
                   fill:true, tension:0.35, pointRadius: yearData.length > 35 ? 0 : 3, pointHoverRadius:5 },
-                { label:'Monthly Expenses (Gross)', data: yearData.map(function(d){ return d.monthly; }),
+                { label: _t('dd.chart.withdrawal'), data: yearData.map(function(d){ return d.monthly; }),
                   borderColor:'#9333ea', backgroundColor:'rgba(147,51,234,0.05)', borderWidth:1.5,
                   borderDash:[4,3], fill:false, tension:0.3, pointRadius:0, pointHoverRadius:4 }
             ];

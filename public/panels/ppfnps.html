@@ -4,10 +4,10 @@
             <div class="rounded-2xl px-4 py-3 text-white flex items-center justify-between gap-3 flex-wrap shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:2px solid rgba(245,200,66,0.4);box-shadow:0 4px 18px rgba(0,0,0,0.25);">
                 <div>
                     <h2 class="text-base font-black flex items-center gap-2" data-i18n="page.ppfnps.h">🏛️ PPF &amp; NPS Calculator</h2>
-                    <p class="text-blue-200 text-[11px] mt-0.5">PPF: 7.1% tax-free with 15yr lock-in · NPS: 60% tax-free lumpsum + 40% mandatory annuity at retirement · 80C + 80CCD deductions.</p>
+                    <p class="text-blue-200 text-[11px] mt-0.5">PPF: 7.1% tax-free with 15yr lock-in · NPS: 60% tax-free lumpsum + 40% mandatory annuity at retirement · 80C + 80CCD deductions. <span class="text-yellow-300 font-semibold">Rates as of Q1 FY26.</span></p>
                 </div>
                 <button onclick="resetPPFNPS()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h5M20 20v-5h-5M4 9a9 9 0 0115-3M20 15a9 9 0 01-15 3"/></svg>Reset
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h5M20 20v-5h-5M4 9a9 9 0 0115-3M20 15a9 9 0 01-15 3"/></svg><span data-i18n="common.reset">Reset</span>
                 </button>
             </div>
 
@@ -30,11 +30,11 @@
 
                 <!-- PPF INPUTS -->
                 <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
-                    <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">PPF Inputs</div>
+                    <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2" data-i18n="ppf.sec.inputs">PPF Inputs</div>
                     <div class="grid grid-cols-2 gap-x-3 gap-y-2">
 
                         <div>
-                            <label class="epf-label">Annual Contribution (₹)</label>
+                            <label class="epf-label" data-i18n="lbl.ppf.annual">Annual Contribution (₹)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
                             <input id="ppf-annual" type="text" inputmode="numeric" value="1,50,000"
                                 class="epf-input pl-7 text-slate-400"
@@ -46,7 +46,7 @@
                         </div>
 
                         <div>
-                            <label class="epf-label">Current PPF Balance (₹)</label>
+                            <label class="epf-label" data-i18n="lbl.ppf.balance">Current PPF Balance (₹)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
                             <input id="ppf-balance" type="text" inputmode="numeric" value="0"
                                 class="epf-input pl-7 text-slate-400"
@@ -58,7 +58,7 @@
                         </div>
 
                         <div>
-                            <label class="epf-label">Years Already Invested</label>
+                            <label class="epf-label" data-i18n="lbl.ppf.years_done">Years Already Invested</label>
                             <input id="ppf-years-done" type="number" min="0" max="14" value="0"
                                 class="epf-input text-slate-400"
                                 oninput="ppfCalc();this.classList.remove('text-slate-400');"
@@ -68,17 +68,17 @@
                         </div>
 
                         <div>
-                            <label class="epf-label">Interest Rate (%)</label>
+                            <label class="epf-label" data-i18n="lbl.ppf.rate">Interest Rate (%)</label>
                             <input id="ppf-rate" type="number" min="4" max="12" step="0.1" value="7.1"
                                 class="epf-input text-slate-400"
                                 oninput="ppfCalc();this.classList.remove('text-slate-400');"
                                 onfocus="if(this.value==='7.1'){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                 onblur="if(!this.value){this.value='7.1';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
-                            <div class="text-[9px] text-slate-400 mt-0.5">Current: 7.1% p.a.</div>
+                            <div class="text-[9px] text-amber-600 mt-0.5">7.1% p.a. · as of Q1 FY26</div>
                         </div>
 
                         <div class="col-span-2">
-                            <label class="epf-label">Extension After 15 Yrs (blocks of 5)</label>
+                            <label class="epf-label" data-i18n="lbl.ppf.extend">Extension After 15 Yrs (blocks of 5)</label>
                             <select id="ppf-extend" class="epf-input" onchange="ppfCalc();">
                                 <option value="0">No extension (withdraw at 15 yrs)</option>
                                 <option value="5">Extend 5 more years (total 20)</option>
@@ -90,7 +90,7 @@
                     </div>
                     <!-- Presets -->
                     <div class="mt-3">
-                        <div class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1.5">Quick Scenarios</div>
+                        <div class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1.5" data-i18n="common.quickscen">Quick Scenarios</div>
                         <div class="flex flex-wrap gap-1">
                             <button onclick="ppfPreset(150000,0,0,7.1,0)"   class="ppf-preset">Fresh start</button>
                             <button onclick="ppfPreset(150000,500000,5,7.1,0)"  class="ppf-preset">₹5L · 5yr done</button>
@@ -106,17 +106,17 @@
                     <!-- 3 headline cards -->
                     <div class="grid grid-cols-3 gap-2">
                         <div class="rounded-2xl p-3 text-center shine-header" style="background:linear-gradient(135deg,#14532d,#166534);border:2px solid #22c55e;">
-                            <div class="text-[9px] font-black text-emerald-200 uppercase tracking-wider">Maturity Value</div>
+                            <div class="text-[9px] font-black text-emerald-200 uppercase tracking-wider" data-i18n="res.ppf.maturity">Maturity Value</div>
                             <div id="ppf-maturity" class="text-xl font-black text-white mt-0.5">—</div>
                             <div class="text-[9px] text-emerald-300 mt-0.5">Fully tax-free</div>
                         </div>
                         <div class="rounded-2xl p-3 text-center shine-header" style="background:linear-gradient(135deg,#0c4a6e,#075985);border:2px solid #0ea5e9;">
-                            <div class="text-[9px] font-black text-sky-200 uppercase tracking-wider">Total Interest</div>
+                            <div class="text-[9px] font-black text-sky-200 uppercase tracking-wider" data-i18n="res.ppf.interest">Total Interest</div>
                             <div id="ppf-interest" class="text-xl font-black text-white mt-0.5">—</div>
                             <div class="text-[9px] text-sky-300 mt-0.5">Sec 10 exempt</div>
                         </div>
                         <div class="rounded-2xl p-3 text-center shine-header" style="background:linear-gradient(135deg,#3b0764,#581c87);border:2px solid #a855f7;">
-                            <div class="text-[9px] font-black text-purple-200 uppercase tracking-wider">Total Invested</div>
+                            <div class="text-[9px] font-black text-purple-200 uppercase tracking-wider" data-i18n="res.ppf.invested">Total Invested</div>
                             <div id="ppf-invested" class="text-xl font-black text-white mt-0.5">—</div>
                             <div class="text-[9px] text-purple-300 mt-0.5">80C deductible</div>
                         </div>
@@ -157,7 +157,7 @@
             <!-- PPF Year-by-Year Table -->
             <div id="ppf-table-section" class="bg-white rounded-2xl border border-slate-100 shadow-sm p-3">
                 <div class="flex items-center justify-between mb-2">
-                    <div class="text-[10px] font-black text-slate-500 uppercase tracking-wider">📋 PPF Year-by-Year Passbook</div>
+                    <div class="text-[10px] font-black text-slate-500 uppercase tracking-wider" data-i18n="ppf.tbl.title">📋 PPF Year-by-Year Passbook</div>
                     <button id="ppf-table-btn" onclick="ppfToggleTable()" class="text-[10px] font-bold text-slate-400 hover:text-emerald-600 transition-all">Show ▾</button>
                 </div>
                 <div id="ppf-table-wrap" class="hidden overflow-x-auto">
@@ -180,7 +180,7 @@
 
             <!-- PPF Rules Quick Reference -->
             <div id="ppf-rules-section" class="rounded-2xl p-3" style="background:#f8fafc;border:1px solid #e2e8f0;">
-                <div class="text-[9px] font-black text-slate-500 uppercase tracking-wider mb-2">📌 PPF Key Rules</div>
+                <div class="text-[9px] font-black text-slate-500 uppercase tracking-wider mb-2" data-i18n="ppf.rules">📌 PPF Key Rules</div>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10px]">
                     <div class="rounded-xl p-2" style="background:#f0fdf4;border:1px solid #86efac;">
                         <div class="font-black text-emerald-800 mb-0.5">🔒 Lock-in</div>
@@ -206,11 +206,11 @@
 
                 <!-- NPS INPUTS -->
                 <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
-                    <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">NPS Inputs</div>
+                    <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2" data-i18n="nps.sec.inputs">NPS Inputs</div>
                     <div class="grid grid-cols-2 gap-x-3 gap-y-2">
 
                         <div>
-                            <label class="epf-label">Monthly Contribution (₹)</label>
+                            <label class="epf-label" data-i18n="lbl.nps.monthly">Monthly Contribution (₹)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
                             <input id="nps-monthly" type="text" inputmode="numeric" value="5,000"
                                 class="epf-input pl-7 text-slate-400"
@@ -222,7 +222,7 @@
                         </div>
 
                         <div>
-                            <label class="epf-label">Current Age (yrs)</label>
+                            <label class="epf-label" data-i18n="lbl.nps.age">Current Age (yrs)</label>
                             <input id="nps-age" type="number" min="18" max="59" value="30"
                                 class="epf-input text-slate-400"
                                 oninput="npsCalc();this.classList.remove('text-slate-400');"
@@ -232,7 +232,7 @@
                         </div>
 
                         <div>
-                            <label class="epf-label">Current NPS Balance (₹)</label>
+                            <label class="epf-label" data-i18n="lbl.nps.balance">Current NPS Balance (₹)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
                             <input id="nps-balance" type="text" inputmode="numeric" value="0"
                                 class="epf-input pl-7 text-slate-400"
@@ -244,7 +244,7 @@
                         </div>
 
                         <div>
-                            <label class="epf-label">Expected Return (%/yr)</label>
+                            <label class="epf-label" data-i18n="lbl.nps.return">Expected Return (%/yr)</label>
                             <input id="nps-return" type="number" min="4" max="18" step="0.5" value="10"
                                 class="epf-input text-slate-400"
                                 oninput="npsCalc();this.classList.remove('text-slate-400');"
@@ -254,7 +254,7 @@
                         </div>
 
                         <div>
-                            <label class="epf-label">Annuity Rate (%/yr)</label>
+                            <label class="epf-label" data-i18n="lbl.nps.annuity">Annuity Rate (%/yr)</label>
                             <input id="nps-annuity-rate" type="number" min="3" max="10" step="0.5" value="6"
                                 class="epf-input text-slate-400"
                                 oninput="npsCalc();this.classList.remove('text-slate-400');"
@@ -264,7 +264,7 @@
                         </div>
 
                         <div>
-                            <label class="epf-label">Tax Regime</label>
+                            <label class="epf-label" data-i18n="lbl.nps.regime">Tax Regime</label>
                             <select id="nps-regime" class="epf-input" onchange="_regimeChange('nps-regime','nps-slab',npsCalc)">
                                 <option value="new" selected>New Regime</option>
                                 <option value="old">Old Regime</option>
@@ -272,7 +272,7 @@
                         </div>
 
                         <div class="col-span-2">
-                            <label class="epf-label">Your Tax Slab</label>
+                            <label class="epf-label" data-i18n="lbl.nps.slab">Your Tax Slab</label>
                             <select id="nps-slab" class="epf-input" onchange="npsCalc();">
                                 <option value="0">0% — taxable income ≤ ₹12L (87A rebate)</option>
                                 <option value="15">15% — taxable income ₹12L–₹16L</option>
@@ -285,7 +285,7 @@
                     </div>
                     <!-- Presets -->
                     <div class="mt-3">
-                        <div class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1.5">Quick Scenarios</div>
+                        <div class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1.5" data-i18n="common.quickscen">Quick Scenarios</div>
                         <div class="flex flex-wrap gap-1">
                             <button onclick="npsPreset(5000,30,0,10,6,20)"   class="nps-preset">₹5K/mo · 30yr</button>
                             <button onclick="npsPreset(10000,30,0,10,6,30)"  class="nps-preset">₹10K · 30% slab</button>
@@ -301,17 +301,17 @@
                     <!-- 3 headline cards -->
                     <div class="grid grid-cols-3 gap-2">
                         <div class="rounded-2xl p-3 text-center shine-header" style="background:linear-gradient(135deg,#0c4a6e,#075985);border:2px solid #0ea5e9;">
-                            <div class="text-[9px] font-black text-sky-200 uppercase tracking-wider">Total NPS Corpus</div>
+                            <div class="text-[9px] font-black text-sky-200 uppercase tracking-wider" data-i18n="res.nps.corpus">Total NPS Corpus</div>
                             <div id="nps-total-corpus" class="text-xl font-black text-white mt-0.5">—</div>
                             <div class="text-[9px] text-sky-300 mt-0.5">at age 60</div>
                         </div>
                         <div class="rounded-2xl p-3 text-center shine-header" style="background:linear-gradient(135deg,#14532d,#166534);border:2px solid #22c55e;">
-                            <div class="text-[9px] font-black text-emerald-200 uppercase tracking-wider">Tax-Free Lumpsum</div>
+                            <div class="text-[9px] font-black text-emerald-200 uppercase tracking-wider" data-i18n="res.nps.lumpsum">Tax-Free Lumpsum</div>
                             <div id="nps-lumpsum" class="text-xl font-black text-white mt-0.5">—</div>
                             <div class="text-[9px] text-emerald-300 mt-0.5">60% of corpus</div>
                         </div>
                         <div class="rounded-2xl p-3 text-center shine-header" style="background:linear-gradient(135deg,#3b0764,#581c87);border:2px solid #a855f7;">
-                            <div class="text-[9px] font-black text-purple-200 uppercase tracking-wider">Monthly Pension</div>
+                            <div class="text-[9px] font-black text-purple-200 uppercase tracking-wider" data-i18n="res.nps.pension">Monthly Pension</div>
                             <div id="nps-pension" class="text-xl font-black text-white mt-0.5">—</div>
                             <div class="text-[9px] text-purple-300 mt-0.5">from 40% annuity</div>
                         </div>
@@ -352,7 +352,7 @@
 
             <!-- NPS Rules Quick Reference (hidden by default) -->
             <div id="nps-rules-section" class="hidden rounded-2xl p-3" style="background:#f8fafc;border:1px solid #e2e8f0;">
-                <div class="text-[9px] font-black text-slate-500 uppercase tracking-wider mb-2">📌 NPS Key Rules</div>
+                <div class="text-[9px] font-black text-slate-500 uppercase tracking-wider mb-2" data-i18n="nps.rules">📌 NPS Key Rules</div>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10px]">
                     <div class="rounded-xl p-2" style="background:#f0fdf4;border:1px solid #86efac;">
                         <div class="font-black text-emerald-800 mb-0.5">🎯 At Retirement (60)</div>

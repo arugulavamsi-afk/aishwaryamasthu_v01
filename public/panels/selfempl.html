@@ -7,16 +7,16 @@
                     <p class="text-blue-200 text-[11px] mt-0.5">44AD / 44ADA presumptive tax · Business emergency fund · GST cash-flow timing · Quarterly advance tax · Freelancer vs MSME</p>
                 </div>
                 <button onclick="resetSelfEmpl()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h5M20 20v-5h-5M4 9a9 9 0 0115-3M20 15a9 9 0 01-15 3"/></svg>Reset
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h5M20 20v-5h-5M4 9a9 9 0 0115-3M20 15a9 9 0 01-15 3"/></svg><span data-i18n="common.reset">Reset</span>
                 </button>
             </div>
 
             <!-- TAB NAV -->
             <div class="flex gap-1.5 flex-wrap" id="se-tab-nav">
-                <button onclick="seTab('tax')"    id="se-tab-tax"    class="se-tab-btn se-tab-active">🧾 Presumptive Tax</button>
-                <button onclick="seTab('bef')"    id="se-tab-bef"    class="se-tab-btn se-tab-inactive">🛡️ Business Emergency Fund</button>
-                <button onclick="seTab('gst')"    id="se-tab-gst"    class="se-tab-btn se-tab-inactive">📊 GST Cash-Flow</button>
-                <button onclick="seTab('adv')"    id="se-tab-adv"    class="se-tab-btn se-tab-inactive">📅 Advance Tax Planner</button>
+                <button onclick="seTab('tax')"    id="se-tab-tax"    class="se-tab-btn se-tab-active" data-i18n="selfempl.tab.tax">🧾 Presumptive Tax</button>
+                <button onclick="seTab('bef')"    id="se-tab-bef"    class="se-tab-btn se-tab-inactive" data-i18n="selfempl.tab.bef">🛡️ Business Emergency Fund</button>
+                <button onclick="seTab('gst')"    id="se-tab-gst"    class="se-tab-btn se-tab-inactive" data-i18n="selfempl.tab.gst">📊 GST Cash-Flow</button>
+                <button onclick="seTab('adv')"    id="se-tab-adv"    class="se-tab-btn se-tab-inactive" data-i18n="selfempl.tab.adv">📅 Advance Tax Planner</button>
             </div>
 
             <!-- ── TAB 1: PRESUMPTIVE TAX ─────────────────────────────── -->
@@ -24,11 +24,11 @@
 
                 <!-- INPUTS -->
                 <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
-                    <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">Your Business Profile</div>
+                    <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2" data-i18n="selfempl.sec.profile">Your Business Profile</div>
                     <div class="space-y-2">
 
                         <div>
-                            <label class="epf-label">Business Type</label>
+                            <label class="epf-label" data-i18n="lbl.selfempl.type">Business Type</label>
                             <select id="se-biz-type" class="epf-input" onchange="seCalcTax();">
                                 <option value="44AD_digital">44AD — Digital payments / Online (6% of turnover)</option>
                                 <option value="44AD_cash">44AD — Cash business (8% of turnover)</option>
@@ -39,7 +39,7 @@
                         </div>
 
                         <div>
-                            <label class="epf-label">Annual Turnover / Gross Receipts (₹)</label>
+                            <label class="epf-label" data-i18n="lbl.selfempl.turnover">Annual Turnover / Gross Receipts (₹)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
                             <input id="se-turnover" type="text" inputmode="numeric" placeholder="25,00,000"
                                 class="epf-input pl-7 text-slate-400"
@@ -50,7 +50,7 @@
                         </div>
 
                         <div id="se-actual-profit-row" class="hidden">
-                            <label class="epf-label">Actual Annual Profit (₹)</label>
+                            <label class="epf-label" data-i18n="lbl.selfempl.profit">Actual Annual Profit (₹)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
                             <input id="se-actual-profit" type="text" inputmode="numeric" placeholder="8,00,000"
                                 class="epf-input pl-7 text-slate-400"
@@ -61,7 +61,7 @@
                         </div>
 
                         <div>
-                            <label class="epf-label">Tax Regime</label>
+                            <label class="epf-label" data-i18n="lbl.selfempl.regime">Tax Regime</label>
                             <select id="se-tax-regime" class="epf-input" onchange="seCalcTax();">
                                 <option value="new" selected>New Regime (default for business)</option>
                                 <option value="old">Old Regime (80C, HRA, deductions)</option>
@@ -69,7 +69,7 @@
                         </div>
 
                         <div>
-                            <label class="epf-label">Other Income (Salary/Interest) (₹/yr)</label>
+                            <label class="epf-label" data-i18n="lbl.selfempl.other">Other Income (Salary/Interest) (₹/yr)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
                             <input id="se-other-income" type="text" inputmode="numeric" placeholder="0"
                                 class="epf-input pl-7 text-slate-400"

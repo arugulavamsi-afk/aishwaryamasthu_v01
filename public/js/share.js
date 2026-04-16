@@ -371,6 +371,28 @@
                   '\nPlan your retirement 👇';
         }
 
+        else if (page === 'hra') {
+            var hraExempt  = _waFmt(document.getElementById('hra-exempt-mo'));
+            var hraSaved   = _waFmt(document.getElementById('hra-tax-saved'));
+            msg = '🏠 I calculated my *HRA Exemption* on Aishwaryamasthu!\n' +
+                  'Monthly HRA exempt: *' + hraExempt + '*\n' +
+                  'Annual tax saved: *' + hraSaved + '*\n' +
+                  'Sec 10(13A) · Old Regime · Metro/Non-Metro\n' +
+                  '\nCalculate yours 👇';
+        }
+
+        else if (page === 'nomtrack') {
+            var ntScore = _waFmt(document.getElementById('nt-score-val'));
+            var ntBadge = _waFmt(document.getElementById('nt-score-badge'));
+            // Generate and download the nomination/Will PDF first
+            if (typeof ntGeneratePdf === 'function') ntGeneratePdf();
+            msg = '📜 I just shared my *Nomination & Will Declaration* — generated via Aishwaryamasthu!\n' +
+                  'Estate Readiness Score: *' + ntScore + '* — ' + ntBadge + '\n' +
+                  'I\'ve attached the PDF with my full nomination details & estate plan.\n' +
+                  '~30% EPF accounts in India have NO nominee — is yours updated?\n' +
+                  '\nCheck yours 👇';
+        }
+
         if (!msg) {
             msg = '📊 Check out *Aishwaryamasthu* — India\'s best free financial planning tool!\n\n' +
                   'SIP calculator · Goal planner · EPF projector · SSA planner · Tax guide & more 👇';

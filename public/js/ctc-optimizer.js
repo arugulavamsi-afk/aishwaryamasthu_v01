@@ -345,7 +345,8 @@
             ins.innerHTML = '<strong>💡 Take-home Insight:</strong> On CTC of <strong>' + ctcFmt(annualCTC) + '</strong>, you receive <strong>' + ctcFmt(takeHome) + '/mo</strong> (' + (takeHome*12/annualCTC*100).toFixed(0) + '% of CTC). ' +
                 optDesc +
                 ' Effective tax rate: <strong>' + effRate.toFixed(1) + '%</strong>. ' +
-                (bestRegime !== regime ? '⚠ <strong>' + (bestRegime==='old'?'Old':'New') + ' Regime saves ₹' + diff.toLocaleString('en-IN') + '/yr more</strong> for your income — consider switching.' : '');
+                (bestRegime !== regime ? '⚠ <strong>' + (bestRegime==='old'?'Old':'New') + ' Regime saves ₹' + diff.toLocaleString('en-IN') + '/yr more</strong> for your income — consider switching.' : '') +
+                '<div style="margin-top:8px;padding-top:8px;border-top:1px solid #bae6fd;font-size:9px;color:#0c4a6e;">⚠️ <strong>These are illustrative suggestions only.</strong> Eligibility depends on your employer\'s HR policy and CTC structure. Not all components can be restructured at every company. <strong>Verify with your HR department and/or a qualified CA before requesting any changes.</strong></div>';
         }
 
         if (typeof saveUserData === 'function') saveUserData();

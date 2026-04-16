@@ -128,21 +128,23 @@
 
         // 90-day action plan
         var actions = [];
-        if (missed > 0)   actions.push({ week: 'Week 1', icon: '🔴', text: 'Set auto-pay for ALL EMIs & credit card bills today. One missed payment can cost 80–100 points.', urgent: true });
-        if (util > 30)    actions.push({ week: 'Week 1–2', icon: '🔵', text: 'Pay down credit card balance to below 30% of limit. If balance is ₹' + _cibilComma(Math.round(loanAmt * 0.001)) + ', your target is ₹' + _cibilComma(Math.round(loanAmt * 0.0003)) + '.', urgent: util > 60 });
-        if (enq > 3)      actions.push({ week: 'Week 2', icon: '🟠', text: 'Stop all new loan/card applications for at least 6 months. Each hard enquiry drops score by 5–10 points.', urgent: true });
-        if (age < 3)      actions.push({ week: 'Month 1', icon: '🟡', text: 'Never close your oldest credit card — even if unused. Keep it active with 1 small purchase/month.', urgent: false });
-        if (cards === 0)  actions.push({ week: 'Month 1', icon: '🟣', text: 'Apply for 1 secured credit card (against FD). Use it for ≤10% of limit and pay in full each month.', urgent: false });
-        if (util <= 30 && missed === 0 && enq <= 2) actions.push({ week: 'Month 2', icon: '✅', text: 'Request credit limit increase from your card issuer — this reduces utilisation ratio without extra spending.', urgent: false });
-        actions.push({ week: 'Month 3', icon: '📋', text: 'Pull your free CIBIL report and dispute any errors at cibil.com/dispute. Errors corrected = instant score boost.', urgent: false });
-        if (score >= 750) actions.push({ week: 'Now', icon: '🎯', text: 'Your score is excellent! Apply for your home loan now to lock the best interest rate (≈' + bestRate.toFixed(2) + '%).', urgent: false });
+        if (missed > 0)   actions.push({ week: 'Week 1', icon: '🔴', text: 'Set auto-pay for ALL EMIs & credit card bills today. One missed payment can cost 80–100 points.', urgent: true,  lag: 'Score impact visible 30–60 days after your next statement is reported to CIBIL. Past missed payments remain on record for 3–5 years regardless.' });
+        if (util > 30)    actions.push({ week: 'Week 1–2', icon: '🔵', text: 'Pay down credit card balance to below 30% of limit. If balance is ₹' + _cibilComma(Math.round(loanAmt * 0.001)) + ', your target is ₹' + _cibilComma(Math.round(loanAmt * 0.0003)) + '.', urgent: util > 60, lag: 'Balance reduction reflects in your score 30–60 days after your card issuer files the next statement with CIBIL.' });
+        if (enq > 3)      actions.push({ week: 'Week 2', icon: '🟠', text: 'Stop all new loan/card applications for at least 6 months. Each hard enquiry drops score by 5–10 points.', urgent: true,  lag: 'Hard enquiries fade gradually — each one loses impact after 12 months and drops off the report after 2 years. No quick fix here.' });
+        if (age < 3)      actions.push({ week: 'Month 1', icon: '🟡', text: 'Never close your oldest credit card — even if unused. Keep it active with 1 small purchase/month.', urgent: false, lag: 'Credit age improves slowly over years. Closing an old card can immediately lower your average age and hurt your score.' });
+        if (cards === 0)  actions.push({ week: 'Month 1', icon: '🟣', text: 'Apply for 1 secured credit card (against FD). Use it for ≤10% of limit and pay in full each month.', urgent: false, lag: 'New account appears on your CIBIL report within 30–60 days. Score benefits from consistent usage build over 6+ months.' });
+        if (util <= 30 && missed === 0 && enq <= 2) actions.push({ week: 'Month 2', icon: '✅', text: 'Request credit limit increase from your card issuer — this reduces utilisation ratio without extra spending.', urgent: false, lag: 'Higher limit reflects in score 30–60 days after the next statement cycle, once the issuer reports to CIBIL.' });
+        actions.push({ week: 'Month 3', icon: '📋', text: 'Pull your free CIBIL report and dispute any errors at cibil.com/dispute. Errors corrected = instant score boost.', urgent: false, lag: 'CIBIL disputes are resolved in 30–45 days. Your score updates after the lender confirms the correction.' });
+        if (score >= 750) actions.push({ week: 'Now', icon: '🎯', text: 'Your score is excellent! Apply for your home loan now to lock the best interest rate (≈' + bestRate.toFixed(2) + '%).', urgent: false, lag: '' });
 
         var planHtml = '';
         actions.forEach(function(a) {
             planHtml += '<div class="flex gap-2 items-start rounded-xl p-2" style="background:' + (a.urgent ? '#fef2f2' : '#f8fafc') + ';border:1px solid ' + (a.urgent ? '#fecaca' : '#e2e8f0') + ';">' +
                 '<span class="text-sm flex-shrink-0">' + a.icon + '</span>' +
                 '<div><div class="text-[9px] font-black text-slate-400 uppercase">' + a.week + '</div>' +
-                '<div class="text-[10px] text-slate-700 leading-relaxed">' + a.text + '</div></div></div>';
+                '<div class="text-[10px] text-slate-700 leading-relaxed">' + a.text + '</div>' +
+                (a.lag ? '<div class="text-[9px] text-slate-400 italic mt-0.5">⏱ ' + a.lag + '</div>' : '') +
+                '</div></div>';
         });
         document.getElementById('cibil-action-plan').innerHTML = planHtml;
 
@@ -284,11 +286,11 @@
         addEv([fy+1,6,31], '📋 ITR Filing Deadline — Salaried (Jul 31)',
             'File your income tax return for FY' + fy + '-' + (fy-1999) + '. Late filing fee: ₹1,000–₹5,000 + 1% interest/month. Losses cannot be carried forward if filed late.',
             'tax','📋','₹5,000 late fee + 1% interest/month (Sec 234A)');
-        addEv([fy+1,9,31], '⚠️ Belated ITR Deadline (Oct 31)',
-            'Last date for belated or revised ITR. After this, you cannot file for FY' + fy + '-' + (fy-1999) + ' at all.',
-            'tax','⚠️','₹5,000 penalty + cannot file after this');
-        addEv([fy+1,11,31],'🔴 Final Belated Return — Dec 31',
-            'Absolute last chance to file a belated return for FY' + fy + '-' + (fy-1999) + '. Miss this and you permanently lose the ability to file.',
+        addEv([fy+1,9,31], '📋 ITR Deadline — Tax Audit & Business Cases (Oct 31)',
+            'Due date for companies, firms, and individuals whose accounts must be audited under Sec 44AB (business turnover >₹1Cr / professional receipts >₹50L). Salaried individuals\' deadline is July 31 — this does NOT extend that.',
+            'tax','📋','₹5,000 late fee + 1% interest/month (Sec 234A)');
+        addEv([fy+1,11,31],'🔴 Final Belated / Revised Return — Dec 31',
+            'Absolute last date to file a belated return (Sec 139(4)) or revised return (Sec 139(5)) for FY' + fy + '-' + (fy-1999) + ' — applies to ALL taxpayers including salaried. After Dec 31 you permanently lose the ability to file for this FY.',
             'tax','🚨','Permanently cannot file — all refunds forfeited');
 
         // Form 16 receipt

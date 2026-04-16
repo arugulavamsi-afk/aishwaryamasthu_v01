@@ -66,11 +66,9 @@
         var physEffective   = amount - gstAmt - makingAmt;
         // Gold grows on the units purchased
         var physFV          = physEffective * Math.pow(1 + ret, years);
-        // Physical gold LTCG after 2yr = 20% with indexation benefit
-        // Simplified indexation: assume ~5% inflation → indexed cost
-        var indexedCost     = years >= 2 ? physEffective * Math.pow(1.05, years) : physEffective;
-        var physGainTaxable = Math.max(0, physFV - indexedCost);
-        var physTax         = years >= 2 ? physGainTaxable * 0.20 : Math.max(0, physFV - physEffective) * (slab / 100);
+        // Physical gold LTCG after 2yr = 12.5% without indexation (Finance Act 2024, effective Jul 23 2024)
+        var physGainTaxable = Math.max(0, physFV - physEffective);
+        var physTax         = years >= 2 ? physGainTaxable * 0.125 : physGainTaxable * (slab / 100);
         var physNet         = physFV - physTax - totalLockerCost;
         var physEffRet      = amount > 0 ? Math.pow(physNet / amount, 1/years) - 1 : 0;
 
@@ -131,8 +129,7 @@
                 var eN = amount * Math.pow(1 + etfEffReturn, y) - (amount * Math.pow(1 + etfEffReturn, y) - amount) * (y >= 1 ? 0.125 : slab/100);
                 var pEff = amount - gstAmt - makingAmt;
                 var pFV  = pEff * Math.pow(1 + ret, y);
-                var pIdx  = y >= 2 ? pEff * Math.pow(1.05, y) : pEff;
-                var pTax  = y >= 2 ? Math.max(0,pFV-pIdx)*0.20 : Math.max(0,pFV-pEff)*(slab/100);
+                var pTax  = y >= 2 ? Math.max(0,pFV-pEff)*0.125 : Math.max(0,pFV-pEff)*(slab/100);
                 var pN   = pFV - pTax - (lockerYr * y);
                 if (pN > eN && breakevenYr === null) { breakevenYr = y; }
             }

@@ -29,6 +29,9 @@
         ulipcheck:    { icon:'🔍', title:'ULIP / Policy Analyzer',       color:'#dc2626' },
         fixedincome:    { icon:'🏦', title:'Fixed Income Tools',           color:'#0369a1' },
         retirementhub:  { icon:'🏖️', title:'Retirement Hub + Drawdown',    color:'#7c3aed' },
+        cgcalc:       { icon:'💹', title:'Capital Gains Calculator',     color:'#7c3aed' },
+        hracalc:      { icon:'🏠', title:'HRA Calculator',              color:'#0891b2' },
+        nomtrack:     { icon:'📜', title:'Nomination Tracker & Will',   color:'#7c3aed' },
     };
 
     function _dashGetFavs() {

@@ -65,28 +65,39 @@
         _fbAuth.onAuthStateChanged(user => {
             const authPanel    = document.getElementById('auth-panel');
             const welcomePanel = document.getElementById('auth-welcome');
-            const bar          = document.getElementById('user-bar');
 
+            const bar          = document.getElementById('user-bar');
             const greet        = document.getElementById('nav-user-greeting');
 
+            const splashInner = document.getElementById('splash-inner');
             if (user) {
+                // Signed-in: hide everything auth-related, show welcome, restore data
+                window._guestMode = false;
                 const fname = (user.displayName || user.email).split(' ')[0];
                 const dname = user.displayName || user.email;
                 if (document.getElementById('welcome-greeting'))
                     document.getElementById('welcome-greeting').textContent = `Welcome back, ${fname}! 👋`;
                 if (welcomePanel) { welcomePanel.style.display = 'flex'; }
                 if (authPanel)    { authPanel.style.display    = 'none'; }
+
+                const guestBar = document.getElementById('guest-signin-bar');
+                if (guestBar) guestBar.style.display = 'none';
                 if (bar && greet) {
                     greet.textContent = '👋 ' + dname;
                     bar.classList.remove('hidden');
                     bar.style.display = 'flex';
                 }
-                // Load this user's saved data after auth confirms
+                // Centre the welcome content vertically in the splash
+                if (splashInner) splashInner.classList.add('splash-inner--centered');
+                // Restore user's saved data — unaffected by guest tile state
                 if (typeof loadUserData === 'function') loadUserData();
             } else {
-                if (authPanel)    { authPanel.style.display    = 'block'; }
-                if (welcomePanel) { welcomePanel.style.display = 'none';  }
-                if (bar)          { bar.style.display = 'none'; bar.classList.add('hidden'); }
+                // Not signed in: show auth form and guest tiles
+                if (authPanel)  { authPanel.style.display  = 'block'; }
+                if (welcomePanel) { welcomePanel.style.display = 'none'; }
+
+                if (bar) { bar.style.display = 'none'; bar.classList.add('hidden'); }
+                if (splashInner) splashInner.classList.remove('splash-inner--centered');
             }
         });
 
@@ -104,12 +115,16 @@
         const tabLogin    = document.getElementById('auth-tab-login');
         const tabSignup   = document.getElementById('auth-tab-signup');
 
+        const scroll = document.querySelector('.auth-forms-scroll');
         if (tab === 'login') {
-            loginForm.style.display  = 'flex';
             signupForm.style.display = 'none';
+            loginForm.style.display  = 'flex';
+            if (scroll) scroll.style.height = ''; // release; login sizes naturally
             tabLogin.classList.add('active');
             tabSignup.classList.remove('active');
         } else {
+            // Lock scroll height to login's current size before revealing signup
+            if (scroll) scroll.style.height = scroll.offsetHeight + 'px';
             loginForm.style.display  = 'none';
             signupForm.style.display = 'flex';
             tabSignup.classList.add('active');
@@ -252,6 +267,25 @@
         splash.addEventListener('animationend', () => { splash.remove(); }, { once: true });
     }
 
+
+    /** Return to the sign-in splash from guest mode */
+    function returnToSignIn() {
+        window._guestMode = false;
+        const splash = document.getElementById('splash');
+        if (splash) splash.style.display = '';   // restore flex from CSS
+
+        // Hide guest bar
+        const guestBar = document.getElementById('guest-signin-bar');
+        if (guestBar) guestBar.style.display = 'none';
+
+        // Restore breadcrumb button to its normal Dashboard behaviour
+        const dashBtn = document.getElementById('nav-bc-dashboard-btn');
+        if (dashBtn) {
+            dashBtn.querySelector('span').textContent = '⬅ Dashboard';
+            dashBtn.onclick = function() { switchMode('dashboard'); };
+        }
+    }
+
     /** Wipe all saved calculator data for the current user (with confirmation) */
     function confirmResetAllData() {
         if (!confirm('Reset all your saved numbers?\n\nThis clears Growth, Goal, Emergency Fund, Health Score, and Financial Plan data. Your account stays safe.')) return;
@@ -308,8 +342,26 @@
         _saveTimer = setTimeout(() => _doSaveUserData(user), 1500);
     }
 
+    // Flush any pending debounced save immediately on page unload (refresh/close).
+    // Without this, a save triggered within the 1.5s window before a refresh is lost.
+    window.addEventListener('beforeunload', function() {
+        const user = _fbAuth && _fbAuth.currentUser;
+        if (_saveTimer && user && _fbDb) {
+            clearTimeout(_saveTimer);
+            _doSaveUserData(user);
+        }
+    });
+
     function _doSaveUserData(user) {
         try {
+            // Helper: collect field values only if the panel is in the DOM.
+            // Returns null when anchor element is missing (panel not yet lazy-loaded).
+            // Caller uses spread syntax so null keys are omitted from Firestore payload —
+            // with merge:true, omitted keys are PRESERVED, not overwritten with empty strings.
+            function _panelData(anchorId, collectFn) {
+                return document.getElementById(anchorId) ? collectFn() : null;
+            }
+
             const fixedExpenses = {};
             document.querySelectorAll('#expense-rows .expense-row').forEach(function(row) {
                 const cat = row.getAttribute('data-category') || 'Other';
@@ -322,12 +374,14 @@
                 const inp = row.querySelector('.ef-input');
                 customRows.push({ category: cat, value: inp ? inp.value.replace(/,/g,'') : '0' });
             });
-            const hsFields = ['hs-income','hs-emi','hs-expenses','hs-savings','hs-health-ins','hs-term-ins','hs-efund','hs-age',
-                              'hs-pf-equity','hs-pf-debt','hs-pf-realty','hs-pf-gold','hs-pf-retiral','hs-pf-other'];
-            const healthScore = {};
-            hsFields.forEach(function(id) {
-                const el = document.getElementById(id);
-                healthScore[id] = el ? el.value : '';
+            // healthScore — null when panel not in DOM (omitted from payload → Firestore preserves existing)
+            const healthScore = _panelData('hs-income', function() {
+                var obj = {};
+                ['hs-income','hs-emi','hs-expenses','hs-savings','hs-health-ins','hs-term-ins','hs-efund','hs-age',
+                 'hs-pf-equity','hs-pf-debt','hs-pf-realty','hs-pf-gold','hs-pf-retiral','hs-pf-other'].forEach(function(id) {
+                    obj[id] = document.getElementById(id)?.value || '';
+                });
+                return obj;
             });
             const fpSaveObj = window._fpState ? {
                 step: window._fpState.step,
@@ -377,242 +431,301 @@
             }
             // If neither branch applies (section never opened AND no pending data),
             // taxGuide stays {} which is correct for a brand-new user.
-            // Home Loan fields
-            const homeLoan = {};
-            homeLoan['hl-amount'] = document.getElementById('hl-amount')?.value || '';
-            homeLoan['hl-rate'] = document.getElementById('hl-rate')?.value || '';
-            homeLoan['hl-tenure'] = document.getElementById('hl-tenure')?.value || '';
-            homeLoan['hl-start-month'] = document.getElementById('hl-start-month')?.value || '';
-            homeLoan['hl-start-year'] = document.getElementById('hl-start-year')?.value || '';
-            homeLoan['pp-amount'] = document.getElementById('pp-amount')?.value || '';
-            homeLoan['pp-rate'] = document.getElementById('pp-rate')?.value || '';
-            homeLoan['pp-tenure'] = document.getElementById('pp-tenure')?.value || '';
-            homeLoan['pp-lump'] = document.getElementById('pp-lump')?.value || '';
-            homeLoan['pp-after'] = document.getElementById('pp-after')?.value || '';
-            homeLoan['rvb-price'] = document.getElementById('rvb-price')?.value || '';
-            homeLoan['rvb-down'] = document.getElementById('rvb-down')?.value || '';
-            homeLoan['rvb-rate'] = document.getElementById('rvb-rate')?.value || '';
-            homeLoan['rvb-tenure'] = document.getElementById('rvb-tenure')?.value || '';
-            homeLoan['rvb-apprec'] = document.getElementById('rvb-apprec')?.value || '';
-            homeLoan['rvb-maint'] = document.getElementById('rvb-maint')?.value || '';
-            homeLoan['rvb-society'] = document.getElementById('rvb-society')?.value || '';
-            homeLoan['rvb-stamp'] = document.getElementById('rvb-stamp')?.value || '';
-            homeLoan['rvb-gst'] = document.getElementById('rvb-gst')?.value || '';
-            homeLoan['rvb-modt'] = document.getElementById('rvb-modt')?.value || '';
-            homeLoan['rvb-rent'] = document.getElementById('rvb-rent')?.value || '';
-            homeLoan['rvb-rent-incr'] = document.getElementById('rvb-rent-incr')?.value || '';
-            homeLoan['rvb-inv-return'] = document.getElementById('rvb-inv-return')?.value || '';
-            homeLoan['rvb-years'] = document.getElementById('rvb-years')?.value || '';
-            homeLoan['tx-amount'] = document.getElementById('tx-amount')?.value || '';
-            homeLoan['tx-rate'] = document.getElementById('tx-rate')?.value || '';
-            homeLoan['tx-tenure'] = document.getElementById('tx-tenure')?.value || '';
-            homeLoan['tx-slab'] = document.getElementById('tx-slab')?.value || '';
-            homeLoan['tx-type'] = document.getElementById('tx-type')?.value || '';
-            const stepUpSIP = {};
-            ['su-amount','su-rate','su-years','su-stepup'].forEach(function(id) {
-                stepUpSIP[id] = document.getElementById(id)?.value || '';
+            // Per-panel data — _panelData returns null when anchor not in DOM.
+            // Spread in data object: null → key omitted → Firestore merge:true preserves existing value.
+            const homeLoan = _panelData('hl-amount', function() {
+                var obj = {};
+                ['hl-amount','hl-rate','hl-tenure','hl-start-month','hl-start-year',
+                 'pp-amount','pp-rate','pp-tenure','pp-lump','pp-after',
+                 'rvb-price','rvb-down','rvb-rate','rvb-tenure','rvb-apprec','rvb-maint','rvb-society','rvb-stamp','rvb-gst','rvb-modt','rvb-rent','rvb-rent-incr','rvb-inv-return','rvb-years',
+                 'tx-amount','tx-rate','tx-tenure','tx-slab','tx-type'].forEach(function(id) {
+                    obj[id] = document.getElementById(id)?.value || '';
+                });
+                return obj;
             });
-            stepUpSIP['su-ltcg'] = document.getElementById('su-ltcg-toggle')?.checked ? '1' : '0';
-            const data = {
-                growth:    window._tabState ? Object.assign({}, window._tabState.growth) : {},
-                goal:      window._tabState ? Object.assign({}, window._tabState.goal)   : {},
+            const stepUpSIP = _panelData('su-amount', function() {
+                var obj = {};
+                ['su-amount','su-rate','su-years','su-stepup'].forEach(function(id) {
+                    obj[id] = document.getElementById(id)?.value || '';
+                });
+                obj['su-ltcg'] = document.getElementById('su-ltcg-toggle')?.checked ? '1' : '0';
+                return obj;
+            });
+            const ssaPlanner = _panelData('ssa-dob-year', function() {
+                var obj = {};
+                ['ssa-dob-year','ssa-annual','ssa-tenure','ssa-elss-sip','ssa-elss-return','ssa-inflation','ssa-goal-edu','ssa-goal-marr'].forEach(function(id){
+                    obj[id] = document.getElementById(id)?.value || '';
+                });
+                return obj;
+            });
+            const epfCalc = _panelData('epf-basic', function() {
+                var obj = {};
+                ['epf-basic','epf-balance','epf-age','epf-retire','epf-growth','epf-rate'].forEach(function(id){
+                    obj[id] = document.getElementById(id)?.value || '';
+                });
+                return obj;
+            });
+            const drawdown = _panelData('dd-corpus', function() {
+                var obj = {};
+                ['dd-corpus','dd-current-age','dd-ret-age','dd-expenses','dd-inflation','dd-return','dd-other-income'].forEach(function(id){
+                    obj[id] = document.getElementById(id)?.value || '';
+                });
+                return obj;
+            });
+            const ppfnps = _panelData('ppf-annual', function() {
+                var obj = {};
+                ['ppf-annual','ppf-balance','ppf-years-done','ppf-rate','ppf-extend',
+                 'nps-monthly','nps-age','nps-balance','nps-return','nps-annuity-rate','nps-slab','nps-regime'].forEach(function(id){
+                    obj[id] = document.getElementById(id)?.value || '';
+                });
+                obj['ppfnps-active-tab'] = (document.getElementById('ppf-section') && !document.getElementById('ppf-section').classList.contains('hidden')) ? 'ppf' : 'nps';
+                return obj;
+            });
+            const ctcOptimizer = _panelData('ctc-annual', function() {
+                var obj = {};
+                ['ctc-annual','ctc-basic','ctc-hra','ctc-rent','ctc-city','ctc-lta',
+                 'ctc-food','ctc-phone','ctc-emp-nps','ctc-80c','ctc-regime'].forEach(function(id){
+                    obj[id] = document.getElementById(id)?.value || '';
+                });
+                return obj;
+            });
+            const insurance = _panelData('ins-income', function() {
+                var obj = {};
+                ['ins-income','ins-age','ins-dependents','ins-loans','ins-term-current',
+                 'ins-health-current','ins-monthly-exp','ins-family',
+                 'ins-assets','ins-ci-current','ins-disability-current',
+                 'ins-parents-cover','ins-parents-age1','ins-parents-age2'].forEach(function(id){
+                    obj[id] = document.getElementById(id)?.value || '';
+                });
+                return obj;
+            });
+            const fixedIncome = _panelData('fi-fd-principal', function() {
+                var obj = {};
+                ['fi-fd-principal','fi-fd-rate','fi-fd-tenure','fi-fd-type',
+                 'fi-fd-regime','fi-fd-slab',
+                 'fi-scss-principal','fi-scss-regime','fi-scss-slab',
+                 'fi-pomis-principal','fi-pomis-regime','fi-pomis-slab',
+                 'fi-nsc-principal','fi-nsc-regime','fi-nsc-slab',
+                 'fi-kvp-principal',
+                 'fi-cmp-principal','fi-cmp-fd-rate','fi-cmp-elss-return',
+                 'fi-cmp-regime','fi-cmp-slab'].forEach(function(id){
+                    obj[id] = document.getElementById(id)?.value || '';
+                });
+                return obj;
+            });
+            const retirementHub = _panelData('rh-age', function() {
+                var obj = {};
+                ['rh-age','rh-ret-age','rh-life-exp','rh-inflation','rh-ret-return','rh-expenses',
+                 'rh-epf-balance','rh-epf-basic',
+                 'rh-ppf-balance','rh-ppf-annual','rh-ppf-years-done',
+                 'rh-nps-balance','rh-nps-monthly','rh-nps-return','rh-nps-annuity',
+                 'rh-sip-monthly','rh-sip-return',
+                 'rh-other-corpus','rh-other-return'].forEach(function(id){
+                    obj[id] = document.getElementById(id)?.value || '';
+                });
+                return obj;
+            });
+            const gratuity = _panelData('grat-basic', function() {
+                var obj = {};
+                ['grat-basic','grat-years','grat-months','grat-type','grat-slab','grat-regime'].forEach(function(id){
+                    obj[id] = document.getElementById(id)?.value || '';
+                });
+                return obj;
+            });
+            const debtPlan = _panelData('debt-extra', function() {
+                var obj = {};
+                obj['debt-extra'] = document.getElementById('debt-extra')?.value || '';
+                var loans = [];
+                var rows = document.querySelectorAll('#debt-loans-container .debt-loan-row');
+                rows.forEach(function(row) {
+                    var inputs = row.querySelectorAll('.debt-loan-input');
+                    if (inputs.length >= 3) {
+                        loans.push({name: inputs[0].value, balance: inputs[1].value, rate: inputs[2].value, emi: inputs[3] ? inputs[3].value : ''});
+                    }
+                });
+                obj['debt-loans'] = JSON.stringify(loans);
+                return obj;
+            });
+            const jointPlan = _panelData('jp-p1-name', function() {
+                var obj = {};
+                ['jp-p1-name','jp-p1-income','jp-p1-invest','jp-p1-portfolio','jp-p1-80c',
+                 'jp-p2-name','jp-p2-income','jp-p2-invest','jp-p2-portfolio','jp-p2-80c',
+                 'jp-edu-cost','jp-edu-years','jp-home-cost','jp-home-years',
+                 'jp-retire-age','jp-retire-monthly','jp-return'].forEach(function(id){
+                    obj[id] = document.getElementById(id)?.value || '';
+                });
+                obj['jp-p1-slab']     = document.getElementById('jp-p1-slab')?.value     || '20';
+                obj['jp-p2-slab']     = document.getElementById('jp-p2-slab')?.value     || '30';
+                obj['jp-p1-regime']   = document.getElementById('jp-p1-regime')?.value   || 'new';
+                obj['jp-p2-regime']   = document.getElementById('jp-p2-regime')?.value   || 'new';
+                obj['jp-goal-edu']    = document.getElementById('jp-goal-edu')?.checked    ? '1' : '0';
+                obj['jp-goal-home']   = document.getElementById('jp-goal-home')?.checked   ? '1' : '0';
+                obj['jp-goal-retire'] = document.getElementById('jp-goal-retire')?.checked ? '1' : '0';
+                return obj;
+            });
+            const cibil = _panelData('cibil-score', function() {
+                var obj = {};
+                ['cibil-score','cibil-util','cibil-missed','cibil-age','cibil-cards',
+                 'cibil-enquiries','cibil-loan-amt','cibil-loan-tenure'].forEach(function(id){
+                    obj[id] = document.getElementById(id)?.value || '';
+                });
+                return obj;
+            });
+            const fincal = _panelData('fc-income', function() {
+                var obj = {};
+                obj['fc-regime']  = document.getElementById('fc-regime')?.value  || 'new';
+                obj['fc-income']  = document.getElementById('fc-income')?.value  || '';
+                obj['fc-ppf']     = document.getElementById('fc-ppf')?.value     || 'yes';
+                obj['fc-elss']    = document.getElementById('fc-elss')?.value    || 'yes';
+                obj['fc-sgb']     = document.getElementById('fc-sgb')?.value     || 'yes';
+                obj['fc-epf']     = document.getElementById('fc-epf')?.value     || 'yes';
+                obj['fc-cc-date'] = document.getElementById('fc-cc-date')?.value || '';
+                return obj;
+            });
+            const selfEmpl = _panelData('se-turnover', function() {
+                var obj = {};
+                ['se-turnover','se-actual-profit','se-other-income','se-80c','se-nps',
+                 'se-bef-salaries','se-bef-rent','se-bef-tools','se-bef-loans','se-bef-utilities',
+                 'se-bef-inventory','se-bef-personal','se-bef-current',
+                 'se-gst-revenue','se-gst-purchases','se-gst-delay','se-adv-tax'].forEach(function(id){
+                    obj[id] = document.getElementById(id)?.value || '';
+                });
+                obj['se-biz-type']     = document.getElementById('se-biz-type')?.value     || '44AD_digital';
+                obj['se-tax-regime']   = document.getElementById('se-tax-regime')?.value   || 'new';
+                obj['se-bef-months']   = document.getElementById('se-bef-months')?.value   || '6';
+                obj['se-gst-type']     = document.getElementById('se-gst-type')?.value     || 'regular';
+                obj['se-gst-rate-out'] = document.getElementById('se-gst-rate-out')?.value || '18';
+                obj['se-gst-rate-in']  = document.getElementById('se-gst-rate-in')?.value  || '18';
+                return obj;
+            });
+            const goldComp = _panelData('gc-amount', function() {
+                var obj = {};
+                ['gc-amount','gc-years','gc-return','gc-making','gc-locker'].forEach(function(id){
+                    obj[id] = document.getElementById(id)?.value || '';
+                });
+                obj['gc-slab']   = document.getElementById('gc-slab')?.value   || '20';
+                obj['gc-regime'] = document.getElementById('gc-regime')?.value || 'new';
+                return obj;
+            });
+            const ulipCheck = _panelData('uc-premium', function() {
+                var obj = {};
+                ['uc-premium','uc-term','uc-paid','uc-maturity','uc-sv',
+                 'uc-cover','uc-age','uc-inv-return'].forEach(function(id){
+                    obj[id] = document.getElementById(id)?.value || '';
+                });
+                obj['uc-slab'] = document.getElementById('uc-slab')?.value || '20';
+                return obj;
+            });
+            const netWorth = _panelData('nw-savings', function() {
+                var obj = {};
+                ['nw-savings','nw-fd','nw-stocks','nw-eq-mf','nw-epf','nw-ppf','nw-nps',
+                 'nw-debt-mf','nw-home','nw-property','nw-gold-phys','nw-gold-paper',
+                 'nw-crypto','nw-ins-sv','nw-other-assets',
+                 'nw-liab-home','nw-liab-car','nw-liab-pl','nw-liab-edu','nw-liab-cc','nw-liab-other'].forEach(function(id){
+                    obj[id] = document.getElementById(id)?.value || '';
+                });
+                return obj;
+            });
+            const cgCalc = _panelData('cg-cost', function() {
+                var obj = {};
+                ['cg-buy-date','cg-sell-date','cg-cost','cg-sale','cg-ltcg-used','cg-income'].forEach(function(id){
+                    obj[id] = document.getElementById(id)?.value || '';
+                });
+                obj['cg-asset']  = document.getElementById('cg-asset')?.value  || 'equity';
+                obj['cg-regime'] = document.getElementById('cg-regime')?.value || 'new';
+                return obj;
+            });
+            const hraCalc = _panelData('hra-basic', function() {
+                var obj = {};
+                ['hra-basic','hra-received','hra-rent'].forEach(function(id){
+                    obj[id] = document.getElementById(id)?.value || '';
+                });
+                obj['hra-city']   = document.getElementById('hra-city')?.value   || 'metro';
+                obj['hra-regime'] = document.getElementById('hra-regime')?.value || 'old';
+                obj['hra-slab']   = document.getElementById('hra-slab')?.value   || '20';
+                return obj;
+            });
+            const nomTrack = _panelData('nt-bank-status', function() {
+                var obj = {};
+                ['bank','mf','life','epf','ppf','nps','demat','health'].forEach(function(a) {
+                    ['status','nominee','date'].forEach(function(f) {
+                        var id = 'nt-' + a + '-' + f;
+                        obj[id] = document.getElementById(id)?.value || '';
+                    });
+                });
+                ['nt-will-status','nt-exec-status','nt-fam-status','nt-digital-status'].forEach(function(id) {
+                    obj[id] = document.getElementById(id)?.value || '';
+                });
+                obj['nt-notes'] = document.getElementById('nt-notes')?.value || '';
+                // Will generator fields
+                ['wg-name','wg-age','wg-parent','wg-religion','wg-address','wg-date',
+                 'wg-exec-name','wg-exec-rel','wg-exec-addr',
+                 'wg-w1-name','wg-w1-occ','wg-w1-addr',
+                 'wg-w2-name','wg-w2-occ','wg-w2-addr','wg-special'].forEach(function(id) {
+                    obj[id] = document.getElementById(id)?.value || '';
+                });
+                // Beneficiary rows (class-based, no IDs — save by index)
+                ['name','rel','share','cont'].forEach(function(field) {
+                    document.querySelectorAll('.wg-bene-' + field).forEach(function(el, i) {
+                        obj['wg-bene-' + field + '-' + i] = el.value || '';
+                    });
+                });
+                return obj;
+            });
+            // Seed from last Firestore snapshot so panel data isn't lost when panels
+            // are lazy-loaded and not currently in the DOM.  Firestore's merge:true
+            // only preserves OTHER document fields (e.g. riskProfile), NOT nested
+            // sub-fields within appData — so we must carry forward missing panel data
+            // ourselves using the cached snapshot as the starting point.
+            var _base = window._cachedRestoreData ? Object.assign({}, window._cachedRestoreData) : {};
+            var data = Object.assign(_base, {
+                growth:    window._tabState ? Object.assign({}, window._tabState.growth) : (_base.growth || {}),
+                goal:      window._tabState ? Object.assign({}, window._tabState.goal)   : (_base.goal   || {}),
                 emergency: { months: window._efMonths || 6, fixedExpenses: fixedExpenses, customRows: customRows },
-                healthScore: healthScore,
+                ...(healthScore  ? { healthScore }  : {}),
                 finplan:   fpSaveObj,
-                // Only include taxGuide when we actually have data.
-                // If taxGuide is {} (Tax Guide never opened this session AND
-                // _tgPendingData not yet populated from Firestore), omitting it
-                // prevents a race-condition save from overwriting stored values
-                // with an empty object before loadUserData's fetch has returned.
+                // Only include taxGuide when we actually have data (see comment above taxGuide block).
                 ...(Object.keys(taxGuide).length > 0 ? { taxGuide } : {}),
-                homeLoan:  homeLoan,
-                stepUpSIP: stepUpSIP,
-                ssaPlanner: (function(){
-                    var obj = {};
-                    ['ssa-dob-year','ssa-annual','ssa-tenure','ssa-elss-sip','ssa-elss-return','ssa-inflation','ssa-goal-edu','ssa-goal-marr'].forEach(function(id){
-                        obj[id] = document.getElementById(id)?.value || '';
-                    });
-                    return obj;
-                })(),
-                epfCalc:   (function(){
-                    var obj = {};
-                    ['epf-basic','epf-balance','epf-age','epf-retire','epf-growth','epf-rate'].forEach(function(id){
-                        obj[id] = document.getElementById(id)?.value || '';
-                    });
-                    return obj;
-                })(),
-                userProfile: window._userProfile || {},
-                drawdown: (function(){
-                    var obj = {};
-                    ['dd-corpus','dd-current-age','dd-ret-age','dd-expenses','dd-inflation','dd-return','dd-other-income'].forEach(function(id){
-                        obj[id] = document.getElementById(id)?.value || '';
-                    });
-                    return obj;
-                })(),
-                ppfnps: (function(){
-                    var obj = {};
-                    ['ppf-annual','ppf-balance','ppf-years-done','ppf-rate','ppf-extend',
-                     'nps-monthly','nps-age','nps-balance','nps-return','nps-annuity-rate','nps-slab','nps-regime'].forEach(function(id){
-                        obj[id] = document.getElementById(id)?.value || '';
-                    });
-                    obj['ppfnps-active-tab'] = (document.getElementById('ppf-section') && !document.getElementById('ppf-section').classList.contains('hidden')) ? 'ppf' : 'nps';
-                    return obj;
-                })(),
-                ctcOptimizer: (function(){
-                    var obj = {};
-                    ['ctc-annual','ctc-basic','ctc-hra','ctc-rent','ctc-city','ctc-lta',
-                     'ctc-food','ctc-phone','ctc-emp-nps','ctc-80c','ctc-regime'].forEach(function(id){
-                        obj[id] = document.getElementById(id)?.value || '';
-                    });
-                    return obj;
-                })(),
-                insurance: (function(){
-                    var obj = {};
-                    ['ins-income','ins-age','ins-dependents','ins-loans','ins-term-current',
-                     'ins-health-current','ins-monthly-exp','ins-family',
-                     'ins-assets','ins-ci-current','ins-disability-current',
-                     'ins-parents-cover','ins-parents-age1','ins-parents-age2'].forEach(function(id){
-                        obj[id] = document.getElementById(id)?.value || '';
-                    });
-                    return obj;
-                })(),
-                fixedIncome: (function(){
-                    var obj = {};
-                    ['fi-fd-principal','fi-fd-rate','fi-fd-tenure','fi-fd-type',
-                     'fi-fd-regime','fi-fd-slab',
-                     'fi-scss-principal','fi-scss-regime','fi-scss-slab',
-                     'fi-pomis-principal','fi-pomis-regime','fi-pomis-slab',
-                     'fi-nsc-principal','fi-nsc-regime','fi-nsc-slab',
-                     'fi-kvp-principal',
-                     'fi-cmp-principal','fi-cmp-fd-rate','fi-cmp-elss-return',
-                     'fi-cmp-regime','fi-cmp-slab'].forEach(function(id){
-                        obj[id] = document.getElementById(id)?.value || '';
-                    });
-                    return obj;
-                })(),
-                retirementHub: (function(){
-                    var obj = {};
-                    ['rh-age','rh-ret-age','rh-life-exp','rh-inflation','rh-ret-return','rh-expenses',
-                     'rh-epf-balance','rh-epf-basic',
-                     'rh-ppf-balance','rh-ppf-annual','rh-ppf-years-done',
-                     'rh-nps-balance','rh-nps-monthly','rh-nps-return','rh-nps-annuity',
-                     'rh-sip-monthly','rh-sip-return',
-                     'rh-other-corpus','rh-other-return'].forEach(function(id){
-                        obj[id] = document.getElementById(id)?.value || '';
-                    });
-                    return obj;
-                })(),
-                gratuity: (function(){
-                    var obj = {};
-                    ['grat-basic','grat-years','grat-months','grat-type','grat-slab','grat-regime'].forEach(function(id){
-                        obj[id] = document.getElementById(id)?.value || '';
-                    });
-                    return obj;
-                })(),
-                debtPlan: (function(){
-                    var obj = {};
-                    obj['debt-extra'] = document.getElementById('debt-extra')?.value || '';
-                    // Save loan rows
-                    var loans = [];
-                    var rows = document.querySelectorAll('#debt-loans-container .debt-loan-row');
-                    rows.forEach(function(row) {
-                        var inputs = row.querySelectorAll('.debt-loan-input');
-                        if (inputs.length >= 3) {
-                            loans.push({name: inputs[0].value, balance: inputs[1].value, rate: inputs[2].value, emi: inputs[3] ? inputs[3].value : ''});
-                        }
-                    });
-                    obj['debt-loans'] = JSON.stringify(loans);
-                    return obj;
-                })(),
-                jointPlan: (function(){
-                    var obj = {};
-                    ['jp-p1-name','jp-p1-income','jp-p1-invest','jp-p1-portfolio','jp-p1-80c',
-                     'jp-p2-name','jp-p2-income','jp-p2-invest','jp-p2-portfolio','jp-p2-80c',
-                     'jp-edu-cost','jp-edu-years','jp-home-cost','jp-home-years',
-                     'jp-retire-age','jp-retire-monthly','jp-return'].forEach(function(id){
-                        obj[id] = document.getElementById(id)?.value || '';
-                    });
-                    obj['jp-p1-slab']       = document.getElementById('jp-p1-slab')?.value || '20';
-                    obj['jp-p2-slab']       = document.getElementById('jp-p2-slab')?.value || '30';
-                    obj['jp-p1-regime']     = document.getElementById('jp-p1-regime')?.value || 'new';
-                    obj['jp-p2-regime']     = document.getElementById('jp-p2-regime')?.value || 'new';
-                    obj['jp-goal-edu']      = document.getElementById('jp-goal-edu')?.checked ? '1' : '0';
-                    obj['jp-goal-home']     = document.getElementById('jp-goal-home')?.checked ? '1' : '0';
-                    obj['jp-goal-retire']   = document.getElementById('jp-goal-retire')?.checked ? '1' : '0';
-                    return obj;
-                })(),
-                cibil: (function(){
-                    var obj = {};
-                    ['cibil-score','cibil-util','cibil-missed','cibil-age','cibil-cards',
-                     'cibil-enquiries','cibil-loan-amt','cibil-loan-tenure'].forEach(function(id){
-                        obj[id] = document.getElementById(id)?.value || '';
-                    });
-                    return obj;
-                })(),
-                fincal: (function(){
-                    var obj = {};
-                    obj['fc-regime']  = document.getElementById('fc-regime')?.value  || 'new';
-                    obj['fc-income']  = document.getElementById('fc-income')?.value  || '';
-                    obj['fc-ppf']     = document.getElementById('fc-ppf')?.value     || 'yes';
-                    obj['fc-elss']    = document.getElementById('fc-elss')?.value    || 'yes';
-                    obj['fc-sgb']     = document.getElementById('fc-sgb')?.value     || 'yes';
-                    obj['fc-epf']     = document.getElementById('fc-epf')?.value     || 'yes';
-                    obj['fc-cc-date'] = document.getElementById('fc-cc-date')?.value || '';
-                    return obj;
-                })(),
-                selfEmpl: (function(){
-                    var obj = {};
-                    ['se-turnover','se-actual-profit','se-other-income','se-80c','se-nps',
-                     'se-bef-salaries','se-bef-rent','se-bef-tools','se-bef-loans','se-bef-utilities',
-                     'se-bef-inventory','se-bef-personal','se-bef-current',
-                     'se-gst-revenue','se-gst-purchases','se-gst-delay','se-adv-tax'].forEach(function(id){
-                        obj[id] = document.getElementById(id)?.value || '';
-                    });
-                    obj['se-biz-type']    = document.getElementById('se-biz-type')?.value    || '44AD_digital';
-                    obj['se-tax-regime']  = document.getElementById('se-tax-regime')?.value  || 'new';
-                    obj['se-bef-months']  = document.getElementById('se-bef-months')?.value  || '6';
-                    obj['se-gst-type']    = document.getElementById('se-gst-type')?.value    || 'regular';
-                    obj['se-gst-rate-out']= document.getElementById('se-gst-rate-out')?.value|| '18';
-                    obj['se-gst-rate-in'] = document.getElementById('se-gst-rate-in')?.value || '18';
-                    return obj;
-                })(),
-                goldComp: (function(){
-                    var obj = {};
-                    ['gc-amount','gc-years','gc-return','gc-making','gc-locker'].forEach(function(id){
-                        obj[id] = document.getElementById(id)?.value || '';
-                    });
-                    obj['gc-slab'] = document.getElementById('gc-slab')?.value || '20';
-                    obj['gc-regime'] = document.getElementById('gc-regime')?.value || 'new';
-                    return obj;
-                })(),
-                savedGoals: window._savedGoals || [],
-                ulipCheck: (function(){
-                    var obj = {};
-                    ['uc-premium','uc-term','uc-paid','uc-maturity','uc-sv',
-                     'uc-cover','uc-age','uc-inv-return'].forEach(function(id){
-                        obj[id] = document.getElementById(id)?.value || '';
-                    });
-                    obj['uc-slab'] = document.getElementById('uc-slab')?.value || '20';
-                    return obj;
-                })(),
-                netWorth: (function(){
-                    var obj = {};
-                    ['nw-savings','nw-fd','nw-stocks','nw-eq-mf','nw-epf','nw-ppf','nw-nps',
-                     'nw-debt-mf','nw-home','nw-property','nw-gold-phys','nw-gold-paper',
-                     'nw-crypto','nw-ins-sv','nw-other-assets',
-                     'nw-liab-home','nw-liab-car','nw-liab-pl','nw-liab-edu','nw-liab-cc','nw-liab-other'].forEach(function(id){
-                        obj[id] = document.getElementById(id)?.value || '';
-                    });
-                    return obj;
-                })()
-            };
+                ...(homeLoan     ? { homeLoan }     : {}),
+                ...(stepUpSIP    ? { stepUpSIP }    : {}),
+                ...(ssaPlanner   ? { ssaPlanner }   : {}),
+                ...(epfCalc      ? { epfCalc }      : {}),
+                userProfile: window._userProfile || _base.userProfile || {},
+                ...(drawdown     ? { drawdown }     : {}),
+                ...(ppfnps       ? { ppfnps }       : {}),
+                ...(ctcOptimizer ? { ctcOptimizer } : {}),
+                ...(insurance    ? { insurance }    : {}),
+                ...(fixedIncome  ? { fixedIncome }  : {}),
+                ...(retirementHub? { retirementHub }: {}),
+                ...(gratuity     ? { gratuity }     : {}),
+                ...(debtPlan     ? { debtPlan }     : {}),
+                ...(jointPlan    ? { jointPlan }    : {}),
+                ...(cibil        ? { cibil }        : {}),
+                ...(fincal       ? { fincal }       : {}),
+                ...(selfEmpl     ? { selfEmpl }     : {}),
+                ...(goldComp     ? { goldComp }     : {}),
+                savedGoals: window._savedGoals || _base.savedGoals || [],
+                ...(ulipCheck    ? { ulipCheck }    : {}),
+                ...(netWorth     ? { netWorth }     : {}),
+                ...(cgCalc       ? { cgCalc }       : {}),
+                ...(hraCalc      ? { hraCalc }      : {}),
+                ...(nomTrack     ? { nomTrack }     : {}),
+                nwHistory: (typeof _nwHistory !== 'undefined' && _nwHistory.length) ? _nwHistory.slice() : (_base.nwHistory || [])
+            });
+            // Keep in-memory cache in sync so subsequent saves inherit current values
+            window._cachedRestoreData = data;
             _fbDb.collection('users').doc(user.uid)
                 .set({ appData: data }, { merge: true })
                 .catch(e => console.warn('saveUserData Firestore failed:', e));
         } catch(e) { console.warn('saveUserData failed:', e); }
     }
 
-    function loadUserData() {
+    function loadUserData(preloaded) {
+        if (preloaded !== undefined) {
+            if (!preloaded) return;
+            _applyData(preloaded);
+            return;
+        }
         const user = _fbAuth && _fbAuth.currentUser;
         if (!user || !_fbDb) return;
 
@@ -624,8 +737,36 @@
             }
             const data = snap.exists && snap.data() && snap.data().appData ? snap.data().appData : null;
             if (!data) return;
-            _restoring = true;
-            try {
+            window._cachedRestoreData = data;
+            _applyData(data);
+        }).catch(e => console.warn('loadUserData Firestore failed:', e));
+    }
+
+    // Generic helper: if anchorId is in DOM, call applyFn immediately (inside the
+    // caller's _restoring = true context). Otherwise set up a MutationObserver so
+    // data is applied the instant the panel appears — with its own _restoring guard.
+    function _applyWhenReady(anchorId, applyFn) {
+        if (document.getElementById(anchorId) !== null) {
+            applyFn(); // _restoring is already true from outer _applyData
+        } else {
+            var _obs = new MutationObserver(function(_, obs) {
+                if (document.getElementById(anchorId) !== null) {
+                    obs.disconnect();
+                    setTimeout(function() {
+                        // _applyData has completed by now; set _restoring ourselves
+                        _restoring = true;
+                        try { applyFn(); } catch(e) { console.warn('panel restore (' + anchorId + '):', e); }
+                        finally { _restoring = false; }
+                    }, 0);
+                }
+            });
+            _obs.observe(document.body, { childList: true, subtree: true });
+        }
+    }
+
+    function _applyData(data) {
+        _restoring = true;
+        try {
             // Growth / Goal
             try {
                 if (data.growth && window._tabState) Object.assign(window._tabState.growth, data.growth);
@@ -687,16 +828,43 @@
             } catch(e) { console.warn('loadUserData emergency:', e); }
 
             // Health Score
+            // Health Score — same MutationObserver pattern as Tax Guide:
+            // store pending data then watch for panel to appear in DOM
             try {
                 if (data.healthScore) {
-                    Object.entries(data.healthScore).forEach(function(entry) {
-                        const id = entry[0], val = entry[1];
-                        const el = document.getElementById(id);
-                        if (!el || val === '' || val === undefined || val === null) return;
-                        el.value = val;
-                        if (val && val !== '0') el.classList.remove('text-slate-400');
-                    });
-                    if (typeof calcHealthScore === 'function') calcHealthScore();
+                    window._hsPendingData = data.healthScore;
+
+                    function _applyHsData() {
+                        var pending = window._hsPendingData;
+                        if (!pending) return;
+                        window._hsPendingData = null; // prevent double-apply
+                        _restoring = true;
+                        try {
+                            Object.entries(pending).forEach(function(entry) {
+                                var id = entry[0], val = entry[1];
+                                var el = document.getElementById(id);
+                                if (!el || val === '' || val === undefined || val === null) return;
+                                el.value = val;
+                                if (val && val !== '0') el.classList.remove('text-slate-400');
+                            });
+                        } finally {
+                            _restoring = false;
+                        }
+                        if (typeof calcHealthScore === 'function') calcHealthScore();
+                    }
+
+                    if (document.getElementById('hs-income') !== null) {
+                        _applyHsData();
+                    } else {
+                        var _hsObserver = new MutationObserver(function(mutations, obs) {
+                            if (document.getElementById('hs-income') !== null) {
+                                obs.disconnect();
+                                // setTimeout(0) lets the panel's init code finish before we overwrite
+                                setTimeout(_applyHsData, 0);
+                            }
+                        });
+                        _hsObserver.observe(document.body, { childList: true, subtree: true });
+                    }
                 }
             } catch(e) { console.warn('loadUserData health score:', e); }
 
@@ -828,32 +996,28 @@
                 }
             } catch(e) { console.warn('loadUserData taxGuide:', e); }
 
-            // Home Loan: restore directly (all fields exist in DOM from page load)
+            // Home Loan restore
             try {
                 if (data.homeLoan) {
-                    window._hlPendingData = data.homeLoan; // also keep for initHomeLoan colour fix
-                    var hlRestoreDefaults = {'hl-rate':'8.5','hl-tenure':'20','pp-rate':'8.5','pp-tenure':'20','pp-after':'3','rvb-rate':'8.5','rvb-tenure':'20','rvb-apprec':'7','rvb-stamp':'7','rvb-gst':'0','rvb-rent-incr':'5','rvb-inv-return':'12','rvb-years':'20','tx-rate':'8.5','tx-tenure':'20'};
-                    Object.entries(data.homeLoan).forEach(function([id, val]) {
-                        var el = document.getElementById(id);
-                        if (!el || val === null) return;
-                        el.value = val;
-                        var defaultVal = hlRestoreDefaults[id];
-                        if (el.tagName === 'SELECT') {
-                            if (val) el.style.removeProperty('color');
-                        } else if (defaultVal !== undefined) {
-                            if (val === '' || val === defaultVal) {
-                                el.classList.add('text-slate-400');
+                    window._hlPendingData = data.homeLoan; // kept for initHomeLoan colour fix
+                    var _hlData = data.homeLoan;
+                    _applyWhenReady('hl-amount', function() {
+                        var hlRestoreDefaults = {'hl-rate':'8.5','hl-tenure':'20','pp-rate':'8.5','pp-tenure':'20','pp-after':'3','rvb-rate':'8.5','rvb-tenure':'20','rvb-apprec':'7','rvb-stamp':'7','rvb-gst':'0','rvb-rent-incr':'5','rvb-inv-return':'12','rvb-years':'20','tx-rate':'8.5','tx-tenure':'20'};
+                        Object.entries(_hlData).forEach(function([id, val]) {
+                            var el = document.getElementById(id);
+                            if (!el || val === null) return;
+                            el.value = val;
+                            var defaultVal = hlRestoreDefaults[id];
+                            if (el.tagName === 'SELECT') {
+                                if (val) el.style.removeProperty('color');
+                            } else if (defaultVal !== undefined) {
+                                if (val === '' || val === defaultVal) el.classList.add('text-slate-400');
+                                else el.classList.remove('text-slate-400');
                             } else {
-                                el.classList.remove('text-slate-400');
+                                if (val && val !== '0') el.classList.remove('text-slate-400');
+                                else el.classList.add('text-slate-400');
                             }
-                        } else {
-                            // Placeholder/hlFormat field
-                            if (val && val !== '0') {
-                                el.classList.remove('text-slate-400');
-                            } else {
-                                el.classList.add('text-slate-400');
-                            }
-                        }
+                        });
                     });
                 }
             } catch(e) { console.warn('loadUserData homeLoan:', e); }
@@ -861,53 +1025,56 @@
             // Step-Up SIP restore
             try {
                 if (data.stepUpSIP) {
-                    var suDefaults = {'su-amount':'5,000','su-rate':'12','su-years':'20','su-stepup':'10'};
-                    Object.entries(data.stepUpSIP).forEach(function([id, val]) {
-                        var el = document.getElementById(id);
-                        if (!el || val === null || val === '') return;
-                        el.value = val;
-                        if (val === (suDefaults[id] || '')) {
-                            el.classList.add('text-slate-400');
-                        } else {
-                            el.classList.remove('text-slate-400');
-                        }
+                    var _suData = data.stepUpSIP;
+                    _applyWhenReady('su-amount', function() {
+                        var suDefaults = {'su-amount':'5,000','su-rate':'12','su-years':'20','su-stepup':'10'};
+                        Object.entries(_suData).forEach(function([id, val]) {
+                            var el = document.getElementById(id);
+                            if (!el || val === null || val === '') return;
+                            el.value = val;
+                            if (val === (suDefaults[id] || '')) el.classList.add('text-slate-400');
+                            else el.classList.remove('text-slate-400');
+                        });
+                        var suLtcgTog = document.getElementById('su-ltcg-toggle');
+                        if (suLtcgTog && _suData['su-ltcg'] !== undefined) suLtcgTog.checked = _suData['su-ltcg'] === '1';
+                        if (typeof stepUpCalc === 'function') stepUpCalc();
                     });
-                    // Restore LTCG toggle
-                    var suLtcgTog = document.getElementById('su-ltcg-toggle');
-                    if (suLtcgTog && data.stepUpSIP['su-ltcg'] !== undefined) {
-                        suLtcgTog.checked = data.stepUpSIP['su-ltcg'] === '1';
-                    }
-                    if (typeof stepUpCalc === 'function') stepUpCalc();
                 }
             } catch(e) { console.warn('loadUserData stepUpSIP:', e); }
 
             // EPF Corpus Projector restore
             try {
                 if (data.epfCalc) {
-                    var epfDefs = {'epf-basic':'50000','epf-balance':'200000','epf-age':'30','epf-retire':'60','epf-growth':'8','epf-rate':'8.15'};
-                    Object.entries(data.epfCalc).forEach(function([id, val]) {
-                        var el = document.getElementById(id);
-                        if (!el || val === null || val === '') return;
-                        el.value = val;
-                        if (val === (epfDefs[id] || '')) { el.classList.add('text-slate-400'); }
-                        else { el.classList.remove('text-slate-400'); }
+                    var _epfData = data.epfCalc;
+                    _applyWhenReady('epf-basic', function() {
+                        var epfDefs = {'epf-basic':'50000','epf-balance':'200000','epf-age':'30','epf-retire':'60','epf-growth':'8','epf-rate':'8.15'};
+                        Object.entries(_epfData).forEach(function([id, val]) {
+                            var el = document.getElementById(id);
+                            if (!el || val === null || val === '') return;
+                            el.value = val;
+                            if (val === (epfDefs[id] || '')) el.classList.add('text-slate-400');
+                            else el.classList.remove('text-slate-400');
+                        });
+                        if (typeof epfCalc === 'function') epfCalc();
                     });
-                    if (typeof epfCalc === 'function') epfCalc();
                 }
             } catch(e) { console.warn('loadUserData epfCalc:', e); }
 
             // SSA Planner restore
             try {
                 if (data.ssaPlanner) {
-                    var ssaDefs = {'ssa-dob-year': String(new Date().getFullYear()-5), 'ssa-annual':'150000','ssa-tenure':'15','ssa-elss-sip':'5000','ssa-elss-return':'12','ssa-inflation':'8','ssa-goal-edu':'2500000','ssa-goal-marr':'3000000'};
-                    Object.entries(data.ssaPlanner).forEach(function([id, val]) {
-                        var el = document.getElementById(id);
-                        if (!el || val === null || val === '') return;
-                        el.value = val;
-                        if (val === (ssaDefs[id] || '')) { el.classList.add('text-slate-400'); }
-                        else { el.classList.remove('text-slate-400'); }
+                    var _ssaData = data.ssaPlanner;
+                    _applyWhenReady('ssa-dob-year', function() {
+                        var ssaDefs = {'ssa-dob-year': String(new Date().getFullYear()-5), 'ssa-annual':'150000','ssa-tenure':'15','ssa-elss-sip':'5000','ssa-elss-return':'12','ssa-inflation':'8','ssa-goal-edu':'2500000','ssa-goal-marr':'3000000'};
+                        Object.entries(_ssaData).forEach(function([id, val]) {
+                            var el = document.getElementById(id);
+                            if (!el || val === null || val === '') return;
+                            el.value = val;
+                            if (val === (ssaDefs[id] || '')) el.classList.add('text-slate-400');
+                            else el.classList.remove('text-slate-400');
+                        });
+                        if (typeof ssaCalc === 'function') ssaCalc();
                     });
-                    if (typeof ssaCalc === 'function') ssaCalc();
                 }
             } catch(e) { console.warn('loadUserData ssaPlanner:', e); }
 
@@ -924,308 +1091,429 @@
             // Drawdown Planner restore
             try {
                 if (data.drawdown) {
-                    var ddDefs = {'dd-corpus':'1,00,00,000','dd-current-age':'30','dd-ret-age':'60','dd-expenses':'60,000','dd-inflation':'6','dd-return':'8','dd-other-income':''};
-                    Object.entries(data.drawdown).forEach(function([id, val]) {
-                        var el = document.getElementById(id);
-                        if (!el || val === null || val === undefined) return;
-                        el.value = val;
-                        if (val === (ddDefs[id] || '')) { el.classList.add('text-slate-400'); }
-                        else { el.classList.remove('text-slate-400'); }
+                    var _ddData = data.drawdown;
+                    _applyWhenReady('dd-corpus', function() {
+                        var ddDefs = {'dd-corpus':'1,00,00,000','dd-current-age':'30','dd-ret-age':'60','dd-expenses':'60,000','dd-inflation':'6','dd-return':'8','dd-other-income':''};
+                        Object.entries(_ddData).forEach(function([id, val]) {
+                            var el = document.getElementById(id);
+                            if (!el || val === null || val === undefined) return;
+                            el.value = val;
+                            if (val === (ddDefs[id] || '')) el.classList.add('text-slate-400');
+                            else el.classList.remove('text-slate-400');
+                        });
+                        if (typeof drawdownCalc === 'function') drawdownCalc();
                     });
-                    if (typeof drawdownCalc === 'function') drawdownCalc();
                 }
             } catch(e) { console.warn('loadUserData drawdown:', e); }
 
             // PPF & NPS restore
             try {
                 if (data.ppfnps) {
-                    var ppfDefs = {'ppf-annual':'1,50,000','ppf-balance':'0','ppf-years-done':'0','ppf-rate':'7.1','ppf-extend':'0',
-                                   'nps-monthly':'5,000','nps-age':'30','nps-balance':'0','nps-return':'10','nps-annuity-rate':'6','nps-slab':'20'};
-                    Object.entries(data.ppfnps).forEach(function([id, val]) {
-                        if (id === 'ppfnps-active-tab') return;
-                        var el = document.getElementById(id);
-                        if (!el || val === null || val === undefined || val === '') return;
-                        el.value = val;
-                        if (val === (ppfDefs[id] || '')) { el.classList.add('text-slate-400'); }
-                        else { el.classList.remove('text-slate-400'); }
+                    var _ppfData = data.ppfnps;
+                    _applyWhenReady('ppf-annual', function() {
+                        var ppfDefs = {'ppf-annual':'1,50,000','ppf-balance':'0','ppf-years-done':'0','ppf-rate':'7.1','ppf-extend':'0',
+                                       'nps-monthly':'5,000','nps-age':'30','nps-balance':'0','nps-return':'10','nps-annuity-rate':'6','nps-slab':'20'};
+                        Object.entries(_ppfData).forEach(function([id, val]) {
+                            if (id === 'ppfnps-active-tab') return;
+                            var el = document.getElementById(id);
+                            if (!el || val === null || val === undefined || val === '') return;
+                            el.value = val;
+                            if (val === (ppfDefs[id] || '')) el.classList.add('text-slate-400');
+                            else el.classList.remove('text-slate-400');
+                        });
+                        if (_ppfData['ppfnps-active-tab'] === 'nps') {
+                            if (typeof ppfnpsTab === 'function') ppfnpsTab('nps');
+                        }
+                        if (typeof ppfCalc === 'function') ppfCalc();
+                        if (typeof npsCalc === 'function') npsCalc();
                     });
-                    // Restore active tab
-                    if (data.ppfnps['ppfnps-active-tab'] === 'nps') {
-                        if (typeof ppfnpsTab === 'function') ppfnpsTab('nps');
-                    }
-                    if (typeof ppfCalc === 'function') ppfCalc();
-                    if (typeof npsCalc === 'function') npsCalc();
                 }
             } catch(e) { console.warn('loadUserData ppfnps:', e); }
 
             // CTC Optimizer restore
             try {
                 if (data.ctcOptimizer) {
-                    var ctcDefs = {'ctc-annual':'12,00,000','ctc-basic':'40,000','ctc-hra':'20,000',
-                                   'ctc-rent':'15,000','ctc-city':'metro','ctc-lta':'20,000',
-                                   'ctc-food':'0','ctc-phone':'0','ctc-emp-nps':'0',
-                                   'ctc-80c':'1,50,000','ctc-regime':'new'};
-                    Object.entries(data.ctcOptimizer).forEach(function([id, val]) {
-                        var el = document.getElementById(id);
-                        if (!el || val === null || val === undefined || val === '') return;
-                        el.value = val;
-                        if (val === (ctcDefs[id] || '')) { el.classList.add('text-slate-400'); }
-                        else { el.classList.remove('text-slate-400'); }
+                    var _ctcData = data.ctcOptimizer;
+                    _applyWhenReady('ctc-annual', function() {
+                        var ctcDefs = {'ctc-annual':'12,00,000','ctc-basic':'40,000','ctc-hra':'20,000',
+                                       'ctc-rent':'15,000','ctc-city':'metro','ctc-lta':'20,000',
+                                       'ctc-food':'0','ctc-phone':'0','ctc-emp-nps':'0',
+                                       'ctc-80c':'1,50,000','ctc-regime':'new'};
+                        Object.entries(_ctcData).forEach(function([id, val]) {
+                            var el = document.getElementById(id);
+                            if (!el || val === null || val === undefined || val === '') return;
+                            el.value = val;
+                            if (val === (ctcDefs[id] || '')) el.classList.add('text-slate-400');
+                            else el.classList.remove('text-slate-400');
+                        });
+                        if (typeof ctcCalc === 'function') ctcCalc();
                     });
-                    if (typeof ctcCalc === 'function') ctcCalc();
                 }
             } catch(e) { console.warn('loadUserData ctcOptimizer:', e); }
 
             // Insurance Adequacy restore
             try {
                 if (data.insurance) {
-                    var insDefs = {'ins-income':'12,00,000','ins-age':'30','ins-dependents':'2',
-                                   'ins-loans':'0','ins-term-current':'0','ins-health-current':'0',
-                                   'ins-monthly-exp':'50,000','ins-family':'2',
-                                   'ins-assets':'0','ins-ci-current':'0','ins-disability-current':'0',
-                                   'ins-parents-cover':'0','ins-parents-age1':'55','ins-parents-age2':'52'};
-                    Object.entries(data.insurance).forEach(function([id, val]) {
-                        var el = document.getElementById(id);
-                        if (!el || val === null || val === undefined || val === '') return;
-                        el.value = val;
-                        if (val === (insDefs[id] || '')) { el.classList.add('text-slate-400'); }
-                        else { el.classList.remove('text-slate-400'); }
+                    var _insData = data.insurance;
+                    _applyWhenReady('ins-income', function() {
+                        var insDefs = {'ins-income':'12,00,000','ins-age':'30','ins-dependents':'2',
+                                       'ins-loans':'0','ins-term-current':'0','ins-health-current':'0',
+                                       'ins-monthly-exp':'50,000','ins-family':'2',
+                                       'ins-assets':'0','ins-ci-current':'0','ins-disability-current':'0',
+                                       'ins-parents-cover':'0','ins-parents-age1':'55','ins-parents-age2':'52'};
+                        Object.entries(_insData).forEach(function([id, val]) {
+                            var el = document.getElementById(id);
+                            if (!el || val === null || val === undefined || val === '') return;
+                            el.value = val;
+                            if (val === (insDefs[id] || '')) el.classList.add('text-slate-400');
+                            else el.classList.remove('text-slate-400');
+                        });
+                        if (typeof insureCalc === 'function') insureCalc();
                     });
-                    if (typeof insureCalc === 'function') insureCalc();
                 }
             } catch(e) { console.warn('loadUserData insurance:', e); }
 
             // Fixed Income restore
             try {
                 if (data.fixedIncome) {
-                    var fiDefs = {
-                        'fi-fd-principal':'1,00,000','fi-fd-rate':'7.0','fi-fd-tenure':'12',
-                        'fi-fd-type':'cumulative','fi-fd-regime':'new','fi-fd-slab':'30',
-                        'fi-scss-principal':'10,00,000','fi-scss-regime':'new','fi-scss-slab':'30',
-                        'fi-pomis-principal':'5,00,000','fi-pomis-regime':'new','fi-pomis-slab':'30',
-                        'fi-nsc-principal':'1,00,000','fi-nsc-regime':'new','fi-nsc-slab':'30',
-                        'fi-kvp-principal':'1,00,000',
-                        'fi-cmp-principal':'1,50,000','fi-cmp-fd-rate':'7.0',
-                        'fi-cmp-elss-return':'12.0','fi-cmp-regime':'new','fi-cmp-slab':'30'
-                    };
-                    Object.entries(data.fixedIncome).forEach(function([id, val]) {
-                        var el = document.getElementById(id);
-                        if (!el || val === null || val === undefined || val === '') return;
-                        el.value = val;
-                        if (val === (fiDefs[id] || '')) el.classList.add('text-slate-400');
-                        else el.classList.remove('text-slate-400');
+                    var _fiData = data.fixedIncome;
+                    _applyWhenReady('fi-fd-principal', function() {
+                        var fiDefs = {
+                            'fi-fd-principal':'1,00,000','fi-fd-rate':'7.0','fi-fd-tenure':'12',
+                            'fi-fd-type':'cumulative','fi-fd-regime':'new','fi-fd-slab':'30',
+                            'fi-scss-principal':'10,00,000','fi-scss-regime':'new','fi-scss-slab':'30',
+                            'fi-pomis-principal':'5,00,000','fi-pomis-regime':'new','fi-pomis-slab':'30',
+                            'fi-nsc-principal':'1,00,000','fi-nsc-regime':'new','fi-nsc-slab':'30',
+                            'fi-kvp-principal':'1,00,000',
+                            'fi-cmp-principal':'1,50,000','fi-cmp-fd-rate':'7.0',
+                            'fi-cmp-elss-return':'12.0','fi-cmp-regime':'new','fi-cmp-slab':'30'
+                        };
+                        Object.entries(_fiData).forEach(function([id, val]) {
+                            var el = document.getElementById(id);
+                            if (!el || val === null || val === undefined || val === '') return;
+                            el.value = val;
+                            if (val === (fiDefs[id] || '')) el.classList.add('text-slate-400');
+                            else el.classList.remove('text-slate-400');
+                        });
+                        if (typeof initFixedIncome === 'function') initFixedIncome();
                     });
-                    if (typeof initFixedIncome === 'function') initFixedIncome();
                 }
             } catch(e) { console.warn('loadUserData fixedIncome:', e); }
 
             // Retirement Hub restore
             try {
                 if (data.retirementHub) {
-                    var rhDefs2 = {
-                        'rh-age':'30','rh-ret-age':'60','rh-life-exp':'85',
-                        'rh-inflation':'6','rh-ret-return':'7','rh-expenses':'60,000',
-                        'rh-epf-balance':'2,00,000','rh-epf-basic':'50,000',
-                        'rh-ppf-balance':'0','rh-ppf-annual':'1,50,000','rh-ppf-years-done':'0',
-                        'rh-nps-balance':'0','rh-nps-monthly':'5,000','rh-nps-return':'10','rh-nps-annuity':'6',
-                        'rh-sip-monthly':'10,000','rh-sip-return':'12',
-                        'rh-other-corpus':'0','rh-other-return':'7'
-                    };
-                    Object.entries(data.retirementHub).forEach(function([id, val]) {
-                        var el = document.getElementById(id);
-                        if (!el || val === null || val === undefined || val === '') return;
-                        el.value = val;
-                        if (val === (rhDefs2[id] || '')) el.classList.add('text-slate-400');
-                        else el.classList.remove('text-slate-400');
+                    var _rhData = data.retirementHub;
+                    _applyWhenReady('rh-age', function() {
+                        var rhDefs2 = {
+                            'rh-age':'30','rh-ret-age':'60','rh-life-exp':'90',
+                            'rh-inflation':'6','rh-ret-return':'7','rh-expenses':'60,000',
+                            'rh-epf-balance':'2,00,000','rh-epf-basic':'50,000',
+                            'rh-ppf-balance':'0','rh-ppf-annual':'1,50,000','rh-ppf-years-done':'0',
+                            'rh-nps-balance':'0','rh-nps-monthly':'5,000','rh-nps-return':'10','rh-nps-annuity':'6',
+                            'rh-sip-monthly':'10,000','rh-sip-return':'12',
+                            'rh-other-corpus':'0','rh-other-return':'7'
+                        };
+                        Object.entries(_rhData).forEach(function([id, val]) {
+                            var el = document.getElementById(id);
+                            if (!el || val === null || val === undefined || val === '') return;
+                            el.value = val;
+                            if (val === (rhDefs2[id] || '')) el.classList.add('text-slate-400');
+                            else el.classList.remove('text-slate-400');
+                        });
+                        if (typeof retHubCalc === 'function') retHubCalc();
                     });
-                    if (typeof retHubCalc === 'function') retHubCalc();
                 }
             } catch(e) { console.warn('loadUserData retirementHub:', e); }
 
             // Gratuity restore
             try {
                 if (data.gratuity) {
-                    var gratDefs = {'grat-basic':'50,000','grat-years':'7','grat-months':'0',
-                                    'grat-type':'covered','grat-slab':'20'};
-                    Object.entries(data.gratuity).forEach(function([id, val]) {
-                        var el = document.getElementById(id);
-                        if (!el || val === null || val === undefined || val === '') return;
-                        el.value = val;
-                        if (val === (gratDefs[id] || '')) { el.classList.add('text-slate-400'); }
-                        else { el.classList.remove('text-slate-400'); }
+                    var _gratData = data.gratuity;
+                    _applyWhenReady('grat-basic', function() {
+                        var gratDefs = {'grat-basic':'50,000','grat-years':'7','grat-months':'0',
+                                        'grat-type':'covered','grat-slab':'20'};
+                        Object.entries(_gratData).forEach(function([id, val]) {
+                            var el = document.getElementById(id);
+                            if (!el || val === null || val === undefined || val === '') return;
+                            el.value = val;
+                            if (val === (gratDefs[id] || '')) el.classList.add('text-slate-400');
+                            else el.classList.remove('text-slate-400');
+                        });
+                        if (typeof gratCalc === 'function') gratCalc();
                     });
-                    if (typeof gratCalc === 'function') gratCalc();
                 }
             } catch(e) { console.warn('loadUserData gratuity:', e); }
 
             // Debt Plan restore
             try {
                 if (data.debtPlan) {
-                    var extraEl = document.getElementById('debt-extra');
-                    if (extraEl && data.debtPlan['debt-extra']) {
-                        extraEl.value = data.debtPlan['debt-extra'];
-                        extraEl.classList.remove('text-slate-400');
-                    }
-                    if (data.debtPlan['debt-loans']) {
-                        try {
-                            var savedLoans = JSON.parse(data.debtPlan['debt-loans']);
-                            if (Array.isArray(savedLoans) && savedLoans.length > 0) {
-                                var container = document.getElementById('debt-loans-container');
-                                if (container) {
-                                    container.innerHTML = '';
-                                    window._debtLoans = [];
-                                    savedLoans.forEach(function(l) {
-                                        debtAddLoan(l.name, l.balance, l.rate, l.emi);
-                                    });
+                    var _dpData = data.debtPlan;
+                    _applyWhenReady('debt-extra', function() {
+                        var extraEl = document.getElementById('debt-extra');
+                        if (extraEl && _dpData['debt-extra']) {
+                            extraEl.value = _dpData['debt-extra'];
+                            extraEl.classList.remove('text-slate-400');
+                        }
+                        if (_dpData['debt-loans']) {
+                            try {
+                                var savedLoans = JSON.parse(_dpData['debt-loans']);
+                                if (Array.isArray(savedLoans) && savedLoans.length > 0) {
+                                    var container = document.getElementById('debt-loans-container');
+                                    if (container) {
+                                        container.innerHTML = '';
+                                        window._debtLoans = [];
+                                        savedLoans.forEach(function(l) { debtAddLoan(l.name, l.balance, l.rate, l.emi); });
+                                    }
                                 }
-                            }
-                        } catch(e2) {}
-                    }
-                    if (typeof debtCalc === 'function') debtCalc();
+                            } catch(e2) {}
+                        }
+                        if (typeof debtCalc === 'function') debtCalc();
+                    });
                 }
             } catch(e) { console.warn('loadUserData debtPlan:', e); }
 
             // Joint Family Planner restore
             try {
                 if (data.jointPlan) {
-                    var jpDefs = {
-                        'jp-p1-income':'1,20,000','jp-p1-invest':'25,000','jp-p1-portfolio':'5,00,000','jp-p1-80c':'1,50,000',
-                        'jp-p2-income':'90,000','jp-p2-invest':'18,000','jp-p2-portfolio':'2,50,000','jp-p2-80c':'1,50,000',
-                        'jp-edu-cost':'20,00,000','jp-edu-years':'15','jp-home-cost':'60,00,000','jp-home-years':'5',
-                        'jp-retire-age':'35','jp-retire-monthly':'1,00,000','jp-return':'12'
-                    };
-                    Object.entries(data.jointPlan).forEach(function([id, val]) {
-                        var el = document.getElementById(id);
-                        if (!el || val === null || val === undefined || val === '') return;
-                        if (el.type === 'checkbox') {
-                            el.checked = val === '1';
-                        } else if (el.tagName === 'SELECT') {
-                            el.value = val;
-                        } else {
-                            el.value = val;
-                            if (val === (jpDefs[id] || '')) { el.classList.add('text-slate-400'); }
-                            else { el.classList.remove('text-slate-400'); }
-                        }
+                    var _jpData = data.jointPlan;
+                    _applyWhenReady('jp-p1-name', function() {
+                        var jpDefs = {
+                            'jp-p1-income':'1,20,000','jp-p1-invest':'25,000','jp-p1-portfolio':'5,00,000','jp-p1-80c':'1,50,000',
+                            'jp-p2-income':'90,000','jp-p2-invest':'18,000','jp-p2-portfolio':'2,50,000','jp-p2-80c':'1,50,000',
+                            'jp-edu-cost':'20,00,000','jp-edu-years':'15','jp-home-cost':'60,00,000','jp-home-years':'5',
+                            'jp-retire-age':'35','jp-retire-monthly':'1,00,000','jp-return':'12'
+                        };
+                        Object.entries(_jpData).forEach(function([id, val]) {
+                            var el = document.getElementById(id);
+                            if (!el || val === null || val === undefined || val === '') return;
+                            if (el.type === 'checkbox') {
+                                el.checked = val === '1';
+                            } else if (el.tagName === 'SELECT') {
+                                el.value = val;
+                            } else {
+                                el.value = val;
+                                if (val === (jpDefs[id] || '')) el.classList.add('text-slate-400');
+                                else el.classList.remove('text-slate-400');
+                            }
+                        });
+                        if (typeof initJointPlan === 'function') initJointPlan();
                     });
-                    if (typeof initJointPlan === 'function') initJointPlan();
                 }
             } catch(e) { console.warn('loadUserData jointPlan:', e); }
 
             // CIBIL Score Tracker restore
             try {
                 if (data.cibil) {
-                    var cibilDefs = {'cibil-score':'720','cibil-util':'35','cibil-missed':'0','cibil-age':'4',
-                                     'cibil-cards':'2','cibil-enquiries':'1','cibil-loan-amt':'50,00,000','cibil-loan-tenure':'20'};
-                    Object.entries(data.cibil).forEach(function([id, val]) {
-                        var el = document.getElementById(id);
-                        if (!el || val === null || val === undefined || val === '') return;
-                        el.value = val;
-                        if (val === (cibilDefs[id] || '')) { el.classList.add('text-slate-400'); }
-                        else { el.classList.remove('text-slate-400'); }
+                    var _cibilData = data.cibil;
+                    _applyWhenReady('cibil-score', function() {
+                        var cibilDefs = {'cibil-score':'720','cibil-util':'35','cibil-missed':'0','cibil-age':'4',
+                                         'cibil-cards':'2','cibil-enquiries':'1','cibil-loan-amt':'50,00,000','cibil-loan-tenure':'20'};
+                        Object.entries(_cibilData).forEach(function([id, val]) {
+                            var el = document.getElementById(id);
+                            if (!el || val === null || val === undefined || val === '') return;
+                            el.value = val;
+                            if (val === (cibilDefs[id] || '')) el.classList.add('text-slate-400');
+                            else el.classList.remove('text-slate-400');
+                        });
+                        if (typeof cibilCalc === 'function') cibilCalc();
                     });
-                    if (typeof cibilCalc === 'function') cibilCalc();
                 }
             } catch(e) { console.warn('loadUserData cibil:', e); }
 
             // Financial Calendar restore
             try {
                 if (data.fincal) {
-                    var fcDefs = {'fc-income':'12,00,000','fc-cc-date':'5'};
-                    Object.entries(data.fincal).forEach(function([id, val]) {
-                        var el = document.getElementById(id);
-                        if (!el || val === null || val === undefined || val === '') return;
-                        if (el.tagName === 'SELECT') { el.value = val; }
-                        else {
-                            el.value = val;
-                            if (val === (fcDefs[id] || '')) { el.classList.add('text-slate-400'); }
-                            else { el.classList.remove('text-slate-400'); }
-                        }
+                    var _fcData = data.fincal;
+                    _applyWhenReady('fc-income', function() {
+                        var fcDefs = {'fc-income':'12,00,000','fc-cc-date':'5'};
+                        Object.entries(_fcData).forEach(function([id, val]) {
+                            var el = document.getElementById(id);
+                            if (!el || val === null || val === undefined || val === '') return;
+                            if (el.tagName === 'SELECT') el.value = val;
+                            else {
+                                el.value = val;
+                                if (val === (fcDefs[id] || '')) el.classList.add('text-slate-400');
+                                else el.classList.remove('text-slate-400');
+                            }
+                        });
+                        if (typeof finCalRender === 'function') finCalRender();
                     });
-                    if (typeof finCalRender === 'function') finCalRender();
                 }
             } catch(e) { console.warn('loadUserData fincal:', e); }
 
             // Self-Employed & Business Planner restore
-            try {
-                if (data.selfEmpl) {
-                    var seDefs = {
-                        'se-turnover':'25,00,000','se-actual-profit':'8,00,000','se-other-income':'0',
-                        'se-80c':'1,50,000','se-nps':'50,000',
-                        'se-bef-salaries':'80,000','se-bef-rent':'25,000','se-bef-tools':'10,000',
-                        'se-bef-loans':'15,000','se-bef-utilities':'5,000','se-bef-inventory':'0',
-                        'se-bef-personal':'60,000','se-bef-current':'0',
-                        'se-gst-revenue':'8,00,000','se-gst-purchases':'3,00,000','se-gst-delay':'45',
-                        'se-adv-tax':'1,80,000'
-                    };
-                    var seSelectIds = ['se-biz-type','se-tax-regime','se-bef-months','se-gst-type','se-gst-rate-out','se-gst-rate-in'];
-                    Object.entries(data.selfEmpl).forEach(function([id, val]) {
-                        var el = document.getElementById(id);
-                        if (!el || val === null || val === undefined || val === '') return;
-                        if (seSelectIds.indexOf(id) !== -1) { el.value = val; }
-                        else {
-                            el.value = val;
-                            if (val === (seDefs[id] || '')) { el.classList.add('text-slate-400'); }
-                            else { el.classList.remove('text-slate-400'); }
-                        }
-                    });
-                    if (typeof initSelfEmpl === 'function') initSelfEmpl();
-                }
-            } catch(e) { console.warn('loadUserData selfEmpl:', e); }
+            if (data.selfEmpl) {
+                var _seData = data.selfEmpl;
+                _applyWhenReady('se-turnover', function() {
+                    try {
+                        var seDefs = {
+                            'se-turnover':'25,00,000','se-actual-profit':'8,00,000','se-other-income':'0',
+                            'se-80c':'1,50,000','se-nps':'50,000',
+                            'se-bef-salaries':'80,000','se-bef-rent':'25,000','se-bef-tools':'10,000',
+                            'se-bef-loans':'15,000','se-bef-utilities':'5,000','se-bef-inventory':'0',
+                            'se-bef-personal':'60,000','se-bef-current':'0',
+                            'se-gst-revenue':'8,00,000','se-gst-purchases':'3,00,000','se-gst-delay':'45',
+                            'se-adv-tax':'1,80,000'
+                        };
+                        var seSelectIds = ['se-biz-type','se-tax-regime','se-bef-months','se-gst-type','se-gst-rate-out','se-gst-rate-in'];
+                        Object.entries(_seData).forEach(function(entry) {
+                            var id = entry[0], val = entry[1];
+                            var el = document.getElementById(id);
+                            if (!el || val === null || val === undefined || val === '') return;
+                            if (seSelectIds.indexOf(id) !== -1) { el.value = val; }
+                            else {
+                                el.value = val;
+                                if (val === (seDefs[id] || '')) { el.classList.add('text-slate-400'); }
+                                else { el.classList.remove('text-slate-400'); }
+                            }
+                        });
+                        if (typeof initSelfEmpl === 'function') initSelfEmpl();
+                    } catch(e) { console.warn('loadUserData selfEmpl:', e); }
+                });
+            }
 
             // Gold Comparator restore
-            try {
-                if (data.goldComp) {
-                    var gcDefs = {'gc-amount':'1,00,000','gc-years':'5','gc-return':'10','gc-making':'12','gc-locker':'2,000'};
-                    Object.entries(data.goldComp).forEach(function([id, val]) {
-                        var el = document.getElementById(id);
-                        if (!el || val === null || val === undefined || val === '') return;
-                        if (id === 'gc-slab') { el.value = val; }
-                        else {
-                            el.value = val;
-                            if (val === (gcDefs[id] || '')) { el.classList.add('text-slate-400'); }
-                            else { el.classList.remove('text-slate-400'); }
-                        }
-                    });
-                    if (typeof goldCalc === 'function') goldCalc();
-                }
-            } catch(e) { console.warn('loadUserData goldComp:', e); }
+            if (data.goldComp) {
+                var _gcData = data.goldComp;
+                _applyWhenReady('gc-amount', function() {
+                    try {
+                        var gcDefs = {'gc-amount':'1,00,000','gc-years':'5','gc-return':'10','gc-making':'12','gc-locker':'2,000'};
+                        Object.entries(_gcData).forEach(function(entry) {
+                            var id = entry[0], val = entry[1];
+                            var el = document.getElementById(id);
+                            if (!el || val === null || val === undefined || val === '') return;
+                            if (id === 'gc-slab') { el.value = val; }
+                            else {
+                                el.value = val;
+                                if (val === (gcDefs[id] || '')) { el.classList.add('text-slate-400'); }
+                                else { el.classList.remove('text-slate-400'); }
+                            }
+                        });
+                        if (typeof goldCalc === 'function') goldCalc();
+                    } catch(e) { console.warn('loadUserData goldComp:', e); }
+                });
+            }
 
             // ULIP / Policy Analyzer restore
-            try {
-                if (data.ulipCheck) {
-                    var ucDefs = {'uc-premium':'50,000','uc-term':'21','uc-paid':'5',
-                                  'uc-maturity':'15,00,000','uc-sv':'1,50,000',
-                                  'uc-cover':'10,00,000','uc-age':'35','uc-inv-return':'12'};
-                    Object.entries(data.ulipCheck).forEach(function([id, val]) {
-                        var el = document.getElementById(id);
-                        if (!el || val === null || val === undefined || val === '') return;
-                        el.value = val;
-                        if (el.tagName === 'SELECT') return;
-                        if (val === (ucDefs[id] || '')) el.classList.add('text-slate-400');
-                        else el.classList.remove('text-slate-400');
-                    });
-                    if (typeof ucCalc === 'function') ucCalc();
-                }
-            } catch(e) { console.warn('loadUserData ulipCheck:', e); }
+            if (data.ulipCheck) {
+                var _ucData = data.ulipCheck;
+                _applyWhenReady('uc-premium', function() {
+                    try {
+                        var ucDefs = {'uc-premium':'50,000','uc-term':'21','uc-paid':'5',
+                                      'uc-maturity':'15,00,000','uc-sv':'1,50,000',
+                                      'uc-cover':'10,00,000','uc-age':'35','uc-inv-return':'12'};
+                        Object.entries(_ucData).forEach(function(entry) {
+                            var id = entry[0], val = entry[1];
+                            var el = document.getElementById(id);
+                            if (!el || val === null || val === undefined || val === '') return;
+                            el.value = val;
+                            if (el.tagName === 'SELECT') return;
+                            if (val === (ucDefs[id] || '')) el.classList.add('text-slate-400');
+                            else el.classList.remove('text-slate-400');
+                        });
+                        if (typeof ucCalc === 'function') ucCalc();
+                    } catch(e) { console.warn('loadUserData ulipCheck:', e); }
+                });
+            }
 
             // Net Worth Tracker restore
-            try {
-                if (data.netWorth) {
-                    Object.entries(data.netWorth).forEach(function([id, val]) {
-                        var el = document.getElementById(id);
-                        if (!el || val === null || val === undefined || val === '') return;
-                        el.value = val;
-                        if (val === '0' || val === '') { el.classList.add('text-slate-400'); }
-                        else { el.classList.remove('text-slate-400'); }
-                    });
-                    if (typeof nwCalc === 'function') nwCalc();
-                }
-            } catch(e) { console.warn('loadUserData netWorth:', e); }
+            if (data.netWorth || (data.nwHistory && Array.isArray(data.nwHistory))) {
+                var _nwData = data.netWorth;
+                var _nwHistData = data.nwHistory;
+                _applyWhenReady('nw-savings', function() {
+                    try {
+                        if (_nwData) {
+                            Object.entries(_nwData).forEach(function(entry) {
+                                var id = entry[0], val = entry[1];
+                                var el = document.getElementById(id);
+                                if (!el || val === null || val === undefined || val === '') return;
+                                el.value = val;
+                                if (val === '0' || val === '') { el.classList.add('text-slate-400'); }
+                                else { el.classList.remove('text-slate-400'); }
+                            });
+                            if (typeof nwCalc === 'function') nwCalc();
+                        }
+                        if (_nwHistData && Array.isArray(_nwHistData)) {
+                            _nwHistory = _nwHistData;
+                            if (typeof nwRenderTrend === 'function') nwRenderTrend();
+                        }
+                    } catch(e) { console.warn('loadUserData netWorth:', e); }
+                });
+            }
+
+            // Capital Gains Calculator restore
+            if (data.cgCalc) {
+                var _cgData = data.cgCalc;
+                _applyWhenReady('cg-cost', function() {
+                    try {
+                        var cgDefs = {'cg-cost':'1,00,000','cg-sale':'1,50,000','cg-ltcg-used':'0','cg-income':'12,00,000'};
+                        Object.entries(_cgData).forEach(function(entry) {
+                            var id = entry[0], val = entry[1];
+                            var el = document.getElementById(id);
+                            if (!el || val === null || val === undefined || val === '') return;
+                            el.value = val;
+                            if (el.tagName === 'SELECT') return;
+                            if (val === (cgDefs[id] || '')) el.classList.add('text-slate-400');
+                            else el.classList.remove('text-slate-400');
+                        });
+                        if (typeof cgSetRegime === 'function') cgSetRegime(_cgData['cg-regime'] || 'new');
+                        if (typeof cgCalc === 'function') cgCalc();
+                    } catch(e) { console.warn('loadUserData cgCalc:', e); }
+                });
+            }
+
+            // HRA Calculator restore
+            if (data.hraCalc) {
+                var _hraData = data.hraCalc;
+                _applyWhenReady('hra-basic', function() {
+                    try {
+                        var hraDefs = {'hra-basic':'50,000','hra-received':'20,000','hra-rent':'15,000'};
+                        ['hra-basic','hra-received','hra-rent'].forEach(function(id) {
+                            var val = _hraData[id];
+                            var el  = document.getElementById(id);
+                            if (!el || val === null || val === undefined || val === '') return;
+                            el.value = val;
+                            if (val === (hraDefs[id] || '')) el.classList.add('text-slate-400');
+                            else el.classList.remove('text-slate-400');
+                        });
+                        var hraCityEl   = document.getElementById('hra-city');
+                        var hraRegimeEl = document.getElementById('hra-regime');
+                        var hraSlabEl   = document.getElementById('hra-slab');
+                        if (hraCityEl   && _hraData['hra-city'])   hraCityEl.value   = _hraData['hra-city'];
+                        if (hraRegimeEl && _hraData['hra-regime']) hraRegimeEl.value = _hraData['hra-regime'];
+                        if (hraSlabEl   && _hraData['hra-slab'])   hraSlabEl.value   = _hraData['hra-slab'];
+                        if (typeof hraCalc === 'function') hraCalc();
+                    } catch(e) { console.warn('loadUserData hraCalc:', e); }
+                });
+            }
+
+            // Nomination Tracker restore
+            if (data.nomTrack) {
+                var _ntData = data.nomTrack;
+                _applyWhenReady('nt-bank-status', function() {
+                    try {
+                        Object.entries(_ntData).forEach(function(entry) {
+                            var id = entry[0], val = entry[1];
+                            var el = document.getElementById(id);
+                            if (!el || val === null || val === undefined) return;
+                            el.value = val; // works for select, input[text], input[date], textarea
+                        });
+                        // Restore beneficiary rows (class-based, no IDs)
+                        ['name','rel','share','cont'].forEach(function(field) {
+                            document.querySelectorAll('.wg-bene-' + field).forEach(function(el, i) {
+                                var val = _ntData['wg-bene-' + field + '-' + i];
+                                if (val !== undefined && val !== null) el.value = val;
+                            });
+                        });
+                        if (typeof nomRender === 'function') nomRender();
+                    } catch(e) { console.warn('loadUserData nomTrack:', e); }
+                });
+            }
 
             } finally {
                 _restoring = false;
             }
-        }).catch(e => console.warn('loadUserData Firestore failed:', e));
     }
 
     // ============================================================

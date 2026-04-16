@@ -408,17 +408,14 @@ async function main() {
     const data = await fetchWithRetry(`https://api.mfapi.in/mf/${f.code}`);
     if (!data) return;
 
-    // Refine category from API meta (more accurate than name parsing).
-    // Guard: don't let meta override certain name-parsed categories to 'Index':
-    //  - Debt index funds (IBX/Crisil/SDL/G-Sec target-maturity) — SEBI categorises these as Index Funds
-    //  - International funds (Nasdaq/S&P/overseas ETF FoF) — AMFI may say "ETF Fund of Funds" without "overseas"
-    //  - Value-factor index funds (Nifty 500 Value 50, Nifty 50 Value 20) — passive but value-strategy funds
+    // Refine category from API meta (more accurate than name parsing for most categories).
+    // Guard: don't let meta override to 'Index' if name parsing already gave a specific
+    // category. AMFI lumps ALL index-tracking funds (sectoral, midcap, international, debt)
+    // into "Other Scheme - Index Funds", which is too coarse. Only assign 'Index' via meta
+    // when the name parser returned 'Other' (unclassified). For every other category, trust
+    // the name-based parse (e.g. Auto Index → Sectoral, Midcap 50 → Mid Cap, S&P 500 → International).
     const metaCat = catFromMeta(data?.meta?.scheme_category);
-    if (metaCat && !(metaCat === 'Index' && (
-        /crisil|ibx|target.?matur|bharat.?bond|\bsdl\b|g.?sec|gsec|gilt/i.test(f.name) ||
-        f.cat === 'International' ||
-        f.cat === 'Value/Contra'
-    ))) {
+    if (metaCat && !(metaCat === 'Index' && f.cat !== 'Other')) {
       f.cat = metaCat;
     }
 

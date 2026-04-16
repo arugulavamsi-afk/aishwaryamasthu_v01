@@ -276,6 +276,39 @@
                 (monthsSaved > 0 ? ' and become debt-free <strong>' + (monthsSaved >= 12 ? Math.floor(monthsSaved/12) + ' yr ' + (monthsSaved%12) + ' mo' : monthsSaved + ' months') + ' sooner</strong>.' : '.');
         }
 
+        // ── OPPORTUNITY COST: Prepay vs Invest in Equity ───────────────────
+        var oppCard = document.getElementById('debt-opp-card');
+        if (oppCard && extraMonthly > 0) {
+            var N  = withExtra.months;
+            var r  = 0.01; // 12% p.a. → 1% per month
+            var equityFV   = Math.round(extraMonthly * ((Math.pow(1 + r, N) - 1) / r) * (1 + r));
+            var maxRate    = Math.max.apply(null, loans.map(function(l) { return l.rate; }));
+            var prepayWins = maxRate >= 12;
+            var vColor     = prepayWins ? '#166534' : '#92400e';
+            var verdict    = prepayWins
+                ? 'Prepay first. Your highest loan (' + maxRate.toFixed(1) + '% p.a.) costs more than equity\'s post-tax return (~9–10% after LTCG & fees). Prepaying is a guaranteed, risk-free saving.'
+                : 'Consider splitting — but read the caveats below before deciding. Your highest rate (' + maxRate.toFixed(1) + '%) looks below equity\'s ~12% gross, but post-tax equity returns are realistically 9–10%. If this is a <strong>home loan</strong>, the ₹2L interest deduction (old regime) may reduce its effective rate further — making prepayment even less urgent. Consult your CA.';
+            oppCard.classList.remove('hidden');
+            oppCard.innerHTML =
+                '<div class="text-[10px] font-black uppercase tracking-wider mb-2" style="color:#57534e;">⚖️ Prepay vs Invest — What does ₹' + Number(extraMonthly).toLocaleString('en-IN') + '/mo extra do?</div>' +
+                '<div class="grid grid-cols-2 gap-2 mb-2">' +
+                    '<div class="rounded-lg p-2 text-center" style="background:#fef2f2;border:1px solid #fca5a5;">' +
+                        '<div class="text-[9px] font-bold text-red-600">Interest Saved (Prepay)</div>' +
+                        '<div class="text-sm font-black text-red-700">' + debtFmt(interestSaved) + '</div>' +
+                        '<div class="text-[9px] text-red-400">Guaranteed · Tax-free saving</div>' +
+                    '</div>' +
+                    '<div class="rounded-lg p-2 text-center" style="background:#f0fdf4;border:1px solid #86efac;">' +
+                        '<div class="text-[9px] font-bold text-emerald-600">Equity Corpus (Invest instead)</div>' +
+                        '<div class="text-sm font-black text-emerald-700">' + debtFmt(equityFV) + '</div>' +
+                        '<div class="text-[9px] text-emerald-400">At 12% p.a. gross · ~9–10% post-LTCG & fees · Not guaranteed</div>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="text-[10px] font-semibold leading-snug rounded-lg px-2.5 py-1.5 mb-1.5" style="background:' + vColor + '18;color:' + vColor + ';border:1px solid ' + vColor + '30;">' + verdict + '</div>' +
+                '<div class="text-[9px] leading-relaxed mt-1 rounded-lg px-2.5 py-1.5" style="color:#78716c;background:#fafaf9;border:1px solid #e7e5e4;">⚠️ Equity figure assumes 12% p.a. gross (Nifty 50 historical avg). After 10% LTCG tax on gains above ₹1L and fund expense ratios, realistic post-tax returns are <strong>9–10% p.a.</strong> — narrowing the gap with debt repayment. <strong>Home loan:</strong> interest up to ₹2L/yr is deductible u/s 24(b) under the old tax regime, reducing effective loan cost — e.g., an 8.5% loan becomes ~5.95% for a 30% bracket taxpayer. <strong>Consult your CA before deciding to prepay or invest.</strong></div>';
+        } else if (oppCard) {
+            oppCard.classList.add('hidden');
+        }
+
         if (typeof saveUserData === 'function') saveUserData();
     }
 

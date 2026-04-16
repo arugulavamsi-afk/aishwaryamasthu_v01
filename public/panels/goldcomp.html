@@ -7,7 +7,7 @@
                     <p class="text-blue-200 text-[11px] mt-0.5">ETF vs Gold MF vs Physical Gold · True cost comparison · Digital Gold ⚠️ warning · GMS idle gold insight</p>
                 </div>
                 <button onclick="resetGoldComp()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h5M20 20v-5h-5M4 9a9 9 0 0115-3M20 15a9 9 0 01-15 3"/></svg>Reset
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h5M20 20v-5h-5M4 9a9 9 0 0115-3M20 15a9 9 0 01-15 3"/></svg><span data-i18n="common.reset">Reset</span>
                 </button>
             </div>
 
@@ -15,7 +15,7 @@
             <div class="rounded-2xl px-4 py-3 flex items-start gap-3" style="background:#fef2f2;border:2px solid #ef4444;">
                 <span class="text-2xl flex-shrink-0">⚠️</span>
                 <div>
-                    <div class="text-[11px] font-black text-red-800 mb-1">SEBI WARNING: Digital Gold (PhonePe / Paytm / Google Pay) is UNREGULATED</div>
+                    <div class="text-[11px] font-black text-red-800 mb-1" data-i18n="gold.warning">SEBI WARNING: Digital Gold (PhonePe / Paytm / Google Pay) is UNREGULATED</div>
                     <div class="text-[10px] text-red-700 leading-relaxed">SEBI has formally flagged digital gold sold through UPI apps as <strong>outside its regulatory purview</strong>. There is <strong>zero investor protection</strong> — no guarantee the gold is actually held in a vault, no compensation fund, no grievance redressal mechanism. Millions of young Indians buy digital gold through these apps completely unaware of this risk. <strong>Stick to Gold ETFs, Gold MF/FoFs, or physical gold from BIS Hallmarked jewellers only.</strong></div>
                 </div>
             </div>
@@ -25,11 +25,11 @@
 
                 <!-- INPUTS -->
                 <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
-                    <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">Your Gold Investment Profile</div>
+                    <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2" data-i18n="gold.sec.profile">Your Gold Investment Profile</div>
                     <div class="space-y-2">
 
                         <div>
-                            <label class="epf-label">Investment Amount (₹)</label>
+                            <label class="epf-label" data-i18n="lbl.gold.amount">Investment Amount (₹)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
                             <input id="gc-amount" type="text" inputmode="numeric" placeholder="1,00,000"
                                 class="epf-input pl-7 text-slate-400"
@@ -40,7 +40,7 @@
                         </div>
 
                         <div>
-                            <label class="epf-label">Holding Period (Years)</label>
+                            <label class="epf-label" data-i18n="lbl.gold.years">Holding Period (Years)</label>
                             <input id="gc-years" type="number" min="1" max="30" placeholder="5"
                                 class="epf-input text-slate-400"
                                 onfocus="if(this.classList.contains('text-slate-400')){this.value='';this.classList.remove('text-slate-400');}"
@@ -49,7 +49,7 @@
                         </div>
 
                         <div>
-                            <label class="epf-label">Expected Gold Price Return (% p.a.)</label>
+                            <label class="epf-label" data-i18n="lbl.gold.return">Expected Gold Price Return (% p.a.)</label>
                             <input id="gc-return" type="number" min="1" max="25" step="0.5" placeholder="10"
                                 class="epf-input text-slate-400"
                                 onfocus="if(this.classList.contains('text-slate-400')){this.value='';this.classList.remove('text-slate-400');}"
@@ -59,7 +59,7 @@
                         </div>
 
                         <div>
-                            <label class="epf-label">Tax Regime</label>
+                            <label class="epf-label" data-i18n="lbl.gold.regime">Tax Regime</label>
                             <select id="gc-regime" class="epf-input" onchange="_regimeChange('gc-regime','gc-slab',goldCalc)">
                                 <option value="new" selected>New Regime</option>
                                 <option value="old">Old Regime</option>
@@ -67,7 +67,7 @@
                         </div>
 
                         <div>
-                            <label class="epf-label">Income Tax Slab</label>
+                            <label class="epf-label" data-i18n="lbl.gold.slab">Income Tax Slab</label>
                             <select id="gc-slab" class="epf-input" onchange="goldCalc();">
                                 <option value="0">0% — taxable income ≤ ₹12L (87A rebate)</option>
                                 <option value="15">15% — taxable income ₹12L–₹16L</option>
@@ -78,7 +78,7 @@
                         </div>
 
                         <div>
-                            <label class="epf-label">Physical Gold — Making Charges (%)</label>
+                            <label class="epf-label" data-i18n="lbl.gold.making">Physical Gold — Making Charges (%)</label>
                             <input id="gc-making" type="number" min="0" max="35" step="0.5" placeholder="12"
                                 class="epf-input text-slate-400"
                                 onfocus="if(this.classList.contains('text-slate-400')){this.value='';this.classList.remove('text-slate-400');}"
@@ -88,7 +88,7 @@
                         </div>
 
                         <div>
-                            <label class="epf-label">Locker Rent (₹/year)</label>
+                            <label class="epf-label" data-i18n="lbl.gold.locker">Locker Rent (₹/year)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
                             <input id="gc-locker" type="text" inputmode="numeric" placeholder="2,000"
                                 class="epf-input pl-7 text-slate-400"
@@ -101,7 +101,7 @@
 
                         <!-- Quick presets -->
                         <div class="pt-1 border-t border-slate-100">
-                            <div class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1.5">Quick Scenarios</div>
+                            <div class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1.5" data-i18n="common.quickscen">Quick Scenarios</div>
                             <div class="flex flex-wrap gap-1">
                                 <button onclick="gcPreset('sip')"      class="grat-preset">💰 ₹5K SIP / mo</button>
                                 <button onclick="gcPreset('lumpsum')"  class="grat-preset">🏆 ₹1L Lumpsum</button>
@@ -191,7 +191,7 @@
                         <div class="p-3 flex flex-col gap-1.5 flex-1">
                             <div class="flex justify-between text-[10px]"><span class="text-slate-500">Entry Cost</span><span class="font-black text-slate-800" id="gc-phys-entry">—</span></div>
                             <div class="flex justify-between text-[10px]"><span class="text-slate-500">Making Charges</span><span class="font-black text-red-600" id="gc-phys-making">—</span></div>
-                            <div class="flex justify-between text-[10px]"><span class="text-slate-500">Tax (>2yr)</span><span class="font-black text-orange-700">20% LTCG + indexation</span></div>
+                            <div class="flex justify-between text-[10px]"><span class="text-slate-500">Tax (>2yr)</span><span class="font-black text-orange-700">12.5% LTCG (no indexation)</span></div>
                             <div class="flex justify-between text-[10px]"><span class="text-slate-500">Tax (<2yr)</span><span class="font-black text-red-600">Slab rate STCG</span></div>
                             <div class="flex justify-between text-[10px]"><span class="text-slate-500">Storage Risk</span><span class="font-black text-red-600">High (theft)</span></div>
                             <div class="flex justify-between text-[10px]"><span class="text-slate-500">Locker Cost/yr</span><span class="font-black text-red-600" id="gc-phys-locker">—</span></div>
@@ -217,7 +217,7 @@
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
                 <!-- Winner -->
                 <div id="gc-winner-card" class="rounded-2xl px-4 py-3 shine-header" style="background:linear-gradient(135deg,#0c2340,#1a4a7a);border:2px solid rgba(245,200,66,0.35);">
-                    <div class="text-[9px] font-black text-blue-200 uppercase tracking-wider mb-1">🏆 Best Option for Your Profile</div>
+                    <div class="text-[9px] font-black text-blue-200 uppercase tracking-wider mb-1" data-i18n="res.gold.winner">🏆 Best Option for Your Profile</div>
                     <div id="gc-winner-name" class="text-xl font-black text-white">—</div>
                     <div id="gc-winner-reason" class="text-[10px] text-blue-300 mt-1 leading-relaxed">Enter your details to see personalised recommendation.</div>
                     <div class="mt-2 grid grid-cols-2 gap-2">
@@ -234,7 +234,7 @@
 
                 <!-- Physical Gold cost drag -->
                 <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
-                    <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">📉 Physical Gold Hidden Cost Drag</div>
+                    <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2" data-i18n="gold.sec.phys">📉 Physical Gold Hidden Cost Drag</div>
                     <div class="space-y-1.5" id="gc-costdrag">
                         <div class="flex justify-between text-[10px]"><span class="text-slate-500">GST on purchase</span><span class="font-black text-red-600" id="gc-cd-gst">—</span></div>
                         <div class="flex justify-between text-[10px]"><span class="text-slate-500">Making charges</span><span class="font-black text-red-600" id="gc-cd-making">—</span></div>
@@ -265,7 +265,7 @@
                 </div>
                 <div class="rounded-xl p-2.5" style="background:#f8fafc;border:1px solid #e2e8f0;">
                     <div class="text-[10px] font-black text-slate-700 mb-1">📿 Physical Gold — Real Cost</div>
-                    <div class="text-[9px] text-slate-600 leading-relaxed"><strong>3% GST</strong> is added at purchase — so ₹1L investment is really ₹1.03L cost. <strong>Making charges 8–25%</strong> on jewellery (2–5% on coins). Locker: ₹1,500–₹5,000/yr. LTCG after 2 years at 20% with indexation (Finance Act 2023 removed indexation for many assets but physical gold retained it). Always buy <strong>BIS Hallmarked (916/750)</strong> gold only.</div>
+                    <div class="text-[9px] text-slate-600 leading-relaxed"><strong>3% GST</strong> is added at purchase — so ₹1L investment is really ₹1.03L cost. <strong>Making charges 8–25%</strong> on jewellery (2–5% on coins). Locker: ₹1,500–₹5,000/yr. LTCG after 2 years at 12.5% without indexation (Finance Act 2024, effective Jul 23 2024, removed indexation and cut rate from 20% to 12.5%). Always buy <strong>BIS Hallmarked (916/750)</strong> gold only.</div>
                 </div>
                 <div class="rounded-xl p-2.5" style="background:#f0f9ff;border:1px solid #bae6fd;">
                     <div class="text-[10px] font-black text-sky-800 mb-1">🏛️ Gold Monetisation Scheme (GMS)</div>

@@ -37,10 +37,11 @@
                             </div>
                             <div>
                                 <label class="epf-label">Live Till (age)</label>
-                                <input id="rh-life-exp" type="number" min="60" max="100" value="85" class="epf-input text-slate-400"
+                                <input id="rh-life-exp" type="number" min="60" max="100" value="90" class="epf-input text-slate-400"
                                     oninput="retHubCalc();this.classList.remove('text-slate-400');"
-                                    onfocus="if(this.value==='85'){this.value='';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');"
-                                    onblur="if(!this.value){this.value='85';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');">
+                                    onfocus="if(this.value==='90'){this.value='';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');"
+                                    onblur="if(!this.value){this.value='90';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');">
+                                <div class="text-[9px] text-amber-600 mt-0.5 font-semibold">Use 95 for conservative planning</div>
                             </div>
                             <div>
                                 <label class="epf-label">Inflation % p.a.</label>
@@ -58,21 +59,39 @@
                                 <div class="text-[9px] text-slate-400 mt-0.5">On retirement corpus</div>
                             </div>
                             <div class="col-span-2">
-                                <label class="epf-label">Monthly Expenses (₹ today)</label>
+                                <label class="epf-label">Monthly General Expenses (₹ today)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
                                 <input id="rh-expenses" type="text" inputmode="numeric" value="60,000" class="epf-input pl-7 text-slate-400"
                                     oninput="rhFormatInput(this);retHubCalc();this.classList.remove('text-slate-400');"
                                     onfocus="if(this.value==='60,000'){this.value='';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');"
                                     onblur="if(!this.value){this.value='60,000';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');">
                                 </div>
-                                <div class="text-[9px] text-slate-400 mt-0.5">Will be inflated to retirement date</div>
+                                <div class="text-[9px] text-slate-400 mt-0.5">Inflated at general inflation rate to retirement</div>
+                            </div>
+                            <div>
+                                <label class="epf-label">Monthly Medical (₹ today)</label>
+                                <div class="relative"><span class="epf-prefix">₹</span>
+                                <input id="rh-medical-expenses" type="text" inputmode="numeric" value="5,000" class="epf-input pl-7 text-slate-400"
+                                    oninput="rhFormatInput(this);retHubCalc();this.classList.remove('text-slate-400');"
+                                    onfocus="if(this.value==='5,000'){this.value='';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');"
+                                    onblur="if(!this.value){this.value='5,000';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');">
+                                </div>
+                                <div class="text-[9px] text-rose-500 mt-0.5 font-semibold">Grows faster — see rate →</div>
+                            </div>
+                            <div>
+                                <label class="epf-label">Healthcare Inflation % p.a.</label>
+                                <input id="rh-medical-inflation" type="text" inputmode="decimal" value="12" class="epf-input text-slate-400"
+                                    oninput="retHubCalc();this.classList.remove('text-slate-400');"
+                                    onfocus="if(this.value==='12'){this.value='';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');"
+                                    onblur="if(!this.value){this.value='12';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');">
+                                <div class="text-[9px] text-rose-500 mt-0.5 font-semibold">India avg ~12% p.a.</div>
                             </div>
                         </div>
                     </div>
 
                     <!-- EPF -->
                     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
-                        <div class="text-[10px] font-black uppercase tracking-wider mb-2" style="color:#0891b2;">🏢 EPF (Employee Provident Fund)</div>
+                        <div class="text-[10px] font-black uppercase tracking-wider mb-2" style="color:#0891b2;">🏢 EPF (Employee Provident Fund) <span class="text-[8px] font-semibold normal-case text-slate-400">· 8.25% rate as of Q1 FY26</span></div>
                         <div class="grid grid-cols-2 gap-x-3 gap-y-2">
                             <div>
                                 <label class="epf-label">Current Balance (₹)</label>
@@ -98,7 +117,7 @@
 
                     <!-- PPF -->
                     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
-                        <div class="text-[10px] font-black uppercase tracking-wider mb-2" style="color:#059669;">🔒 PPF (Public Provident Fund) — 7.1% tax-free</div>
+                        <div class="text-[10px] font-black uppercase tracking-wider mb-2" style="color:#059669;">🔒 PPF (Public Provident Fund) — 7.1% tax-free <span class="text-[8px] font-semibold normal-case text-slate-400">· as of Q1 FY26</span></div>
                         <div class="grid grid-cols-3 gap-x-2 gap-y-2">
                             <div>
                                 <label class="epf-label">Balance (₹)</label>
@@ -130,7 +149,7 @@
 
                     <!-- NPS -->
                     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
-                        <div class="text-[10px] font-black uppercase tracking-wider mb-2" style="color:#1e40af;">🛡️ NPS — 60% lumpsum · 40% annuity pension</div>
+                        <div class="text-[10px] font-black uppercase tracking-wider mb-2" style="color:#1e40af;">🛡️ NPS</div>
                         <div class="grid grid-cols-2 gap-x-3 gap-y-2">
                             <div>
                                 <label class="epf-label">Current Balance (₹)</label>
@@ -164,6 +183,14 @@
                                     onfocus="if(this.value==='6'){this.value='';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');"
                                     onblur="if(!this.value){this.value='6';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');">
                                 <div class="text-[9px] text-slate-400 mt-0.5">LIC / NPS annuity ~6% p.a.</div>
+                            </div>
+                            <div class="col-span-2">
+                                <label class="epf-label">Lumpsum % at exit</label>
+                                <input id="rh-nps-lumpsum-pct" type="text" inputmode="decimal" value="60" class="epf-input text-slate-400"
+                                    oninput="retHubCalc();this.classList.remove('text-slate-400');"
+                                    onfocus="if(this.value==='60'){this.value='';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');"
+                                    onblur="if(!this.value){this.value='60';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');">
+                                <div class="text-[9px] text-sky-600 mt-0.5 font-semibold">Default 60% (old rule). Post Apr 2024: up to 100% lumpsum allowed if corpus ≤₹5L, or on meeting exit conditions — check with your NPS CRA.</div>
                             </div>
                         </div>
                     </div>
@@ -265,7 +292,7 @@
                                 <div id="rh-pct-nps" class="w-8 text-[10px] font-black text-slate-500 text-right shrink-0">0%</div>
                                 <div class="w-20 text-right shrink-0">
                                     <div id="rh-nps-result" class="text-[10px] font-black" style="color:#1e40af;">—</div>
-                                    <div id="rh-nps-total-note" class="text-[8px] text-slate-400">(60% lumpsum)</div>
+                                    <div id="rh-nps-total-note" class="text-[8px] text-slate-400"></div>
                                 </div>
                             </div>
 
@@ -553,10 +580,10 @@
 
             <!-- DRAWDOWN: YEAR-BY-YEAR TABLE -->
             <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-3">
-                <div class="flex items-center justify-between mb-2">
+                <button onclick="ddToggleTable()" class="flex items-center justify-between w-full mb-2 group">
                     <div class="text-[10px] font-black text-slate-500 uppercase tracking-wider">📋 Year-by-Year Drawdown Passbook</div>
-                    <button id="dd-table-btn" onclick="ddToggleTable()" class="text-[10px] font-bold text-slate-400 hover:text-blue-600 transition-all">Show ▾</button>
-                </div>
+                    <span id="dd-table-btn" class="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all" style="background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;">Show ▾</span>
+                </button>
                 <div id="dd-table-wrap" class="hidden overflow-x-auto">
                     <table class="w-full text-[10px]" style="min-width:640px;">
                         <thead>

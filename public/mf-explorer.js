@@ -486,10 +486,15 @@
             _mfeList = [];
             Object.entries(data.categories).forEach(([cat, funds]) => {
                 funds.forEach(f => {
-                    // Re-classify debt index funds (e.g. IBX/Crisil target-maturity) that
-                    // the pipeline may have mis-tagged as 'Index' instead of 'Debt'.
-                    const actualCat = (cat === 'Index' && /crisil|ibx|target.?matur|bharat.?bond/i.test(f.name))
-                        ? 'Debt' : cat;
+                    // Re-classify funds that the pipeline mis-tagged as 'Index'.
+                    // AMFI lumps all index-tracking funds (sectoral, midcap, international, debt)
+                    // into "Index Funds". Re-run name-based parsing and use a more specific result
+                    // if available (e.g. Auto Index → Sectoral, Midcap 50 → Mid Cap, S&P 500 → International).
+                    let actualCat = cat;
+                    if (cat === 'Index') {
+                        const namecat = mfeParseCat(f.name);
+                        if (namecat && namecat !== 'Index' && namecat !== 'Other') actualCat = namecat;
+                    }
                     const ss = f.subSect || 'Thematic';
                     _mfeList.push({ code: f.code, name: f.name, amc: f.amc, cat: actualCat, subSect: ss });
                     if (f.nav !== null) _mfeNavCache[f.code] = { nav: f.nav, date: f.navDate };
@@ -730,11 +735,13 @@
                     if (!d || isNaN(nav)) return;
                     _mfeNavCache[f.code] = {nav, date: d.date};
                     // Refine category from API metadata (more accurate than name parsing).
-                    // Guard: don't let meta override 'International' or 'Value/Contra' to 'Index'.
-                    // AMFI may return "ETF Fund of Funds" (no "overseas") for Nasdaq/S&P FoFs, and
-                    // "Index Fund" for value-factor index funds (Nifty 500 Value 50, etc.).
+                    // Guard: don't let meta override to 'Index' if the name parser already gave a
+                    // specific category. AMFI lumps ALL index-tracking funds (sectoral, midcap,
+                    // smallcap, international, etc.) into "Other Scheme - Index Funds", which is
+                    // too coarse. Only assign 'Index' via meta when the name parser returned 'Other'
+                    // (unclassified). For every other category, trust the name-based parse.
                     const metaCat = mfeCatFromMeta(j?.meta?.scheme_category);
-                    if (metaCat && !(metaCat === 'Index' && (f.cat === 'International' || f.cat === 'Value/Contra'))) f.cat = metaCat;
+                    if (metaCat && !(metaCat === 'Index' && f.cat !== 'Other')) f.cat = metaCat;
                 } catch {}
             }));
             done += batch.length;
@@ -1061,7 +1068,7 @@
         });
         if (!scored.length) return;
 
-        // Percentile-bucket into 1–5 signal tiers (Morningstar distribution)
+        // Percentile-bucket into 1–5 fund score tiers (Morningstar distribution)
         scored.sort((a,b) => a.raw - b.raw);
         const total = scored.length;
         scored.forEach(({ code, cacheKey }, idx) => {
@@ -1077,30 +1084,61 @@
             _mfeMetCache[key].stars = stars;
             _mfeMetCache[key].score = Math.round((idx / Math.max(total-1,1)) * 100);
         });
+
+        // ── 3-Pillar grades (1=Weak 2=Fair 3=Strong) — category-relative ──
+        // Returns: alpha + rolling avg  |  Safety: sharpe + sortino + stdDev  |  Consistency: hit rate
+        const _pArr = scored.map(({ cacheKey }) => {
+            const m = _mfeMetCache[cacheKey];
+            if (!m) return null;
+            const sdB = isDebtLike ? 8 : (isGold ? 25 : 30);
+            return {
+                k:    cacheKey,
+                ret:  Math.max(-15, Math.min(15, m.alpha)) / 5 + (m.rolling ? Math.max(-20, Math.min(20, m.rolling.avg)) / 20 : 0),
+                safe: Math.max(-3, Math.min(5, m.sharpe)) + Math.max(-3, Math.min(6, m.sortino)) + Math.max(0, (sdB - m.stdDev) / sdB),
+                cons: m.rolling ? Math.max(0, Math.min(100, m.rolling.hitRate)) / 100 : 0.5
+            };
+        }).filter(Boolean);
+        ['ret', 'safe', 'cons'].forEach(pillar => {
+            const sorted = _pArr.slice().sort((a, b) => a[pillar] - b[pillar]);
+            const n = sorted.length;
+            sorted.forEach(({ k }, i) => {
+                if (!_mfeMetCache[k]) return;
+                if (!_mfeMetCache[k].pillars) _mfeMetCache[k].pillars = {};
+                const p = (i + 1) / n;
+                _mfeMetCache[k].pillars[pillar] = p <= 0.33 ? 1 : p <= 0.67 ? 2 : 3;
+            });
+        });
     }
 
     /* ════════════════════════════════════════════════════════
        RENDER
     ════════════════════════════════════════════════════════ */
-    /* ── Signal bar display helper ── */
+    /* ── Star rating display helper ── */
     const _mfeSigCfg = [
         null,
-        { clr:'#dc2626', lbl:'Avoid',   pct:'Bottom 10%'  },
-        { clr:'#d97706', lbl:'Weak',    pct:'Next 22.5%'  },
-        { clr:'#64748b', lbl:'Average', pct:'Middle 35%'  },
-        { clr:'#0d9488', lbl:'Strong',  pct:'Next 22.5%'  },
-        { clr:'#7c3aed', lbl:'Elite',   pct:'Top 10%'     },
+        { lbl:'Avoid',   verdict:'Bottom 10% — many better options in this category'  },
+        { lbl:'Weak',    verdict:'Below most peers in this category'                   },
+        { lbl:'Average', verdict:'Middle of the pack for this category'                },
+        { lbl:'Strong',  verdict:'Better than most funds in this category'             },
+        { lbl:'Elite',   verdict:'Top 10% — stands out in this category'               },
     ];
-    const _mfeSigH = [4, 7, 11, 15, 19]; // bar heights in px
+    const _mfePillarLabel = ['Weak', 'Fair', 'Strong'];
 
-    function mfeSignalHtml(tier) {
+    function mfeSignalHtml(tier, score, pillars) {
         if (tier == null) return '<span class="mfe-st-nd">…</span>';
         const cfg = _mfeSigCfg[tier];
         if (!cfg) return '';
-        const bars = _mfeSigH.map((h, i) =>
-            `<span class="mfe-sig-bar ${i < tier ? 'on' : 'off'}" style="height:${h}px;"></span>`
+        const stars = Array.from({length: 5}, (_, i) =>
+            `<span class="mfe-star-${i < tier ? 'on' : 'off'}">\u2605</span>`
         ).join('');
-        return `<span class="mfe-sig mfe-sig-${tier}" title="${cfg.lbl} · ${cfg.pct} within category">${bars}</span>`;
+        let tip = `${tier} \u2605 out of 5 \u00B7 ${cfg.lbl}\n${cfg.verdict}`;
+        if (pillars) {
+            tip += '\n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500'
+                + `\nReturns:      ${_mfePillarLabel[(pillars.ret  || 1) - 1]}`
+                + `\nSafety:       ${_mfePillarLabel[(pillars.safe || 1) - 1]}`
+                + `\nConsistency:  ${_mfePillarLabel[(pillars.cons || 1) - 1]}`;
+        }
+        return `<span class="mfe-stars" title="${tip}">${stars}</span>`;
     }
 
     /* kept for sort compat — internal value unchanged */
@@ -1184,7 +1222,7 @@
             const hasM = m !== undefined && m !== null;
             const sigCell = !hasM
                 ? '<span class="mfe-st-nd">…</span>'
-                : mfeSignalHtml(m?.stars ?? null);
+                : mfeSignalHtml(m?.stars ?? null, m?.score ?? null, m?.pillars ?? null);
 
             // For Commodity and International, note that Alpha/Beta use non-Nifty benchmark
             const benchNote = (_mfeCur==='International'||_mfeCur==='Commodity')

@@ -2,7 +2,9 @@
        NET WORTH TRACKER
     ══════════════════════════════════════════════════════════ */
 
-    var _nwChart = null;
+    var _nwChart      = null;
+    var _nwTrendChart = null;
+    var _nwHistory    = []; // [{m:'YYYY-MM', nw:N, a:N, l:N}, ...]
 
     var _nwAssetFields = [
         'nw-savings','nw-fd',
@@ -169,6 +171,10 @@
             bkEl.innerHTML = '<div class="text-[10px] text-slate-400 text-center py-4">Enter your assets above to see breakdown</div>';
         }
 
+        // Monthly history snapshot + trend chart
+        nwSnapshotMonth(totalAssets, totalLiab, netWorth);
+        nwRenderTrend();
+
         if (typeof saveUserData === 'function') saveUserData();
     }
 
@@ -227,5 +233,177 @@
                 }
             }
         });
+    }
+
+    // ── Monthly history ──────────────────────────────────────────────
+    function nwSnapshotMonth(assets, liab, nw) {
+        if (assets <= 0 && liab <= 0) return;
+        var d   = new Date();
+        var key = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+        var idx = _nwHistory.findIndex(function(h) { return h.m === key; });
+        var entry = { m: key, nw: Math.round(nw), a: Math.round(assets), l: Math.round(liab) };
+        if (idx === -1) { _nwHistory.push(entry); }
+        else            { _nwHistory[idx] = entry; }
+        _nwHistory.sort(function(a, b) { return a.m < b.m ? -1 : 1; });
+        if (_nwHistory.length > 36) _nwHistory = _nwHistory.slice(-36);
+    }
+
+    function nwRenderTrend() {
+        var section = document.getElementById('nw-trend-section');
+        if (!section) return;
+
+        if (_nwHistory.length === 0) {
+            section.innerHTML =
+                '<div class="flex flex-col items-center justify-center py-8 gap-2">' +
+                '<div class="text-3xl">📆</div>' +
+                '<div class="text-xs font-semibold text-slate-500">No history yet</div>' +
+                '<div class="text-[10px] text-slate-400 text-center max-w-xs leading-relaxed">Enter your assets and liabilities above — your net worth will be recorded here automatically each month.</div>' +
+                '</div>';
+            return;
+        }
+
+        var hist   = _nwHistory.slice().sort(function(a, b) { return a.m < b.m ? -1 : 1; });
+        var MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+        function fmtLabel(m) {
+            var p = m.split('-');
+            return MONTHS[parseInt(p[1]) - 1] + ' \'' + p[0].slice(2);
+        }
+        function fmtLong(m) {
+            var p = m.split('-');
+            return MONTHS[parseInt(p[1]) - 1] + ' ' + p[0];
+        }
+
+        var latest    = hist[hist.length - 1];
+        var prevEntry = hist.length > 1 ? hist[hist.length - 2] : null;
+        var momChange = prevEntry ? latest.nw - prevEntry.nw : null;
+        var momColor  = momChange === null ? '' : (momChange >= 0 ? '#10b981' : '#ef4444');
+        var momArrow  = momChange === null ? '' : (momChange >= 0 ? '▲' : '▼');
+
+        var momHtml = momChange !== null
+            ? '<span class="text-[10px] font-black px-2 py-0.5 rounded-full" style="background:' + momColor + '18;color:' + momColor + ';">' +
+              momArrow + ' ' + nwFmt(Math.abs(momChange)) + ' vs ' + fmtLong(prevEntry.m) + '</span>'
+            : '<span class="text-[10px] text-slate-400 italic">First month recorded — check back next month for trend</span>';
+
+        var tableRows = hist.slice().reverse().map(function(h, i, arr) {
+            var prevH  = arr[i + 1];
+            var change = prevH !== undefined ? h.nw - prevH.nw : null;
+            var chg    = '';
+            if (change !== null) {
+                var c = change >= 0 ? '#10b981' : '#ef4444';
+                chg = '<span style="color:' + c + ';font-weight:700;">' + (change >= 0 ? '+' : '') + nwFmt(change) + '</span>';
+            }
+            return '<tr class="border-b border-slate-50 last:border-0">' +
+                '<td class="py-1.5 px-3 text-[11px] font-semibold text-slate-600">' + fmtLong(h.m) + '</td>' +
+                '<td class="py-1.5 px-3 text-[11px] text-right text-blue-600">' + nwFmt(h.a) + '</td>' +
+                '<td class="py-1.5 px-3 text-[11px] text-right text-red-500">' + (h.l > 0 ? nwFmt(h.l) : '<span class="text-slate-300">—</span>') + '</td>' +
+                '<td class="py-1.5 px-3 text-[11px] text-right font-black ' + (h.nw >= 0 ? 'text-emerald-600' : 'text-red-600') + '">' + nwFmt(h.nw) + '</td>' +
+                '<td class="py-1.5 px-3 text-[11px] text-right">' + (chg || '<span class="text-slate-300">—</span>') + '</td>' +
+                '</tr>';
+        }).join('');
+
+        section.innerHTML =
+            // MoM summary bar
+            '<div class="flex items-start justify-between gap-3 mb-3 flex-wrap">' +
+                '<div>' +
+                    '<div class="text-sm font-black text-slate-800">' + nwFmt(latest.nw) +
+                        '<span class="text-[10px] font-normal text-slate-400 ml-1.5">as of ' + fmtLong(latest.m) + '</span>' +
+                    '</div>' +
+                    '<div class="mt-1">' + momHtml + '</div>' +
+                '</div>' +
+                '<div class="text-[9px] text-slate-400 text-right leading-relaxed">' +
+                    hist.length + ' month' + (hist.length !== 1 ? 's' : '') + ' tracked<br>auto-updated on every save' +
+                '</div>' +
+            '</div>' +
+            // Chart (only if 2+ data points)
+            (hist.length >= 2
+                ? '<div style="position:relative;height:150px;" class="mb-3"><canvas id="nw-trend-chart"></canvas></div>'
+                : '') +
+            // Table
+            '<div class="overflow-x-auto rounded-xl border border-slate-100">' +
+                '<table class="w-full">' +
+                    '<thead><tr style="background:#f8fafc;">' +
+                        '<th class="py-1.5 px-3 text-[9px] font-black text-slate-400 uppercase tracking-wider text-left">Month</th>' +
+                        '<th class="py-1.5 px-3 text-[9px] font-black text-slate-400 uppercase tracking-wider text-right">Assets</th>' +
+                        '<th class="py-1.5 px-3 text-[9px] font-black text-slate-400 uppercase tracking-wider text-right">Liabilities</th>' +
+                        '<th class="py-1.5 px-3 text-[9px] font-black text-slate-400 uppercase tracking-wider text-right">Net Worth</th>' +
+                        '<th class="py-1.5 px-3 text-[9px] font-black text-slate-400 uppercase tracking-wider text-right">MoM Change</th>' +
+                    '</tr></thead>' +
+                    '<tbody>' + tableRows + '</tbody>' +
+                '</table>' +
+            '</div>';
+
+        // Draw line chart
+        if (hist.length >= 2) {
+            if (_nwTrendChart) { _nwTrendChart.destroy(); _nwTrendChart = null; }
+            var ctx = document.getElementById('nw-trend-chart');
+            if (!ctx) return;
+            _nwTrendChart = new Chart(ctx.getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: hist.map(function(h) { return fmtLabel(h.m); }),
+                    datasets: [
+                        {
+                            label: 'Net Worth',
+                            data: hist.map(function(h) { return h.nw; }),
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16,185,129,0.08)',
+                            borderWidth: 2.5,
+                            pointRadius: 4,
+                            pointBackgroundColor: '#10b981',
+                            fill: true,
+                            tension: 0.35
+                        },
+                        {
+                            label: 'Assets',
+                            data: hist.map(function(h) { return h.a; }),
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'transparent',
+                            borderWidth: 1.5,
+                            pointRadius: 3,
+                            pointBackgroundColor: '#3b82f6',
+                            borderDash: [5, 3],
+                            fill: false,
+                            tension: 0.35
+                        },
+                        {
+                            label: 'Liabilities',
+                            data: hist.map(function(h) { return h.l; }),
+                            borderColor: '#ef4444',
+                            backgroundColor: 'transparent',
+                            borderWidth: 1.5,
+                            pointRadius: 3,
+                            pointBackgroundColor: '#ef4444',
+                            borderDash: [5, 3],
+                            fill: false,
+                            tension: 0.35
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: { font: { size: 9 }, boxWidth: 18, padding: 8 }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(c) { return ' ' + c.dataset.label + ': ' + nwFmt(c.parsed.y); }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { ticks: { font: { size: 9 }, maxRotation: 30 }, grid: { display: false } },
+                        y: {
+                            ticks: { font: { size: 9 }, callback: function(v) { return nwFmt(v); } },
+                            grid: { color: 'rgba(0,0,0,0.04)' }
+                        }
+                    }
+                }
+            });
+        }
     }
 

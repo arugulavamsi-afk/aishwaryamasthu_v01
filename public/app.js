@@ -304,7 +304,11 @@
             'dashcat-calc': { label: 'Calculators',    icon: '⚡' },
             'dashcat-mf':   { label: 'Mutual Funds',   icon: '📊' },
             'dashcat-tax':  { label: 'Planning & Tax', icon: '🗺️' },
-            'dashcat-fav':  { label: 'Favourites',     icon: '⭐' }
+            'dashcat-fav':  { label: 'Favourites',     icon: '⭐' },
+            myprofile:      { label: 'My Profile',     icon: '👤' },
+            cgcalc:         { label: 'Capital Gains Calc', icon: '💹' },
+            hracalc:        { label: 'HRA Calculator',    icon: '🏠' },
+            nomtrack:       { label: 'Nomination Tracker', icon: '📜' }
         };
 
         function toggleMobileDropdown() {
@@ -384,28 +388,9 @@
             // Retirement Drawdown is now part of Retirement Hub
             if (mode === 'drawdown') mode = 'retirementhub';
 
-            // Lazy-load panel HTML if it hasn't been injected yet
-            var _pendingPanel = document.getElementById(mode + '-panel');
-            if (_pendingPanel && _pendingPanel.dataset.panelSrc && !_pendingPanel.dataset.loaded) {
-                var _src = _pendingPanel.dataset.panelSrc;
-                _pendingPanel.dataset.loaded = 'loading';
-                fetch(_src)
-                    .then(function(r) { return r.text(); })
-                    .then(function(html) {
-                        var _tmp = document.createElement('div');
-                        _tmp.innerHTML = html.trim();
-                        var _newPanel = _tmp.firstElementChild;
-                        if (_newPanel) _pendingPanel.replaceWith(_newPanel);
-                        switchMode(mode);
-                    })
-                    .catch(function() { switchMode(mode); }); // fallback: proceed anyway
-                return;
-            }
-
-            // Always scroll to top on any mode switch
-            window.scrollTo({ top: 0, behavior: 'instant' });
-
-            // Track category context for breadcrumb back-navigation
+            // Track category context for breadcrumb back-navigation.
+            // Must happen BEFORE the lazy-load early-return so the first visit to a
+            // lazy panel captures the originating category panel correctly.
             if (mode === 'dashboard' || mode.startsWith('dashcat-')) {
                 // Going to dashboard or a category panel — clear category tracking
                 _prevCategoryMode = null;
@@ -414,6 +399,32 @@
                 _prevCategoryMode = currentMode;
             }
             // If tool-hopping (tool → tool), keep existing _prevCategoryMode so back still works
+
+            // Lazy-load panel HTML if it hasn't been injected yet
+            var _pendingPanel = document.getElementById(mode + '-panel');
+            if (_pendingPanel && _pendingPanel.dataset.panelSrc && !_pendingPanel.dataset.loaded) {
+                var _src = _pendingPanel.dataset.panelSrc;
+                _pendingPanel.dataset.loaded = 'loading';
+                fetch(_src, { cache: 'no-store' })
+                    .then(function(r) { return r.text(); })
+                    .then(function(html) {
+                        var _tmp = document.createElement('div');
+                        _tmp.innerHTML = html.trim();
+                        var _newPanel = _tmp.firstElementChild;
+                        if (_newPanel) _pendingPanel.replaceWith(_newPanel);
+                        // Panel DOM is now live — re-apply cached Firestore data so
+                        // all tools restore correctly regardless of navigation order.
+                        if (window._cachedRestoreData && typeof loadUserData === 'function') {
+                            loadUserData(window._cachedRestoreData);
+                        }
+                        switchMode(mode);
+                    })
+                    .catch(function() { switchMode(mode); }); // fallback: proceed anyway
+                return;
+            }
+
+            // Always scroll to top on any mode switch
+            window.scrollTo({ top: 0, behavior: 'instant' });
 
             // Update breadcrumb instead of pill tabs
             updateBreadcrumb(mode);
@@ -459,16 +470,20 @@
             const isUlipCheck     = mode === 'ulipcheck';
             const isFixedIncome   = mode === 'fixedincome';
             const isRetirementHub = mode === 'retirementhub';
-            const isFullPanel  = isDashboard || isEmergency || isMFKit || isFundPicker || isHealthScore || isFinPlan || isMFExplorer || isTaxGuide || isHomeLoan || isStepUpSIP || isEPFCalc || isSSAPlanner || isPPFNPS || isCtcOptimizer || isInsure || isGratuity || isDebtPlan || isJointPlan || isCibil || isFinCal || isSelfEmpl || isGoldComp || isDashCalc || isDashMF || isDashTax || isDashFav || isCoffeeCan || isNetWorth || isUlipCheck || isFixedIncome || isRetirementHub;
+            const isMyProfile     = mode === 'myprofile';
+            const isCgCalc        = mode === 'cgcalc';
+            const isHraCalc       = mode === 'hracalc';
+            const isNomTrack      = mode === 'nomtrack';
+            const isFullPanel  = isDashboard || isEmergency || isMFKit || isFundPicker || isHealthScore || isFinPlan || isMFExplorer || isTaxGuide || isHomeLoan || isStepUpSIP || isEPFCalc || isSSAPlanner || isPPFNPS || isCtcOptimizer || isInsure || isGratuity || isDebtPlan || isJointPlan || isCibil || isFinCal || isSelfEmpl || isGoldComp || isDashCalc || isDashMF || isDashTax || isDashFav || isCoffeeCan || isNetWorth || isUlipCheck || isFixedIncome || isRetirementHub || isMyProfile || isCgCalc || isHraCalc || isNomTrack;
 
             // Show/hide main panels
             const leftPanel = document.getElementById('growth-left-panel');
-            const rightPanel = document.querySelector('main > div.w-full.lg\\:w-2\\/3');
-            ['dashboard-panel','emergency-panel','mfkit-panel','fundpicker-panel','healthscore-panel','finplan-panel','mfexplorer-panel','taxguide-panel','homeloan-panel','stepupsip-panel','epfcalc-panel','ssaplanner-panel','ppfnps-panel','ctcoptimizer-panel','insure-panel','gratuity-panel','debtplan-panel','jointplan-panel','cibil-panel','fincal-panel','selfempl-panel','goldcomp-panel','dashcat-calc-panel','dashcat-mf-panel','dashcat-tax-panel','dashcat-fav-panel','coffeecan-panel','networth-panel','ulipcheck-panel','fixedincome-panel','retirementhub-panel'].forEach(id => {
+            const rightPanel = document.getElementById('growth-right-panel');
+            ['dashboard-panel','emergency-panel','mfkit-panel','fundpicker-panel','healthscore-panel','finplan-panel','mfexplorer-panel','taxguide-panel','homeloan-panel','stepupsip-panel','epfcalc-panel','ssaplanner-panel','ppfnps-panel','ctcoptimizer-panel','insure-panel','gratuity-panel','debtplan-panel','jointplan-panel','cibil-panel','fincal-panel','selfempl-panel','goldcomp-panel','dashcat-calc-panel','dashcat-mf-panel','dashcat-tax-panel','dashcat-fav-panel','coffeecan-panel','networth-panel','ulipcheck-panel','fixedincome-panel','retirementhub-panel','myprofile-panel','cgcalc-panel','hracalc-panel','nomtrack-panel'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.classList.add('hidden');
             });
-            const activeId = isDashboard ? 'dashboard-panel' : isEmergency ? 'emergency-panel' : isMFKit ? 'mfkit-panel' : isFundPicker ? 'fundpicker-panel' : isHealthScore ? 'healthscore-panel' : isFinPlan ? 'finplan-panel' : isMFExplorer ? 'mfexplorer-panel' : isTaxGuide ? 'taxguide-panel' : isHomeLoan ? 'homeloan-panel' : isStepUpSIP ? 'stepupsip-panel' : isEPFCalc ? 'epfcalc-panel' : isSSAPlanner ? 'ssaplanner-panel' : isPPFNPS ? 'ppfnps-panel' : isCtcOptimizer ? 'ctcoptimizer-panel' : isInsure ? 'insure-panel' : isGratuity ? 'gratuity-panel' : isDebtPlan ? 'debtplan-panel' : isJointPlan ? 'jointplan-panel' : isCibil ? 'cibil-panel' : isFinCal ? 'fincal-panel' : isSelfEmpl ? 'selfempl-panel' : isGoldComp ? 'goldcomp-panel' : isDashCalc ? 'dashcat-calc-panel' : isDashMF ? 'dashcat-mf-panel' : isDashTax ? 'dashcat-tax-panel' : isDashFav ? 'dashcat-fav-panel' : isCoffeeCan ? 'coffeecan-panel' : isNetWorth ? 'networth-panel' : isUlipCheck ? 'ulipcheck-panel' : isFixedIncome ? 'fixedincome-panel' : isRetirementHub ? 'retirementhub-panel' : null;
+            const activeId = isDashboard ? 'dashboard-panel' : isEmergency ? 'emergency-panel' : isMFKit ? 'mfkit-panel' : isFundPicker ? 'fundpicker-panel' : isHealthScore ? 'healthscore-panel' : isFinPlan ? 'finplan-panel' : isMFExplorer ? 'mfexplorer-panel' : isTaxGuide ? 'taxguide-panel' : isHomeLoan ? 'homeloan-panel' : isStepUpSIP ? 'stepupsip-panel' : isEPFCalc ? 'epfcalc-panel' : isSSAPlanner ? 'ssaplanner-panel' : isPPFNPS ? 'ppfnps-panel' : isCtcOptimizer ? 'ctcoptimizer-panel' : isInsure ? 'insure-panel' : isGratuity ? 'gratuity-panel' : isDebtPlan ? 'debtplan-panel' : isJointPlan ? 'jointplan-panel' : isCibil ? 'cibil-panel' : isFinCal ? 'fincal-panel' : isSelfEmpl ? 'selfempl-panel' : isGoldComp ? 'goldcomp-panel' : isDashCalc ? 'dashcat-calc-panel' : isDashMF ? 'dashcat-mf-panel' : isDashTax ? 'dashcat-tax-panel' : isDashFav ? 'dashcat-fav-panel' : isCoffeeCan ? 'coffeecan-panel' : isNetWorth ? 'networth-panel' : isUlipCheck ? 'ulipcheck-panel' : isFixedIncome ? 'fixedincome-panel' : isRetirementHub ? 'retirementhub-panel' : isMyProfile ? 'myprofile-panel' : isCgCalc ? 'cgcalc-panel' : isHraCalc ? 'hracalc-panel' : isNomTrack ? 'nomtrack-panel' : null;
             if (activeId) {
                 const el = document.getElementById(activeId);
                 el.classList.remove('hidden');
@@ -519,6 +534,10 @@
             if (isUlipCheck)     { initUlipCheck();     applyLang(); return; }
             if (isFixedIncome)    { initFixedIncome();    applyLang(); return; }
             if (isRetirementHub) { initRetirementHub(); initDrawdown(); applyLang(); return; }
+            if (isMyProfile)     { if (typeof initMyProfile === 'function') initMyProfile(); applyLang(); return; }
+            if (isCgCalc)        { initCgCalc();    applyLang(); return; }
+            if (isHraCalc)       { initHraCalc();   applyLang(); return; }
+            if (isNomTrack)      { initNomTrack();  applyLang(); return; }
 
             // Show/hide reset buttons
             document.getElementById('reset-growth-btn').style.display = isGoal ? 'none' : 'flex';
@@ -2652,6 +2671,34 @@
         let hsChartInstance = null;
         let hsPfChartInstance = null;
 
+        // Percentile curves by age bracket — anchored to RBI Household Finance Committee
+        // report, SEBI Investor Survey 2022, India insurance penetration ~3.7% of GDP,
+        // average household savings rate ~11-12%.
+        // Each row: [score_floor, % of Indians that age who score AT OR BELOW this]
+        var _HS_PCT_BRACKETS = [
+            { min:18, max:25, label:'18–25', curve:[[90,96],[80,90],[70,80],[60,65],[50,48],[40,30],[30,16],[0,5]] },
+            { min:26, max:35, label:'26–35', curve:[[90,95],[80,88],[70,76],[60,60],[50,44],[40,28],[30,14],[0,5]] },
+            { min:36, max:45, label:'36–45', curve:[[90,94],[80,86],[70,73],[60,57],[50,41],[40,26],[30,13],[0,4]] },
+            { min:46, max:55, label:'46–55', curve:[[90,93],[80,84],[70,70],[60,54],[50,39],[40,24],[30,12],[0,4]] },
+            { min:56, max:80, label:'56+',   curve:[[90,92],[80,82],[70,68],[60,52],[50,37],[40,23],[30,11],[0,4]] }
+        ];
+        function hsOrdinal(n) {
+            var s = ['th','st','nd','rd'], v = n % 100;
+            return n + (s[(v - 20) % 10] || s[v] || s[0]);
+        }
+        function hsGetPercentile(score, age) {
+            var bracket = _HS_PCT_BRACKETS.find(function(b){ return age >= b.min && age <= b.max; }) || _HS_PCT_BRACKETS[1];
+            var curve = bracket.curve;
+            for (var i = 0; i < curve.length - 1; i++) {
+                var hi = curve[i], lo = curve[i + 1];
+                if (score >= lo[0] && score <= hi[0]) {
+                    var t = hi[0] === lo[0] ? 1 : (score - lo[0]) / (hi[0] - lo[0]);
+                    return { pct: Math.round(lo[1] + t * (hi[1] - lo[1])), label: bracket.label };
+                }
+            }
+            return { pct: curve[curve.length - 1][1], label: bracket.label };
+        }
+
         function hsFormatInput(el) {
             let val = el.value.replace(/[^0-9]/g, '');
             if (val === '') { el.value = ''; return; }
@@ -2688,6 +2735,8 @@
             var pfPieC = document.getElementById('hs-pf-pie-container'); if (pfPieC) pfPieC.classList.add('hidden');
             if (hsChartInstance) { hsChartInstance.destroy(); hsChartInstance = null; }
             if (hsPfChartInstance) { hsPfChartInstance.destroy(); hsPfChartInstance = null; }
+            var _pctReset = document.getElementById('hs-percentile-banner');
+            if (_pctReset) _pctReset.style.display = 'none';
             if (typeof saveUserData === 'function') saveUserData();
         }
 
@@ -2955,6 +3004,29 @@
             const rawTotal = categories.reduce((a, c) => a + c.pts, 0);
             const maxTotal = categories.reduce((a, c) => a + c.max, 0);
             const totalScore = Math.min(100, Math.round(rawTotal * 100 / maxTotal));
+
+            // ---- PERCENTILE BENCHMARK ----
+            var _pctEl = document.getElementById('hs-percentile-banner');
+            var _pctHL = document.getElementById('hs-percentile-headline');
+            var _pctNm = document.getElementById('hs-percentile-number');
+            var _pctCx = document.getElementById('hs-percentile-context');
+            if (_pctEl) {
+                _pctEl.style.display = 'flex';
+                if (age >= 18 && age <= 80) {
+                    var _pg = hsGetPercentile(totalScore, age);
+                    var _pc = totalScore >= 70 ? '#10b981' : totalScore >= 50 ? '#f59e0b' : '#ef4444';
+                    if (_pctHL) _pctHL.textContent = 'Better than ' + _pg.pct + '% of Indians aged ' + _pg.label;
+                    if (_pctNm) { _pctNm.textContent = hsOrdinal(_pg.pct); _pctNm.style.color = _pc; }
+                    if (_pctCx) _pctCx.textContent = _pg.pct >= 80 ? 'You\'re among the most financially prepared Indians in your age group.'
+                                                   : _pg.pct >= 60 ? 'Above average — most Indians your age are not this prepared.'
+                                                   : _pg.pct >= 40 ? 'Around the median — plenty of room to pull ahead.'
+                                                   : 'Most Indians your age face similar challenges. The fix starts here.';
+                } else {
+                    if (_pctHL) _pctHL.textContent = 'How do you compare to Indians your age?';
+                    if (_pctNm) { _pctNm.textContent = '?'; _pctNm.style.color = '#94a3b8'; }
+                    if (_pctCx) _pctCx.textContent  = 'Enter your age in the form on the left to see your peer percentile.';
+                }
+            }
 
             // ---- GRADE ----
             let grade, emoji, desc, arcColor;
@@ -4345,15 +4417,17 @@
             if (leftCol)  leftCol.classList.add('hidden');
             if (rightCol) { rightCol.classList.remove('lg:w-1/2'); rightCol.classList.add('w-full'); }
 
+            // Hide snapshot card — results take its place
+            var snap = document.getElementById('fp-snapshot-card');
+            if (snap) snap.classList.add('hidden');
+
             // Hide all step forms when showing results
             [1,2,3].forEach(function(s){ var el=document.getElementById('fp-step-'+s); if(el) el.classList.add('hidden'); });
 
-            document.getElementById('fp-results-placeholder').classList.add('hidden');
+            var fpRP = document.getElementById('fp-results-placeholder');
+            if (fpRP) fpRP.classList.add('hidden');
             var fpRC = document.getElementById('fp-results-card');
-            fpRC.classList.remove('hidden');
-            fpRC.classList.remove('slide-up-in');
-            void fpRC.offsetWidth;
-            fpRC.classList.add('slide-up-in');
+            if (fpRC) { fpRC.classList.remove('hidden'); fpRC.classList.remove('slide-up-in'); void fpRC.offsetWidth; fpRC.classList.add('slide-up-in'); }
 
             document.getElementById('fp-result-header').style.background   = profile.gradient;
             document.getElementById('fp-result-greeting').textContent       = _t('fp.result.greeting').replace('{n}', name);
@@ -4757,7 +4831,110 @@
                 return '<div class="fp-road-item" style="background:' + r.color + '0f;border-color:' + r.color + '30;"><span class="text-lg flex-shrink-0">' + r.icon + '</span><div><div class="text-xs font-black uppercase tracking-wide mb-0.5" style="color:' + r.color + '">' + r.title + '</div><div class="text-xs text-slate-600 leading-relaxed">' + r.desc + '</div></div></div>';
             }).join('');
 
+            // Save plan snapshot for Excel export
+            window._fpLastPlan = {
+                name: name, age: age, retireAge: retireAge,
+                yearsToRetire: yearsToRetire,
+                monthlyInvest: monthlyInvest,
+                totalScore: totalScore,
+                profileLabel: profile.label,
+                profileSub: profile.sub,
+                blendedReturn: profile.blendedReturn,
+                allocs: allocs,
+                goalSIPs: goalSIPs,
+                goals: fpState.goals.slice(),
+                roadmap: roadmap
+            };
+
             setTimeout(function(){ document.getElementById('fp-results-card').scrollIntoView({behavior:'smooth',block:'start'}); },200);
+        }
+
+        // ---- Export to Excel ----
+        function fpExportExcel() {
+            var plan = window._fpLastPlan;
+            if (!plan) { alert('Please generate your plan first.'); return; }
+            var XLSX = window.XLSX;
+            if (!XLSX) { alert('Excel library not loaded. Please refresh and try again.'); return; }
+
+            var wb = XLSX.utils.book_new();
+            var fmt = function(n){ return new Intl.NumberFormat('en-IN').format(Math.round(n)); };
+            var today = new Date().toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' });
+
+            // Sheet 1: Overview
+            var ws1 = XLSX.utils.aoa_to_sheet([
+                ['My Financial Plan — ' + plan.name, ''],
+                ['Generated On', today],
+                ['', ''],
+                ['PERSONAL PROFILE', ''],
+                ['Name', plan.name],
+                ['Current Age', plan.age + ' years'],
+                ['Retirement Age Goal', plan.retireAge + ' years'],
+                ['Years to Retirement', plan.yearsToRetire],
+                ['Monthly Investment', '\u20B9' + fmt(plan.monthlyInvest)],
+                ['', ''],
+                ['RISK PROFILE', ''],
+                ['Risk Score', plan.totalScore + ' / 15'],
+                ['Risk Category', plan.profileLabel],
+                ['Profile Description', plan.profileSub],
+                ['Blended Expected Return', plan.blendedReturn + '% p.a.'],
+                ['', ''],
+                ['DISCLAIMER', ''],
+                ['Note', 'This is an illustrative plan for educational purposes only.'],
+                ['', 'Consult a SEBI-Registered Investment Adviser (RIA) before investing.']
+            ]);
+            ws1['!cols'] = [{ wch: 30 }, { wch: 45 }];
+            XLSX.utils.book_append_sheet(wb, ws1, 'Overview');
+
+            // Sheet 2: Portfolio Allocation
+            var allocRows = (plan.allocs || []).map(function(a) {
+                return [a.name, a.pct + '%', (a.rate || '') + '%', a.liquid || '-', a.when || '-', a.tip || '-'];
+            });
+            var ws2 = XLSX.utils.aoa_to_sheet(
+                [['Asset Class', 'Allocation %', 'Expected Return p.a.', 'Liquidity', 'Best Used For', 'Note']].concat(allocRows)
+            );
+            ws2['!cols'] = [{ wch: 30 }, { wch: 14 }, { wch: 22 }, { wch: 12 }, { wch: 35 }, { wch: 50 }];
+            XLSX.utils.book_append_sheet(wb, ws2, 'Portfolio Allocation');
+
+            // Sheet 3: Goal SIPs
+            var sipRows;
+            if (plan.goalSIPs && plan.goalSIPs.length > 0) {
+                sipRows = plan.goalSIPs.map(function(g) {
+                    var gapStr = g.gap > 0 ? '\u20B9' + fmt(g.gap) + ' (extra SIP needed)'
+                               : g.gap !== null && g.gap <= 0 ? 'On track \u2713' : '\u2014';
+                    return [
+                        g.label, g.years,
+                        g.target > 0 ? '\u20B9' + fmt(g.target) : '\u2014',
+                        '\u20B9' + fmt(g.amt),
+                        '\u20B9' + fmt(g.corpus),
+                        gapStr
+                    ];
+                });
+            } else if (plan.goals && plan.goals.length > 0) {
+                sipRows = plan.goals.map(function(g) {
+                    return [g.emoji + ' ' + (g.customName || g.label), g.years,
+                            g.targetAmt ? '\u20B9' + g.targetAmt : '\u2014', '\u2014', '\u2014', '\u2014'];
+                });
+            } else {
+                sipRows = [['No goals added', '', '', '', '', '']];
+            }
+            var ws3 = XLSX.utils.aoa_to_sheet(
+                [['Goal', 'Timeline (yrs)', 'Target Amount', 'Monthly SIP', 'Projected Corpus', 'Gap']].concat(sipRows)
+            );
+            ws3['!cols'] = [{ wch: 28 }, { wch: 15 }, { wch: 20 }, { wch: 18 }, { wch: 20 }, { wch: 30 }];
+            XLSX.utils.book_append_sheet(wb, ws3, 'Goal SIPs');
+
+            // Sheet 4: Action Roadmap
+            var roadmapRows = (plan.roadmap || []).map(function(r, i) {
+                return [i + 1, r.title, r.desc];
+            });
+            var ws4 = XLSX.utils.aoa_to_sheet(
+                [['#', 'Action', 'What To Do']].concat(roadmapRows)
+            );
+            ws4['!cols'] = [{ wch: 4 }, { wch: 35 }, { wch: 70 }];
+            XLSX.utils.book_append_sheet(wb, ws4, 'Action Roadmap');
+
+            var safeName = (plan.name || 'My').replace(/[^a-zA-Z0-9]/g, '_');
+            XLSX.writeFile(wb, 'Financial-Plan-' + safeName + '-' + new Date().getFullYear() + '.xlsx');
         }
 
         // ---- Reset ----
@@ -4767,6 +4944,8 @@
             if (rc) rc.classList.add('hidden');
             var rp = document.getElementById('fp-results-placeholder');
             if (rp) rp.classList.remove('hidden');
+            var snap = document.getElementById('fp-snapshot-card');
+            if (snap) snap.classList.remove('hidden');
             // Restore two-column layout
             var leftCol  = document.getElementById('fp-left-col');
             var rightCol = document.getElementById('fp-right-col');
@@ -4823,6 +5002,7 @@
             if (tab4) { tab4.className = tab4.className.replace(/fp-tab-(active|inactive|done)-pill/g, ''); tab4.classList.add('fp-tab-inactive-pill'); }
             var rc=document.getElementById('fp-results-card'); if(rc) rc.classList.add('hidden');
             var rp=document.getElementById('fp-results-placeholder'); if(rp) rp.classList.remove('hidden');
+            var snap=document.getElementById('fp-snapshot-card'); if(snap) snap.classList.remove('hidden');
             fpLiveUpdate();
             if (typeof saveUserData === 'function') saveUserData();
         }

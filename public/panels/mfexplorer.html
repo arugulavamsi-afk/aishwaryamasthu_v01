@@ -159,38 +159,28 @@
                 </div>
             </div>
 
-            <!-- Signal bar legend -->
+            <!-- Star rating legend -->
             <div class="mfe-legend-scroll">
-                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Signal strength (within category):</span>
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Rating (within category):</span>
                 <span class="flex items-center gap-1.5">
-                    <span class="mfe-sig mfe-sig-5" style="gap:2px;">
-                        <span class="mfe-sig-bar on" style="height:4px;"></span><span class="mfe-sig-bar on" style="height:7px;"></span><span class="mfe-sig-bar on" style="height:11px;"></span><span class="mfe-sig-bar on" style="height:15px;"></span><span class="mfe-sig-bar on" style="height:19px;"></span>
-                    </span>
-                    <span class="text-[10px] font-bold text-violet-700">Elite</span><span class="text-[10px] text-slate-400">Top 10%</span>
+                    <span class="mfe-stars"><span class="mfe-star-on">★</span><span class="mfe-star-on">★</span><span class="mfe-star-on">★</span><span class="mfe-star-on">★</span><span class="mfe-star-on">★</span></span>
+                    <span class="text-[10px] font-bold text-amber-600">Elite</span><span class="text-[10px] text-slate-400">Top 10%</span>
                 </span>
                 <span class="flex items-center gap-1.5">
-                    <span class="mfe-sig mfe-sig-4" style="gap:2px;">
-                        <span class="mfe-sig-bar on" style="height:4px;"></span><span class="mfe-sig-bar on" style="height:7px;"></span><span class="mfe-sig-bar on" style="height:11px;"></span><span class="mfe-sig-bar on" style="height:15px;"></span><span class="mfe-sig-bar off" style="height:19px;"></span>
-                    </span>
-                    <span class="text-[10px] font-bold text-teal-700">Strong</span><span class="text-[10px] text-slate-400">Next 22.5%</span>
+                    <span class="mfe-stars"><span class="mfe-star-on">★</span><span class="mfe-star-on">★</span><span class="mfe-star-on">★</span><span class="mfe-star-on">★</span><span class="mfe-star-off">★</span></span>
+                    <span class="text-[10px] font-bold text-amber-600">Strong</span><span class="text-[10px] text-slate-400">Better than most</span>
                 </span>
                 <span class="flex items-center gap-1.5">
-                    <span class="mfe-sig mfe-sig-3" style="gap:2px;">
-                        <span class="mfe-sig-bar on" style="height:4px;"></span><span class="mfe-sig-bar on" style="height:7px;"></span><span class="mfe-sig-bar on" style="height:11px;"></span><span class="mfe-sig-bar off" style="height:15px;"></span><span class="mfe-sig-bar off" style="height:19px;"></span>
-                    </span>
-                    <span class="text-[10px] font-bold text-slate-500">Average</span><span class="text-[10px] text-slate-400">Middle 35%</span>
+                    <span class="mfe-stars"><span class="mfe-star-on">★</span><span class="mfe-star-on">★</span><span class="mfe-star-on">★</span><span class="mfe-star-off">★</span><span class="mfe-star-off">★</span></span>
+                    <span class="text-[10px] font-bold text-slate-500">Average</span><span class="text-[10px] text-slate-400">Middle of the pack</span>
                 </span>
                 <span class="flex items-center gap-1.5">
-                    <span class="mfe-sig mfe-sig-2" style="gap:2px;">
-                        <span class="mfe-sig-bar on" style="height:4px;"></span><span class="mfe-sig-bar on" style="height:7px;"></span><span class="mfe-sig-bar off" style="height:11px;"></span><span class="mfe-sig-bar off" style="height:15px;"></span><span class="mfe-sig-bar off" style="height:19px;"></span>
-                    </span>
-                    <span class="text-[10px] font-bold text-amber-700">Weak</span><span class="text-[10px] text-slate-400">Next 22.5%</span>
+                    <span class="mfe-stars"><span class="mfe-star-on">★</span><span class="mfe-star-on">★</span><span class="mfe-star-off">★</span><span class="mfe-star-off">★</span><span class="mfe-star-off">★</span></span>
+                    <span class="text-[10px] font-bold text-slate-500">Weak</span><span class="text-[10px] text-slate-400">Below most peers</span>
                 </span>
                 <span class="flex items-center gap-1.5">
-                    <span class="mfe-sig mfe-sig-1" style="gap:2px;">
-                        <span class="mfe-sig-bar on" style="height:4px;"></span><span class="mfe-sig-bar off" style="height:7px;"></span><span class="mfe-sig-bar off" style="height:11px;"></span><span class="mfe-sig-bar off" style="height:15px;"></span><span class="mfe-sig-bar off" style="height:19px;"></span>
-                    </span>
-                    <span class="text-[10px] font-bold text-red-700">Avoid</span><span class="text-[10px] text-slate-400">Bottom 10%</span>
+                    <span class="mfe-stars"><span class="mfe-star-on">★</span><span class="mfe-star-off">★</span><span class="mfe-star-off">★</span><span class="mfe-star-off">★</span><span class="mfe-star-off">★</span></span>
+                    <span class="text-[10px] font-bold text-red-600">Avoid</span><span class="text-[10px] text-slate-400">Bottom 10%</span>
                 </span>
             </div>
 
@@ -266,7 +256,7 @@
                             <tr style="background:linear-gradient(135deg,#1e3a5f 0%,#1a5276 40%,#0e6655 100%);">
                                 <th class="mfe-th" style="width:34px;text-align:center;">#</th>
                                 <th class="mfe-th mfe-th-sort" onclick="mfeSortBy('name')" style="width:180px;">Fund Name <span class="mfe-si">↕</span></th>
-                                <th class="mfe-th mfe-th-sort" onclick="mfeSortBy('score')" title="Signal strength: Elite (top 10%) → Strong → Average → Weak → Avoid (bottom 10%) — ranked within category">Signal <span class="mfe-si">↕</span></th>
+                                <th class="mfe-th mfe-th-sort" onclick="mfeSortBy('score')" title="Star Rating: 5★ Elite (top 10%) → 4★ Strong → 3★ Average → 2★ Weak → 1★ Avoid (bottom 10%) — ranked within category. Hover any rating for Returns / Safety / Consistency breakdown.">Rating <span class="mfe-si">↕</span></th>
                                 <th class="mfe-th mfe-th-sort" onclick="mfeSortBy('cagr')" id="mfe-cagr-header" title="Compounded Annual Growth Rate for selected period">CAGR <span class="mfe-si">↕</span></th>
                                 <th class="mfe-th mfe-th-sort" onclick="mfeSortBy('nav')" title="Latest NAV from AMFI">NAV ₹ <span class="mfe-si">↕</span></th>
                                 <th class="mfe-th mfe-th-sort" onclick="mfeSortBy('rollingHit')" title="Rolling Hit Rate — % of all 3Y windows with positive return. Higher = more consistent">Roll Hit% <span class="mfe-si">↕</span></th>
@@ -291,40 +281,31 @@
 
             <!-- Rating methodology -->
             <div class="bg-white rounded-2xl border border-[#f5c842]/30 p-4">
-                <h3 class="text-xs font-black text-slate-700 uppercase tracking-wider mb-3">📶 Signal Strength Methodology</h3>
+                <h3 class="text-xs font-black text-slate-700 uppercase tracking-wider mb-3">⭐ Star Rating Methodology</h3>
+                <!-- Star rating showcase -->
                 <div class="flex items-center gap-4 mb-3 flex-wrap">
-                    <span class="flex items-center gap-2">
-                        <span class="mfe-sig mfe-sig-5" style="gap:2px;">
-                            <span class="mfe-sig-bar on" style="height:5px;"></span><span class="mfe-sig-bar on" style="height:8px;"></span><span class="mfe-sig-bar on" style="height:12px;"></span><span class="mfe-sig-bar on" style="height:16px;"></span><span class="mfe-sig-bar on" style="height:20px;"></span>
-                        </span>
-                        <span class="text-xs font-black text-violet-700">Elite</span><span class="text-xs text-slate-500 ml-1">Top 10% of category</span>
-                    </span>
-                    <span class="flex items-center gap-2">
-                        <span class="mfe-sig mfe-sig-4" style="gap:2px;">
-                            <span class="mfe-sig-bar on" style="height:5px;"></span><span class="mfe-sig-bar on" style="height:8px;"></span><span class="mfe-sig-bar on" style="height:12px;"></span><span class="mfe-sig-bar on" style="height:16px;"></span><span class="mfe-sig-bar off" style="height:20px;"></span>
-                        </span>
-                        <span class="text-xs font-black text-teal-700">Strong</span><span class="text-xs text-slate-500 ml-1">Next 22.5%</span>
-                    </span>
-                    <span class="flex items-center gap-2">
-                        <span class="mfe-sig mfe-sig-3" style="gap:2px;">
-                            <span class="mfe-sig-bar on" style="height:5px;"></span><span class="mfe-sig-bar on" style="height:8px;"></span><span class="mfe-sig-bar on" style="height:12px;"></span><span class="mfe-sig-bar off" style="height:16px;"></span><span class="mfe-sig-bar off" style="height:20px;"></span>
-                        </span>
-                        <span class="text-xs font-black text-slate-500">Average</span><span class="text-xs text-slate-500 ml-1">Middle 35%</span>
-                    </span>
-                    <span class="flex items-center gap-2">
-                        <span class="mfe-sig mfe-sig-2" style="gap:2px;">
-                            <span class="mfe-sig-bar on" style="height:5px;"></span><span class="mfe-sig-bar on" style="height:8px;"></span><span class="mfe-sig-bar off" style="height:12px;"></span><span class="mfe-sig-bar off" style="height:16px;"></span><span class="mfe-sig-bar off" style="height:20px;"></span>
-                        </span>
-                        <span class="text-xs font-black text-amber-700">Weak</span><span class="text-xs text-slate-500 ml-1">Next 22.5%</span>
-                    </span>
-                    <span class="flex items-center gap-2">
-                        <span class="mfe-sig mfe-sig-1" style="gap:2px;">
-                            <span class="mfe-sig-bar on" style="height:5px;"></span><span class="mfe-sig-bar off" style="height:8px;"></span><span class="mfe-sig-bar off" style="height:12px;"></span><span class="mfe-sig-bar off" style="height:16px;"></span><span class="mfe-sig-bar off" style="height:20px;"></span>
-                        </span>
-                        <span class="text-xs font-black text-red-700">Avoid</span><span class="text-xs text-slate-500 ml-1">Bottom 10%</span>
-                    </span>
+                    <span class="flex items-center gap-1.5"><span class="mfe-stars"><span class="mfe-star-on">★</span><span class="mfe-star-on">★</span><span class="mfe-star-on">★</span><span class="mfe-star-on">★</span><span class="mfe-star-on">★</span></span><span class="text-xs font-black text-amber-600">Elite</span><span class="text-xs text-slate-400 ml-1">Top 10%</span></span>
+                    <span class="flex items-center gap-1.5"><span class="mfe-stars"><span class="mfe-star-on">★</span><span class="mfe-star-on">★</span><span class="mfe-star-on">★</span><span class="mfe-star-on">★</span><span class="mfe-star-off">★</span></span><span class="text-xs font-black text-amber-500">Strong</span><span class="text-xs text-slate-400 ml-1">Better than most</span></span>
+                    <span class="flex items-center gap-1.5"><span class="mfe-stars"><span class="mfe-star-on">★</span><span class="mfe-star-on">★</span><span class="mfe-star-on">★</span><span class="mfe-star-off">★</span><span class="mfe-star-off">★</span></span><span class="text-xs font-black text-slate-500">Average</span><span class="text-xs text-slate-400 ml-1">Middle of the pack</span></span>
+                    <span class="flex items-center gap-1.5"><span class="mfe-stars"><span class="mfe-star-on">★</span><span class="mfe-star-on">★</span><span class="mfe-star-off">★</span><span class="mfe-star-off">★</span><span class="mfe-star-off">★</span></span><span class="text-xs font-black text-slate-500">Weak</span><span class="text-xs text-slate-400 ml-1">Below most peers</span></span>
+                    <span class="flex items-center gap-1.5"><span class="mfe-stars"><span class="mfe-star-on">★</span><span class="mfe-star-off">★</span><span class="mfe-star-off">★</span><span class="mfe-star-off">★</span><span class="mfe-star-off">★</span></span><span class="text-xs font-black text-red-600">Avoid</span><span class="text-xs text-slate-400 ml-1">Bottom 10%</span></span>
                 </div>
-                <p class="text-[10px] text-slate-500 mb-3">Funds are ranked by composite score, then bucketed into 5 signal tiers by percentile — within category only. Each bar represents a score dimension; taller = stronger signal.</p>
+                <!-- 3-pillar explanation -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-3">
+                    <div class="rounded-xl p-2.5" style="background:#eff6ff;border:1px solid #bfdbfe;">
+                        <div class="text-xs font-black text-blue-700 mb-0.5">📈 Returns</div>
+                        <div class="text-[10px] text-slate-600">Did the fund grow your money? Combines rolling average return + alpha (outperformance vs category proxy).</div>
+                    </div>
+                    <div class="rounded-xl p-2.5" style="background:#f0fdfa;border:1px solid #99f6e4;">
+                        <div class="text-xs font-black text-teal-700 mb-0.5">🛡️ Safety</div>
+                        <div class="text-[10px] text-slate-600">How smooth was the ride? Combines Sharpe ratio, Sortino (downside protection), and NAV volatility.</div>
+                    </div>
+                    <div class="rounded-xl p-2.5" style="background:#ecfdf5;border:1px solid #6ee7b7;">
+                        <div class="text-xs font-black text-emerald-700 mb-0.5">🔄 Consistency</div>
+                        <div class="text-[10px] text-slate-600">Was it reliable year after year? Rolling Hit Rate — % of all 3-year windows with a positive return.</div>
+                    </div>
+                </div>
+                <p class="text-[10px] text-slate-500 mb-3">Funds are ranked by composite score and bucketed into 5 star tiers — within category only. 5★ = top 10%, 1★ = bottom 10%. Hover any rating to see the Returns / Safety / Consistency breakdown.</p>
                 <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
                     <div class="rounded-xl p-2.5 text-center" style="background:#ecfdf5;border:1px solid #6ee7b7;"><div class="text-base font-black text-emerald-600">25%</div><div class="text-[10px] font-bold text-slate-700">Roll Hit%</div><div class="text-[9px] text-slate-400">Consistency</div></div>
                     <div class="rounded-xl p-2.5 text-center" style="background:#f0fdfa;border:1px solid #99f6e4;"><div class="text-base font-black text-teal-600">20%</div><div class="text-[10px] font-bold text-slate-700">Sharpe</div><div class="text-[9px] text-slate-400">Risk-adj return</div></div>

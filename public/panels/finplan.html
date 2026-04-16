@@ -45,6 +45,14 @@
                 </div>
             </div>
 
+            <!-- SEBI Disclaimer -->
+            <div class="rounded-xl px-4 py-3 flex gap-3 items-start" style="background:#fffbeb;border:1px solid #fcd34d;">
+                <span class="text-amber-500 font-black text-base flex-shrink-0 leading-tight mt-0.5">⚠️</span>
+                <p class="text-[11px] text-amber-900 leading-relaxed m-0">
+                    <strong>Educational &amp; illustrative use only.</strong> This tool generates a sample portfolio allocation based on your inputs — it does not constitute investment advice, portfolio management, or a recommendation to buy or sell any security. The projections shown are estimates based on historical averages; actual returns may differ materially. <strong>Consult a SEBI-Registered Investment Adviser (RIA) before making any investment decision.</strong>
+                </p>
+            </div>
+
             <!-- Step Cards Wrapper -->
             <div class="flex flex-col lg:flex-row gap-5" id="fp-columns-wrapper">
 
@@ -369,7 +377,7 @@
 
                         <!-- Portfolio Donut + Legend -->
                         <div class="p-5">
-                            <h3 class="text-xs font-black text-slate-400 uppercase tracking-wider mb-3">📊 Recommended Portfolio Allocation</h3>
+                            <h3 class="text-xs font-black text-slate-400 uppercase tracking-wider mb-3">📊 Illustrative Portfolio Allocation</h3>
                             <div class="flex flex-col sm:flex-row items-center gap-4">
                                 <div class="relative flex-shrink-0" style="width:180px;height:180px;">
                                     <canvas id="fp-donut-chart"></canvas>
@@ -379,6 +387,16 @@
                                     </div>
                                 </div>
                                 <div class="flex-1 space-y-2 w-full" id="fp-legend"></div>
+                            </div>
+                        </div>
+
+                        <!-- Illustrative caveat -->
+                        <div class="px-5 pb-3">
+                            <div class="rounded-xl px-3 py-2.5 flex gap-2.5 items-start" style="background:#fffbeb;border:1px solid #fcd34d;">
+                                <span class="text-amber-500 font-black text-sm flex-shrink-0 leading-tight mt-0.5">⚠️</span>
+                                <p class="text-[10px] text-amber-900 leading-relaxed m-0">
+                                    <strong>This is a starting point, not a prescription.</strong> A SEBI-Registered Investment Adviser (RIA) will adjust this based on factors this tool cannot assess — your exact tax bracket, existing insurance gaps, estate planning needs, concentrated stock positions, and your own behavioral response to drawdowns. <strong>Do not invest based on this output alone.</strong>
+                                </p>
                             </div>
                         </div>
 
@@ -408,6 +426,21 @@
                         <div class="px-5 pb-5 mt-2">
                             <h3 class="text-xs font-black text-slate-400 uppercase tracking-wider mb-2">🚀 Your Action Roadmap</h3>
                             <div id="fp-roadmap" class="space-y-2"></div>
+                        </div>
+
+                        <!-- Export & Share -->
+                        <div class="px-5 pb-3">
+                            <h3 class="text-xs font-black text-slate-400 uppercase tracking-wider mb-2">📤 Export & Share</h3>
+                            <div class="flex gap-2">
+                                <button onclick="fpExportExcel()" class="flex-1 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center justify-center gap-2" style="background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                    Download Excel
+                                </button>
+                                <button onclick="waShare('finplan')" class="flex-1 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center justify-center gap-2" style="background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;">
+                                    <svg viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 flex-shrink-0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.557 4.133 1.535 5.876L.057 23.43a.75.75 0 00.918.924l5.688-1.493A11.946 11.946 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.907 0-3.7-.512-5.241-1.403l-.375-.22-3.877 1.018 1.01-3.769-.234-.389A9.953 9.953 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+                                    Share on WhatsApp
+                                </button>
+                            </div>
                         </div>
 
                         <!-- Edit + Reset -->

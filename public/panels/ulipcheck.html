@@ -3,11 +3,11 @@
             <!-- HEADER -->
             <div class="rounded-2xl px-4 py-3 text-white flex items-center justify-between gap-3 flex-wrap shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:2px solid rgba(245,200,66,0.4);box-shadow:0 4px 18px rgba(0,0,0,0.25);">
                 <div>
-                    <h2 class="text-base font-black flex items-center gap-2">🔍 ULIP / Endowment Policy Analyzer</h2>
-                    <p class="text-blue-200 text-[11px] mt-0.5">Should you surrender your LIC / ULIP? True policy IRR vs Buy Term + Invest the Difference (BTID). India's most impactful free financial calculator.</p>
+                    <h2 class="text-base font-black flex items-center gap-2" data-i18n="page.ulip.h">🔍 ULIP / Endowment Policy Analyzer</h2>
+                    <p class="text-blue-200 text-[11px] mt-0.5">Should you surrender your LIC / ULIP? True policy IRR vs Buy Term + Invest the Difference (BTID). Educational calculator — not investment advice. Consult a SEBI-RIA before acting.</p>
                 </div>
                 <button onclick="resetUlipCheck()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h5M20 20v-5h-5M4 9a9 9 0 0115-3M20 15a9 9 0 01-15 3"/></svg>Reset
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h5M20 20v-5h-5M4 9a9 9 0 0115-3M20 15a9 9 0 01-15 3"/></svg><span data-i18n="common.reset">Reset</span>
                 </button>
             </div>
 
@@ -17,11 +17,11 @@
                 <!-- INPUTS -->
                 <div class="lg:col-span-2 flex flex-col gap-2">
                     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
-                        <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">Your Policy Details</div>
+                        <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2" data-i18n="ulip.sec.policy">Your Policy Details</div>
                         <div class="grid grid-cols-2 gap-x-3 gap-y-2">
 
                             <div>
-                                <label class="epf-label">Annual Premium (₹)</label>
+                                <label class="epf-label" data-i18n="lbl.ulip.premium">Annual Premium (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
                                 <input id="uc-premium" type="text" inputmode="numeric" value="50,000" class="epf-input pl-7 text-slate-400"
                                     oninput="ucFmtInput(this);ucCalc();"
@@ -32,7 +32,7 @@
                             </div>
 
                             <div>
-                                <label class="epf-label">Policy Term (years)</label>
+                                <label class="epf-label" data-i18n="lbl.ulip.term">Policy Term (years)</label>
                                 <input id="uc-term" type="number" min="5" max="40" value="21" class="epf-input text-slate-400"
                                     oninput="ucCalc();this.classList.remove('text-slate-400');"
                                     onfocus="if(this.value==='21'||this.value===''){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
@@ -41,7 +41,7 @@
                             </div>
 
                             <div>
-                                <label class="epf-label">Years Paid So Far</label>
+                                <label class="epf-label" data-i18n="lbl.ulip.paid">Years Paid So Far</label>
                                 <input id="uc-paid" type="number" min="0" max="40" value="5" class="epf-input text-slate-400"
                                     oninput="ucCalc();this.classList.remove('text-slate-400');"
                                     onfocus="if(this.value==='5'||this.value===''){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
@@ -50,7 +50,7 @@
                             </div>
 
                             <div>
-                                <label class="epf-label">Maturity Value (₹)</label>
+                                <label class="epf-label" data-i18n="lbl.ulip.maturity">Maturity Value (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
                                 <input id="uc-maturity" type="text" inputmode="numeric" value="15,00,000" class="epf-input pl-7 text-slate-400"
                                     oninput="ucFmtInput(this);ucCalc();"
@@ -61,7 +61,7 @@
                             </div>
 
                             <div>
-                                <label class="epf-label">Surrender Value (₹)</label>
+                                <label class="epf-label" data-i18n="lbl.ulip.sv">Surrender Value (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
                                 <input id="uc-sv" type="text" inputmode="numeric" value="1,50,000" class="epf-input pl-7 text-slate-400"
                                     oninput="ucFmtInput(this);ucCalc();"
@@ -72,7 +72,7 @@
                             </div>
 
                             <div>
-                                <label class="epf-label">Sum Assured / Cover (₹)</label>
+                                <label class="epf-label" data-i18n="lbl.ulip.cover">Sum Assured / Cover (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
                                 <input id="uc-cover" type="text" inputmode="numeric" value="10,00,000" class="epf-input pl-7 text-slate-400"
                                     oninput="ucFmtInput(this);ucCalc();"
@@ -83,7 +83,7 @@
                             </div>
 
                             <div>
-                                <label class="epf-label">Your Current Age</label>
+                                <label class="epf-label" data-i18n="lbl.ulip.age">Your Current Age</label>
                                 <input id="uc-age" type="number" min="18" max="65" value="35" class="epf-input text-slate-400"
                                     oninput="ucCalc();this.classList.remove('text-slate-400');"
                                     onfocus="if(this.value==='35'||this.value===''){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
@@ -143,7 +143,7 @@
                     <!-- IRR Hero row -->
                     <div class="grid grid-cols-3 gap-2">
                         <div class="rounded-2xl p-3 text-center shine-header" style="background:linear-gradient(135deg,#450a0a,#7f1d1d);border:2px solid #ef4444;">
-                            <div class="text-[9px] font-black text-red-200 uppercase tracking-wider">Policy IRR</div>
+                            <div class="text-[9px] font-black text-red-200 uppercase tracking-wider" data-i18n="res.ulip.irr">Policy IRR</div>
                             <div id="uc-irr" class="text-2xl font-black text-white mt-0.5">—</div>
                             <div id="uc-irr-grade" class="text-[9px] text-red-200 mt-0.5 leading-tight">Enter details above</div>
                         </div>
@@ -176,7 +176,7 @@
                     <!-- Advantage banner -->
                     <div class="rounded-2xl px-4 py-2.5 flex items-center justify-between gap-3" style="background:#f0fdf4;border:1.5px solid #86efac;">
                         <div>
-                            <div class="text-[9px] font-black text-emerald-700 uppercase tracking-wider">BTID Advantage</div>
+                            <div class="text-[9px] font-black text-emerald-700 uppercase tracking-wider" data-i18n="res.ulip.advantage">BTID Advantage</div>
                             <div id="uc-advantage" class="text-lg font-black" style="color:#10b981;">—</div>
                         </div>
                         <div class="text-right">

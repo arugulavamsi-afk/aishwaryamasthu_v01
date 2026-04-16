@@ -190,11 +190,11 @@
         }
 
         // ── Signal ──
-        section('Signal Strength');
+        section('Star Rating');
         const sigVals = funds.map((_,i) => mets[i]?.stars ?? null);
-        row('Signal', sigVals, highlight(sigVals),
-            v => mfeSignalHtml(v),
-            'Percentile rank within category (1=Avoid → 5=Elite)');
+        row('Rating', sigVals, highlight(sigVals),
+            (v, i) => mfeSignalHtml(v, mets[i]?.score ?? null, mets[i]?.pillars ?? null),
+            '5★ Elite (top 10%) → 4★ Strong → 3★ Average → 2★ Weak → 1★ Avoid. Hover for Returns / Safety / Consistency breakdown.');
 
         // ── CAGR ──
         section('Returns (CAGR)');
