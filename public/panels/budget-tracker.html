@@ -1,0 +1,120 @@
+<div id="budgettrack-panel" class="hidden w-full flex flex-col gap-3">
+
+    <!-- HEADER -->
+    <div class="rounded-2xl px-4 py-3 text-white shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:2px solid rgba(245,200,66,0.4);box-shadow:0 4px 18px rgba(0,0,0,0.25);">
+        <div class="flex items-center justify-between gap-3 flex-wrap">
+            <div>
+                <h2 class="text-base font-black flex items-center gap-2">📊 Budget &amp; Expense Tracker</h2>
+                <p class="text-blue-200 text-[11px] mt-0.5">Track monthly spend vs budget · Catch outliers · View 12-month trend · Donut breakdown</p>
+            </div>
+            <div class="flex items-center gap-1.5 flex-wrap">
+                <button onclick="_btNavMonth(-1)"
+                    style="padding:5px 10px;border-radius:10px;font-weight:900;font-size:14px;background:rgba(255,255,255,0.1);color:#e2e8f0;border:1px solid rgba(255,255,255,0.2);cursor:pointer;line-height:1;">‹</button>
+                <span id="bt-month-disp"
+                    style="font-size:13px;font-weight:800;color:#f8fafc;min-width:70px;text-align:center;">Apr 2026</span>
+                <button onclick="_btNavMonth(1)"
+                    style="padding:5px 10px;border-radius:10px;font-weight:900;font-size:14px;background:rgba(255,255,255,0.1);color:#e2e8f0;border:1px solid rgba(255,255,255,0.2);cursor:pointer;line-height:1;">›</button>
+                <button id="bt-today-btn" onclick="_btGoToToday()" style="display:none;padding:4px 10px;border-radius:10px;font-size:10px;font-weight:700;background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);cursor:pointer;">Today</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SUMMARY CARDS -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <div class="rounded-xl px-3 py-2.5" style="background:#f0f9ff;border:1px solid #bae6fd;">
+            <div style="font-size:9px;font-weight:900;color:#0369a1;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;">Total Budget</div>
+            <div id="bt-sum-budget" style="font-size:15px;font-weight:900;color:#0c4a6e;">—</div>
+        </div>
+        <div class="rounded-xl px-3 py-2.5" style="background:#f0fdf4;border:1px solid #86efac;">
+            <div style="font-size:9px;font-weight:900;color:#15803d;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;">Total Spent</div>
+            <div id="bt-sum-actual" style="font-size:15px;font-weight:900;color:#166534;">—</div>
+        </div>
+        <div class="rounded-xl px-3 py-2.5" style="background:#fef9c3;border:1px solid #fde047;">
+            <div style="font-size:9px;font-weight:900;color:#92400e;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;">Saved / Over</div>
+            <div id="bt-sum-diff" style="font-size:15px;font-weight:900;color:#78350f;">—</div>
+        </div>
+        <div class="rounded-xl px-3 py-2.5 col-span-2 sm:col-span-1" style="background:#fdf4ff;border:1px solid #e9d5ff;">
+            <div style="font-size:9px;font-weight:900;color:#7c3aed;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;">Outliers</div>
+            <div id="bt-sum-outliers" style="font-size:10px;font-weight:700;color:#6b21a8;line-height:1.3;">—</div>
+        </div>
+    </div>
+
+    <!-- PROGRESS BAR -->
+    <div style="background:#f1f5f9;border-radius:8px;overflow:hidden;height:8px;position:relative;">
+        <div id="bt-bar-fill" style="height:100%;width:0%;background:#22c55e;border-radius:8px;transition:width .4s,background .4s;"></div>
+    </div>
+    <div id="bt-bar-pct" style="font-size:9px;color:#64748b;text-align:right;margin-top:-4px;font-weight:600;"></div>
+
+    <!-- MAIN: TABLE + CHART -->
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-3">
+
+        <!-- CATEGORY TABLE -->
+        <div class="lg:col-span-3 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <table style="width:100%;border-collapse:collapse;">
+                <thead>
+                    <tr style="background:#f8fafc;">
+                        <th style="padding:6px 8px;text-align:left;font-size:9px;font-weight:900;color:#64748b;text-transform:uppercase;letter-spacing:.05em;border-bottom:2px solid #e2e8f0;">Category</th>
+                        <th style="padding:6px 4px;text-align:left;font-size:9px;font-weight:900;color:#64748b;text-transform:uppercase;letter-spacing:.05em;border-bottom:2px solid #e2e8f0;min-width:90px;">Budget (₹)</th>
+                        <th style="padding:6px 4px;text-align:left;font-size:9px;font-weight:900;color:#64748b;text-transform:uppercase;letter-spacing:.05em;border-bottom:2px solid #e2e8f0;min-width:90px;">Spent (₹)</th>
+                        <th style="padding:6px 8px;text-align:right;font-size:9px;font-weight:900;color:#64748b;text-transform:uppercase;letter-spacing:.05em;border-bottom:2px solid #e2e8f0;">Status</th>
+                    </tr>
+                </thead>
+                <tbody id="bt-tbody">
+                    <!-- Rendered by JS -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- CHART PANEL -->
+        <div class="lg:col-span-2 rounded-2xl p-3 flex flex-col gap-2" style="background:#0f172a;border:1px solid rgba(255,255,255,0.08);">
+            <!-- Chart type selector -->
+            <div style="display:flex;gap:4px;">
+                <button id="bt-tab-bar"   onclick="window._btSetChartType('bar')"
+                    style="flex:1;padding:5px 4px;border-radius:8px;font-size:9px;font-weight:700;border:1px solid rgba(255,255,255,0.12);cursor:pointer;color:rgba(255,255,255,0.45);background:transparent;transition:all .15s;">📊 Bar</button>
+                <button id="bt-tab-line"  onclick="window._btSetChartType('line')"
+                    style="flex:1;padding:5px 4px;border-radius:8px;font-size:9px;font-weight:700;border:1px solid rgba(255,255,255,0.12);cursor:pointer;color:rgba(255,255,255,0.45);background:transparent;transition:all .15s;">📈 Trend</button>
+                <button id="bt-tab-donut" onclick="window._btSetChartType('donut')"
+                    style="flex:1;padding:5px 4px;border-radius:8px;font-size:9px;font-weight:700;border:1px solid rgba(255,255,255,0.12);cursor:pointer;color:rgba(255,255,255,0.45);background:transparent;transition:all .15s;">🍩 Split</button>
+            </div>
+            <!-- Chart description -->
+            <div style="font-size:9px;color:rgba(255,255,255,0.3);text-align:center;margin-top:-2px;">
+                <span id="bt-chart-desc">Budget vs Actual spend per category this month</span>
+            </div>
+            <!-- Canvas -->
+            <div style="position:relative;flex:1;min-height:260px;">
+                <canvas id="bt-chart-canvas" style="position:absolute;inset:0;width:100%!important;height:100%!important;"></canvas>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- TIP ROW -->
+    <div style="background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.2);border-radius:12px;padding:10px 14px;font-size:10px;color:#4338ca;line-height:1.6;">
+        💡 <strong>How to use:</strong> Enter your monthly budget per category, then fill in actual spend as the month progresses. Red = over budget. Switch to <strong>Trend</strong> to spot months you overspent, or <strong>Split</strong> to see where your money goes.
+    </div>
+
+    <style>
+        .bt-num-inp {
+            width: 100%;
+            padding: 5px 6px 5px 18px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 7px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #1e293b;
+            outline: none;
+            transition: border-color .15s, box-shadow .15s;
+            box-sizing: border-box;
+        }
+        .bt-num-inp:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 2px rgba(99,102,241,0.15);
+        }
+        .bt-num-inp.text-slate-400 {
+            color: #94a3b8 !important;
+        }
+        .bt-num-inp::placeholder { color: #cbd5e1; }
+    </style>
+
+</div>

@@ -694,6 +694,9 @@
         <div id="nomtrack-panel" class="hidden w-full flex flex-col gap-3" data-panel-src="panels/nomtrack.html"></div>
         <!-- =================== END NOMINATION TRACKER PANEL ======================== -->
 
+        <div id="budgettrack-panel" class="hidden w-full flex flex-col gap-3" data-panel-src="panels/budget-tracker.html"></div>
+        <!-- =================== END BUDGET TRACKER PANEL ======================== -->
+
         <!-- =================== CATEGORY: CALCULATORS ======================== -->
         <div id="dashcat-calc-panel" class="hidden w-full panel-fade">
             <div style="max-width:820px;margin:0 auto;">
@@ -768,6 +771,7 @@
                 <button onclick="switchMode('goldcomp')" class="dash-card group" data-color="#b45309"><div class="dash-card-icon">🥇</div><div class="dash-card-title" data-i18n="card.gold.title">Gold Investment Comparator</div><div class="dash-card-desc" data-i18n="card.gold.desc">ETF vs Gold MF vs Physical Gold · True cost after GST + making charges + locker · Digital Gold warning · GMS idle gold insight</div><div class="dash-card-arrow">→</div></button>
                 <button onclick="switchMode('cgcalc')" class="dash-card group" data-color="#7c3aed"><div class="dash-card-icon">📉</div><div class="dash-card-title">Capital Gains Calculator</div><div class="dash-card-desc">Post-Budget 2024 · Equity LTCG 12.5% · Debt MF slab-rate · Gold 24-mo · SGB exempt at maturity · Indexation vs flat-rate auto-pick</div><div class="dash-card-arrow">→</div></button>
                 <button onclick="switchMode('nomtrack')" class="dash-card group" data-color="#7c3aed"><div class="dash-card-icon">📜</div><div class="dash-card-title">Nomination Tracker &amp; Will Awareness</div><div class="dash-card-desc">~30% EPF accounts have no nominee · Bank · MF · Insurance · EPF · Demat · Will checklist · Estate readiness score</div><div class="dash-card-arrow">→</div></button>
+                <button onclick="switchMode('budgettrack')" class="dash-card group" data-color="#0891b2"><div class="dash-card-icon">📊</div><div class="dash-card-title">Budget &amp; Expense Tracker</div><div class="dash-card-desc">Monthly spend vs budget · Category outliers · 12-month trend line · Donut breakdown · Catch where your money goes</div><div class="dash-card-arrow">→</div></button>
             </div>
             </div>
         </div>
@@ -2369,6 +2373,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
     <script src="js/nom-track.js"></script>
+    <script src="js/budget-tracker.js"></script>
     <!-- ── dashboard core: tool catalog + favs + dashboard render ── -->
     <script src="dashboard.js"></script>
 </body>

@@ -645,6 +645,14 @@
                 obj['hra-slab']   = document.getElementById('hra-slab')?.value   || '20';
                 return obj;
             });
+            const budgetTracker = _panelData('bt-month-disp', function() {
+                return {
+                    month:      window._btMonth       || '',
+                    chartType:  window._btChartType   || 'bar',
+                    data:       window._btData        ? JSON.stringify(window._btData)       : '{}',
+                    customCats: window._btCustomCats  ? JSON.stringify(window._btCustomCats) : '[]'
+                };
+            });
             const nomTrack = _panelData('nt-bank-status', function() {
                 var obj = {};
                 ['bank','mf','life','epf','ppf','nps','demat','health'].forEach(function(a) {
@@ -709,7 +717,8 @@
                 ...(netWorth     ? { netWorth }     : {}),
                 ...(cgCalc       ? { cgCalc }       : {}),
                 ...(hraCalc      ? { hraCalc }      : {}),
-                ...(nomTrack     ? { nomTrack }     : {}),
+                ...(nomTrack      ? { nomTrack }      : {}),
+                ...(budgetTracker ? { budgetTracker } : {}),
                 nwHistory: (typeof _nwHistory !== 'undefined' && _nwHistory.length) ? _nwHistory.slice() : (_base.nwHistory || [])
             });
             // Keep in-memory cache in sync so subsequent saves inherit current values
@@ -1508,6 +1517,24 @@
                         });
                         if (typeof nomRender === 'function') nomRender();
                     } catch(e) { console.warn('loadUserData nomTrack:', e); }
+                });
+            }
+
+            // Budget & Expense Tracker restore
+            if (data.budgetTracker) {
+                var _btRestore = data.budgetTracker;
+                if (_btRestore.month)     window._btMonth     = _btRestore.month;
+                if (_btRestore.chartType) window._btChartType = _btRestore.chartType;
+                if (_btRestore.data) {
+                    try { window._btData = JSON.parse(_btRestore.data); } catch(e2) {}
+                }
+                if (_btRestore.customCats) {
+                    try { window._btCustomCats = JSON.parse(_btRestore.customCats); } catch(e2) {}
+                }
+                _applyWhenReady('bt-month-disp', function() {
+                    try {
+                        if (typeof initBudgetTracker === 'function') initBudgetTracker();
+                    } catch(e) { console.warn('loadUserData budgetTracker:', e); }
                 });
             }
 

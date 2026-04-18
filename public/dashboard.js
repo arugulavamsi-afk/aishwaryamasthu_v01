@@ -32,6 +32,7 @@
         cgcalc:       { icon:'💹', title:'Capital Gains Calculator',     color:'#7c3aed' },
         hracalc:      { icon:'🏠', title:'HRA Calculator',              color:'#0891b2' },
         nomtrack:     { icon:'📜', title:'Nomination Tracker & Will',   color:'#7c3aed' },
+        budgettrack:  { icon:'📊', title:'Budget & Expense Tracker',    color:'#0891b2' },
     };
 
     function _dashGetFavs() {
