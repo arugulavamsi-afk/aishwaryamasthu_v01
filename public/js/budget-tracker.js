@@ -136,7 +136,7 @@
         var diff = budget - actual;
         if (budget === 0 && actual === 0) return '<span style="color:#94a3b8;font-size:10px;">—</span>';
         if (over) return '<span style="color:#ef4444;font-weight:700;font-size:10px;">⚠ +₹' + _btFmt(Math.abs(diff)) + '</span>';
-        if (budget > 0) return '<span style="color:#16a34a;font-size:10px;">✓ ₹' + _btFmt(diff) + ' left</span>';
+        if (budget > 0) return '<span style="color:#16a34a;font-size:10px;">✓ ₹' + (diff === 0 ? '0' : _btFmt(diff)) + ' left</span>';
         return '<span style="color:#94a3b8;font-size:10px;">no budget</span>';
     }
 
