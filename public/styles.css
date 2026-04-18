@@ -591,6 +591,18 @@
             transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s;
             margin-top: 4px;
             font-family: 'Inter', sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+        .auth-submit-btn::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,0.35) 50%, transparent 65%);
+            background-size: 200% 100%;
+            animation: idleShine 3s linear infinite;
+            pointer-events: none;
+            border-radius: inherit;
         }
         .auth-submit-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(245,200,66,0.45); }
         .auth-submit-btn:active { transform: translateY(0); }
@@ -640,6 +652,18 @@
             box-shadow: 0 6px 20px rgba(245,200,66,0.4);
             transition: transform 0.15s, box-shadow 0.15s;
             font-family: 'Inter', sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+        .auth-enter-btn::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,0.35) 50%, transparent 65%);
+            background-size: 200% 100%;
+            animation: idleShine 3s linear infinite;
+            pointer-events: none;
+            border-radius: inherit;
         }
         .auth-enter-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(245,200,66,0.5); }
         .auth-logout-btn {

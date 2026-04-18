@@ -437,6 +437,7 @@
             window._switchingMode = true;
 
             currentMode = mode;
+            if (typeof roadmapMarkVisited === 'function') roadmapMarkVisited(mode);
             // No pill tabs to update — breadcrumb handled by updateBreadcrumb()
 
             const isDashboard  = mode === 'dashboard';

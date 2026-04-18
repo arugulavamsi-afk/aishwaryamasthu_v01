@@ -257,8 +257,11 @@
                 </div>
             </div>
 
+            <!-- ── GUIDED ROADMAP ── -->
+            <div id="roadmap-card" class="mb-4"></div>
+
             <!-- ── MY PROFILE TILE ── -->
-            <button onclick="switchMode('myprofile')" class="mb-4 w-full flex items-center gap-3 px-4 py-3 rounded-2xl cursor-pointer text-left transition-all hover:shadow-lg"
+            <button onclick="switchMode('myprofile')" class="mb-4 w-full flex items-center gap-3 px-4 py-3 rounded-2xl cursor-pointer text-left transition-all hover:shadow-lg shine-header"
                 style="background:linear-gradient(130deg,#e8d5a3 0%,#f5c842 35%,#e8a44a 60%,#c97f3a 80%,#e8d5a3 100%);border:1.5px solid rgba(245,200,66,0.60);box-shadow:0 4px 16px rgba(245,200,66,0.18);max-width:460px;margin-left:auto;margin-right:auto;">
                 <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0" style="background:rgba(255,255,255,0.55);box-shadow:0 1px 4px rgba(0,0,0,0.10);">👤</div>
                 <div class="flex-1 min-w-0">
@@ -304,20 +307,7 @@
 
             </div>
 
-            <!-- Bottom tip -->
-            <div class="mt-6 rounded-2xl px-5 py-4 flex items-start gap-3" style="background:#f8fafc;border:1px solid #e2e8f0;">
-                <span class="text-2xl flex-shrink-0">💡</span>
-                <div>
-                    <div class="text-xs font-black text-slate-700 mb-1" data-i18n="dash.tip">New to investing? Start here</div>
-                    <div class="text-[11px] text-slate-500 leading-relaxed">
-                        <strong>Step 1</strong> → Check your <span class="text-pink-600 font-bold cursor-pointer" onclick="switchMode('healthscore')">Financial Health Score</span> &nbsp;·&nbsp;
-                        <strong>Step 2</strong> → Build your <span class="text-red-600 font-bold cursor-pointer" onclick="switchMode('finplan')">Financial Plan</span> &nbsp;·&nbsp;
-                        <strong>Step 3</strong> → Explore <span class="text-cyan-600 font-bold cursor-pointer" onclick="switchMode('mfexplorer')">MF Explorer</span> to pick funds
-                    </div>
-                </div>
-            </div>
-
-            </div><!-- end centering wrapper -->
+</div><!-- end centering wrapper -->
         </div>
         <!-- =================== END DASHBOARD PANEL ======================== -->
 
@@ -2374,6 +2364,7 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
     <script src="js/nom-track.js"></script>
     <script src="js/budget-tracker.js"></script>
+    <script src="js/roadmap.js"></script>
     <!-- ── dashboard core: tool catalog + favs + dashboard render ── -->
     <script src="dashboard.js"></script>
 </body>

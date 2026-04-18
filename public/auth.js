@@ -719,6 +719,12 @@
                 ...(hraCalc      ? { hraCalc }      : {}),
                 ...(nomTrack      ? { nomTrack }      : {}),
                 ...(budgetTracker ? { budgetTracker } : {}),
+                roadmap: window._rmState ? {
+                    profile: window._rmState.profile || null,
+                    visited: window._rmState.visited  || [],
+                    dismissed: window._rmState.dismissed || false,
+                    collapsed: window._rmState.collapsed || false
+                } : (_base.roadmap || {}),
                 nwHistory: (typeof _nwHistory !== 'undefined' && _nwHistory.length) ? _nwHistory.slice() : (_base.nwHistory || [])
             });
             // Keep in-memory cache in sync so subsequent saves inherit current values
@@ -1536,6 +1542,12 @@
                         if (typeof initBudgetTracker === 'function') initBudgetTracker();
                     } catch(e) { console.warn('loadUserData budgetTracker:', e); }
                 });
+            }
+
+            // Roadmap state restore
+            if (data.roadmap) {
+                window._rmState = Object.assign({ profile: null, visited: [], dismissed: false, collapsed: false }, data.roadmap);
+                if (typeof initRoadmap === 'function') initRoadmap();
             }
 
             } finally {
