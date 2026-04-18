@@ -31,6 +31,13 @@
         retHubCalc();
     }
 
+    function rhToggleStress() {
+        var panel   = document.getElementById('rh-stress-panel');
+        var chevron = document.getElementById('rh-stress-chevron');
+        var hidden  = panel.classList.toggle('hidden');
+        if (chevron) chevron.textContent = hidden ? '▼ Show' : '▲ Hide';
+    }
+
     function resetRetirementHub() {
         Object.entries(_rhDefs).forEach(function(kv) {
             var el = document.getElementById(kv[0]); if (!el) return;
@@ -137,6 +144,16 @@
             }
         }
 
+        // ── Stress test: -30% crash at retirement start ───────────────────
+        var stressDepletionAge = null;
+        if (needMo > 0 && totalCorpus > 0) {
+            var stressBal = totalCorpus * 0.70;
+            for (var smo = 1; smo <= 60 * 12; smo++) {
+                stressBal = stressBal * (1 + rMo) - needMo;
+                if (stressBal <= 0) { stressDepletionAge = retAge + Math.floor(smo / 12); break; }
+            }
+        }
+
         // ── DOM updates ────────────────────────────────────────────────────
         function set(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; }
         function pct(part)  { return totalCorpus > 0 ? Math.round(part / totalCorpus * 100) : 0; }
@@ -206,6 +223,33 @@
             if (medExpToday > 0)
                 lines.push('<span style="color:#be123c;font-weight:700">🏥 Healthcare note:</span> Medical costs projected at <strong>' + (medInflation * 100).toFixed(0) + '% p.a.</strong> (vs ' + (inflation * 100).toFixed(0) + '% general inflation). Today\'s ₹' + medExpToday.toLocaleString('en-IN') + '/mo medical spend inflates to <strong>' + rhFmt(medInflated) + '/mo</strong> by retirement — included in the numbers above.');
             insEl.innerHTML = lines.map(function(l) { return '<p style="margin-bottom:4px">' + l + '</p>'; }).join('');
+        }
+
+        // ── Stress panel DOM updates ───────────────────────────────────────
+        var stressDeplDisp = stressDepletionAge ? String(stressDepletionAge) : '100+';
+        var rhSd  = document.getElementById('rh-stress-depletion');
+        var rhBd  = document.getElementById('rh-base-depletion');
+        var rhSl  = document.getElementById('rh-stress-label');
+        var rhBl  = document.getElementById('rh-base-label');
+        var rhSi  = document.getElementById('rh-stress-insight');
+        if (rhBd) rhBd.textContent = depletionAge ? String(depletionAge) : '100+';
+        if (rhSd) rhSd.textContent = stressDeplDisp;
+        if (rhBl) {
+            rhBl.textContent = depletionAge ? 'Depletes age ' + depletionAge : 'Outlasts life expectancy';
+            rhBl.style.color = depletionAge ? '#fbbf24' : '#86efac';
+        }
+        if (rhSl) {
+            rhSl.textContent = stressDepletionAge ? 'Depletes age ' + stressDepletionAge : 'Outlasts life expectancy';
+            rhSl.style.color = stressDepletionAge ? '#fca5a5' : '#86efac';
+        }
+        if (rhSi) {
+            if (stressDepletionAge && !depletionAge) {
+                rhSi.innerHTML = '⚠️ A 30% crash in Year 1 turns a <strong>healthy corpus into depletion at age ' + stressDepletionAge + '</strong>. Your base case outlasts life expectancy — but a bad sequence erases that advantage. The 3-bucket strategy keeps 1–2 years of expenses in liquid assets so you never sell equity at the worst time.';
+            } else if (stressDepletionAge && depletionAge) {
+                rhSi.innerHTML = '⚠️ A 30% crash in Year 1 moves depletion from age <strong>' + depletionAge + ' → ' + stressDepletionAge + '</strong>. Keeping Bucket 1 (liquid, 1yr) intact means you ride out crashes without forced selling.';
+            } else {
+                rhSi.innerHTML = '✅ Even with a 30% crash in Year 1, your corpus outlasts life expectancy. <strong>Excellent resilience.</strong> Your plan absorbs severe sequence-of-returns risk.';
+            }
         }
 
         if (typeof saveUserData === 'function') saveUserData();

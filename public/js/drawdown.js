@@ -129,6 +129,53 @@
 
         _ddYearData = yearData;
 
+        // Stress test: -30% crash at start of retirement, then normal returns
+        var stressBal = corpus * 0.70;
+        var stressDepletionAge = null;
+        for (var syr = 1; syr <= planYears; syr++) {
+            var sage        = retAge + syr - 1;
+            var sinflFactor = Math.pow(1 + inflation, syr - 1);
+            var smonthlyExp = expAtRetirement * sinflFactor;
+            var smonthlyOth = otherIncome * sinflFactor;
+            var snetMonthly = Math.max(0, smonthlyExp - smonthlyOth);
+            var sannualWithd = snetMonthly * 12;
+            stressBal = stressBal * (1 + returnRate) - sannualWithd;
+            if (stressBal <= 0 && stressDepletionAge === null) {
+                stressDepletionAge = sage + 1;
+                stressBal = 0;
+            }
+        }
+        var stressDeplDisp = stressDepletionAge ? String(stressDepletionAge) : '100+';
+
+        // Update stress panel
+        var sdEl = document.getElementById('dd-stress-depletion');
+        var sbEl = document.getElementById('dd-base-depletion');
+        if (sdEl) sdEl.textContent = stressDeplDisp;
+        if (sbEl) sbEl.textContent = deplAgeDisp;
+        var sdLbl = document.getElementById('dd-stress-label');
+        var sbLbl = document.getElementById('dd-base-label');
+        if (sbLbl) {
+            sbLbl.textContent = depletionAge ? 'Depletes age ' + depletionAge : 'Outlasts age 100';
+            sbLbl.style.color = depletionAge ? '#fbbf24' : '#86efac';
+        }
+        if (sdLbl) {
+            sdLbl.textContent = stressDepletionAge ? 'Depletes age ' + stressDepletionAge : 'Outlasts age 100';
+            sdLbl.style.color = stressDepletionAge ? '#fca5a5' : '#86efac';
+        }
+        var stressIns = document.getElementById('dd-stress-insight');
+        if (stressIns) {
+            var gapYrs = stressDepletionAge
+                ? (depletionAge ? (stressDepletionAge - depletionAge) : (stressDepletionAge - 100))
+                : 0;
+            if (stressDepletionAge && !depletionAge) {
+                stressIns.innerHTML = '⚠️ A 30% crash in Year 1 turns a <strong>healthy corpus into depletion at age ' + stressDepletionAge + '</strong>. Your base case survives to 100+ — but a bad sequence erases that entirely. The 3-bucket strategy (Bucket 1 = 1yr liquid) is your defence: you never sell equity in a crash.';
+            } else if (stressDepletionAge && depletionAge) {
+                stressIns.innerHTML = '⚠️ A 30% crash in Year 1 moves depletion from age <strong>' + depletionAge + ' → ' + stressDepletionAge + '</strong> — ' + Math.abs(gapYrs) + ' years earlier. Holding 1–2 years of expenses in liquid assets (Bucket 1) avoids forced selling at the worst time.';
+            } else {
+                stressIns.innerHTML = '✅ Even with a 30% crash in Year 1, your corpus outlasts age 100. <strong>Excellent resilience.</strong> Your withdrawal rate is conservative enough to absorb severe sequence-of-returns risk.';
+            }
+        }
+
         // Key metrics
         var realReturn = ((1 + returnRate) / (1 + inflation) - 1) * 100;
         var swr30 = (realReturn > 0)
@@ -278,6 +325,13 @@
             if (btn) btn.classList.toggle('dd-chart-btn-active', v === view);
         });
         ddRenderChart(_ddYearData);
+    }
+
+    function ddToggleStress() {
+        var panel   = document.getElementById('dd-stress-panel');
+        var chevron = document.getElementById('dd-stress-chevron');
+        var hidden  = panel.classList.toggle('hidden');
+        if (chevron) chevron.textContent = hidden ? '▼ Show' : '▲ Hide';
     }
 
     function ddToggleTable() {
