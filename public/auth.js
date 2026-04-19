@@ -3,7 +3,7 @@
     ============================================================ */
     (function() {
         const container = document.getElementById('coins-container');
-        for (let i = 0; i < 16; i++) {
+        for (let i = 0; i < 8; i++) {
             const c = document.createElement('div');
             c.className = 'coin';
             const size = 4 + Math.random() * 7;

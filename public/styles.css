@@ -111,14 +111,14 @@
 
         /* ===== PAGE / PANEL TRANSITION ===== */
         .panel-fade {
-            animation: panelIn 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+            animation: panelIn 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
             will-change: transform, opacity;
             backface-visibility: hidden;
             -webkit-backface-visibility: hidden;
         }
         @keyframes panelIn {
-            from { opacity: 0; transform: translateY(10px) scale(0.992); }
-            to   { opacity: 1; transform: translateY(0) scale(1); }
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
 
         /* ===== CARD HOVER LIFT ===== */
@@ -264,32 +264,35 @@
             to { opacity: 0; transform: scale(1.03); pointer-events: none; }
         }
 
-        /* Animated grid lines */
+        /* Animated grid lines — uses transform (GPU composited, no paint per frame) */
         .grid-bg {
             position: absolute;
-            inset: 0;
+            inset: -48px; /* oversized so translate doesn't expose edges */
             background-image:
                 linear-gradient(rgba(45,137,128,0.07) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(45,137,128,0.07) 1px, transparent 1px);
             background-size: 48px 48px;
             animation: gridDrift 20s linear infinite;
+            will-change: transform;
             pointer-events: none;
         }
         @keyframes gridDrift {
-            from { background-position: 0 0; }
-            to   { background-position: 48px 48px; }
+            from { transform: translate(0, 0); }
+            to   { transform: translate(48px, 48px); }
         }
 
-        /* Glowing orbs */
+        /* Glowing orbs — static, no animation; blur promoted to own layer */
         .orb {
             position: absolute;
             border-radius: 50%;
-            filter: blur(90px);
+            filter: blur(70px);
             pointer-events: none;
+            will-change: filter;
+            contain: layout style paint;
         }
-        .orb-1 { width: 380px; height: 380px; background: rgba(45,137,128,0.2);  top: -80px;    left: -100px; }
-        .orb-2 { width: 280px; height: 280px; background: rgba(181,115,47,0.18); bottom: -50px; right: -70px; }
-        .orb-3 { width: 200px; height: 200px; background: rgba(16,185,129,0.12); top: 40%;      right: 10%;  }
+        .orb-1 { width: 320px; height: 320px; background: rgba(45,137,128,0.18);  top: -60px;    left: -80px; }
+        .orb-2 { width: 240px; height: 240px; background: rgba(181,115,47,0.15);  bottom: -40px; right: -60px; }
+        .orb-3 { width: 160px; height: 160px; background: rgba(16,185,129,0.10);  top: 40%;      right: 10%;  }
 
         /* Rising bar chart animation */
         .chart-bars {
@@ -313,6 +316,7 @@
             transform: scaleY(0);
             transform-origin: bottom;
             animation: riseBar 0.6s ease-out forwards;
+            will-change: transform;
         }
         .bar:nth-child(1)  { height: 30%;  animation-delay: 0.1s; }
         .bar:nth-child(2)  { height: 50%;  animation-delay: 0.2s; }
@@ -338,12 +342,13 @@
             animation: floatCoin linear infinite;
             opacity: 0;
             pointer-events: none;
+            will-change: transform, opacity;
         }
         @keyframes floatCoin {
-            0%   { transform: translateY(0) rotate(0deg); opacity: 0; }
-            10%  { opacity: 0.8; }
-            90%  { opacity: 0.4; }
-            100% { transform: translateY(-105vh) rotate(360deg); opacity: 0; }
+            0%   { transform: translateY(0);       opacity: 0; }
+            10%  { opacity: 0.7; }
+            90%  { opacity: 0.3; }
+            100% { transform: translateY(-105vh);  opacity: 0; }
         }
 
         /* Rupee symbol watermark */
@@ -374,7 +379,8 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            animation: shimmerText 3s ease-in-out infinite, titleReveal 1s cubic-bezier(0.22,1,0.36,1) 0.2s both;
+            animation: titleReveal 0.8s cubic-bezier(0.22,1,0.36,1) 0.1s both;
+            will-change: transform, opacity;
             position: relative;
             z-index: 2;
             filter: drop-shadow(0 0 28px rgba(245,200,66,0.3));
@@ -394,7 +400,8 @@
             gap: 18px;
             margin: 6px 0 4px;
             opacity: 0;
-            animation: taglineReveal 0.8s 1s ease-out forwards;
+            animation: taglineReveal 0.7s 0.9s ease-out forwards;
+            will-change: transform, opacity;
             position: relative;
             z-index: 2;
         }
@@ -415,17 +422,20 @@
         }
 
         .splash-divider {
-            width: 0;
+            width: min(460px, 78vw);
             height: 1px;
             background: linear-gradient(90deg, transparent, rgba(245,200,66,0.6), transparent);
             margin: 2px auto 8px;
-            animation: expandLine 0.9s 0.8s ease-out forwards;
+            transform: scaleX(0);
+            transform-origin: center;
+            animation: expandLine 0.7s 0.7s cubic-bezier(0.22,1,0.36,1) forwards;
+            will-change: transform;
             position: relative;
             z-index: 2;
         }
         @keyframes expandLine {
-            from { width: 0; }
-            to   { width: min(460px, 78vw); }
+            from { transform: scaleX(0); }
+            to   { transform: scaleX(1); }
         }
 
         .splash-tagline {
@@ -436,7 +446,8 @@
             opacity: 0;
             position: relative;
             z-index: 2;
-            animation: taglineReveal 0.9s 1.1s ease-out forwards;
+            animation: taglineReveal 0.7s 1s ease-out forwards;
+            will-change: transform, opacity;
         }
         @keyframes taglineReveal {
             from { opacity: 0; transform: translateY(8px); }
