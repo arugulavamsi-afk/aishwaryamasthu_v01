@@ -1063,6 +1063,13 @@
             background: linear-gradient(105deg, transparent 0%, rgba(255,255,255,0.28) 50%, transparent 100%);
         }
 
+        /* Disable idle shine on touch/mobile — no hover, no reason to animate */
+        @media (hover: none) {
+            .shine-header::after,
+            .shine-btn::after,
+            .logo-header-bg::before { animation: none; }
+        }
+
         /* MF Kit styles */
         /* ===== 3D FLIP CARD SYSTEM ===== */
         .flip-card {
