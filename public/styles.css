@@ -264,35 +264,16 @@
             to { opacity: 0; pointer-events: none; }
         }
 
-        /* Animated grid lines — uses transform (GPU composited, no paint per frame) */
+        /* Static grid lines */
         .grid-bg {
             position: absolute;
-            inset: -48px; /* oversized so translate doesn't expose edges */
+            inset: 0;
             background-image:
-                linear-gradient(rgba(45,137,128,0.07) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(45,137,128,0.07) 1px, transparent 1px);
+                linear-gradient(rgba(45,137,128,0.06) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(45,137,128,0.06) 1px, transparent 1px);
             background-size: 48px 48px;
-            animation: gridDrift 20s linear infinite;
-            will-change: transform;
             pointer-events: none;
         }
-        @keyframes gridDrift {
-            from { transform: translate(0, 0); }
-            to   { transform: translate(48px, 48px); }
-        }
-
-        /* Glowing orbs — static, no animation; blur promoted to own layer */
-        .orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(70px);
-            pointer-events: none;
-            will-change: filter;
-            contain: layout style paint;
-        }
-        .orb-1 { width: 320px; height: 320px; background: rgba(45,137,128,0.18);  top: -60px;    left: -80px; }
-        .orb-2 { width: 240px; height: 240px; background: rgba(181,115,47,0.15);  bottom: -40px; right: -60px; }
-        .orb-3 { width: 160px; height: 160px; background: rgba(16,185,129,0.10);  top: 40%;      right: 10%;  }
 
         /* Rising bar chart animation */
         .chart-bars {
@@ -333,23 +314,6 @@
             to   { transform: scaleY(1); }
         }
 
-        /* Floating coins */
-        .coin {
-            position: absolute;
-            border-radius: 50%;
-            background: radial-gradient(circle at 35% 35%, #f5c842, #b5732f);
-            box-shadow: 0 0 8px rgba(245,200,66,0.5);
-            animation: floatCoin linear infinite;
-            opacity: 0;
-            pointer-events: none;
-            will-change: transform, opacity;
-        }
-        @keyframes floatCoin {
-            0%   { transform: translateY(0);       opacity: 0; }
-            10%  { opacity: 0.7; }
-            90%  { opacity: 0.3; }
-            100% { transform: translateY(-105vh);  opacity: 0; }
-        }
 
         /* Rupee symbol watermark */
         .rupee-watermark {
@@ -366,36 +330,6 @@
             z-index: 0;
         }
 
-        /* Splash title shimmer — GPU composited transform sweep */
-        .splash-title-wrap {
-            position: relative;
-            display: inline-block;
-            overflow: hidden;
-            border-radius: 4px;
-        }
-        .splash-title-wrap::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            width: 45%;
-            background: linear-gradient(
-                105deg,
-                transparent 0%,
-                rgba(255,255,255,0.45) 40%,
-                rgba(255,255,255,0.70) 50%,
-                rgba(255,255,255,0.45) 60%,
-                transparent 100%
-            );
-            transform: translateX(-200%);
-            animation: shimmerSweep 6s ease-in-out 1.5s infinite;
-            will-change: transform;
-            pointer-events: none;
-        }
-        @keyframes shimmerSweep {
-            0%   { transform: translateX(-200%); } /* off-screen left */
-            17%  { transform: translateX(500%); }  /* sweep across in ~1s */
-            100% { transform: translateX(500%); }  /* hold off-screen: ~5s pause */
-        }
 
         /* Splash title */
         .splash-title {

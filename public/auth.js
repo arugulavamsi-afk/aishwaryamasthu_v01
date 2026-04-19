@@ -1,23 +1,3 @@
-    /* ============================================================
-       COIN PARTICLES
-    ============================================================ */
-    (function() {
-        const container = document.getElementById('coins-container');
-        for (let i = 0; i < 8; i++) {
-            const c = document.createElement('div');
-            c.className = 'coin';
-            const size = 4 + Math.random() * 7;
-            c.style.cssText = `
-                left: ${Math.random() * 100}vw;
-                bottom: -12px;
-                width: ${size}px;
-                height: ${size}px;
-                animation-duration: ${7 + Math.random() * 9}s;
-                animation-delay: ${Math.random() * 5}s;
-            `;
-            container.appendChild(c);
-        }
-    })();
 
     /* ============================================================
        FIREBASE AUTH + FIRESTORE  (replaces localStorage demo tier)
