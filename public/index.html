@@ -1015,62 +1015,52 @@
             }
         }
 
-        /* ── Idle shiny sweep effect — headers & buttons ── */
+        /* ── Shiny sweep — GPU composited (transform only, no background-position paint) ── */
         @keyframes idleShine {
-            0%   { background-position: -200% center; }
-            100% { background-position: 200% center; }
+            0%   { transform: translateX(-250%); }
+            18%  { transform: translateX(350%); }
+            100% { transform: translateX(350%); }
+        }
+        @keyframes idleShineBtn {
+            0%   { transform: translateX(-250%); }
+            15%  { transform: translateX(350%); }
+            100% { transform: translateX(350%); }
         }
 
-        /* Page section headers (gradient banner h2 elements) */
         .shine-header {
             position: relative;
             overflow: hidden;
         }
         .shine-header::after {
-            content: '';
+            content: "";
             position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(
-                105deg,
-                transparent 40%,
-                rgba(255,255,255,0.18) 50%,
-                transparent 60%
-            );
-            background-size: 200% 100%;
-            animation: idleShine 4s linear infinite;
+            inset: 0;
+            width: 50%;
+            background: linear-gradient(105deg, transparent 0%, rgba(255,255,255,0.16) 50%, transparent 100%);
+            transform: translateX(-250%);
+            animation: idleShine 6s ease-in-out infinite;
             pointer-events: none;
             border-radius: inherit;
         }
 
-        /* Buttons — golden sheen sweep */
         .shine-btn {
             position: relative;
             overflow: hidden;
         }
         .shine-btn::after {
-            content: '';
+            content: "";
             position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(
-                105deg,
-                transparent 35%,
-                rgba(255,255,255,0.25) 50%,
-                transparent 65%
-            );
-            background-size: 200% 100%;
-            animation: idleShine 3.5s linear infinite;
+            inset: 0;
+            width: 50%;
+            background: linear-gradient(105deg, transparent 0%, rgba(255,255,255,0.22) 50%, transparent 100%);
+            transform: translateX(-250%);
+            animation: idleShineBtn 5s ease-in-out infinite;
             pointer-events: none;
             border-radius: inherit;
         }
 
-        /* WA share button — green sheen */
         .wa-share-btn.shine-btn::after {
-            background: linear-gradient(
-                105deg,
-                transparent 35%,
-                rgba(255,255,255,0.3) 50%,
-                transparent 65%
-            );
+            background: linear-gradient(105deg, transparent 0%, rgba(255,255,255,0.28) 50%, transparent 100%);
         }
 
         /* MF Kit styles */
@@ -1148,21 +1138,18 @@
 
         /* ===== LOGO HEADER BG SHIMMER ===== */
         @keyframes logoShimmer {
-            0%   { background-position: -200% center; }
-            100% { background-position: 200% center; }
+            0%   { transform: translateX(-250%); }
+            18%  { transform: translateX(350%); }
+            100% { transform: translateX(350%); }
         }
         .logo-header-bg::before {
-            content: '';
+            content: "";
             position: absolute;
             inset: 0;
-            background: linear-gradient(
-                105deg,
-                transparent 30%,
-                rgba(232,213,163,0.07) 50%,
-                transparent 70%
-            );
-            background-size: 200% 100%;
-            animation: logoShimmer 4s ease-in-out infinite;
+            width: 50%;
+            background: linear-gradient(105deg, transparent 0%, rgba(232,213,163,0.07) 50%, transparent 100%);
+            transform: translateX(-250%);
+            animation: logoShimmer 6s ease-in-out infinite;
             pointer-events: none;
         }
         /* Subtle animated ring on logo */
