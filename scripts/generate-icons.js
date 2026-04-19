@@ -143,7 +143,7 @@ function encodePNG(width, height, pixels) {
 }
 
 // ── Main ──────────────────────────────────────────────────────────────
-const srcFile = path.join(__dirname, '..', 'public', 'icons', 'Aishwaryamasthu_logo_v01.png');
+const srcFile = path.join(__dirname, '..', 'public', 'icons', 'Logo_v01_withoutBkgrnd.png');
 const outDir  = path.join(__dirname, '..', 'public', 'icons');
 
 console.log('Reading:', srcFile);
