@@ -47,6 +47,11 @@ var SHELL = [
   '/icons/icon.svg'
 ];
 
+/* ── Skip-waiting message (sent by update toast in index.html) ── */
+self.addEventListener('message', function(e) {
+  if (e.data && e.data.type === 'SKIP_WAITING') self.skipWaiting();
+});
+
 /* ── Install: cache the app shell ── */
 self.addEventListener('install', function(e) {
   e.waitUntil(
@@ -59,8 +64,6 @@ self.addEventListener('install', function(e) {
           });
         })
       );
-    }).then(function() {
-      return self.skipWaiting();
     })
   );
 });
