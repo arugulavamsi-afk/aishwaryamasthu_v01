@@ -39,6 +39,11 @@
                             <option value="student">Student</option>
                         </select>
                     </div>
+                    <div>
+                        <label class="up-label">Dependents</label>
+                        <input id="up-dependents" type="number" min="0" max="20" class="up-input" placeholder="e.g. 2"
+                            oninput="upSave()">
+                    </div>
                 </div>
             </div>
 
@@ -80,9 +85,19 @@
                     </div>
                     <div>
                         <label class="up-label">Tax Regime</label>
-                        <select id="up-regime" class="up-input" onchange="upSave()">
-                            <option value="new">New Regime</option>
+                        <select id="up-regime" class="up-input" onchange="upRegimeChange();upSave()">
+                            <option value="new">New Regime (FY 2025-26)</option>
                             <option value="old">Old Regime</option>
+                        </select>
+                    </div>
+                    <div class="col-span-2">
+                        <label class="up-label">Your Tax Slab</label>
+                        <select id="up-tax-slab" class="up-input" onchange="upSave()">
+                            <option value="0">0% — taxable income ≤ ₹12L (87A rebate, zero tax)</option>
+                            <option value="15">15% — taxable income ₹12L–₹16L</option>
+                            <option value="20" selected>20% — taxable income ₹16L–₹20L</option>
+                            <option value="25">25% — taxable income ₹20L–₹24L</option>
+                            <option value="30">30% — taxable income above ₹24L</option>
                         </select>
                     </div>
                     <div>
@@ -92,7 +107,42 @@
                             <option value="non-metro">Non-Metro</option>
                         </select>
                     </div>
+                    <div>
+                        <label class="up-label">Monthly Basic Salary (₹)</label>
+                        <div class="relative">
+                            <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[11px] font-bold pointer-events-none">₹</span>
+                            <input id="up-basic-salary" type="text" inputmode="numeric" class="up-input" style="padding-left:1.5rem"
+                                placeholder="e.g. 50,000"
+                                oninput="upFmt(this);upSave()">
+                        </div>
+                    </div>
                 </div>
+            </div>
+
+            <!-- ── RETIREMENT & EPF ── -->
+            <div class="bg-white rounded-2xl border border-[#f5c842]/30 shadow-sm p-3">
+                <div class="text-[10px] font-black uppercase tracking-wider mb-2.5 flex items-center gap-1.5" style="color:#7c3aed;">
+                    <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#8b5cf6;flex-shrink:0;"></span>Retirement &amp; EPF
+                </div>
+                <div class="grid grid-cols-2 gap-x-3 gap-y-2">
+                    <div>
+                        <label class="up-label">Retirement Age Goal</label>
+                        <input id="up-retire-age" type="number" min="40" max="75" class="up-input" placeholder="e.g. 60"
+                            oninput="upSave()">
+                    </div>
+                    <div>
+                        <label class="up-label">Current EPF Balance (₹)</label>
+                        <div class="relative">
+                            <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[11px] font-bold pointer-events-none">₹</span>
+                            <input id="up-epf-balance" type="text" inputmode="numeric" value="0" class="up-input text-slate-400" style="padding-left:1.5rem"
+                                placeholder="e.g. 2,00,000"
+                                oninput="upFmt(this);upSave()"
+                                onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}"
+                                onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                        </div>
+                    </div>
+                </div>
+                <p class="text-[9px] text-slate-400 mt-2 leading-relaxed">Used to auto-fill EPF Calculator, Retirement Hub, PPF &amp; NPS, Financial Plan.</p>
             </div>
 
             <!-- ── CURRENT ASSETS ── -->

@@ -59,11 +59,16 @@
             name:           document.getElementById('up-name')?.value.trim()      || '',
             age:            document.getElementById('up-age')?.value              || '',
             occupation:     document.getElementById('up-occupation')?.value       || '',
+            dependents:     document.getElementById('up-dependents')?.value       || '',
             income:         document.getElementById('up-income')?.value           || '',
             annualIncome:   document.getElementById('up-annual-income')?.value    || '',
             expenses:       document.getElementById('up-expenses')?.value         || '',
             regime:         document.getElementById('up-regime')?.value           || 'new',
+            taxSlab:        document.getElementById('up-tax-slab')?.value         || '',
             city:           document.getElementById('up-city')?.value             || 'metro',
+            basicSalary:    document.getElementById('up-basic-salary')?.value     || '',
+            retireAge:      document.getElementById('up-retire-age')?.value       || '',
+            epfBalance:     document.getElementById('up-epf-balance')?.value      || '',
             // Assets
             assetsBank:     document.getElementById('up-assets-bank')?.value      || '0',
             assetsMf:       document.getElementById('up-assets-mf')?.value        || '0',
@@ -103,10 +108,27 @@
         if (!p) return;
         window._userProfile = p;
         // Basic fields
-        ['name','age','occupation','expenses','regime','city'].forEach(function(k) {
+        ['name','age','occupation','dependents','expenses','regime','city'].forEach(function(k) {
             var el = document.getElementById('up-' + k);
             if (el && p[k] !== undefined) el.value = p[k];
         });
+        // Rebuild slab options for the restored regime, then select saved value
+        upRegimeChange();
+        var slabEl = document.getElementById('up-tax-slab');
+        if (slabEl && p.taxSlab !== undefined) slabEl.value = p.taxSlab;
+        // Monthly Basic Salary
+        var bsEl = document.getElementById('up-basic-salary');
+        if (bsEl && p.basicSalary) { bsEl.value = p.basicSalary; bsEl.classList.remove('text-slate-400'); }
+        // Retirement Age
+        var raEl = document.getElementById('up-retire-age');
+        if (raEl && p.retireAge) raEl.value = p.retireAge;
+        // EPF Balance
+        var epfEl = document.getElementById('up-epf-balance');
+        if (epfEl) {
+            var epfVal = p.epfBalance || '0';
+            epfEl.value = epfVal;
+            if (epfVal === '0' || !epfVal) epfEl.classList.add('text-slate-400'); else epfEl.classList.remove('text-slate-400');
+        }
         // Income (text field — strip commas not needed, value already formatted)
         var incEl = document.getElementById('up-income');
         if (incEl && p.income) incEl.value = p.income;
@@ -189,6 +211,15 @@
     function upToggle() {
         // Old accordion card removed — tile now navigates to myprofile page
         if (typeof switchMode === 'function') switchMode('myprofile');
+    }
+
+    function upRegimeChange() {
+        var regEl  = document.getElementById('up-regime');
+        var slabEl = document.getElementById('up-tax-slab');
+        if (!regEl || !slabEl) return;
+        if (typeof _mkSlabOpts === 'function') {
+            slabEl.innerHTML = _mkSlabOpts(regEl.value, slabEl.value);
+        }
     }
 
     function upAutoFillAnnual() {
@@ -327,6 +358,7 @@
 
     function initMyProfile() {
         var p = window._userProfile;
+        upRegimeChange(); // ensure slab options match regime before restoring
         if (p) upLoad(p);
         upCalcTotals();
         upRefreshRiskDisplay();
@@ -348,9 +380,20 @@
     function upRefreshBanners() {
         var p = window._userProfile;
         var hasProfile = p.income || p.age || p.name;
-        ['taxguide', 'finplan', 'drawdown'].forEach(function(tool) {
+        var hasBasic   = !!(p.basicSalary);
+        var hasTax     = !!(p.regime || p.taxSlab);
+        ['taxguide', 'finplan', 'drawdown',
+         'epfcalc', 'ppfnps', 'retirementhub',
+         'insure', 'gratuity', 'homeloan',
+         'healthscore', 'hracalc'].forEach(function(tool) {
             var banner = document.getElementById('up-banner-' + tool);
-            if (banner) banner.classList.toggle('hidden', !hasProfile);
+            if (!banner) return;
+            var show = hasProfile;
+            if (tool === 'epfcalc' || tool === 'retirementhub') show = hasProfile && (hasBasic || !!(p.retireAge));
+            if (tool === 'gratuity' || tool === 'hracalc')      show = hasBasic || hasTax;
+            if (tool === 'homeloan')                            show = hasTax;
+            if (tool === 'ppfnps')                              show = !!(p.age);
+            banner.classList.toggle('hidden', !show);
         });
     }
 
@@ -498,62 +541,112 @@
         }, 4000);
     }
 
+    function _upSet(id, val, formatted) {
+        var el = document.getElementById(id);
+        if (!el || val === '' || val === null || val === undefined) return;
+        el.value = formatted !== undefined ? formatted : val;
+        el.classList.remove('text-slate-400');
+    }
+
     function upApply(tool) {
-        var p   = window._userProfile;
-        var inc = upNum('up-income');    // monthly income
-        var exp = upNum('up-expenses');  // monthly expenses
-        var age = parseInt(p.age, 10) || 0;
+        var p       = window._userProfile;
+        var inc     = upNum('up-income');          // monthly in-hand
+        var exp     = upNum('up-expenses');         // monthly expenses
+        var age     = parseInt(p.age, 10) || 0;
+        var basic   = parseFloat((p.basicSalary || '').replace(/,/g,'')) || 0;
+        var retAge  = parseInt(p.retireAge, 10) || 0;
+        var epfBal  = parseFloat((p.epfBalance || '').replace(/,/g,'')) || 0;
+        var slab    = p.taxSlab || '';
+        var deps    = p.dependents || '';
+        var annInc  = parseFloat((p.annualIncome || '').replace(/,/g,'')) || (inc * 12);
 
         if (tool === 'taxguide') {
-            // Annual gross = monthly × 12
-            if (inc > 0) {
-                var annualInc = (inc * 12).toLocaleString('en-IN');
-                var el = document.getElementById('tg-income');
-                if (el) { el.value = annualInc; el.classList.remove('text-slate-400'); }
-            }
-            // Tax regime
-            var regEl = document.getElementById('tg-regime');
-            if (regEl && p.regime) {
-                for (var i = 0; i < regEl.options.length; i++) {
-                    if (regEl.options[i].value === p.regime || regEl.options[i].text.toLowerCase().includes(p.regime)) {
-                        regEl.selectedIndex = i; break;
-                    }
-                }
-            }
+            if (annInc > 0) _upSet('tg-income', annInc, annInc.toLocaleString('en-IN'));
+            if (p.regime) { var re = document.getElementById('tg-regime'); if (re) re.value = p.regime; }
+            if (basic > 0) _upSet('tg-epf-basic', basic, basic.toLocaleString('en-IN'));
             if (typeof tgCalc === 'function') tgCalc();
         }
 
         if (tool === 'finplan') {
-            if (p.name) {
-                var fnEl = document.getElementById('fp-name');
-                if (fnEl) fnEl.value = p.name;
-            }
-            if (age > 0) {
-                var faEl = document.getElementById('fp-age');
-                if (faEl) faEl.value = age;
-            }
-            if (inc > 0) {
-                var fiEl = document.getElementById('fp-income');
-                if (fiEl) { fiEl.value = inc.toLocaleString('en-IN'); if (typeof fpFormatMoney === 'function') fpFormatMoney(fiEl, 'fp-income-words'); }
-            }
-            if (inc > 0 && exp > 0 && inc > exp) {
-                var surplus = inc - exp;
-                var fsEl = document.getElementById('fp-invest-amt');
-                if (fsEl) { fsEl.value = surplus.toLocaleString('en-IN'); if (typeof fpFormatMoney === 'function') fpFormatMoney(fsEl, 'fp-invest-words'); }
-            }
+            if (p.name)   _upSet('fp-name', p.name);
+            if (age > 0)  _upSet('fp-age', age);
+            if (retAge > 0) _upSet('fp-retire-age', retAge);
+            if (inc > 0)  { var fi = document.getElementById('fp-income'); if (fi) { fi.value = inc.toLocaleString('en-IN'); fi.classList.remove('text-slate-400'); if (typeof fpFormatMoney === 'function') fpFormatMoney(fi, 'fp-income-words'); } }
+            if (inc > 0 && exp > 0 && inc > exp) { var fs = document.getElementById('fp-invest-amt'); if (fs) { fs.value = (inc - exp).toLocaleString('en-IN'); fs.classList.remove('text-slate-400'); if (typeof fpFormatMoney === 'function') fpFormatMoney(fs, 'fp-invest-words'); } }
+            if (basic > 0) _upSet('fp-epf-basic', basic, basic.toLocaleString('en-IN'));
             if (typeof fpLiveUpdate === 'function') fpLiveUpdate();
         }
 
         if (tool === 'drawdown') {
-            if (age > 0) {
-                var daEl = document.getElementById('dd-current-age');
-                if (daEl) { daEl.value = age; daEl.classList.remove('text-slate-400'); }
-            }
-            if (exp > 0) {
-                var deEl = document.getElementById('dd-expenses');
-                if (deEl) { deEl.value = exp.toLocaleString('en-IN'); deEl.classList.remove('text-slate-400'); }
-            }
+            if (age > 0)  _upSet('dd-current-age', age);
+            if (retAge > 0) _upSet('dd-ret-age', retAge);
+            if (exp > 0)  _upSet('dd-expenses', exp, exp.toLocaleString('en-IN'));
             if (typeof drawdownCalc === 'function') drawdownCalc();
+        }
+
+        if (tool === 'epfcalc') {
+            if (age > 0)    _upSet('epf-age', age);
+            if (retAge > 0) _upSet('epf-retire', retAge);
+            if (basic > 0)  _upSet('epf-basic', basic, basic.toLocaleString('en-IN'));
+            if (epfBal > 0) _upSet('epf-balance', epfBal, epfBal.toLocaleString('en-IN'));
+            if (typeof epfCalc === 'function') epfCalc();
+        }
+
+        if (tool === 'ppfnps') {
+            if (age > 0) _upSet('nps-age', age);
+            if (typeof npsCalc === 'function') npsCalc();
+        }
+
+        if (tool === 'retirementhub') {
+            if (age > 0)    _upSet('rh-age', age);
+            if (retAge > 0) _upSet('rh-ret-age', retAge);
+            if (exp > 0)    _upSet('rh-expenses', exp, exp.toLocaleString('en-IN'));
+            if (basic > 0)  _upSet('rh-epf-basic', basic, basic.toLocaleString('en-IN'));
+            if (epfBal > 0) _upSet('rh-epf-balance', epfBal, epfBal.toLocaleString('en-IN'));
+            if (typeof retHubCalc === 'function') retHubCalc();
+        }
+
+        if (tool === 'insure') {
+            if (annInc > 0) _upSet('ins-income', annInc, annInc.toLocaleString('en-IN'));
+            if (age > 0)    _upSet('ins-age', age);
+            if (exp > 0)    _upSet('ins-monthly-exp', exp, exp.toLocaleString('en-IN'));
+            if (deps !== '')_upSet('ins-dependents', deps);
+            if (deps !== '') _upSet('ins-family', deps);
+            var totalLiab = ['liabHome','liabCar','liabPersonal','liabCc','liabOther'].reduce(function(s,k){ return s + (parseFloat((p[k]||'0').replace(/,/g,''))||0); }, 0);
+            if (totalLiab > 0) _upSet('ins-loans', totalLiab, totalLiab.toLocaleString('en-IN'));
+            var hCov = parseFloat((p.healthCoverage || '0').replace(/,/g,'')) || 0;
+            var tAss = parseFloat((p.termAssured   || '0').replace(/,/g,'')) || 0;
+            if (hCov > 0) _upSet('ins-health-current', hCov, hCov.toLocaleString('en-IN'));
+            if (tAss > 0) _upSet('ins-term-current',   tAss, tAss.toLocaleString('en-IN'));
+            if (typeof insureCalc === 'function') insureCalc();
+        }
+
+        if (tool === 'gratuity') {
+            if (basic > 0) _upSet('grat-basic', basic, basic.toLocaleString('en-IN'));
+            if (p.regime) { var gr = document.getElementById('grat-regime'); if (gr) gr.value = p.regime; }
+            if (slab)     { var gs = document.getElementById('grat-slab');   if (gs) gs.value = slab; }
+            if (typeof gratCalc === 'function') gratCalc();
+        }
+
+        if (tool === 'homeloan') {
+            if (slab)     { var ts = document.getElementById('tx-slab');   if (ts) { ts.value = slab; ts.classList.remove('text-slate-400'); } }
+            if (p.regime) { var tr = document.getElementById('tx-regime'); if (tr) tr.value = p.regime; }
+            if (typeof hlTaxCalc === 'function') hlTaxCalc();
+        }
+
+        if (tool === 'healthscore') {
+            if (inc > 0) _upSet('hs-income', inc, inc.toLocaleString('en-IN'));
+            if (exp > 0) _upSet('hs-expenses', exp, exp.toLocaleString('en-IN'));
+            if (age > 0) _upSet('hs-age', age);
+            if (typeof calcHealthScore === 'function') calcHealthScore();
+        }
+
+        if (tool === 'hracalc') {
+            if (basic > 0) _upSet('hra-basic', basic, basic.toLocaleString('en-IN'));
+            if (p.city)   { var hc = document.getElementById('hra-city');   if (hc) hc.value = p.city; }
+            if (p.regime) { var hr = document.getElementById('hra-regime'); if (hr) hr.value = p.regime; }
+            if (slab)     { var hs = document.getElementById('hra-slab');   if (hs) hs.value = slab; }
+            if (typeof hraCalc === 'function') hraCalc();
         }
 
         // Flash the banner button to confirm
