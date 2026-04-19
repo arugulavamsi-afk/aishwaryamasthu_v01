@@ -142,40 +142,105 @@ function encodePNG(width, height, pixels) {
   ]);
 }
 
-// ── Compose: background fill + centered logo with padding ─────────────
-function compose(logo, iconSize, paddingFraction) {
-  const canvas  = new Uint8Array(iconSize * iconSize * 4);
+// ── Remove white background: make near-white pixels transparent ────────
+function removeWhiteBg(logo) {
+  var out = new Uint8Array(logo.pixels.length);
+  for (var i = 0; i < logo.pixels.length; i += 4) {
+    var r = logo.pixels[i], g = logo.pixels[i+1], b = logo.pixels[i+2], a = logo.pixels[i+3];
+    // Compute "whiteness" — how close to white this pixel is
+    var minCh = Math.min(r, g, b);
+    var sat   = (Math.max(r,g,b) - minCh) / (Math.max(r,g,b) || 1); // 0=grey/white, 1=saturated
+    var white = minCh / 255; // 0=dark, 1=pure white
+    // Fade to transparent as pixel approaches white with low saturation
+    var newAlpha = a;
+    if (white > 0.88 && sat < 0.12) {
+      newAlpha = Math.round(a * Math.max(0, 1 - (white - 0.88) / 0.12));
+    }
+    out[i] = r; out[i+1] = g; out[i+2] = b; out[i+3] = newAlpha;
+  }
+  return { width: logo.width, height: logo.height, pixels: out };
+}
 
-  // Fill background with #0c2340 (navy)
-  const bgR = 0x0c, bgG = 0x23, bgB = 0x40;
-  for (let i = 0; i < iconSize * iconSize; i++) {
-    canvas[i*4]   = bgR;
-    canvas[i*4+1] = bgG;
-    canvas[i*4+2] = bgB;
-    canvas[i*4+3] = 255;
+// ── Auto-crop: find bounding box of non-white/non-transparent pixels ──
+function autoCrop(logo) {
+  var minX = logo.width, maxX = 0, minY = logo.height, maxY = 0;
+  for (var y = 0; y < logo.height; y++) {
+    for (var x = 0; x < logo.width; x++) {
+      var i = (y * logo.width + x) * 4;
+      var r = logo.pixels[i], g = logo.pixels[i+1], b = logo.pixels[i+2], a = logo.pixels[i+3];
+      // Skip fully transparent or near-white pixels
+      if (a < 20) continue;
+      if (r > 240 && g > 240 && b > 240) continue;
+      if (x < minX) minX = x;
+      if (x > maxX) maxX = x;
+      if (y < minY) minY = y;
+      if (y > maxY) maxY = y;
+    }
+  }
+  // Add 2% margin around detected content
+  var mx = Math.round(logo.width  * 0.02);
+  var my = Math.round(logo.height * 0.02);
+  minX = Math.max(0, minX - mx); maxX = Math.min(logo.width  - 1, maxX + mx);
+  minY = Math.max(0, minY - my); maxY = Math.min(logo.height - 1, maxY + my);
+  var cw = maxX - minX + 1, ch = maxY - minY + 1;
+  var cropped = new Uint8Array(cw * ch * 4);
+  for (var cy = 0; cy < ch; cy++) {
+    for (var cx = 0; cx < cw; cx++) {
+      var si = ((minY + cy) * logo.width + (minX + cx)) * 4;
+      var di = (cy * cw + cx) * 4;
+      cropped[di] = logo.pixels[si]; cropped[di+1] = logo.pixels[si+1];
+      cropped[di+2] = logo.pixels[si+2]; cropped[di+3] = logo.pixels[si+3];
+    }
+  }
+  console.log('Auto-crop: ' + logo.width + 'x' + logo.height + ' → ' + cw + 'x' + ch + ' (x:' + minX + '-' + maxX + ' y:' + minY + '-' + maxY + ')');
+  return { width: cw, height: ch, pixels: cropped };
+}
+
+// ── Gradient background pixel ──────────────────────────────────────────
+function gradientBg(x, y, size) {
+  // Diagonal gradient: top-left #071e22 → centre #0c2d45 → bottom-right #0d3a2a
+  var t = (x + y) / (2 * (size - 1));
+  var r = Math.round(0x07 + (0x0d - 0x07) * t);
+  var g = Math.round(0x1e + (0x3a - 0x1e) * t);
+  var b = Math.round(0x22 + (0x2a - 0x22) * t);
+  return [r, g, b];
+}
+
+// ── Compose: gradient background + centered cropped logo ───────────────
+function compose(logo, iconSize, paddingFraction) {
+  var canvas = new Uint8Array(iconSize * iconSize * 4);
+
+  // Fill gradient background
+  for (var py = 0; py < iconSize; py++) {
+    for (var px = 0; px < iconSize; px++) {
+      var bg = gradientBg(px, py, iconSize);
+      var di = (py * iconSize + px) * 4;
+      canvas[di] = bg[0]; canvas[di+1] = bg[1]; canvas[di+2] = bg[2]; canvas[di+3] = 255;
+    }
   }
 
-  // Fit logo inside canvas keeping aspect ratio, with padding
-  const pad     = Math.round(iconSize * paddingFraction);
-  const maxSide = iconSize - pad * 2;
-  const scale   = Math.min(maxSide / logo.width, maxSide / logo.height);
-  const dstW    = Math.round(logo.width  * scale);
-  const dstH    = Math.round(logo.height * scale);
-  const offX    = Math.round((iconSize - dstW) / 2);
-  const offY    = Math.round((iconSize - dstH) / 2);
+  // Fit cropped logo inside canvas keeping aspect ratio
+  var pad     = Math.round(iconSize * paddingFraction);
+  var maxSide = iconSize - pad * 2;
+  var scale   = Math.min(maxSide / logo.width, maxSide / logo.height);
+  var dstW    = Math.round(logo.width  * scale);
+  var dstH    = Math.round(logo.height * scale);
+  var offX    = Math.round((iconSize - dstW) / 2);
+  var offY    = Math.round((iconSize - dstH) / 2);
 
-  const logoResized = resize(logo.pixels, logo.width, logo.height, dstW, dstH);
+  var logoResized = resize(logo.pixels, logo.width, logo.height, dstW, dstH);
 
-  // Alpha-composite logo over background
-  for (let y = 0; y < dstH; y++) {
-    for (let x = 0; x < dstW; x++) {
-      const si = (y * dstW + x) * 4;
-      const di = ((offY + y) * iconSize + (offX + x)) * 4;
-      const a  = logoResized[si + 3] / 255;
-      canvas[di]   = Math.round(logoResized[si]   * a + bgR * (1 - a));
-      canvas[di+1] = Math.round(logoResized[si+1] * a + bgG * (1 - a));
-      canvas[di+2] = Math.round(logoResized[si+2] * a + bgB * (1 - a));
-      canvas[di+3] = 255;
+  // Alpha-composite logo over gradient
+  for (var y = 0; y < dstH; y++) {
+    for (var x = 0; x < dstW; x++) {
+      var si = (y * dstW + x) * 4;
+      var idx = ((offY + y) * iconSize + (offX + x)) * 4;
+      var a   = logoResized[si + 3] / 255;
+      var bg2 = [canvas[idx], canvas[idx+1], canvas[idx+2]];
+      canvas[idx]   = Math.round(logoResized[si]   * a + bg2[0] * (1 - a));
+      canvas[idx+1] = Math.round(logoResized[si+1] * a + bg2[1] * (1 - a));
+      canvas[idx+2] = Math.round(logoResized[si+2] * a + bg2[2] * (1 - a));
+      canvas[idx+3] = 255;
     }
   }
 
@@ -187,11 +252,13 @@ const srcFile = path.join(__dirname, '..', 'public', 'icons', 'Aishwaryamasthu_l
 const outDir  = path.join(__dirname, '..', 'public', 'icons');
 
 console.log('Reading:', srcFile);
-const src = decodePNG(fs.readFileSync(srcFile));
-console.log('Source:', src.width + 'x' + src.height);
+const srcRaw    = decodePNG(fs.readFileSync(srcFile));
+console.log('Source:', srcRaw.width + 'x' + srcRaw.height);
+const srcNoBg   = removeWhiteBg(srcRaw);  // strip white background
+const src       = autoCrop(srcNoBg);      // crop to actual logo content
 
-// 14% padding on each side → logo occupies 72% of the icon
-const PADDING = 0.14;
+// 11% padding — logo occupies 78% of the icon
+const PADDING = 0.11;
 
 [192, 512].forEach(function(size) {
   const pixels = compose(src, size, PADDING);
