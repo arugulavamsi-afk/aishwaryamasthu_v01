@@ -1,20 +1,13 @@
 /**
- * Generates public/icons/icon-192.png and icon-512.png
- * Uses only Node.js built-ins — no npm packages needed.
+ * Resizes public/icons/Aishwaryamasthu_logo_v01.png → icon-192.png & icon-512.png
+ * Pure Node.js — no npm packages needed.
  * Run: node scripts/generate-icons.js
  */
 const zlib = require('zlib');
 const fs   = require('fs');
 const path = require('path');
 
-// ── Colors ────────────────────────────────────────────
-const NAVY  = [12,  35,  64,  255];
-const NAVY2 = [14,  74,  122, 255];
-const GREEN = [14,  92,  58,  255];
-const GOLD  = [245, 200, 66,  255];
-const TRANS = [0,   0,   0,   0  ];
-
-// ── PNG encoder (pure Node.js) ────────────────────────
+// ── CRC32 ─────────────────────────────────────────────────────────────
 const CRC_TABLE = (function() {
   const t = new Uint32Array(256);
   for (let n = 0; n < 256; n++) {
@@ -24,165 +17,145 @@ const CRC_TABLE = (function() {
   }
   return t;
 })();
-
 function crc32(buf) {
   let c = 0xFFFFFFFF;
   for (let i = 0; i < buf.length; i++) c = CRC_TABLE[(c ^ buf[i]) & 0xFF] ^ (c >>> 8);
   return (c ^ 0xFFFFFFFF) >>> 0;
 }
-
 function pngChunk(type, data) {
   const t = Buffer.from(type, 'ascii');
   const d = Buffer.isBuffer(data) ? data : Buffer.from(data);
   const len = Buffer.alloc(4); len.writeUInt32BE(d.length);
-  const crcInput = Buffer.concat([t, d]);
-  const crcBuf = Buffer.alloc(4); crcBuf.writeUInt32BE(crc32(crcInput));
-  return Buffer.concat([len, t, d, crcBuf]);
+  const ci = Buffer.alloc(4); ci.writeUInt32BE(crc32(Buffer.concat([t, d])));
+  return Buffer.concat([len, t, d, ci]);
 }
 
+// ── Paeth predictor ───────────────────────────────────────────────────
+function paeth(a, b, c) {
+  const p = a + b - c;
+  const pa = Math.abs(p - a), pb = Math.abs(p - b), pc = Math.abs(p - c);
+  return pa <= pb && pa <= pc ? a : pb <= pc ? b : c;
+}
+
+// ── PNG decoder → RGBA Uint8Array ─────────────────────────────────────
+function decodePNG(buf) {
+  const SIG = Buffer.from([137,80,78,71,13,10,26,10]);
+  if (!buf.slice(0,8).equals(SIG)) throw new Error('Not a PNG file');
+
+  let pos = 8, width, height, bitDepth, colorType;
+  const idats = [];
+
+  while (pos < buf.length) {
+    const len  = buf.readUInt32BE(pos); pos += 4;
+    const type = buf.slice(pos, pos+4).toString('ascii'); pos += 4;
+    const data = buf.slice(pos, pos+len); pos += len + 4; // +4 skip CRC
+
+    if (type === 'IHDR') {
+      width=data.readUInt32BE(0); height=data.readUInt32BE(4);
+      bitDepth=data[8]; colorType=data[9];
+    } else if (type === 'IDAT') {
+      idats.push(data);
+    } else if (type === 'IEND') break;
+  }
+
+  const bpp = colorType===6 ? 4 : colorType===2 ? 3 : colorType===4 ? 2 : 1;
+  const raw  = zlib.inflateSync(Buffer.concat(idats));
+  const out  = new Uint8Array(width * height * 4);
+  const stride = width * bpp;
+  const prev = new Uint8Array(stride);
+
+  let rp = 0;
+  for (let y = 0; y < height; y++) {
+    const filter = raw[rp++];
+    const row = new Uint8Array(stride);
+    for (let x = 0; x < stride; x++) {
+      const byte = raw[rp++];
+      const a = x >= bpp ? row[x-bpp] : 0;
+      const b = prev[x];
+      const c = x >= bpp ? prev[x-bpp] : 0;
+      row[x] = filter===0 ? byte
+             : filter===1 ? (byte+a)&0xFF
+             : filter===2 ? (byte+b)&0xFF
+             : filter===3 ? (byte+Math.floor((a+b)/2))&0xFF
+             : (byte+paeth(a,b,c))&0xFF;
+    }
+    prev.set(row);
+    for (let x = 0; x < width; x++) {
+      const si = x*bpp, di = (y*width+x)*4;
+      if (colorType===6) {
+        out[di]=row[si]; out[di+1]=row[si+1]; out[di+2]=row[si+2]; out[di+3]=row[si+3];
+      } else if (colorType===2) {
+        out[di]=row[si]; out[di+1]=row[si+1]; out[di+2]=row[si+2]; out[di+3]=255;
+      } else if (colorType===4) { // grey+alpha
+        out[di]=out[di+1]=out[di+2]=row[si]; out[di+3]=row[si+1];
+      } else { // grey
+        out[di]=out[di+1]=out[di+2]=row[si]; out[di+3]=255;
+      }
+    }
+  }
+  return { width, height, pixels: out };
+}
+
+// ── Bilinear resize ───────────────────────────────────────────────────
+function resize(src, srcW, srcH, dstW, dstH) {
+  const dst = new Uint8Array(dstW * dstH * 4);
+  const xScale = srcW / dstW, yScale = srcH / dstH;
+  for (let dy = 0; dy < dstH; dy++) {
+    for (let dx = 0; dx < dstW; dx++) {
+      const sx = (dx+0.5)*xScale - 0.5, sy = (dy+0.5)*yScale - 0.5;
+      const x0 = Math.max(0,Math.floor(sx)), y0 = Math.max(0,Math.floor(sy));
+      const x1 = Math.min(srcW-1,x0+1),     y1 = Math.min(srcH-1,y0+1);
+      const fx = sx-x0, fy = sy-y0;
+      const di = (dy*dstW+dx)*4;
+      for (let c = 0; c < 4; c++) {
+        dst[di+c] = Math.round(
+          src[(y0*srcW+x0)*4+c]*(1-fx)*(1-fy) +
+          src[(y0*srcW+x1)*4+c]*fx*(1-fy)     +
+          src[(y1*srcW+x0)*4+c]*(1-fx)*fy     +
+          src[(y1*srcW+x1)*4+c]*fx*fy
+        );
+      }
+    }
+  }
+  return dst;
+}
+
+// ── PNG encoder ───────────────────────────────────────────────────────
 function encodePNG(width, height, pixels) {
-  // pixels: flat Uint8Array of RGBA values, row by row
   const raw = [];
   for (let y = 0; y < height; y++) {
-    raw.push(0); // filter type None
+    raw.push(0);
     for (let x = 0; x < width; x++) {
-      const i = (y * width + x) * 4;
+      const i = (y*width+x)*4;
       raw.push(pixels[i], pixels[i+1], pixels[i+2], pixels[i+3]);
     }
   }
   const compressed = zlib.deflateSync(Buffer.from(raw), { level: 9 });
-
-  const ihdrData = Buffer.alloc(13);
-  ihdrData.writeUInt32BE(width,  0);
-  ihdrData.writeUInt32BE(height, 4);
-  ihdrData[8]  = 8;  // bit depth
-  ihdrData[9]  = 6;  // RGBA
-  ihdrData[10] = 0;  // deflate
-  ihdrData[11] = 0;  // filter
-  ihdrData[12] = 0;  // interlace none
-
+  const ihdr = Buffer.alloc(13);
+  ihdr.writeUInt32BE(width,0); ihdr.writeUInt32BE(height,4);
+  ihdr[8]=8; ihdr[9]=6; // RGBA
   return Buffer.concat([
-    Buffer.from([137,80,78,71,13,10,26,10]), // PNG sig
-    pngChunk('IHDR', ihdrData),
+    Buffer.from([137,80,78,71,13,10,26,10]),
+    pngChunk('IHDR', ihdr),
     pngChunk('IDAT', compressed),
     pngChunk('IEND', Buffer.alloc(0))
   ]);
 }
 
-// ── Drawing helpers ───────────────────────────────────
-function dist(ax, ay, bx, by) {
-  return Math.sqrt((ax-bx)**2 + (ay-by)**2);
-}
+// ── Main ──────────────────────────────────────────────────────────────
+const srcFile = path.join(__dirname, '..', 'public', 'icons', 'Aishwaryamasthu_logo_v01.png');
+const outDir  = path.join(__dirname, '..', 'public', 'icons');
 
-// Signed distance to a rounded rectangle (positive = outside)
-function sdfRoundedRect(px, py, cx, cy, hw, hh, r) {
-  const qx = Math.abs(px - cx) - hw + r;
-  const qy = Math.abs(py - cy) - hh + r;
-  return Math.sqrt(Math.max(qx,0)**2 + Math.max(qy,0)**2) + Math.min(Math.max(qx,qy),0) - r;
-}
-
-function setPixel(pixels, w, x, y, color) {
-  if (x < 0 || y < 0 || x >= w || y >= w) return;
-  const i = (Math.round(y) * w + Math.round(x)) * 4;
-  pixels[i]=color[0]; pixels[i+1]=color[1]; pixels[i+2]=color[2]; pixels[i+3]=color[3];
-}
-
-function fillRect(pixels, w, x0, y0, x1, y1, color) {
-  for (let y = Math.round(y0); y < Math.round(y1); y++)
-    for (let x = Math.round(x0); x < Math.round(x1); x++)
-      setPixel(pixels, w, x, y, color);
-}
-
-// ── Icon drawing ──────────────────────────────────────
-function drawIcon(size) {
-  const px = new Uint8Array(size * size * 4); // all transparent
-  const cx = size / 2, cy = size / 2;
-  const hw = size / 2, hh = size / 2;
-  const r  = size * 0.20; // corner radius
-  const border = size * 0.035;
-
-  for (let y = 0; y < size; y++) {
-    for (let x = 0; x < size; x++) {
-      const sdf = sdfRoundedRect(x + 0.5, y + 0.5, cx, cy, hw - 0.5, hh - 0.5, r);
-
-      // Outside the shape → transparent
-      if (sdf > 0.5) continue;
-
-      // Gold border ring
-      const innerSdf = sdfRoundedRect(x + 0.5, y + 0.5, cx, cy, hw - border, hh - border, r - border);
-      if (innerSdf > -0.5) {
-        setPixel(px, size, x, y, GOLD);
-        continue;
-      }
-
-      // Background gradient (navy → navy-blue → dark green, diagonal)
-      const t = (x + y) / (size * 2);
-      const bg = t < 0.45
-        ? lerpColor(NAVY, NAVY2, t / 0.45)
-        : lerpColor(NAVY2, GREEN, (t - 0.45) / 0.55);
-      setPixel(px, size, x, y, bg);
-    }
-  }
-
-  // ── Gold coin circle ──────────────────────────────
-  const coinR = size * 0.335;
-  const coinBorder = size * 0.03;
-  for (let y = 0; y < size; y++) {
-    for (let x = 0; x < size; x++) {
-      const d = dist(x + 0.5, y + 0.5, cx, cy);
-      if (d <= coinR + 0.5) {
-        const color = d >= coinR - coinBorder ? GOLD
-                    : d >= coinR - coinBorder * 2.5 ? lerpColor(GOLD, [220,170,40,255], 0.4)
-                    : GOLD;
-        setPixel(px, size, x, y, color);
-      }
-    }
-  }
-
-  // ── ₹ symbol inside the coin (navy on gold) ──────────
-  const u = size / 512;  // scale unit
-  // Vertical bar
-  const barX  = cx - 20*u, barW = 38*u;
-  const barY  = cy - 70*u, barH = 155*u;
-  fillRect(px, size, barX, barY, barX+barW, barY+barH, NAVY);
-
-  // Top horizontal bar
-  const hbar1Y = cy - 70*u, hbar1H = 32*u;
-  fillRect(px, size, cx - 70*u, hbar1Y, cx + 70*u, hbar1Y + hbar1H, NAVY);
-
-  // Middle horizontal bar
-  const hbar2Y = cy - 20*u, hbar2H = 30*u;
-  fillRect(px, size, cx - 70*u, hbar2Y, cx + 70*u, hbar2Y + hbar2H, NAVY);
-
-  // Diagonal slash (bottom-right of ₹)
-  for (let i = 0; i < 110*u; i++) {
-    const lx = (cx + 55*u) - i * 0.7;
-    const ly = (cy - 5*u) + i;
-    fillRect(px, size, lx, ly, lx + 30*u, ly + 28*u, NAVY);
-  }
-
-  return px;
-}
-
-function lerpColor(a, b, t) {
-  return [
-    Math.round(a[0] + (b[0]-a[0]) * t),
-    Math.round(a[1] + (b[1]-a[1]) * t),
-    Math.round(a[2] + (b[2]-a[2]) * t),
-    255
-  ];
-}
-
-// ── Generate & write ──────────────────────────────────
-const outDir = path.join(__dirname, '..', 'public', 'icons');
-if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
+console.log('Reading:', srcFile);
+const src = decodePNG(fs.readFileSync(srcFile));
+console.log('Source:', src.width + 'x' + src.height);
 
 [192, 512].forEach(function(size) {
-  const pixels = drawIcon(size);
-  const png    = encodePNG(size, size, pixels);
-  const file   = path.join(outDir, 'icon-' + size + '.png');
-  fs.writeFileSync(file, png);
-  console.log('Written:', file, '(' + png.length + ' bytes)');
+  const resized = resize(src.pixels, src.width, src.height, size, size);
+  const png     = encodePNG(size, size, resized);
+  const out     = path.join(outDir, 'icon-' + size + '.png');
+  fs.writeFileSync(out, png);
+  console.log('Written:', out, '(' + png.length + ' bytes)');
 });
 
 console.log('Done.');
