@@ -366,6 +366,37 @@
             z-index: 0;
         }
 
+        /* Splash title shimmer — GPU composited transform sweep */
+        .splash-title-wrap {
+            position: relative;
+            display: inline-block;
+            overflow: hidden;
+            border-radius: 4px;
+        }
+        .splash-title-wrap::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            width: 45%;
+            background: linear-gradient(
+                105deg,
+                transparent 0%,
+                rgba(255,255,255,0.55) 45%,
+                rgba(255,255,255,0.75) 50%,
+                rgba(255,255,255,0.55) 55%,
+                transparent 100%
+            );
+            transform: translateX(-200%);
+            animation: shimmerSweep 5s ease-in-out 1.2s infinite;
+            will-change: transform;
+            pointer-events: none;
+        }
+        @keyframes shimmerSweep {
+            0%   { transform: translateX(-200%); } /* off-screen left */
+            10%  { transform: translateX(500%); }  /* fast sweep across (0.5s) */
+            100% { transform: translateX(500%); }  /* hold off-screen: 4.5s pause */
+        }
+
         /* Splash title */
         .splash-title {
             font-family: 'Cinzel Decorative', serif;
