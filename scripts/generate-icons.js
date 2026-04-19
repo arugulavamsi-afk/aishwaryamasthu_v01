@@ -142,18 +142,61 @@ function encodePNG(width, height, pixels) {
   ]);
 }
 
+// ── Compose: background fill + centered logo with padding ─────────────
+function compose(logo, iconSize, paddingFraction) {
+  const canvas  = new Uint8Array(iconSize * iconSize * 4);
+
+  // Fill background with #0c2340 (navy)
+  const bgR = 0x0c, bgG = 0x23, bgB = 0x40;
+  for (let i = 0; i < iconSize * iconSize; i++) {
+    canvas[i*4]   = bgR;
+    canvas[i*4+1] = bgG;
+    canvas[i*4+2] = bgB;
+    canvas[i*4+3] = 255;
+  }
+
+  // Fit logo inside canvas keeping aspect ratio, with padding
+  const pad     = Math.round(iconSize * paddingFraction);
+  const maxSide = iconSize - pad * 2;
+  const scale   = Math.min(maxSide / logo.width, maxSide / logo.height);
+  const dstW    = Math.round(logo.width  * scale);
+  const dstH    = Math.round(logo.height * scale);
+  const offX    = Math.round((iconSize - dstW) / 2);
+  const offY    = Math.round((iconSize - dstH) / 2);
+
+  const logoResized = resize(logo.pixels, logo.width, logo.height, dstW, dstH);
+
+  // Alpha-composite logo over background
+  for (let y = 0; y < dstH; y++) {
+    for (let x = 0; x < dstW; x++) {
+      const si = (y * dstW + x) * 4;
+      const di = ((offY + y) * iconSize + (offX + x)) * 4;
+      const a  = logoResized[si + 3] / 255;
+      canvas[di]   = Math.round(logoResized[si]   * a + bgR * (1 - a));
+      canvas[di+1] = Math.round(logoResized[si+1] * a + bgG * (1 - a));
+      canvas[di+2] = Math.round(logoResized[si+2] * a + bgB * (1 - a));
+      canvas[di+3] = 255;
+    }
+  }
+
+  return canvas;
+}
+
 // ── Main ──────────────────────────────────────────────────────────────
-const srcFile = path.join(__dirname, '..', 'public', 'icons', 'Logo_v01_withoutBkgrnd.png');
+const srcFile = path.join(__dirname, '..', 'public', 'icons', 'Aishwaryamasthu_logo_v01.png');
 const outDir  = path.join(__dirname, '..', 'public', 'icons');
 
 console.log('Reading:', srcFile);
 const src = decodePNG(fs.readFileSync(srcFile));
 console.log('Source:', src.width + 'x' + src.height);
 
+// 14% padding on each side → logo occupies 72% of the icon
+const PADDING = 0.14;
+
 [192, 512].forEach(function(size) {
-  const resized = resize(src.pixels, src.width, src.height, size, size);
-  const png     = encodePNG(size, size, resized);
-  const out     = path.join(outDir, 'icon-' + size + '.png');
+  const pixels = compose(src, size, PADDING);
+  const png    = encodePNG(size, size, pixels);
+  const out    = path.join(outDir, 'icon-' + size + '.png');
   fs.writeFileSync(out, png);
   console.log('Written:', out, '(' + png.length + ' bytes)');
 });
