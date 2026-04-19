@@ -238,12 +238,14 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            padding: clamp(10px, 2vh, 24px) 0 72px;
-            overflow: hidden;
+            justify-content: flex-start;
+            padding-top: clamp(56px, 13vh, 110px);
+            padding-bottom: 72px;
+            overflow-y: auto;
+            overflow-x: hidden;
             cursor: pointer;
         }
-        /* Layout wrapper — no scroll, just centres children horizontally */
+        /* Layout wrapper — centres children horizontally */
         #splash-inner {
             position: relative;
             z-index: 2;
@@ -252,11 +254,8 @@
             align-items: center;
             width: 100%;
         }
-        /* When user is already signed in, vertically centre the welcome content */
-        #splash-inner.splash-inner--centered {
-            margin-top: auto;
-            margin-bottom: auto;
-        }
+        /* splash-inner--centered no longer needed — layout is top-anchored */
+        #splash-inner.splash-inner--centered { }
         #splash.fade-out {
             animation: splashFadeOut 0.3s cubic-bezier(0.4,0,0.2,1) forwards;
         }
