@@ -33,7 +33,10 @@
     <link rel="preload" as="script" href="https://cdn.jsdelivr.net/npm/chart.js">
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js moved to bottom of body — not needed for splash screen -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cinzel+Decorative:wght@700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cinzel+Decorative:wght@700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cinzel+Decorative:wght@700&display=swap"></noscript>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body class="text-slate-800 antialiased min-h-screen flex flex-col">
@@ -44,16 +47,6 @@
 
 
         <!-- ₹ watermark -->
-        <div class="rupee-watermark">₹</div>
-
-        <!-- Bar chart silhouette -->
-        <div class="chart-bars">
-            <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-            <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-            <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-            <div class="bar"></div>
-        </div>
-
         <!-- Coin particles (JS generated) -->
 
         <!-- Language toggle — outside splash-inner so it never overlaps the title -->
