@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#0c2340"/>
+      <stop offset="50%"  stop-color="#1a4a7a"/>
+      <stop offset="100%" stop-color="#0e5c3a"/>
+    </linearGradient>
+  </defs>
+  <!-- Rounded square background -->
+  <rect width="512" height="512" rx="100" ry="100" fill="url(#bg)"/>
+  <!-- Gold border ring -->
+  <rect x="18" y="18" width="476" height="476" rx="86" ry="86" fill="none" stroke="#f5c842" stroke-width="10" opacity="0.6"/>
+  <!-- Rupee symbol ₹ -->
+  <text x="256" y="360"
+        font-family="Georgia, 'Times New Roman', serif"
+        font-size="300"
+        font-weight="bold"
+        fill="#f5c842"
+        text-anchor="middle"
+        dominant-baseline="auto">₹</text>
+</svg>

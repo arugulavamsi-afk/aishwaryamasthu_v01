@@ -1,0 +1,48 @@
+{
+  "name": "AishwaryaMasthu",
+  "short_name": "AishwaryaMasthu",
+  "description": "Personal finance tools for India — MF Explorer, Tax Guide, Home Loan, Retirement Hub & more.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0c2340",
+  "theme_color": "#0c2340",
+  "lang": "en-IN",
+  "categories": ["finance", "utilities"],
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Tax Guide",
+      "short_name": "Tax",
+      "url": "/?tool=taxguide",
+      "description": "Old vs New Regime comparison"
+    },
+    {
+      "name": "MF Explorer",
+      "short_name": "MF",
+      "url": "/?tool=mfexplorer",
+      "description": "Browse & compare mutual funds"
+    },
+    {
+      "name": "Financial Plan",
+      "short_name": "Plan",
+      "url": "/?tool=finplan",
+      "description": "Build your personal financial plan"
+    }
+  ]
+}
