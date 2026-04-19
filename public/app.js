@@ -487,17 +487,21 @@
                 if (el) el.classList.add('hidden');
             });
             const activeId = isDashboard ? 'dashboard-panel' : isEmergency ? 'emergency-panel' : isMFKit ? 'mfkit-panel' : isFundPicker ? 'fundpicker-panel' : isHealthScore ? 'healthscore-panel' : isFinPlan ? 'finplan-panel' : isMFExplorer ? 'mfexplorer-panel' : isTaxGuide ? 'taxguide-panel' : isHomeLoan ? 'homeloan-panel' : isStepUpSIP ? 'stepupsip-panel' : isEPFCalc ? 'epfcalc-panel' : isSSAPlanner ? 'ssaplanner-panel' : isPPFNPS ? 'ppfnps-panel' : isCtcOptimizer ? 'ctcoptimizer-panel' : isInsure ? 'insure-panel' : isGratuity ? 'gratuity-panel' : isDebtPlan ? 'debtplan-panel' : isJointPlan ? 'jointplan-panel' : isCibil ? 'cibil-panel' : isFinCal ? 'fincal-panel' : isSelfEmpl ? 'selfempl-panel' : isGoldComp ? 'goldcomp-panel' : isDashCalc ? 'dashcat-calc-panel' : isDashMF ? 'dashcat-mf-panel' : isDashTax ? 'dashcat-tax-panel' : isDashFav ? 'dashcat-fav-panel' : isCoffeeCan ? 'coffeecan-panel' : isNetWorth ? 'networth-panel' : isUlipCheck ? 'ulipcheck-panel' : isFixedIncome ? 'fixedincome-panel' : isRetirementHub ? 'retirementhub-panel' : isMyProfile ? 'myprofile-panel' : isCgCalc ? 'cgcalc-panel' : isHraCalc ? 'hracalc-panel' : isNomTrack ? 'nomtrack-panel' : isBudgetTrack ? 'budgettrack-panel' : null;
+            function _animatePanel(el) {
+                el.classList.remove('panel-fade');
+                requestAnimationFrame(function() {
+                    requestAnimationFrame(function() {
+                        el.classList.add('panel-fade');
+                    });
+                });
+            }
             if (activeId) {
                 const el = document.getElementById(activeId);
                 el.classList.remove('hidden');
-                el.classList.remove('panel-fade');
-                void el.offsetWidth;
-                el.classList.add('panel-fade');
+                _animatePanel(el);
             }
             if (!isFullPanel && leftPanel) {
-                leftPanel.classList.remove('panel-fade');
-                void leftPanel.offsetWidth;
-                leftPanel.classList.add('panel-fade');
+                _animatePanel(leftPanel);
             }
             if (leftPanel) leftPanel.style.display = isFullPanel ? 'none' : '';
             if (rightPanel) rightPanel.style.display = isFullPanel ? 'none' : '';

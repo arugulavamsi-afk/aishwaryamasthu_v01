@@ -1,8 +1,21 @@
+        /* ── Global smoothness ── */
+        *, *::before, *::after {
+            -webkit-tap-highlight-color: transparent; /* no blue flash on tap */
+        }
+        button, a, input, select, textarea, [role="button"] {
+            touch-action: manipulation; /* kill 300ms tap delay */
+        }
+        html {
+            scroll-behavior: smooth;
+            overscroll-behavior: none; /* prevent pull-to-refresh jank */
+        }
+
         body {
             font-family: 'Inter', sans-serif;
             background: linear-gradient(145deg, #071e22 0%, #0d3d42 45%, #162a10 100%);
             background-attachment: fixed;
             min-height: 100vh;
+            overscroll-behavior: none;
         }
         /* Subtle animated grid overlay on body background */
         body::before {
@@ -98,10 +111,13 @@
 
         /* ===== PAGE / PANEL TRANSITION ===== */
         .panel-fade {
-            animation: panelIn 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+            animation: panelIn 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+            will-change: transform, opacity;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
         }
         @keyframes panelIn {
-            from { opacity: 0; transform: translateY(18px) scale(0.985); }
+            from { opacity: 0; transform: translateY(10px) scale(0.992); }
             to   { opacity: 1; transform: translateY(0) scale(1); }
         }
 
