@@ -381,20 +381,20 @@
             background: linear-gradient(
                 105deg,
                 transparent 0%,
-                rgba(255,255,255,0.55) 45%,
-                rgba(255,255,255,0.75) 50%,
-                rgba(255,255,255,0.55) 55%,
+                rgba(255,255,255,0.45) 40%,
+                rgba(255,255,255,0.70) 50%,
+                rgba(255,255,255,0.45) 60%,
                 transparent 100%
             );
             transform: translateX(-200%);
-            animation: shimmerSweep 5s ease-in-out 1.2s infinite;
+            animation: shimmerSweep 6s ease-in-out 1.5s infinite;
             will-change: transform;
             pointer-events: none;
         }
         @keyframes shimmerSweep {
             0%   { transform: translateX(-200%); } /* off-screen left */
-            10%  { transform: translateX(500%); }  /* fast sweep across (0.5s) */
-            100% { transform: translateX(500%); }  /* hold off-screen: 4.5s pause */
+            17%  { transform: translateX(500%); }  /* sweep across in ~1s */
+            100% { transform: translateX(500%); }  /* hold off-screen: ~5s pause */
         }
 
         /* Splash title */
