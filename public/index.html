@@ -697,7 +697,7 @@
                 </div>
                 <button onclick="switchMode('dashboard')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">⬅ Back</button>
             </div>
-            <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px;">
+            <div class="dash-grid">
                 <button onclick="switchMode('growth')" class="dash-card group" data-color="#10b981"><div class="dash-card-icon">📈</div><div class="dash-card-title" data-i18n="card.growth.title">Growth Calculator</div><div class="dash-card-desc" data-i18n="card.growth.desc">Compound interest · Lumpsum · SIP · Inflation adjust</div><div class="dash-card-arrow">→</div></button>
                 <button onclick="switchMode('goal')" class="dash-card group" data-color="#6366f1"><div class="dash-card-icon">🎯</div><div class="dash-card-title" data-i18n="card.goal.title">Goal Planner</div><div class="dash-card-desc" data-i18n="card.goal.desc">Education · Marriage · Retirement · Category inflation presets</div><div class="dash-card-arrow">→</div></button>
                 <button onclick="switchMode('emergency')" class="dash-card group" data-color="#f59e0b"><div class="dash-card-icon">🛡️</div><div class="dash-card-title" data-i18n="card.ef.title">Emergency Fund</div><div class="dash-card-desc" data-i18n="card.ef.desc">How much safety net you really need · 3–12 month calculator</div><div class="dash-card-arrow">→</div></button>
@@ -723,7 +723,7 @@
                 </div>
                 <button onclick="switchMode('dashboard')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">⬅ Back</button>
             </div>
-            <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px;">
+            <div class="dash-grid">
                 <button onclick="switchMode('mfexplorer')" class="dash-card group" data-color="#0891b2"><div class="dash-card-icon">🔭</div><div class="dash-card-title" data-i18n="card.mfe.title">MF Explorer</div><div class="dash-card-desc" data-i18n="card.mfe.desc">Live NAV · Signal scoring · Fund comparator · 1000+ funds</div><div class="dash-card-arrow">→</div></button>
                 <button onclick="switchMode('mfkit')" class="dash-card group" data-color="#7c3aed"><div class="dash-card-icon">💼</div><div class="dash-card-title" data-i18n="card.mfk.title">MF Kit</div><div class="dash-card-desc" data-i18n="card.mfk.desc">Which fund type suits you · Equity · Debt · Hybrid explained</div><div class="dash-card-arrow">→</div></button>
                 <button onclick="switchMode('fundpicker')" class="dash-card group" data-color="#059669"><div class="dash-card-icon">🔬</div><div class="dash-card-title" data-i18n="card.fp.title">Fund Picker Guide</div><div class="dash-card-desc" data-i18n="card.fp.desc">Alpha · Sharpe · Sortino · Expense ratio · How to read metrics</div><div class="dash-card-arrow">→</div></button>
@@ -743,7 +743,7 @@
                 </div>
                 <button onclick="switchMode('dashboard')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">⬅ Back</button>
             </div>
-            <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px;">
+            <div class="dash-grid">
                 <button onclick="switchMode('fixedincome')" class="dash-card group" data-color="#0369a1"><div class="dash-card-icon">🏦</div><div class="dash-card-title">Fixed Income Tools</div><div class="dash-card-desc">FD Calculator (tax-adjusted) · SCSS 8.2% · POMIS · NSC · KVP · Tax FD vs ELSS · For every investor, not just SIP investors</div><div class="dash-card-arrow">→</div></button>
                 <button onclick="switchMode('ulipcheck')" class="dash-card group" data-color="#dc2626"><div class="dash-card-icon">🔍</div><div class="dash-card-title">ULIP / Policy Analyzer</div><div class="dash-card-desc">Should I surrender? · IRR of your LIC/ULIP · Buy Term + Invest the Difference · Saves crores of Indians</div><div class="dash-card-arrow">→</div></button>
                 <button onclick="switchMode('networth')" class="dash-card group" data-color="#059669"><div class="dash-card-icon">⚖️</div><div class="dash-card-title">Net Worth Tracker</div><div class="dash-card-desc">Assets vs Liabilities · Full balance sheet · Allocation chart · Debt ratio · Your financial snapshot</div><div class="dash-card-arrow">→</div></button>
@@ -777,7 +777,7 @@
                 </div>
                 <button onclick="switchMode('dashboard')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">⬅ Back</button>
             </div>
-            <div id="dashcat-fav-grid" style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px;">
+            <div id="dashcat-fav-grid" class="dash-grid">
                 <!-- Rendered by JS -->
             </div>
             <div class="mt-4 rounded-2xl px-4 py-3 text-[11px] leading-relaxed" style="background:rgba(255,255,255,0.04);border:1px solid rgba(245,200,66,0.2);color:rgba(255,255,255,0.5);">
@@ -1060,7 +1060,8 @@
         @media (hover: none) {
             .shine-header::after,
             .shine-btn::after,
-            .logo-header-bg::before { animation: none; }
+            .logo-header-bg::before,
+            .dash-card::after { animation: none; }
         }
 
         /* MF Kit styles */
@@ -2218,6 +2219,13 @@
     <script src="home-loan.js"></script>
     <!-- ===== DASHBOARD CSS ===== -->
     <style>
+        .dash-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        @media (min-width: 480px) { .dash-grid { grid-template-columns: repeat(4, 1fr); } }
+        @media (min-width: 680px) { .dash-grid { grid-template-columns: repeat(5, 1fr); } }
         .dash-card {
             display: flex;
             flex-direction: column;
@@ -2225,9 +2233,8 @@
             text-align: center;
             background: linear-gradient(130deg, #e8d5a3 0%, #f5c842 35%, #e8a44a 60%, #c97f3a 80%, #e8d5a3 100%);
             border: 1.5px solid rgba(245,200,66,0.60);
-            border-radius: 16px;
-            padding: 10px 14px 24px;
-            width: 175px;
+            border-radius: 14px;
+            padding: 12px 6px 12px;
             min-width: 0;
             cursor: pointer;
             transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1);
@@ -2242,43 +2249,32 @@
         }
         .dash-card:active { transform: translateY(0) scale(0.98); }
         .dash-card-icon {
-            font-size: 1.25rem;
-            width: 36px;
-            height: 36px;
-            border-radius: 9px;
+            font-size: 1.35rem;
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 6px;
+            margin-bottom: 7px;
             flex-shrink: 0;
             background: rgba(255,255,255,0.55);
             box-shadow: 0 1px 4px rgba(0,0,0,0.08);
         }
         .dash-card-title {
-            font-size: 12px;
+            font-size: 10.5px;
             font-weight: 800;
             color: #162a10;
-            margin-bottom: 3px;
             line-height: 1.3;
+            word-break: break-word;
         }
-        .dash-card-desc {
+        .dash-card-desc { display: none; }
+        .dash-card-arrow { display: none; }
+        .dash-card-unpin {
             font-size: 9px;
-            color: rgba(22,42,16,0.65);
-            line-height: 1.5;
-            flex: 1;
-        }
-        .dash-card-arrow {
-            position: absolute;
-            bottom: 10px;
-            right: 12px;
-            font-size: 12px;
-            font-weight: 900;
-            color: rgba(22,42,16,0.35);
-            transition: all 0.2s;
-        }
-        .dash-card:hover .dash-card-arrow {
-            color: #162a10;
-            transform: translateX(3px);
+            font-weight: 800;
+            color: #f5c842;
+            margin-top: 5px;
         }
         .dash-card::before {
             content: '';

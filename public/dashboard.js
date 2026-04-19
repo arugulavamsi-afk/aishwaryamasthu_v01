@@ -67,11 +67,10 @@
             btn.innerHTML =
                 '<div class="dash-card-icon">' + t.icon + '</div>' +
                 '<div class="dash-card-title">' + t.title + '</div>' +
-                '<div class="dash-card-desc" style="margin-top:4px;">' +
+                '<div class="dash-card-unpin">' +
                     '<span onclick="event.stopPropagation();dashToggleFav(\'' + k + '\',this);initDashFav();" ' +
-                    'style="cursor:pointer;font-size:10px;font-weight:800;color:#f5c842;">' + _t('pin.active.tap') + '</span>' +
-                '</div>' +
-                '<div class="dash-card-arrow">→</div>';
+                    'style="cursor:pointer;">' + _t('pin.active.tap') + '</span>' +
+                '</div>';
             btn.onclick = function() { switchMode(k); };
             grid.appendChild(btn);
         });
@@ -99,7 +98,7 @@
                 _dashInjectPinBtns(panelId);
             };
             var arrow = card.querySelector('.dash-card-arrow');
-            if (arrow) card.insertBefore(span, arrow);
+            if (arrow) card.insertBefore(span, arrow); else card.appendChild(span);
         });
     }
     function initDashboard() {
