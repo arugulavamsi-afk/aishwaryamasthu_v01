@@ -65,7 +65,7 @@ function renderMyMFs() {
         el.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:36px 16px;">' +
             '<div style="font-size:28px;margin-bottom:8px;">☆</div>' +
             '<div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:4px;">No funds saved yet</div>' +
-            '<div style="font-size:11px;color:rgba(255,255,255,0.4);">Open MF Explorer and click ☆ on any fund to add it here.</div>' +
+            '<div style="font-size:11px;color:rgba(255,255,255,0.4);">Search for a fund above, or open MF Explorer and click ☆ on any row.</div>' +
             '</td></tr>';
         return;
     }
@@ -122,6 +122,127 @@ function renderMyMFs() {
     }).join('');
 }
 window.renderMyMFs = renderMyMFs;
+
+// ── Search ─────────────────────────────────────────────────────
+var _myMFsSearchIdx = -1;  // keyboard-selected result index
+
+function myMFsOnSearch(query) {
+    var drop = document.getElementById('mymfs-search-drop');
+    var status = document.getElementById('mymfs-search-status');
+    if (!drop) return;
+
+    query = (query || '').trim();
+    _myMFsSearchIdx = -1;
+
+    if (!query) { drop.style.display = 'none'; if (status) status.textContent = ''; return; }
+
+    // Trigger data load if not ready yet
+    if (typeof _mfeReady !== 'undefined' && !_mfeReady) {
+        if (typeof mfeLoadPrecomputed === 'function') mfeLoadPrecomputed();
+        drop.style.display = 'block';
+        drop.innerHTML = '<div style="padding:14px 16px;font-size:12px;color:rgba(255,255,255,0.45);">Loading fund data… please wait a moment.</div>';
+        if (status) status.textContent = 'loading…';
+        return;
+    }
+
+    var list = typeof _mfeList !== 'undefined' ? _mfeList : [];
+    if (!list.length) {
+        drop.style.display = 'none';
+        return;
+    }
+
+    var q = query.toLowerCase();
+    var results = list.filter(function(f) {
+        return f.name.toLowerCase().includes(q) || f.amc.toLowerCase().includes(q);
+    }).slice(0, 10);
+
+    if (status) status.textContent = results.length ? results.length + ' result' + (results.length > 1 ? 's' : '') : 'no results';
+
+    if (!results.length) {
+        drop.style.display = 'block';
+        drop.innerHTML = '<div style="padding:14px 16px;font-size:12px;color:rgba(255,255,255,0.4);">No funds found for "' + _myMFesc(query) + '"</div>';
+        return;
+    }
+
+    drop.style.display = 'block';
+    drop.innerHTML = results.map(function(f, i) {
+        var saved = mfIsWatchlisted(f.code);
+        var cacheKey = (f.cat === 'Sectoral' && f.subSect) ? f.code + ':' + f.subSect : f.code;
+        var m = typeof _mfeMetCache !== 'undefined' ? _mfeMetCache[cacheKey] : null;
+        var starsHtml = (m && m.stars != null && typeof mfeSignalHtml === 'function')
+            ? mfeSignalHtml(m.stars, m.score, m.pillars)
+            : '<span style="color:rgba(255,255,255,0.25);font-size:10px;">—</span>';
+        var cagrText = m && m.cagr && m.cagr.y3 != null
+            ? '<span style="color:' + (m.cagr.y3 >= 0 ? '#4ade80' : '#f87171') + ';font-size:10px;font-weight:700;">' + (m.cagr.y3 >= 0 ? '+' : '') + m.cagr.y3.toFixed(1) + '%</span>'
+            : '';
+        var nameHtml = _myMFesc(f.name).replace(new RegExp('(' + _myMFescRegex(query) + ')', 'gi'), '<mark style="background:rgba(245,200,66,0.25);color:#f5c842;border-radius:2px;">$1</mark>');
+        return '<div class="mymfs-drop-row" data-idx="' + i + '" data-code="' + _myMFesc(f.code) + '" ' +
+            'onclick="myMFsAddFromSearch(\'' + _myMFescAttr(f.code) + '\',\'' + _myMFescAttr(f.name) + '\',\'' + _myMFescAttr(f.cat) + '\',\'' + _myMFescAttr(f.subSect||'') + '\',\'' + _myMFescAttr(f.amc) + '\')" ' +
+            'onmouseover="myMFsDropHover(' + i + ')" ' +
+            'style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.06);transition:background .1s;' + (saved ? 'opacity:0.55;' : '') + '">' +
+            '<div style="min-width:0;">' +
+                '<div style="font-size:12px;font-weight:700;color:#e2e8f0;line-height:1.3;word-break:break-word;">' + nameHtml + '</div>' +
+                '<div style="font-size:10px;color:rgba(255,255,255,0.4);margin-top:1px;">' + _myMFesc(f.amc) + ' · ' + _myMFesc(f.cat) + '</div>' +
+            '</div>' +
+            '<div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">' +
+                starsHtml + cagrText +
+                '<span style="font-size:18px;color:' + (saved ? '#f5c842' : '#94a3b8') + ';" title="' + (saved ? 'Already in your list' : 'Add to My Mutual Funds') + '">' + (saved ? '★' : '☆') + '</span>' +
+            '</div>' +
+        '</div>';
+    }).join('');
+}
+window.myMFsOnSearch = myMFsOnSearch;
+
+function myMFsAddFromSearch(code, name, cat, subSect, amc) {
+    if (mfIsWatchlisted(code)) return;  // already saved — clicking does nothing
+    mfToggleWatchlist(code, name, cat, subSect, amc);
+    // Refresh the dropdown to show updated ★ state
+    var inp = document.getElementById('mymfs-search');
+    if (inp) myMFsOnSearch(inp.value);
+}
+window.myMFsAddFromSearch = myMFsAddFromSearch;
+
+function myMFsDropHover(idx) {
+    _myMFsSearchIdx = idx;
+    document.querySelectorAll('.mymfs-drop-row').forEach(function(el, i) {
+        el.style.background = i === idx ? 'rgba(13,148,136,0.18)' : '';
+    });
+}
+window.myMFsDropHover = myMFsDropHover;
+
+function myMFsSearchKey(e) {
+    var rows = document.querySelectorAll('.mymfs-drop-row');
+    if (!rows.length) return;
+    if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        _myMFsSearchIdx = Math.min(_myMFsSearchIdx + 1, rows.length - 1);
+        rows.forEach(function(el, i) { el.style.background = i === _myMFsSearchIdx ? 'rgba(13,148,136,0.18)' : ''; });
+    } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        _myMFsSearchIdx = Math.max(_myMFsSearchIdx - 1, 0);
+        rows.forEach(function(el, i) { el.style.background = i === _myMFsSearchIdx ? 'rgba(13,148,136,0.18)' : ''; });
+    } else if (e.key === 'Enter' && _myMFsSearchIdx >= 0) {
+        e.preventDefault();
+        rows[_myMFsSearchIdx] && rows[_myMFsSearchIdx].click();
+    } else if (e.key === 'Escape') {
+        var drop = document.getElementById('mymfs-search-drop');
+        if (drop) drop.style.display = 'none';
+        e.target.blur();
+    }
+}
+window.myMFsSearchKey = myMFsSearchKey;
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('#mymfs-search') && !e.target.closest('#mymfs-search-drop')) {
+        var drop = document.getElementById('mymfs-search-drop');
+        if (drop) drop.style.display = 'none';
+    }
+});
+
+function _myMFescRegex(s) {
+    return String(s || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
 
 function _myMFesc(s) {
     return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
