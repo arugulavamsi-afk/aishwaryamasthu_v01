@@ -1,0 +1,51 @@
+<div id="mymfs-panel" class="hidden w-full flex flex-col gap-4">
+
+    <!-- Header -->
+    <div class="rounded-2xl px-5 py-4 text-white shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a5276 45%,#0e4d3e 100%);border:2px solid rgba(245,200,66,0.4);box-shadow:0 4px 18px rgba(0,0,0,0.25);">
+        <div class="flex items-start justify-between gap-3 flex-wrap">
+            <div>
+                <h2 class="text-lg font-black flex items-center gap-2">★ My Mutual Funds</h2>
+                <p class="text-blue-200 text-xs mt-1">Your personal watchlist · Ratings from MF Explorer · Save up to 20 funds</p>
+            </div>
+            <div class="flex items-center gap-3 flex-shrink-0">
+                <span id="mymfs-count" class="text-[11px] font-bold" style="color:rgba(245,200,66,0.8);">0 / 20 funds</span>
+                <button onclick="switchMode('dashcat-mf')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">⬅ Back</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Disclaimer -->
+    <div class="flex items-start gap-2 px-4 py-2.5 rounded-xl text-xs font-medium text-amber-800" style="background:#fffbeb;border:1px solid rgba(245,158,11,0.3);">
+        <span class="text-base flex-shrink-0 mt-0.5">ℹ️</span>
+        <span>Ratings are percentile ranks within each fund's category — a 5★ Large Cap fund is top 10% of Large Cap funds only. Scores are from the latest nightly compute. <strong>Not investment advice.</strong></span>
+    </div>
+
+    <!-- Table -->
+    <div class="rounded-2xl overflow-hidden" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);">
+        <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
+            <table style="width:100%;border-collapse:collapse;min-width:620px;">
+                <thead>
+                    <tr style="background:rgba(255,255,255,0.07);">
+                        <th class="mymf-th" style="text-align:left;min-width:180px;">Fund</th>
+                        <th class="mymf-th" style="text-align:left;">Category</th>
+                        <th class="mymf-th" style="text-align:center;">Rating</th>
+                        <th class="mymf-th" style="text-align:right;">3Y CAGR</th>
+                        <th class="mymf-th" style="text-align:right;">NAV</th>
+                        <th class="mymf-th" style="text-align:right;">Sharpe</th>
+                        <th class="mymf-th" style="text-align:right;">Exp Ratio</th>
+                        <th class="mymf-th" style="text-align:center;"></th>
+                    </tr>
+                </thead>
+                <tbody id="mymfs-tbody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Add funds CTA -->
+    <div style="text-align:center;padding:4px 0 8px;">
+        <button onclick="switchMode('mfexplorer')" style="font-size:11px;font-weight:700;color:#0d9488;background:rgba(13,148,136,0.1);border:1px solid rgba(13,148,136,0.25);border-radius:10px;padding:8px 18px;cursor:pointer;">
+            🔭 Open MF Explorer to add more funds
+        </button>
+    </div>
+
+</div>

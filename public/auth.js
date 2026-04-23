@@ -705,7 +705,8 @@
                     dismissed: window._rmState.dismissed || false,
                     collapsed: window._rmState.collapsed || false
                 } : (_base.roadmap || {}),
-                nwHistory: (typeof _nwHistory !== 'undefined' && _nwHistory.length) ? _nwHistory.slice() : (_base.nwHistory || [])
+                nwHistory: (typeof _nwHistory !== 'undefined' && _nwHistory.length) ? _nwHistory.slice() : (_base.nwHistory || []),
+                myMFs: window._myMFs && window._myMFs.length ? window._myMFs.slice() : (_base.myMFs || [])
             });
             // Keep in-memory cache in sync so subsequent saves inherit current values
             window._cachedRestoreData = data;
@@ -1528,6 +1529,12 @@
             if (data.roadmap) {
                 window._rmState = Object.assign({ profile: null, visited: [], dismissed: false, collapsed: false }, data.roadmap);
                 if (typeof initRoadmap === 'function') initRoadmap();
+            }
+
+            // My Mutual Funds restore
+            if (Array.isArray(data.myMFs)) {
+                window._myMFs = data.myMFs;
+                if (typeof _myMFsRefreshBookmarks === 'function') _myMFsRefreshBookmarks();
             }
 
             } finally {

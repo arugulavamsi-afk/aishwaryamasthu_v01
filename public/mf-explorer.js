@@ -511,7 +511,7 @@
                 }
             });
 
-            document.getElementById('mfe-stat-total').textContent = _mfeList.length.toLocaleString();
+            const _stEl = document.getElementById('mfe-stat-total'); if(_stEl) _stEl.textContent = _mfeList.length.toLocaleString();
             _mfePrecomputed = true;
             _mfeReady = true;
             _mfeBusy  = false;
@@ -519,6 +519,7 @@
             _mfeShowTable();
             mfeCatLoad('Index');
             mfeSyncCatDropdowns('Index');
+            if (typeof renderMyMFs === 'function') renderMyMFs();
 
             // If NAVs are stale, refresh the initial category live in background (non-blocking)
             if (_mfeNavStale) mfeLiveNavRefresh('Index');
@@ -682,7 +683,7 @@
                     subSect: mfeParseSubSect(f.schemeName)
                 }));
 
-            document.getElementById('mfe-stat-total').textContent = _mfeList.length.toLocaleString();
+            const _stEl2 = document.getElementById('mfe-stat-total'); if(_stEl2) _stEl2.textContent = _mfeList.length.toLocaleString();
             const ts = document.getElementById('mfe-last-updated');
             if (ts) ts.textContent = 'Updated: ' + new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
 
@@ -754,7 +755,7 @@
         }
 
         const catCount = _mfeList.filter(f => f.cat === cat && _mfeNavCache[f.code]).length;
-        document.getElementById('mfe-stat-cat').textContent = catCount.toLocaleString();
+        const _ccEl = document.getElementById('mfe-stat-cat'); if(_ccEl) _ccEl.textContent = catCount.toLocaleString();
         _mfeCatNav[cat] = true;
     }
 
@@ -793,7 +794,7 @@
             done += batch.length;
             const pct = Math.round(done/total*100);
             _mfeProgress(`Scoring funds… ${done}/${total}`, 'Scores fill in progressively — best funds rise to top 🏆', pct);
-            const scoredCount = _mfeList.filter(f => f.cat===cat && _mfeMetCache[(cat==='Sectoral')?f.code+':'+_mfeSubSect:f.code]).length; document.getElementById('mfe-stat-scored').textContent = scoredCount.toLocaleString();
+            const scoredCount = _mfeList.filter(f => f.cat===cat && _mfeMetCache[(cat==='Sectoral')?f.code+':'+_mfeSubSect:f.code]).length; const _ssEl = document.getElementById('mfe-stat-scored'); if(_ssEl) _ssEl.textContent = scoredCount.toLocaleString();
             // Normalise + re-render after each batch
             mfeNorm(cat);
             if (_mfeCur === cat) mfeRender();
@@ -813,8 +814,8 @@
         _mfeScopeAbort = ctl;
 
         const catFunds = _mfeList.filter(f => f.cat === cat);
-        document.getElementById('mfe-stat-cat').textContent = catFunds.length.toLocaleString();
-        document.getElementById('mfe-stat-scored').textContent = '—';
+        const _scEl = document.getElementById('mfe-stat-cat'); if(_scEl) _scEl.textContent = catFunds.length.toLocaleString();
+        const _scEl2 = document.getElementById('mfe-stat-scored'); if(_scEl2) _scEl2.textContent = '—';
 
         // Update benchmark label in UI
         let bLabel;
@@ -1252,6 +1253,13 @@
                 erHtml = `<span class="${erCls}"${erTip}>${erData.val.toFixed(2)}%${erSuffix}</span>`;
             }
 
+            const _bmSaved = typeof mfIsWatchlisted === 'function' && mfIsWatchlisted(f.code);
+            const _bmIcon  = _bmSaved ? '★' : '☆';
+            const _bmTitle = _bmSaved ? 'Remove from My Mutual Funds' : 'Add to My Mutual Funds';
+            const _bmColor = _bmSaved ? '#f5c842' : 'rgba(255,255,255,0.35)';
+            const _bmEscName = _esc(f.name).replace(/'/g,'&#39;');
+            const _bmEscAmc  = _esc(f.amc).replace(/'/g,'&#39;');
+            const _bmSub = _esc(f.subSect||'').replace(/'/g,'&#39;');
             return `<tr>
                 <td class="mfe-td mfe-td-rank text-center">${rankHtml}</td>
                 <td class="mfe-td mfe-td-name">
@@ -1269,6 +1277,7 @@
                 <td class="mfe-td text-right"${benchNote}>${m&&m.alpha!=null?mc(m.alpha,v=>v>2?'mfe-good':v>0?'mfe-avg':'mfe-bad')+'%':'<span class="mfe-shimmer"></span>'}</td>
                 <td class="mfe-td text-right">${m&&m.sharpe!=null?mc(m.sharpe,v=>v>1.5?'mfe-good':v>0.8?'mfe-avg':'mfe-bad'):'<span class="mfe-shimmer"></span>'}</td>
                 <td class="mfe-td text-right">${m&&m.sortino!=null?mc(m.sortino,v=>v>1.5?'mfe-good':v>0.8?'mfe-avg':'mfe-bad'):'<span class="mfe-shimmer"></span>'}</td>
+                <td class="mfe-td text-center"><button data-mf-bm="${_esc(f.code)}" onclick="mfToggleWatchlist('${_esc(f.code)}','${_bmEscName}','${_esc(f.cat)}','${_bmSub}','${_bmEscAmc}')" style="font-size:16px;line-height:1;background:none;border:none;cursor:pointer;color:${_bmColor};padding:2px 4px;transition:color .15s;" title="${_bmTitle}">${_bmIcon}</button></td>
             </tr>`;
         }).join('');
 
@@ -1449,8 +1458,8 @@
         }
         mfeRenderSubSectPills();
         const cf=_mfeList.filter(f=>f.cat===cat);
-        document.getElementById('mfe-stat-cat').textContent=cf.length.toLocaleString();
-        document.getElementById('mfe-stat-scored').textContent='—';
+        const _cfEl = document.getElementById('mfe-stat-cat'); if(_cfEl) _cfEl.textContent=cf.length.toLocaleString();
+        const _cfEl2 = document.getElementById('mfe-stat-scored'); if(_cfEl2) _cfEl2.textContent='—';
         if (_mfeReady) {
             // For Sectoral, check the composite done key so we don't re-score
             if (cat === 'Sectoral') {

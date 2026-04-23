@@ -43,6 +43,7 @@ var SHELL = [
   '/js/nom-track.js',
   '/js/budget-tracker.js',
   '/js/roadmap.js',
+  '/js/mymfs.js',
   '/manifest.json',
   '/icons/icon.svg'
 ];
