@@ -33,6 +33,7 @@
         hracalc:      { icon:'🏠', title:'HRA Calculator',              color:'#0891b2' },
         nomtrack:     { icon:'📜', title:'Nomination Tracker & Will',   color:'#7c3aed' },
         budgettrack:  { icon:'📊', title:'Budget & Expense Tracker',    color:'#0891b2' },
+        mymfs:        { icon:'★',  title:'My Mutual Funds',             color:'#f5c842' },
     };
 
     function _dashGetFavs() {
