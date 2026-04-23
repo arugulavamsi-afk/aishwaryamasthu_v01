@@ -1255,8 +1255,9 @@
 
             const _bmSaved = typeof mfIsWatchlisted === 'function' && mfIsWatchlisted(f.code);
             const _bmIcon  = _bmSaved ? '★' : '☆';
-            const _bmTitle = _bmSaved ? 'Remove from My Mutual Funds' : 'Add to My Mutual Funds';
-            const _bmColor = _bmSaved ? '#f5c842' : 'rgba(255,255,255,0.35)';
+            const _bmTitle = _bmSaved ? 'Saved — click to remove from My Mutual Funds' : 'Click to save to My Mutual Funds';
+            const _bmColor = _bmSaved ? '#f5c842' : '#94a3b8';
+            const _bmHover = _bmSaved ? '#e2ac1a' : '#f5c842';
             const _bmEscName = _esc(f.name).replace(/'/g,'&#39;');
             const _bmEscAmc  = _esc(f.amc).replace(/'/g,'&#39;');
             const _bmSub = _esc(f.subSect||'').replace(/'/g,'&#39;');
@@ -1277,7 +1278,7 @@
                 <td class="mfe-td text-right"${benchNote}>${m&&m.alpha!=null?mc(m.alpha,v=>v>2?'mfe-good':v>0?'mfe-avg':'mfe-bad')+'%':'<span class="mfe-shimmer"></span>'}</td>
                 <td class="mfe-td text-right">${m&&m.sharpe!=null?mc(m.sharpe,v=>v>1.5?'mfe-good':v>0.8?'mfe-avg':'mfe-bad'):'<span class="mfe-shimmer"></span>'}</td>
                 <td class="mfe-td text-right">${m&&m.sortino!=null?mc(m.sortino,v=>v>1.5?'mfe-good':v>0.8?'mfe-avg':'mfe-bad'):'<span class="mfe-shimmer"></span>'}</td>
-                <td class="mfe-td text-center"><button data-mf-bm="${_esc(f.code)}" onclick="mfToggleWatchlist('${_esc(f.code)}','${_bmEscName}','${_esc(f.cat)}','${_bmSub}','${_bmEscAmc}')" style="font-size:16px;line-height:1;background:none;border:none;cursor:pointer;color:${_bmColor};padding:2px 4px;transition:color .15s;" title="${_bmTitle}">${_bmIcon}</button></td>
+                <td class="mfe-td text-center"><button data-mf-bm="${_esc(f.code)}" onclick="mfToggleWatchlist('${_esc(f.code)}','${_bmEscName}','${_esc(f.cat)}','${_bmSub}','${_bmEscAmc}')" onmouseover="this.style.color='${_bmHover}';this.style.transform='scale(1.25)';" onmouseout="this.style.color='${_bmColor}';this.style.transform='';" style="font-size:17px;line-height:1;background:none;border:none;cursor:pointer;color:${_bmColor};padding:2px 4px;transition:color .15s,transform .15s;" title="${_bmTitle}">${_bmIcon}</button></td>
             </tr>`;
         }).join('');
 

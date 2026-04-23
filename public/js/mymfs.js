@@ -36,8 +36,8 @@ function _myMFsRefreshBookmarks() {
         var code = btn.getAttribute('data-mf-bm');
         var saved = mfIsWatchlisted(code);
         btn.textContent = saved ? '★' : '☆';
-        btn.title = saved ? 'Remove from My Mutual Funds' : 'Add to My Mutual Funds';
-        btn.style.color = saved ? '#f5c842' : 'rgba(255,255,255,0.35)';
+        btn.title = saved ? 'Saved — click to remove from My Mutual Funds' : 'Click to save to My Mutual Funds';
+        btn.style.color = saved ? '#f5c842' : '#94a3b8';
     });
 }
 window._myMFsRefreshBookmarks = _myMFsRefreshBookmarks;
