@@ -26,7 +26,6 @@
         html {
             scroll-behavior: smooth;
             overscroll-behavior: none; /* prevent pull-to-refresh jank */
-            overflow-x: hidden;
         }
 
         body {
