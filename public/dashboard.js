@@ -91,7 +91,7 @@
             var isPinned = favs.indexOf(m) !== -1;
             var span = document.createElement('span');
             span.className = 'dash-pin-btn';
-            span.style.cssText = 'display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:800;cursor:pointer;margin-top:6px;padding:3px 8px;border-radius:8px;transition:all 0.2s;' + (isPinned ? 'color:#162a10;background:rgba(255,255,255,0.75);border:1px solid rgba(22,42,16,0.25);' : 'color:rgba(22,42,16,0.6);background:rgba(255,255,255,0.35);border:1px solid rgba(22,42,16,0.15);');
+            span.style.cssText = 'display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:800;cursor:pointer;margin-top:6px;padding:3px 8px;border-radius:8px;transition:all 0.2s;' + (isPinned ? 'color:#f5c842;background:rgba(22,42,16,0.65);border:1px solid rgba(245,200,66,0.45);' : 'color:rgba(22,42,16,0.65);background:rgba(0,0,0,0.1);border:1px solid rgba(22,42,16,0.18);');
             span.textContent = isPinned ? _t('pin.active') : _t('pin.inactive');
             span.onclick = function(e) {
                 e.stopPropagation();
