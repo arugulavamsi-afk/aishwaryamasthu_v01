@@ -902,6 +902,62 @@
             } else {
                 if (ltcgRow) ltcgRow.classList.add('hidden');
             }
+
+            // ---- GROWTH CALCULATOR ACTION PLAN ----
+            var growActEl = document.getElementById('growth-actions');
+            if (growActEl && amount > 0 && years > 0 && currentMode === 'growth') {
+                var growActs = [];
+                var fmtG = (val) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(val);
+
+                if (rate > 15) {
+                    growActs.push({ icon:'⚠️', color:'#dc2626', title:'Aggressive return assumption (' + rate + '%)',
+                        tip:'Nifty 50 has averaged ~12% CAGR over 20 years; very few active funds sustain 15%+ consistently. Re-run at 12% to see a realistic scenario and avoid planning on overstated numbers.' });
+                } else if (rate < 6 && years >= 5) {
+                    growActs.push({ icon:'📉', color:'#f59e0b', title:'Returns below inflation',
+                        tip:'At ' + rate + '%, your real return after India\'s average inflation (~5–6%) is near zero. For long-term goals, consider equity index funds — they\'ve historically beaten inflation by 6–8% annually.' });
+                }
+
+                if (type === 'sip' && amount > 0 && years >= 5) {
+                    var suMRate = (rate / 100) / 12;
+                    var suR = rate / 100;
+                    var suCorpus = 0;
+                    var suSIP = amount;
+                    for (var suY = 0; suY < years; suY++) {
+                        suCorpus += suSIP * ((Math.pow(1 + suMRate, 12) - 1) / suMRate) * (1 + suMRate) * Math.pow(1 + suR, years - suY - 1);
+                        suSIP *= 1.1;
+                    }
+                    var suExtra = suCorpus - fv;
+                    if (suExtra > 0) {
+                        growActs.push({ icon:'📈', color:'#10b981', title:'Step-up 10%/yr: ' + fmtG(suExtra) + ' extra',
+                            tip:'Raising your SIP by 10% each year (next year: ' + fmtG(amount * 1.1) + '/mo) grows your corpus to ' + fmtG(suCorpus) + ' — ' + fmtG(suExtra) + ' more. Try the Step-Up SIP tool for the full breakdown.' });
+                    }
+                }
+
+                if (years < 5 && rate > 10) {
+                    growActs.push({ icon:'⚡', color:'#f97316', title:'Short horizon — equity is risky',
+                        tip:'For goals under 5 years, markets can drop 30–40% right when you need the money. Consider Debt MF (~7–8%), short-term FD, or arbitrage funds — they protect capital while still beating savings accounts.' });
+                }
+
+                if (type === 'sip' && years >= 3 && rate >= 10) {
+                    growActs.push({ icon:'🧾', color:'#7c3aed', title:'ELSS: same returns + 80C tax saving',
+                        tip:'If you haven\'t used your full ₹1.5L 80C limit, put this SIP in ELSS. At 30% slab, ₹12,500/month in ELSS saves ₹46,800/year in income tax — effectively boosting your real return by 2–3%.' });
+                }
+
+                if (growActs.length > 0) {
+                    growActEl.classList.remove('hidden');
+                    growActEl.innerHTML = '<div class="text-[10px] font-black text-slate-500 uppercase tracking-wider mb-2">⚡ Investment Action Plan</div>' +
+                        growActs.slice(0, 4).map(function(a) {
+                            return '<div class="flex items-start gap-2.5 p-3 rounded-xl border mb-2" style="background:' + a.color + '12;border-color:' + a.color + '30;">' +
+                                '<span class="text-base flex-shrink-0 mt-0.5">' + a.icon + '</span>' +
+                                '<div><div class="text-[11px] font-black uppercase tracking-wide mb-0.5" style="color:' + a.color + '">' + a.title + '</div>' +
+                                '<div class="text-xs text-slate-600 leading-relaxed">' + a.tip + '</div></div></div>';
+                        }).join('');
+                } else {
+                    growActEl.classList.add('hidden');
+                }
+            } else if (growActEl) {
+                growActEl.classList.add('hidden');
+            }
         }
 
         /* ── Goal-specific inflation defaults ─────────────────────────────────
@@ -1496,6 +1552,35 @@
                 document.getElementById('ef-chart-container').classList.remove('hidden');
                 renderEFDonutChart(categories, values);
             }
+            // ---- EMERGENCY FUND ACTION PLAN ----
+            var efActEl = document.getElementById('ef-actions');
+            if (efActEl && total > 0) {
+                var efActs = [];
+                var t3ef = total * 3, t6ef = total * 6;
+                if (efMonths > 3) {
+                    efActs.push({ icon:'🎯', color:'#f59e0b', title:'Build in phases — start with 3-month target',
+                        tip:'Reach ' + fmt(t3ef) + ' first — this handles most job losses or medical emergencies. Once achieved, extend to ' + fmt(t6ef) + '. Phased goals feel more achievable and build the habit.' });
+                }
+                efActs.push({ icon:'🏦', color:'#0891b2', title:'Where to park your emergency fund',
+                    tip:'Best: Liquid Mutual Fund (1-day redemption, ~7% return — ideal for the bulk). Good: Sweep-in FD (idle balance auto-invests at FD rates). Avoid: equity MF, gold, or ULIPs — too volatile or too slow to redeem in a crisis.' });
+                efActs.push({ icon:'🔒', color:'#6366f1', title:'Keep it separate and untouched',
+                    tip:'Open a dedicated liquid MF folio or a separate savings account labelled "Emergency Only." Don\'t dip into it for planned expenses like holidays, appliances, or investments — those need separate savings.' });
+                if (total >= 50000) {
+                    efActs.push({ icon:'📋', color:'#dc2626', title:'Consider trimming monthly expenses',
+                        tip:'At ' + fmt(total) + '/month, even a 3-month fund needs ' + fmt(t3ef) + '. Review if any discretionary spending (OTT subscriptions, dining out, impulse purchases) could be cut to reach your target faster.' });
+                }
+                efActEl.classList.remove('hidden');
+                efActEl.innerHTML = '<div class="text-[10px] font-black text-slate-500 uppercase tracking-wider mb-2">⚡ Emergency Fund Action Plan</div>' +
+                    efActs.map(function(a) {
+                        return '<div class="flex items-start gap-2.5 p-3 rounded-xl border mb-2" style="background:' + a.color + '12;border-color:' + a.color + '30;">' +
+                            '<span class="text-base flex-shrink-0 mt-0.5">' + a.icon + '</span>' +
+                            '<div><div class="text-[11px] font-black uppercase tracking-wide mb-0.5" style="color:' + a.color + '">' + a.title + '</div>' +
+                            '<div class="text-xs text-slate-600 leading-relaxed">' + a.tip + '</div></div></div>';
+                    }).join('');
+            } else if (efActEl) {
+                efActEl.classList.add('hidden');
+            }
+
             if (typeof saveUserData === 'function') saveUserData();
         }
 

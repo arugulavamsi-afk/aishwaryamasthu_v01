@@ -75,6 +75,8 @@
         if (!P || !r || !n) {
             if (el) el.innerHTML = '<p class="text-xs text-slate-400 text-center font-semibold py-4">Enter loan details to see EMI</p>';
             if (aw) aw.classList.add('hidden');
+            var hlActClr = document.getElementById('hl-emi-actions');
+            if (hlActClr) hlActClr.innerHTML = '';
             return;
         }
         var emi        = P * r * Math.pow(1+r,n) / (Math.pow(1+r,n) - 1);
@@ -141,6 +143,37 @@
             '</tr>';
         }
         tbody.innerHTML = rows;
+
+        // ---- HOME LOAN ACTION PLAN ----
+        var hlActEl = document.getElementById('hl-emi-actions');
+        if (hlActEl) {
+            var hlActs = [];
+            var annualIntRate = (r * 12 * 100).toFixed(1);
+
+            if (intRatio > 55) {
+                var prepayOneEmiSaving = Math.round(totalInt * 0.08);
+                hlActs.push({ icon:'🔥', color:'#dc2626', title:'High interest burden: ' + intRatio + '% of total payment',
+                    tip:'You\'ll pay ' + hlFmt(totalInt) + ' in interest vs ' + hlFmt(P) + ' principal. Paying just 1 extra EMI (' + hlFmt(emi) + ') per year could save ~' + hlFmt(prepayOneEmiSaving) + ' in interest and cut 2–3 years off tenure.' });
+            } else {
+                hlActs.push({ icon:'✅', color:'#10b981', title:'Interest-to-principal ratio is manageable',
+                    tip:'At ' + intRatio + '%, your interest burden is reasonable. Keep your EMI below 30% of monthly take-home pay — that\'s the safe zone for loan serviceability.' });
+            }
+
+            hlActs.push({ icon:'🧾', color:'#7c3aed', title:'Section 24(b): Claim ₹2L interest deduction',
+                tip:'Under Old Regime, home loan interest up to ₹2L/year is deductible (Sec 24b). At 30% slab that\'s ₹60,000 saved per year. Open the Tax Guide to calculate your full tax impact alongside this loan.' });
+
+            hlActs.push({ icon:'⚡', color:'#f59e0b', title:'Prepay early — interest is front-loaded',
+                tip:'In the first 5 years, 70–80% of each EMI goes to interest. A prepayment now saves far more than the same rupee prepaid in year 10. Use the Prepayment tab above to see exactly how much you\'d save.' });
+
+            hlActEl.innerHTML = '<div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-2"><div class="text-[10px] font-black text-slate-500 uppercase tracking-wider mb-2">⚡ Next Steps</div>' +
+                hlActs.map(function(a) {
+                    return '<div class="flex items-start gap-2.5 p-3 rounded-xl border" style="background:' + a.color + '12;border-color:' + a.color + '30;">' +
+                        '<span class="text-base flex-shrink-0 mt-0.5">' + a.icon + '</span>' +
+                        '<div><div class="text-[11px] font-black uppercase tracking-wide mb-0.5" style="color:' + a.color + '">' + a.title + '</div>' +
+                        '<div class="text-xs text-slate-600 leading-relaxed">' + a.tip + '</div></div></div>';
+                }).join('') + '</div>';
+        }
+
         if (typeof saveUserData === 'function') saveUserData();
     }
 

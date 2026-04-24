@@ -391,6 +391,61 @@
             if (surplusCard) surplusCard.classList.add('hidden');
             window._tgSurplus = null;
         }
+        // ---- TAX ACTION PLAN ----
+        var tgActEl = document.getElementById('tg-actions');
+        if (tgActEl) {
+            var tgActs = [];
+            var c80Gap = 150000 - c80;
+
+            if (winner === 'new') {
+                tgActs.push({ icon:'✅', color:'#059669', title:'Stay on New Regime',
+                    tip:'You save ' + fmt(winAmt) + '/yr vs Old Regime. No need to lock money in 80C instruments — invest freely in index funds, liquid MFs, and gold without 3–15 year lock-ins.' });
+                tgActs.push({ icon:'🔓', color:'#6366f1', title:'Skip 80C lock-ins',
+                    tip:'New Regime gives no 80C benefit. Don\'t buy ELSS/NSC just for tax — put that capital into open-ended index funds. Same growth potential, full liquidity.' });
+            } else if (winner === 'old') {
+                if (c80Gap > 5000) {
+                    tgActs.push({ icon:'💼', color:'#7c3aed', title:'80C Gap: ' + fmt(c80Gap) + ' unused',
+                        tip:'Top up 80C with ELSS (equity returns + shortest 3yr lock-in), PPF (safe, fully tax-free maturity), or voluntary EPF. Every ₹1 invested here saves ₹0.20–₹0.30 in tax.' });
+                }
+                if (c80d < 25000) {
+                    tgActs.push({ icon:'🏥', color:'#ec4899', title:'80D: Add or increase health insurance',
+                        tip:'You\'ve claimed only ' + fmt(c80d) + ' under 80D (limit: ₹25K for self+family, ₹50K if parents are senior citizens). A family floater for ₹10L cover costs ₹8–15K/yr — saves tax AND protects against hospitalisation bills.' });
+                }
+                if (nps === 0 && gross >= 500000) {
+                    tgActs.push({ icon:'🎯', color:'#0891b2', title:'80CCD(1B): Extra ₹50K deduction via NPS',
+                        tip:'NPS gives ₹50,000 extra deduction above the ₹1.5L 80C cap. At 30% slab that\'s ₹15,600 saved per year. ₹6,000/month in NPS Tier I also builds a retirement corpus.' });
+                }
+                if (homeloan === 0) {
+                    tgActs.push({ icon:'🏠', color:'#3b82f6', title:'Section 24(b): Home loan interest deduction',
+                        tip:'If you have a home loan, interest up to ₹2L/year is deductible under Old Regime (Sec 24b). At 30% slab that\'s ₹60K/year saved. Enter your annual interest amount in the deductions above.' });
+                }
+            }
+
+            var surp = window._tgSurplus;
+            if (surp && surp >= 2000) {
+                var where = surp >= 20000
+                    ? '60% in Nifty 50 index fund SIP + 20% PPF/NPS + 10% liquid MF (emergency fund buffer) + 10% gold ETF'
+                    : surp >= 8000
+                    ? 'Start a SIP in a Nifty 50 index fund + keep 3 months of expenses in a liquid MF'
+                    : 'Start a ' + fmt(Math.ceil(surp * 0.5 / 500) * 500) + '/month SIP in an index fund — even small amounts compound significantly over 10+ years';
+                tgActs.push({ icon:'📈', color:'#10b981', title:'Invest your ' + fmt(surp) + '/month surplus',
+                    tip: where });
+            }
+
+            if (tgActs.length === 0) {
+                tgActEl.classList.add('hidden');
+            } else {
+                tgActEl.classList.remove('hidden');
+                tgActEl.innerHTML = '<div class="text-[10px] font-black text-slate-500 uppercase tracking-wider mb-2">⚡ Your Tax Action Plan</div>' +
+                    tgActs.slice(0, 4).map(function(a) {
+                        return '<div class="flex items-start gap-2.5 p-3 rounded-xl border mb-2" style="background:' + a.color + '12;border-color:' + a.color + '30;">' +
+                            '<span class="text-base flex-shrink-0 mt-0.5">' + a.icon + '</span>' +
+                            '<div><div class="text-[11px] font-black uppercase tracking-wide mb-0.5" style="color:' + a.color + '">' + a.title + '</div>' +
+                            '<div class="text-xs text-slate-600 leading-relaxed">' + a.tip + '</div></div></div>';
+                    }).join('');
+            }
+        }
+
         if (typeof saveUserData === 'function') saveUserData();
     }
 
