@@ -1,5 +1,5 @@
 /* AishwaryaMasthu Service Worker */
-var CACHE = 'am-v1';
+var CACHE = 'am-v2';
 
 /* App shell — pre-cached on SW install. Other files are cached on first access. */
 var SHELL = [
@@ -45,7 +45,7 @@ var SHELL = [
   '/js/roadmap.js',
   '/js/mymfs.js',
   '/manifest.json',
-  '/icons/icon.svg'
+  '/icons/GoldenEle_Logov02.png'
 ];
 
 /* ── Skip-waiting message (sent by update toast in index.html) ── */
