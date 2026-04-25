@@ -573,10 +573,6 @@
 
         </div>
 
-        <!-- ===================== EMERGENCY FUND PANEL ===================== -->
-        <div id="emergency-panel" class="hidden w-full flex flex-col gap-3" data-panel-src="panels/emergency.html"></div>
-        <!-- =================== END EMERGENCY FUND PANEL ================== -->
-
         <!-- ===================== MUTUAL FUND KIT PANEL ===================== -->
         <div id="mfkit-panel" class="hidden w-full flex flex-col gap-3" data-panel-src="panels/mfkit.html"></div>
         <!-- =================== END MUTUAL FUND KIT PANEL ================== -->
@@ -710,8 +706,7 @@
             <div class="dash-grid">
                 <button onclick="switchMode('growth')" class="dash-card group" data-color="#10b981"><div class="dash-card-icon">📈</div><div class="dash-card-title" data-i18n="card.growth.title">Growth Calculator</div><div class="dash-card-desc" data-i18n="card.growth.desc">Compound interest · Lumpsum · SIP · Inflation adjust</div><div class="dash-card-arrow">→</div></button>
                 <button onclick="switchMode('goal')" class="dash-card group" data-color="#6366f1"><div class="dash-card-icon">🎯</div><div class="dash-card-title" data-i18n="card.goal.title">Goal Planner</div><div class="dash-card-desc" data-i18n="card.goal.desc">Education · Marriage · Retirement · Category inflation presets</div><div class="dash-card-arrow">→</div></button>
-                <button onclick="switchMode('emergency')" class="dash-card group" data-color="#f59e0b"><div class="dash-card-icon">🛡️</div><div class="dash-card-title" data-i18n="card.ef.title">Emergency Fund</div><div class="dash-card-desc" data-i18n="card.ef.desc">How much safety net you really need · 3–12 month calculator</div><div class="dash-card-arrow">→</div></button>
-                <button onclick="switchMode('homeloan')" class="dash-card group" data-color="#3b82f6"><div class="dash-card-icon">🏠</div><div class="dash-card-title" data-i18n="card.hl.title">Home Loan Advisor</div><div class="dash-card-desc" data-i18n="card.hl.desc">EMI · Prepayment benefit · Rent vs Buy · Sec 24(b) tax saving</div><div class="dash-card-arrow">→</div></button>
+<button onclick="switchMode('homeloan')" class="dash-card group" data-color="#3b82f6"><div class="dash-card-icon">🏠</div><div class="dash-card-title" data-i18n="card.hl.title">Home Loan Advisor</div><div class="dash-card-desc" data-i18n="card.hl.desc">EMI · Prepayment benefit · Rent vs Buy · Sec 24(b) tax saving</div><div class="dash-card-arrow">→</div></button>
                 <button onclick="switchMode('stepupsip')" class="dash-card group" data-color="#f59e0b"><div class="dash-card-icon">📈</div><div class="dash-card-title" data-i18n="card.su.title">Step-Up SIP Calculator</div><div class="dash-card-desc" data-i18n="card.su.desc">Flat SIP vs 10% annual step-up · See the staggering corpus gap</div><div class="dash-card-arrow">→</div></button>
                 <button onclick="switchMode('retirementhub')" class="dash-card group" data-color="#7c3aed"><div class="dash-card-icon">🏖️</div><div class="dash-card-title">Retirement Hub ✨</div><div class="dash-card-desc">EPF + PPF + NPS + SIP → corpus · income · surplus — plus Drawdown Planner: SWP strategy, 3-bucket allocation, depletion timeline</div><div class="dash-card-arrow">→</div></button>
                 <button onclick="switchMode('epfcalc')" class="dash-card group" data-color="#0891b2"><div class="dash-card-icon">🏦</div><div class="dash-card-title" data-i18n="card.epf.title">EPF Corpus Projector</div><div class="dash-card-desc" data-i18n="card.epf.desc">Basic salary · Employer match · Retirement corpus · India's invisible retirement number</div><div class="dash-card-arrow">→</div></button>
@@ -2378,6 +2373,7 @@
     <script src="js/nom-track.js"></script>
     <script src="js/budget-tracker.js"></script>
     <script src="js/roadmap.js"></script>
+    <script src="js/how-to-use.js"></script>
     <script src="js/mymfs.js"></script>
     <!-- ── dashboard core: tool catalog + favs + dashboard render ── -->
     <script src="dashboard.js"></script>

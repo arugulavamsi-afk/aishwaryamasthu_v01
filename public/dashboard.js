@@ -3,7 +3,6 @@
     var _dashAllTools = {
         growth:       { icon:'📈', title:'Growth Calculator',            color:'#10b981' },
         goal:         { icon:'🎯', title:'Goal Planner',                 color:'#6366f1' },
-        emergency:    { icon:'🛡️', title:'Emergency Fund',               color:'#f59e0b' },
         homeloan:     { icon:'🏠', title:'Home Loan Advisor',             color:'#3b82f6' },
         stepupsip:    { icon:'📈', title:'Step-Up SIP Calculator',        color:'#f59e0b' },
         epfcalc:      { icon:'🏦', title:'EPF Corpus Projector',          color:'#0891b2' },

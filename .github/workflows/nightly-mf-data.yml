@@ -65,3 +65,25 @@ jobs:
         run: |
           npm install -g firebase-tools
           firebase deploy --only hosting --token "$FIREBASE_TOKEN" --non-interactive
+
+      - name: Notify on failure
+        if: failure()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: "❌ Nightly MF Data Build Failed — ${{ github.run_id }}"
+          to: arugula.vamsi@gmail.com
+          from: AishwaryaMasthu Bot <${{ secrets.MAIL_USERNAME }}>
+          body: |
+            The nightly MF data build failed on ${{ github.run_number == 0 && 'manual trigger' || github.event.schedule }}.
+
+            Run:    ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            Branch: ${{ github.ref_name }}
+            Commit: ${{ github.sha }}
+
+            Check the run log above for the failed step. The live app is still
+            serving the previous mf-data.json until the next successful build.

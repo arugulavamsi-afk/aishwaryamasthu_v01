@@ -330,6 +330,8 @@
         }
         var pctEl = document.getElementById('bt-bar-pct');
         if (pctEl) pctEl.textContent = t.budget > 0 ? pct + '% of budget used' : '';
+
+        _btRenderEF();
     }
 
     // ── Render: chart ──────────────────────────────────────────
@@ -465,6 +467,60 @@
                 }
             });
         }
+    }
+
+    // ── Emergency Fund section ─────────────────────────────────
+    var _btEFMonths = 3;
+
+    function _btSetEFMonths(m) {
+        _btEFMonths = m;
+        [3, 6, 12].forEach(function (n) {
+            var btn = document.getElementById('bt-ef-btn-' + n);
+            if (!btn) return;
+            var active = n === m;
+            btn.style.background   = active ? '#fbbf24' : 'transparent';
+            btn.style.borderColor  = active ? '#fbbf24' : '#e2e8f0';
+            btn.style.color        = '#78350f';
+        });
+        _btRenderEF();
+    }
+    window._btSetEFMonths = _btSetEFMonths;
+
+    function _btRenderEF() {
+        var t = _btGetTotals();
+        var monthly = t.actual > 0 ? t.actual : t.budget;
+        var fmt = function (v) {
+            return '₹' + v.toLocaleString('en-IN');
+        };
+
+        var basisEl = document.getElementById('bt-ef-basis');
+        var resEl   = document.getElementById('bt-ef-result');
+        var lblEl   = document.getElementById('bt-ef-result-label');
+        var el3     = document.getElementById('bt-ef-3m');
+        var el6     = document.getElementById('bt-ef-6m');
+        var el12    = document.getElementById('bt-ef-12m');
+        if (!resEl) return;
+
+        if (monthly === 0) {
+            resEl.textContent = '—';
+            if (lblEl) lblEl.textContent = 'Fill in your monthly expenses above to see your target';
+            if (basisEl) basisEl.textContent = 'Based on your monthly expenses';
+            if (el3)  el3.textContent  = '—';
+            if (el6)  el6.textContent  = '—';
+            if (el12) el12.textContent = '—';
+            return;
+        }
+
+        var source = t.actual > 0 ? 'actual spend' : 'budgeted amount';
+        if (basisEl) basisEl.textContent = 'Based on ' + source + ' of ' + fmt(monthly) + ' / month';
+
+        var target = monthly * _btEFMonths;
+        resEl.textContent = fmt(target);
+        if (lblEl) lblEl.textContent = _btEFMonths + '-month emergency corpus target';
+
+        if (el3)  el3.textContent  = fmt(monthly * 3);
+        if (el6)  el6.textContent  = fmt(monthly * 6);
+        if (el12) el12.textContent = fmt(monthly * 12);
     }
 
     // ── Refresh all ────────────────────────────────────────────
