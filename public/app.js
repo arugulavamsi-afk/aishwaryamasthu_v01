@@ -482,6 +482,7 @@
             // Show/hide main panels
             const leftPanel = document.getElementById('growth-left-panel');
             const rightPanel = document.getElementById('growth-right-panel');
+            const growthWrapper = document.getElementById('growth-wrapper');
             ['dashboard-panel','mfkit-panel','fundpicker-panel','healthscore-panel','finplan-panel','mfexplorer-panel','taxguide-panel','homeloan-panel','stepupsip-panel','epfcalc-panel','ssaplanner-panel','ppfnps-panel','ctcoptimizer-panel','insure-panel','gratuity-panel','debtplan-panel','jointplan-panel','cibil-panel','fincal-panel','selfempl-panel','goldcomp-panel','dashcat-calc-panel','dashcat-mf-panel','dashcat-tax-panel','dashcat-fav-panel','coffeecan-panel','networth-panel','ulipcheck-panel','fixedincome-panel','retirementhub-panel','myprofile-panel','cgcalc-panel','hracalc-panel','nomtrack-panel','budgettrack-panel','mymfs-panel'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.classList.add('hidden');
@@ -501,11 +502,10 @@
                 _animatePanel(el);
             }
             try { if (typeof injectHowToUse === 'function') injectHowToUse(mode); } catch(e) { console.warn('[how-to-use] inject error:', e); }
-            if (!isFullPanel && leftPanel) {
-                _animatePanel(leftPanel);
+            if (!isFullPanel && growthWrapper) {
+                _animatePanel(growthWrapper);
             }
-            if (leftPanel) leftPanel.style.display = isFullPanel ? 'none' : '';
-            if (rightPanel) rightPanel.style.display = isFullPanel ? 'none' : '';
+            if (growthWrapper) growthWrapper.style.display = isFullPanel ? 'none' : '';
 
             if (isMFKit) { renderMFKit(); applyLang(); return; }
             if (isFundPicker) { renderFundPickerPage(); applyLang(); return; }
@@ -557,6 +557,11 @@
             document.getElementById('goal-panel-header').classList.toggle('hidden', !isGoal);
             document.getElementById('growth-results-header').classList.toggle('hidden', isGoal);
             document.getElementById('goal-results-header').classList.toggle('hidden', !isGoal);
+            // Toggle how-to-use slots
+            var ghSlot = document.getElementById('howto-growth-slot');
+            var glSlot = document.getElementById('howto-goal-slot');
+            if (ghSlot) ghSlot.style.display = isGoal ? 'none' : '';
+            if (glSlot) glSlot.style.display = isGoal ? '' : 'none';
 
             document.getElementById('rate-container').style.display = isGoal ? 'none' : 'block';
             document.getElementById('inflation-toggle-container').style.display = isGoal ? 'none' : 'block';
