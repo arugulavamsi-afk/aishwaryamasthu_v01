@@ -359,16 +359,15 @@
             'invest','🏛️', regime === 'old' ? '₹5,000–₹15,000 tax saving forfeited' : 'Check if applicable under your regime');
 
         // ── CREDIT CARD EVENTS ──────────────────────────────────────────
-        var dueDayCC = ccDay + 20 > 28 ? (ccDay + 20 - 28) : ccDay + 20;
-        // Add monthly for next 3 months
+        // Add monthly for next 3 months — let JS handle month overflow naturally
         for (var cm = 0; cm < 3; cm++) {
-            var stmtMo = new Date(today.getFullYear(), today.getMonth() + cm, ccDay);
-            var dueDate = new Date(today.getFullYear(), today.getMonth() + cm, dueDayCC);
-            addEv([stmtMo.getFullYear(), stmtMo.getMonth(), ccDay],
+            var stmtDate = new Date(today.getFullYear(), today.getMonth() + cm, ccDay);
+            var dueDate  = new Date(today.getFullYear(), today.getMonth() + cm, ccDay + 20);
+            addEv([stmtDate.getFullYear(), stmtDate.getMonth(), stmtDate.getDate()],
                 '💳 Credit Card Statement Generated',
                 'Your statement is generated today. Log in and check for any fraudulent charges or billing errors. Dispute window: 30 days.',
                 'credit','💳','');
-            addEv([dueDate.getFullYear(), dueDate.getMonth(), dueDayCC],
+            addEv([dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate()],
                 '🔴 Credit Card Payment Due',
                 'Pay the FULL statement amount to avoid 36–42% p.a. interest. Even paying ₹1 short triggers interest on the entire balance. Set auto-pay today.',
                 'credit','🔴','36–42% p.a. interest on entire balance if not paid in full');
@@ -495,42 +494,86 @@
         var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
         document.getElementById('fc-month-label').textContent = months[mo] + ' ' + yr;
 
-        // Build a set: dateStr → [cats]
+        // Store all events for day-click lookups
+        window._fcCurrentEvents = events;
+
+        // Apply active filter to calendar dots too
+        var filter = _fcActiveFilter || 'all';
+        var filtered = filter === 'all' ? events : events.filter(function(ev) { return ev.cat === filter; });
+
+        // Build day map: day → array of events (filtered)
         var dayMap = {};
-        events.forEach(function(ev) {
+        filtered.forEach(function(ev) {
             if (ev.date.getFullYear() === yr && ev.date.getMonth() === mo) {
                 var key = ev.date.getDate();
                 if (!dayMap[key]) dayMap[key] = [];
-                if (dayMap[key].indexOf(ev.cat) === -1) dayMap[key].push(ev.cat);
+                dayMap[key].push(ev);
             }
         });
 
         var catColors = { tax:'#ef4444', invest:'#f59e0b', credit:'#3b82f6', epf:'#8b5cf6', general:'#10b981' };
-        var firstDay = new Date(yr, mo, 1).getDay(); // 0=Sun
-        // Convert to Mon=0
-        var startOffset = (firstDay + 6) % 7;
+        var firstDay = new Date(yr, mo, 1).getDay();
+        var startOffset = (firstDay + 6) % 7; // Mon=0 … Sun=6
         var daysInMonth = new Date(yr, mo + 1, 0).getDate();
         var today = new Date(); today.setHours(0,0,0,0);
 
         var html = '';
-        // Empty cells before first day
-        for (var i = 0; i < startOffset; i++) {
-            html += '<div class="aspect-square"></div>';
-        }
+        for (var i = 0; i < startOffset; i++) html += '<div class="aspect-square"></div>';
+
         for (var d = 1; d <= daysInMonth; d++) {
             var isToday = (today.getFullYear()===yr && today.getMonth()===mo && today.getDate()===d);
-            var cats    = dayMap[d] || [];
+            var evs     = dayMap[d] || [];
+            var cats    = evs.map(function(e){ return e.cat; }).filter(function(c,i,a){ return a.indexOf(c)===i; });
             var hasDots = cats.length > 0;
             var dateObj = new Date(yr, mo, d);
             var isPast  = dateObj < today;
-            var bg = isToday ? 'background:#1a5276;' : hasDots ? 'background:#f0f9ff;' : '';
-            var border = isToday ? 'border:1.5px solid #f5c842;' : hasDots ? 'border:1px solid #bae6fd;' : 'border:1px solid transparent;';
-            html += '<div class="aspect-square rounded-lg flex flex-col items-center justify-center p-0.5 cursor-default transition-all" style="' + bg + border + (isPast && !isToday ? 'opacity:0.45;' : '') + '">' +
+            var bg      = isToday ? 'background:#1a5276;' : hasDots ? 'background:#f0f9ff;' : '';
+            var border  = isToday ? 'border:1.5px solid #f5c842;' : hasDots ? 'border:1px solid #bae6fd;' : 'border:1px solid transparent;';
+            var click   = hasDots ? ' onclick="fcShowDayEvents(' + yr + ',' + mo + ',' + d + ')" title="' + evs.length + ' event' + (evs.length > 1 ? 's' : '') + ' — click to view"' : '';
+            var cursor  = hasDots ? 'cursor:pointer;' : '';
+            html += '<div class="aspect-square rounded-lg flex flex-col items-center justify-center p-0.5 transition-all hover:scale-105"' +
+                ' style="' + bg + border + (isPast && !isToday ? 'opacity:0.45;' : '') + cursor + '"' + click + '>' +
                 '<span class="text-[9px] font-bold ' + (isToday ? 'text-white' : 'text-slate-700') + '">' + d + '</span>' +
-                (hasDots ? '<div class="flex gap-0.5 mt-0.5">' + cats.slice(0,3).map(function(c){ return '<div class="w-1 h-1 rounded-full" style="background:' + (catColors[c]||'#10b981') + ';"></div>'; }).join('') + '</div>' : '') +
+                (hasDots ? '<div class="flex gap-0.5 mt-0.5">' + cats.slice(0,3).map(function(c){
+                    return '<div class="w-1.5 h-1.5 rounded-full" style="background:' + (catColors[c]||'#10b981') + ';"></div>';
+                }).join('') + '</div>' : '') +
                 '</div>';
         }
         document.getElementById('fc-cal-grid').innerHTML = html;
+
+        // Clear the day detail panel on month change
+        var det = document.getElementById('fc-day-detail');
+        if (det) det.innerHTML = '';
+    }
+
+    function fcShowDayEvents(yr, mo, d) {
+        var allEvents = window._fcCurrentEvents || [];
+        var filter = _fcActiveFilter || 'all';
+        var dayEvs = allEvents.filter(function(ev) {
+            return ev.date.getFullYear() === yr && ev.date.getMonth() === mo && ev.date.getDate() === d
+                && (filter === 'all' || ev.cat === filter);
+        });
+        var det = document.getElementById('fc-day-detail');
+        if (!det) return;
+        if (dayEvs.length === 0) { det.innerHTML = ''; return; }
+
+        var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+        var catColors = { tax:'#ef4444', invest:'#f59e0b', credit:'#3b82f6', epf:'#8b5cf6', general:'#10b981' };
+        var html = '<div class="mt-2 pt-2 border-t border-slate-100">' +
+            '<div class="text-[10px] font-black text-slate-500 uppercase tracking-wider mb-2">📅 ' + months[mo] + ' ' + d + ' — ' + dayEvs.length + ' event' + (dayEvs.length > 1 ? 's' : '') + '</div>' +
+            dayEvs.map(function(ev) {
+                var dot = catColors[ev.cat] || '#10b981';
+                return '<div class="flex items-start gap-2 rounded-xl px-2.5 py-2 mb-1.5" style="background:#f8fafc;border:1px solid #e2e8f0;">' +
+                    '<div class="w-2 h-2 rounded-full mt-1 flex-shrink-0" style="background:' + dot + ';"></div>' +
+                    '<div class="flex-1 min-w-0">' +
+                        '<div class="text-[10px] font-black text-slate-800 leading-snug">' + ev.title + '</div>' +
+                        '<div class="text-[9px] text-slate-500 mt-0.5 leading-snug">' + ev.desc.slice(0, 110) + (ev.desc.length > 110 ? '…' : '') + '</div>' +
+                        (ev.penalty ? '<div class="text-[8px] font-bold mt-0.5" style="color:#dc2626;">⚠️ ' + ev.penalty + '</div>' : '') +
+                    '</div></div>';
+            }).join('') +
+            '</div>';
+        det.innerHTML = html;
+        det.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
     function fcMonthNav(dir) {
