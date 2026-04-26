@@ -447,17 +447,43 @@
                 '<div class="flex justify-between border-t border-slate-100 pt-1 mt-0.5"><span class="font-black text-slate-600">Net Worth</span><span class="font-black" style="color:' + nwColor + ';">' + _upFmt(nw.netWorth || 0) + '</span></div>';
         }
 
-        // Financial Health Score
+        // Financial Health Score — mini arc card
         var hsEl = document.getElementById('up-health-summary');
         if (hsEl && s.healthScore) {
             var hs = s.healthScore;
-            var hsColor = hs.score >= 70 ? '#059669' : hs.score >= 50 ? '#d97706' : '#dc2626';
+            var sc = hs.score || 0;
+            var hsColor = sc >= 90 ? '#10b981' : sc >= 80 ? '#22c55e' : sc >= 70 ? '#84cc16'
+                        : sc >= 55 ? '#eab308' : sc >= 40 ? '#f97316' : sc >= 25 ? '#ef4444' : '#dc2626';
+            var hsEmoji = sc >= 90 ? '🏆' : sc >= 80 ? '🌟' : sc >= 70 ? '📈'
+                        : sc >= 55 ? '🚀' : sc >= 40 ? '⚡' : sc >= 25 ? '🚨' : '🆘';
+            var circumf = 226.2; // 2π × r36
+            var fullOffset = circumf;
+            var targetOffset = circumf * (1 - sc / 100);
             hsEl.innerHTML =
-                '<div class="flex justify-between items-center">' +
-                    '<span class="text-slate-500">Score</span>' +
-                    '<span class="text-lg font-black" style="color:' + hsColor + ';">' + hs.score + '<span class="text-[10px] font-normal">/100</span></span>' +
-                '</div>' +
-                '<div class="text-[10px] font-semibold" style="color:' + hsColor + ';">' + (hs.grade || '') + '</div>';
+                '<div class="flex items-center gap-4">' +
+                    '<div class="relative flex-shrink-0">' +
+                        '<svg viewBox="0 0 90 90" style="width:80px;height:80px;transform:rotate(-90deg);">' +
+                            '<circle cx="45" cy="45" r="36" fill="none" stroke="#f1f5f9" stroke-width="9"/>' +
+                            '<circle id="up-hs-arc" cx="45" cy="45" r="36" fill="none" stroke="' + hsColor + '" stroke-width="9"' +
+                                ' stroke-linecap="round" stroke-dasharray="' + circumf + '" stroke-dashoffset="' + fullOffset + '"' +
+                                ' style="transition:stroke-dashoffset 1.2s cubic-bezier(0.34,1.56,0.64,1);"/>' +
+                        '</svg>' +
+                        '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">' +
+                            '<span style="font-size:22px;font-weight:900;color:#1e293b;line-height:1;">' + sc + '</span>' +
+                            '<span style="font-size:9px;font-weight:700;color:#94a3b8;letter-spacing:0.05em;">/100</span>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div style="flex:1;">' +
+                        '<div style="font-size:26px;line-height:1;margin-bottom:4px;">' + hsEmoji + '</div>' +
+                        '<div style="font-size:13px;font-weight:900;color:#1e293b;line-height:1.2;">' + (hs.grade || '') + '</div>' +
+                        '<div style="font-size:10px;color:#64748b;margin-top:3px;">Financial Health Score</div>' +
+                    '</div>' +
+                '</div>';
+            // Animate the arc after render
+            setTimeout(function() {
+                var arc = document.getElementById('up-hs-arc');
+                if (arc) arc.style.strokeDashoffset = targetOffset;
+            }, 60);
         }
 
         // Financial Plan
