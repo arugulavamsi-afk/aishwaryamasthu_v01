@@ -413,12 +413,8 @@
                 <div class="flex flex-col gap-2">
                     <div id="up-risk-display" class="w-full text-[11px] font-semibold px-3 py-2 rounded-xl leading-snug"
                          style="background:rgba(245,200,66,0.12);color:#7c5c0a;border:1px solid rgba(245,200,66,0.35);">Not assessed yet</div>
-                    <button onclick="upShowRiskQuiz()" class="w-full text-[12px] font-bold px-3 py-2 rounded-xl transition-all"
-                            style="background:linear-gradient(130deg,#f5c842,#e8a44a);color:#162a10;border:1px solid rgba(245,200,66,0.7);">🎯 Assess / Reassess Risk</button>
-                </div>
-                <!-- Risk Questionnaire (inline, hidden until Assess clicked) -->
-                <div id="up-risk-quiz" class="hidden mt-3 rounded-2xl overflow-hidden" style="border:1.5px solid rgba(245,200,66,0.40);background:#fff9e6;">
-                    <div id="up-risk-quiz-inner"></div>
+                    <button onclick="switchMode('finplan')" class="w-full text-[12px] font-bold px-3 py-2 rounded-xl transition-all"
+                            style="background:linear-gradient(130deg,#f5c842,#e8a44a);color:#162a10;border:1px solid rgba(245,200,66,0.7);">🎯 Take Risk Assessment →</button>
                 </div>
             </div>
 
