@@ -12,19 +12,19 @@
   "categories": ["finance", "utilities"],
   "icons": [
     {
-      "src": "/icons/GoldenEle_Logov02.png",
+      "src": "/icons/GoldenEle_Logov03_nobg.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/GoldenEle_Logov02.png",
+      "src": "/icons/GoldenEle_Logov03_nobg.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/GoldenEle_Logov02.png",
+      "src": "/icons/GoldenEle_Logov03_nobg.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
