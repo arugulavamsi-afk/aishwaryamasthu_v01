@@ -4,7 +4,7 @@
     <div class="rounded-2xl px-4 py-3 text-white shine-header"
          style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:2px solid rgba(245,200,66,0.4);box-shadow:0 4px 18px rgba(0,0,0,0.25);">
         <h2 class="text-base font-black flex items-center gap-2">👤 My Profile</h2>
-        <p class="text-blue-200 text-[11px] mt-0.5">Personal details · Income · Assets · Insurance · Risk appetite</p>
+        <p class="text-blue-200 text-[11px] mt-0.5">Your financial snapshot — linked to all tools</p>
     </div>
 
     <!-- BODY: 2-col on lg screens -->
@@ -47,240 +47,40 @@
                 </div>
             </div>
 
-            <!-- ── INCOME & TAX ── -->
+            <!-- ── INCOME & TAX (summary + link) ── -->
             <div class="bg-white rounded-2xl border border-[#f5c842]/30 shadow-sm p-3">
-                <div class="text-[10px] font-black uppercase tracking-wider mb-2.5 flex items-center gap-1.5" style="color:#7c5c0a;">
+                <div class="text-[10px] font-black uppercase tracking-wider mb-2 flex items-center gap-1.5" style="color:#7c5c0a;">
                     <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#f5c842;flex-shrink:0;"></span>Income &amp; Tax
                 </div>
-                <div class="grid grid-cols-2 gap-x-3 gap-y-2">
-                    <div>
-                        <label class="up-label">Monthly In-Hand (₹)</label>
-                        <div class="relative">
-                            <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[11px] font-bold pointer-events-none">₹</span>
-                            <input id="up-income" type="text" inputmode="numeric" class="up-input" style="padding-left:1.5rem"
-                                placeholder="e.g. 1,00,000"
-                                oninput="upFmt(this);upSave();upAutoFillAnnual()">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="up-label">Annual Income (₹)</label>
-                        <div class="relative">
-                            <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[11px] font-bold pointer-events-none">₹</span>
-                            <input id="up-annual-income" type="text" inputmode="numeric" value="0" class="up-input text-slate-400" style="padding-left:1.5rem"
-                                placeholder="e.g. 12,00,000"
-                                oninput="upFmt(this);upSave()"
-                                onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}"
-                                onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
-                        </div>
-                        <div id="up-annual-hint" class="text-[9px] text-slate-400 mt-0.5"></div>
-                    </div>
-                    <div>
-                        <label class="up-label">Monthly Expenses (₹)</label>
-                        <div class="relative">
-                            <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[11px] font-bold pointer-events-none">₹</span>
-                            <input id="up-expenses" type="text" inputmode="numeric" class="up-input" style="padding-left:1.5rem"
-                                placeholder="e.g. 50,000"
-                                oninput="upFmt(this);upSave()">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="up-label">Tax Regime</label>
-                        <select id="up-regime" class="up-input" onchange="upRegimeChange();upSave()">
-                            <option value="new">New Regime (FY 2025-26)</option>
-                            <option value="old">Old Regime</option>
-                        </select>
-                    </div>
-                    <div class="col-span-2">
-                        <label class="up-label">Your Tax Slab</label>
-                        <select id="up-tax-slab" class="up-input" onchange="upSave()">
-                            <option value="0">0% — taxable income ≤ ₹12L (87A rebate, zero tax)</option>
-                            <option value="15">15% — taxable income ₹12L–₹16L</option>
-                            <option value="20" selected>20% — taxable income ₹16L–₹20L</option>
-                            <option value="25">25% — taxable income ₹20L–₹24L</option>
-                            <option value="30">30% — taxable income above ₹24L</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="up-label">City Type</label>
-                        <select id="up-city" class="up-input" onchange="upSave()">
-                            <option value="metro">Metro</option>
-                            <option value="non-metro">Non-Metro</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="up-label">Monthly Basic Salary (₹)</label>
-                        <div class="relative">
-                            <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[11px] font-bold pointer-events-none">₹</span>
-                            <input id="up-basic-salary" type="text" inputmode="numeric" class="up-input" style="padding-left:1.5rem"
-                                placeholder="e.g. 50,000"
-                                oninput="upFmt(this);upSave()">
-                        </div>
-                    </div>
+                <div id="up-tax-summary" class="rounded-xl px-3 py-2 mb-2 text-[11px] space-y-1" style="background:rgba(245,200,66,0.08);border:1px solid rgba(245,200,66,0.25);">
+                    <p class="text-slate-400 text-[10px]">Not calculated yet · fill in Tax Guide →</p>
                 </div>
+                <button onclick="switchMode('taxguide')" class="w-full text-[12px] font-bold px-3 py-2 rounded-xl transition-all"
+                        style="background:linear-gradient(130deg,#f5c842,#e8a44a);color:#162a10;border:1px solid rgba(245,200,66,0.7);">→ Open Tax Guide</button>
             </div>
 
-            <!-- ── RETIREMENT & EPF ── -->
+            <!-- ── RETIREMENT & EPF (summary + link) ── -->
             <div class="bg-white rounded-2xl border border-[#f5c842]/30 shadow-sm p-3">
-                <div class="text-[10px] font-black uppercase tracking-wider mb-2.5 flex items-center gap-1.5" style="color:#7c3aed;">
+                <div class="text-[10px] font-black uppercase tracking-wider mb-2 flex items-center gap-1.5" style="color:#7c3aed;">
                     <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#8b5cf6;flex-shrink:0;"></span>Retirement &amp; EPF
                 </div>
-                <div class="grid grid-cols-2 gap-x-3 gap-y-2">
-                    <div>
-                        <label class="up-label">Retirement Age Goal</label>
-                        <input id="up-retire-age" type="number" min="40" max="75" class="up-input" placeholder="e.g. 60"
-                            oninput="upSave()">
-                    </div>
-                    <div>
-                        <label class="up-label">Current EPF Balance (₹)</label>
-                        <div class="relative">
-                            <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[11px] font-bold pointer-events-none">₹</span>
-                            <input id="up-epf-balance" type="text" inputmode="numeric" value="0" class="up-input text-slate-400" style="padding-left:1.5rem"
-                                placeholder="e.g. 2,00,000"
-                                oninput="upFmt(this);upSave()"
-                                onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}"
-                                onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
-                        </div>
-                    </div>
+                <div id="up-retirement-summary" class="rounded-xl px-3 py-2 mb-2 text-[11px] space-y-1" style="background:rgba(139,92,246,0.06);border:1px solid rgba(139,92,246,0.20);">
+                    <p class="text-slate-400 text-[10px]">Not calculated yet · fill in Retirement Hub →</p>
                 </div>
-                <p class="text-[9px] text-slate-400 mt-2 leading-relaxed">Used to auto-fill EPF Calculator, Retirement Hub, PPF &amp; NPS, Financial Plan.</p>
+                <button onclick="switchMode('retirementhub')" class="w-full text-[12px] font-bold px-3 py-2 rounded-xl transition-all"
+                        style="background:linear-gradient(130deg,#8b5cf6,#6d28d9);color:#fff;border:1px solid rgba(139,92,246,0.5);">→ Open Retirement Hub</button>
             </div>
 
-            <!-- ── CURRENT ASSETS ── -->
+            <!-- ── NET WORTH (summary + link, replaces Assets/Liabilities) ── -->
             <div class="bg-white rounded-2xl border border-[#f5c842]/30 shadow-sm p-3">
-                <div class="text-[10px] font-black uppercase tracking-wider mb-2.5 flex items-center gap-1.5" style="color:#059669;">
-                    <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#10b981;flex-shrink:0;"></span>Current Assets
+                <div class="text-[10px] font-black uppercase tracking-wider mb-2 flex items-center gap-1.5" style="color:#059669;">
+                    <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#10b981;flex-shrink:0;"></span>Net Worth
                 </div>
-                <div class="grid grid-cols-2 gap-x-3 gap-y-2 mb-2">
-                    <div>
-                        <label class="up-label">Bank / Savings (₹)</label>
-                        <div class="relative"><span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[11px] font-bold pointer-events-none">₹</span>
-                        <input id="up-assets-bank" type="text" inputmode="numeric" value="0" class="up-input text-slate-400" style="padding-left:1.5rem"
-                            oninput="upFmt(this);upSave();upCalcTotals()"
-                            onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}"
-                            onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="up-label">Mutual Funds (₹)</label>
-                        <div class="relative"><span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[11px] font-bold pointer-events-none">₹</span>
-                        <input id="up-assets-mf" type="text" inputmode="numeric" value="0" class="up-input text-slate-400" style="padding-left:1.5rem"
-                            oninput="upFmt(this);upSave();upCalcTotals()"
-                            onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}"
-                            onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="up-label">Stocks / Shares (₹)</label>
-                        <div class="relative"><span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[11px] font-bold pointer-events-none">₹</span>
-                        <input id="up-assets-stocks" type="text" inputmode="numeric" value="0" class="up-input text-slate-400" style="padding-left:1.5rem"
-                            oninput="upFmt(this);upSave();upCalcTotals()"
-                            onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}"
-                            onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="up-label">Real Estate (₹)</label>
-                        <div class="relative"><span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[11px] font-bold pointer-events-none">₹</span>
-                        <input id="up-assets-re" type="text" inputmode="numeric" value="0" class="up-input text-slate-400" style="padding-left:1.5rem"
-                            oninput="upFmt(this);upSave();upCalcTotals()"
-                            onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}"
-                            onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="up-label">PPF / EPF (₹)</label>
-                        <div class="relative"><span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[11px] font-bold pointer-events-none">₹</span>
-                        <input id="up-assets-ppf" type="text" inputmode="numeric" value="0" class="up-input text-slate-400" style="padding-left:1.5rem"
-                            oninput="upFmt(this);upSave();upCalcTotals()"
-                            onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}"
-                            onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="up-label">Gold &amp; Jewellery (₹)</label>
-                        <div class="relative"><span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[11px] font-bold pointer-events-none">₹</span>
-                        <input id="up-assets-gold" type="text" inputmode="numeric" value="0" class="up-input text-slate-400" style="padding-left:1.5rem"
-                            oninput="upFmt(this);upSave();upCalcTotals()"
-                            onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}"
-                            onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
-                        </div>
-                    </div>
-                    <div class="col-span-2">
-                        <label class="up-label">Other Assets (₹)</label>
-                        <div class="relative"><span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[11px] font-bold pointer-events-none">₹</span>
-                        <input id="up-assets-other" type="text" inputmode="numeric" value="0" class="up-input text-slate-400" style="padding-left:1.5rem"
-                            oninput="upFmt(this);upSave();upCalcTotals()"
-                            onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}"
-                            onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
-                        </div>
-                    </div>
+                <div id="up-networth-summary" class="rounded-xl px-3 py-2 mb-2 text-[11px] space-y-1" style="background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.20);">
+                    <p class="text-slate-400 text-[10px]">Not calculated yet · fill in Net Worth Tracker →</p>
                 </div>
-                <div class="rounded-xl px-3 py-2 flex items-center justify-between" style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.25);">
-                    <span class="text-[11px] font-black text-emerald-700">Total Assets</span>
-                    <span id="up-assets-total" class="text-[13px] font-black text-emerald-700">₹0</span>
-                </div>
-            </div>
-
-            <!-- ── CURRENT LIABILITIES ── -->
-            <div class="bg-white rounded-2xl border border-[#f5c842]/30 shadow-sm p-3">
-                <div class="text-[10px] font-black uppercase tracking-wider mb-2.5 flex items-center gap-1.5" style="color:#dc2626;">
-                    <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#ef4444;flex-shrink:0;"></span>Current Liabilities
-                </div>
-                <div class="grid grid-cols-2 gap-x-3 gap-y-2 mb-2">
-                    <div>
-                        <label class="up-label">Home Loan Outstanding (₹)</label>
-                        <div class="relative"><span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[11px] font-bold pointer-events-none">₹</span>
-                        <input id="up-liab-home" type="text" inputmode="numeric" value="0" class="up-input text-slate-400" style="padding-left:1.5rem"
-                            oninput="upFmt(this);upSave();upCalcTotals()"
-                            onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}"
-                            onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="up-label">Car / Vehicle Loan (₹)</label>
-                        <div class="relative"><span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[11px] font-bold pointer-events-none">₹</span>
-                        <input id="up-liab-car" type="text" inputmode="numeric" value="0" class="up-input text-slate-400" style="padding-left:1.5rem"
-                            oninput="upFmt(this);upSave();upCalcTotals()"
-                            onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}"
-                            onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="up-label">Personal Loan (₹)</label>
-                        <div class="relative"><span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[11px] font-bold pointer-events-none">₹</span>
-                        <input id="up-liab-personal" type="text" inputmode="numeric" value="0" class="up-input text-slate-400" style="padding-left:1.5rem"
-                            oninput="upFmt(this);upSave();upCalcTotals()"
-                            onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}"
-                            onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="up-label">Credit Card Dues (₹)</label>
-                        <div class="relative"><span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[11px] font-bold pointer-events-none">₹</span>
-                        <input id="up-liab-cc" type="text" inputmode="numeric" value="0" class="up-input text-slate-400" style="padding-left:1.5rem"
-                            oninput="upFmt(this);upSave();upCalcTotals()"
-                            onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}"
-                            onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
-                        </div>
-                    </div>
-                    <div class="col-span-2">
-                        <label class="up-label">Other Liabilities (₹)</label>
-                        <div class="relative"><span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[11px] font-bold pointer-events-none">₹</span>
-                        <input id="up-liab-other" type="text" inputmode="numeric" value="0" class="up-input text-slate-400" style="padding-left:1.5rem"
-                            oninput="upFmt(this);upSave();upCalcTotals()"
-                            onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}"
-                            onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
-                        </div>
-                    </div>
-                </div>
-                <div class="rounded-xl px-3 py-2 flex items-center justify-between mb-1.5" style="background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.22);">
-                    <span class="text-[11px] font-black text-red-600">Total Liabilities</span>
-                    <span id="up-liab-total" class="text-[13px] font-black text-red-600">₹0</span>
-                </div>
-                <div id="up-networth-bar" class="rounded-xl px-3 py-2 flex items-center justify-between" style="background:rgba(245,200,66,0.10);border:1px solid rgba(245,200,66,0.35);">
-                    <span class="text-[11px] font-black" style="color:#7c5c0a;">Net Worth</span>
-                    <span id="up-networth-val" class="text-[13px] font-black" style="color:#7c5c0a;">₹0</span>
-                </div>
+                <button onclick="switchMode('networth')" class="w-full text-[12px] font-bold px-3 py-2 rounded-xl transition-all"
+                        style="background:linear-gradient(130deg,#10b981,#059669);color:#fff;border:1px solid rgba(16,185,129,0.5);">→ Open Net Worth Tracker</button>
             </div>
 
         </div><!-- end left column -->
@@ -288,97 +88,52 @@
         <!-- ════ RIGHT COLUMN ════ -->
         <div class="flex flex-col gap-3">
 
-            <!-- ── HEALTH INSURANCE ── -->
+            <!-- ── FINANCIAL HEALTH SCORE ── -->
             <div class="bg-white rounded-2xl border border-[#f5c842]/30 shadow-sm p-3">
-                <div class="text-[10px] font-black uppercase tracking-wider mb-2.5 flex items-center gap-1.5" style="color:#0891b2;">
-                    <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#06b6d4;flex-shrink:0;"></span>Health Insurance
+                <div class="text-[10px] font-black uppercase tracking-wider mb-2 flex items-center gap-1.5" style="color:#e11d48;">
+                    <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#f43f5e;flex-shrink:0;"></span>Financial Health Score
                 </div>
-                <div class="grid grid-cols-2 gap-x-3 gap-y-2">
-                    <div class="col-span-2">
-                        <label class="up-label">Insurer / Company Name</label>
-                        <input id="up-health-insurer" type="text" class="up-input" placeholder="e.g. Star Health, HDFC Ergo">
-                        </input>
-                    </div>
-                    <div>
-                        <label class="up-label">Sum Insured / Coverage (₹)</label>
-                        <div class="relative"><span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[11px] font-bold pointer-events-none">₹</span>
-                        <input id="up-health-coverage" type="text" inputmode="numeric" value="0" class="up-input text-slate-400" style="padding-left:1.5rem"
-                            oninput="upFmt(this);upSave()"
-                            onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}"
-                            onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="up-label">Annual Premium (₹)</label>
-                        <div class="relative"><span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[11px] font-bold pointer-events-none">₹</span>
-                        <input id="up-health-premium" type="text" inputmode="numeric" value="0" class="up-input text-slate-400" style="padding-left:1.5rem"
-                            oninput="upFmt(this);upSave()"
-                            onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}"
-                            onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="up-label">Coverage Type</label>
-                        <select id="up-health-type" class="up-input" onchange="upSave()">
-                            <option value="individual">Individual</option>
-                            <option value="family">Family Floater</option>
-                            <option value="corporate">Corporate / Group</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="up-label">Policy Number <span class="font-normal normal-case text-slate-400">(optional)</span></label>
-                        <input id="up-health-policyno" type="text" class="up-input" placeholder="e.g. P/191234/01/…" oninput="upSave()">
-                    </div>
+                <div id="up-health-summary" class="rounded-xl px-3 py-2 mb-2 text-[11px] space-y-1" style="background:rgba(244,63,94,0.06);border:1px solid rgba(244,63,94,0.18);">
+                    <p class="text-slate-400 text-[10px]">Not calculated yet · fill in Health Score →</p>
                 </div>
+                <button onclick="switchMode('healthscore')" class="w-full text-[12px] font-bold px-3 py-2 rounded-xl transition-all"
+                        style="background:linear-gradient(130deg,#f43f5e,#e11d48);color:#fff;border:1px solid rgba(244,63,94,0.4);">→ Calculate Health Score</button>
             </div>
 
-            <!-- ── TERM INSURANCE ── -->
+            <!-- ── FINANCIAL PLAN SUMMARY ── -->
             <div class="bg-white rounded-2xl border border-[#f5c842]/30 shadow-sm p-3">
-                <div class="text-[10px] font-black uppercase tracking-wider mb-2.5 flex items-center gap-1.5" style="color:#7c3aed;">
-                    <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#8b5cf6;flex-shrink:0;"></span>Term Insurance
+                <div class="text-[10px] font-black uppercase tracking-wider mb-2 flex items-center gap-1.5" style="color:#0369a1;">
+                    <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#0ea5e9;flex-shrink:0;"></span>Financial Plan
                 </div>
-                <div class="grid grid-cols-2 gap-x-3 gap-y-2">
-                    <div class="col-span-2">
-                        <label class="up-label">Insurer / Company Name</label>
-                        <input id="up-term-insurer" type="text" class="up-input" placeholder="e.g. LIC Tech Term, HDFC Click 2 Protect" oninput="upSave()">
-                    </div>
-                    <div>
-                        <label class="up-label">Sum Assured (₹)</label>
-                        <div class="relative"><span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[11px] font-bold pointer-events-none">₹</span>
-                        <input id="up-term-assured" type="text" inputmode="numeric" value="0" class="up-input text-slate-400" style="padding-left:1.5rem"
-                            oninput="upFmt(this);upSave()"
-                            onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}"
-                            onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="up-label">Annual Premium (₹)</label>
-                        <div class="relative"><span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[11px] font-bold pointer-events-none">₹</span>
-                        <input id="up-term-premium" type="text" inputmode="numeric" value="0" class="up-input text-slate-400" style="padding-left:1.5rem"
-                            oninput="upFmt(this);upSave()"
-                            onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}"
-                            onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="up-label">Nominee Name</label>
-                        <input id="up-term-nominee" type="text" class="up-input" placeholder="e.g. Priya Sharma" oninput="upSave()">
-                    </div>
-                    <div>
-                        <label class="up-label">Nominee Relationship</label>
-                        <select id="up-term-nominee-rel" class="up-input" onchange="upSave()">
-                            <option value="">Select…</option>
-                            <option value="spouse">Spouse</option>
-                            <option value="child">Child</option>
-                            <option value="parent">Parent</option>
-                            <option value="sibling">Sibling</option>
-                            <option value="other">Other</option>
-                        </select>
-                    </div>
-                    <div class="col-span-2">
-                        <label class="up-label">Policy Number <span class="font-normal normal-case text-slate-400">(optional)</span></label>
-                        <input id="up-term-policyno" type="text" class="up-input" placeholder="e.g. 987654321" oninput="upSave()">
-                    </div>
+                <div id="up-finplan-summary" class="rounded-xl px-3 py-2 mb-2 text-[11px] space-y-1" style="background:rgba(14,165,233,0.06);border:1px solid rgba(14,165,233,0.18);">
+                    <p class="text-slate-400 text-[10px]">Plan not generated yet · complete Risk Assessment →</p>
+                </div>
+                <button onclick="switchMode('finplan')" class="w-full text-[12px] font-bold px-3 py-2 rounded-xl transition-all"
+                        style="background:linear-gradient(130deg,#0ea5e9,#0369a1);color:#fff;border:1px solid rgba(14,165,233,0.4);">→ Open Financial Plan</button>
+            </div>
+
+            <!-- ── EMERGENCY FUND ── -->
+            <div class="bg-white rounded-2xl border border-[#f5c842]/30 shadow-sm p-3">
+                <div class="text-[10px] font-black uppercase tracking-wider mb-2 flex items-center gap-1.5" style="color:#b45309;">
+                    <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#f59e0b;flex-shrink:0;"></span>Emergency Fund
+                </div>
+                <div id="up-emergency-summary" class="rounded-xl px-3 py-2 mb-2 text-[11px] space-y-1" style="background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.25);">
+                    <p class="text-slate-400 text-[10px]">Not calculated yet · fill in Budget Planner →</p>
+                </div>
+                <button onclick="switchMode('budgettrack')" class="w-full text-[12px] font-bold px-3 py-2 rounded-xl transition-all"
+                        style="background:linear-gradient(130deg,#f59e0b,#d97706);color:#162a10;border:1px solid rgba(245,158,11,0.5);">→ Open Budget Planner</button>
+            </div>
+
+            <!-- ── RISK APPETITE ── -->
+            <div class="bg-white rounded-2xl border border-[#f5c842]/30 shadow-sm p-3">
+                <div class="text-[10px] font-black uppercase tracking-wider mb-2.5 flex items-center gap-1.5" style="color:#7c5c0a;">
+                    <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#f5c842;flex-shrink:0;"></span>Risk Appetite
+                </div>
+                <div class="flex flex-col gap-2">
+                    <div id="up-risk-display" class="w-full text-[11px] font-semibold px-3 py-2 rounded-xl leading-snug"
+                         style="background:rgba(245,200,66,0.12);color:#7c5c0a;border:1px solid rgba(245,200,66,0.35);">Not assessed yet</div>
+                    <button onclick="switchMode('finplan')" class="w-full text-[12px] font-bold px-3 py-2 rounded-xl transition-all"
+                            style="background:linear-gradient(130deg,#f5c842,#e8a44a);color:#162a10;border:1px solid rgba(245,200,66,0.7);">🎯 Take Risk Assessment →</button>
                 </div>
             </div>
 
@@ -400,25 +155,12 @@
                 <div class="flex items-start gap-2">
                     <span class="text-[13px] flex-shrink-0 mt-0.5">💡</span>
                     <p class="text-[10px] leading-relaxed" style="color:#7c5c0a;">
-                        <strong>Did you know?</strong> As of early 2026, over ₹1 lakh crore (&gt;$12 billion) is lying unclaimed in India's financial system — approximately ₹78,000 crore in bank deposits and over ₹14,000 crore in insurance policies. The total across all sectors, including mutual funds, reaches around ₹1.84 lakh crore, with major initiatives underway to return these funds.
+                        <strong>Did you know?</strong> As of early 2026, over ₹1 lakh crore (&gt;$12 billion) is lying unclaimed in India's financial system — approximately ₹78,000 crore in bank deposits and over ₹14,000 crore in insurance policies.
                     </p>
                 </div>
             </div>
 
-            <!-- ── RISK APPETITE ── -->
-            <div class="bg-white rounded-2xl border border-[#f5c842]/30 shadow-sm p-3">
-                <div class="text-[10px] font-black uppercase tracking-wider mb-2.5 flex items-center gap-1.5" style="color:#7c5c0a;">
-                    <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#f5c842;flex-shrink:0;"></span>Risk Appetite
-                </div>
-                <div class="flex flex-col gap-2">
-                    <div id="up-risk-display" class="w-full text-[11px] font-semibold px-3 py-2 rounded-xl leading-snug"
-                         style="background:rgba(245,200,66,0.12);color:#7c5c0a;border:1px solid rgba(245,200,66,0.35);">Not assessed yet</div>
-                    <button onclick="switchMode('finplan')" class="w-full text-[12px] font-bold px-3 py-2 rounded-xl transition-all"
-                            style="background:linear-gradient(130deg,#f5c842,#e8a44a);color:#162a10;border:1px solid rgba(245,200,66,0.7);">🎯 Take Risk Assessment →</button>
-                </div>
-            </div>
-
-            <!-- saved goals (retained from old card) -->
+            <!-- saved goals -->
             <div id="up-goals-section" class="hidden bg-white rounded-2xl border border-[#f5c842]/30 shadow-sm p-3">
                 <div class="flex items-center gap-1.5 mb-2">
                     <span class="text-sm leading-none">🎯</span>

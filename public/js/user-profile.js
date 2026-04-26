@@ -53,49 +53,51 @@
         if (typeof saveUserData === 'function') saveUserData();
     }
 
+    function _upDomVal(id, fallback) {
+        var el = document.getElementById(id);
+        return el !== null ? el.value : fallback;
+    }
+
     function upSave() {
         var existing = window._userProfile || {};
         var p = {
-            name:           document.getElementById('up-name')?.value.trim()      || '',
-            age:            document.getElementById('up-age')?.value              || '',
-            occupation:     document.getElementById('up-occupation')?.value       || '',
-            dependents:     document.getElementById('up-dependents')?.value       || '',
-            income:         document.getElementById('up-income')?.value           || '',
-            annualIncome:   document.getElementById('up-annual-income')?.value    || '',
-            expenses:       document.getElementById('up-expenses')?.value         || '',
-            regime:         document.getElementById('up-regime')?.value           || 'new',
-            taxSlab:        document.getElementById('up-tax-slab')?.value         || '',
-            city:           document.getElementById('up-city')?.value             || 'metro',
-            basicSalary:    document.getElementById('up-basic-salary')?.value     || '',
-            retireAge:      document.getElementById('up-retire-age')?.value       || '',
-            epfBalance:     document.getElementById('up-epf-balance')?.value      || '',
-            // Assets
-            assetsBank:     document.getElementById('up-assets-bank')?.value      || '0',
-            assetsMf:       document.getElementById('up-assets-mf')?.value        || '0',
-            assetsStocks:   document.getElementById('up-assets-stocks')?.value    || '0',
-            assetsRe:       document.getElementById('up-assets-re')?.value        || '0',
-            assetsPpf:      document.getElementById('up-assets-ppf')?.value       || '0',
-            assetsGold:     document.getElementById('up-assets-gold')?.value      || '0',
-            assetsOther:    document.getElementById('up-assets-other')?.value     || '0',
-            // Liabilities
-            liabHome:       document.getElementById('up-liab-home')?.value        || '0',
-            liabCar:        document.getElementById('up-liab-car')?.value         || '0',
-            liabPersonal:   document.getElementById('up-liab-personal')?.value    || '0',
-            liabCc:         document.getElementById('up-liab-cc')?.value          || '0',
-            liabOther:      document.getElementById('up-liab-other')?.value       || '0',
-            // Health Insurance
-            healthInsurer:  document.getElementById('up-health-insurer')?.value   || '',
-            healthCoverage: document.getElementById('up-health-coverage')?.value  || '0',
-            healthPremium:  document.getElementById('up-health-premium')?.value   || '0',
-            healthType:     document.getElementById('up-health-type')?.value      || 'individual',
-            healthPolicyNo: document.getElementById('up-health-policyno')?.value  || '',
-            // Term Insurance
-            termInsurer:    document.getElementById('up-term-insurer')?.value     || '',
-            termAssured:    document.getElementById('up-term-assured')?.value     || '0',
-            termPremium:    document.getElementById('up-term-premium')?.value     || '0',
-            termNominee:    document.getElementById('up-term-nominee')?.value     || '',
-            termNomineeRel: document.getElementById('up-term-nominee-rel')?.value || '',
-            termPolicyNo:   document.getElementById('up-term-policyno')?.value    || '',
+            name:           _upDomVal('up-name',    existing.name    || '').trim(),
+            age:            _upDomVal('up-age',      existing.age     || ''),
+            occupation:     _upDomVal('up-occupation',existing.occupation || ''),
+            dependents:     _upDomVal('up-dependents',existing.dependents || ''),
+            // Preserved from linked tools — not editable in My Profile any more
+            income:         _upDomVal('up-income',      existing.income      || ''),
+            annualIncome:   _upDomVal('up-annual-income',existing.annualIncome|| ''),
+            expenses:       _upDomVal('up-expenses',    existing.expenses    || ''),
+            regime:         _upDomVal('up-regime',      existing.regime      || 'new'),
+            taxSlab:        _upDomVal('up-tax-slab',    existing.taxSlab     || ''),
+            city:           _upDomVal('up-city',        existing.city        || 'metro'),
+            basicSalary:    _upDomVal('up-basic-salary',existing.basicSalary || ''),
+            retireAge:      _upDomVal('up-retire-age',  existing.retireAge   || ''),
+            epfBalance:     _upDomVal('up-epf-balance', existing.epfBalance  || ''),
+            assetsBank:     _upDomVal('up-assets-bank',    existing.assetsBank    || '0'),
+            assetsMf:       _upDomVal('up-assets-mf',      existing.assetsMf      || '0'),
+            assetsStocks:   _upDomVal('up-assets-stocks',  existing.assetsStocks  || '0'),
+            assetsRe:       _upDomVal('up-assets-re',      existing.assetsRe      || '0'),
+            assetsPpf:      _upDomVal('up-assets-ppf',     existing.assetsPpf     || '0'),
+            assetsGold:     _upDomVal('up-assets-gold',    existing.assetsGold    || '0'),
+            assetsOther:    _upDomVal('up-assets-other',   existing.assetsOther   || '0'),
+            liabHome:       _upDomVal('up-liab-home',      existing.liabHome      || '0'),
+            liabCar:        _upDomVal('up-liab-car',       existing.liabCar       || '0'),
+            liabPersonal:   _upDomVal('up-liab-personal',  existing.liabPersonal  || '0'),
+            liabCc:         _upDomVal('up-liab-cc',        existing.liabCc        || '0'),
+            liabOther:      _upDomVal('up-liab-other',     existing.liabOther     || '0'),
+            healthInsurer:  _upDomVal('up-health-insurer', existing.healthInsurer  || ''),
+            healthCoverage: _upDomVal('up-health-coverage',existing.healthCoverage || '0'),
+            healthPremium:  _upDomVal('up-health-premium', existing.healthPremium  || '0'),
+            healthType:     _upDomVal('up-health-type',    existing.healthType     || 'individual'),
+            healthPolicyNo: _upDomVal('up-health-policyno',existing.healthPolicyNo || ''),
+            termInsurer:    _upDomVal('up-term-insurer',   existing.termInsurer    || ''),
+            termAssured:    _upDomVal('up-term-assured',   existing.termAssured    || '0'),
+            termPremium:    _upDomVal('up-term-premium',   existing.termPremium    || '0'),
+            termNominee:    _upDomVal('up-term-nominee',   existing.termNominee    || ''),
+            termNomineeRel: _upDomVal('up-term-nominee-rel',existing.termNomineeRel|| ''),
+            termPolicyNo:   _upDomVal('up-term-policyno',  existing.termPolicyNo   || ''),
             profileGoals:   existing.profileGoals || []
         };
         window._userProfile = p;
@@ -362,6 +364,7 @@
         if (p) upLoad(p);
         upCalcTotals();
         upRefreshRiskDisplay();
+        upRefreshToolSummaries();
         upRenderProfileGoals();
     }
 
@@ -396,6 +399,88 @@
             banner.classList.toggle('hidden', !show);
         });
     }
+
+    // ── Compact number formatter ──────────────────────────────────────────────
+    function _upFmt(n) {
+        if (!n || isNaN(n)) return '—';
+        if (n >= 1e7) return '₹' + (n / 1e7).toFixed(2) + ' Cr';
+        if (n >= 1e5) return '₹' + (n / 1e5).toFixed(1) + ' L';
+        return '₹' + Math.round(n).toLocaleString('en-IN');
+    }
+
+    // ── Tool summary cards ────────────────────────────────────────────────────
+    function upRefreshToolSummaries() {
+        var s = window._toolSummaries || {};
+
+        // Tax Guide
+        var taxEl = document.getElementById('up-tax-summary');
+        if (taxEl && s.taxGuide) {
+            var t = s.taxGuide;
+            taxEl.innerHTML =
+                '<div class="flex justify-between"><span class="text-slate-500">Best Regime</span><span class="font-black" style="color:#7c5c0a;">' + (t.bestRegime || '—') + '</span></div>' +
+                '<div class="flex justify-between"><span class="text-slate-500">Tax Payable</span><span class="font-bold">' + _upFmt(Math.min(t.taxOld || 0, t.taxNew || 0)) + '/yr</span></div>' +
+                '<div class="flex justify-between"><span class="text-slate-500">Regime Saving</span><span class="font-bold text-emerald-600">' + _upFmt(t.savings || 0) + '/yr</span></div>' +
+                '<div class="flex justify-between"><span class="text-slate-500">Take-Home</span><span class="font-black" style="color:#059669;">' + _upFmt(t.takeHomeMonthly || 0) + '/mo</span></div>';
+        }
+
+        // Retirement Hub
+        var retEl = document.getElementById('up-retirement-summary');
+        if (retEl && s.retirement) {
+            var r = s.retirement;
+            var gapColor = (r.gap || 0) >= 0 ? '#059669' : '#dc2626';
+            var gapLabel = (r.gap || 0) >= 0 ? 'Surplus' : 'Shortfall';
+            retEl.innerHTML =
+                '<div class="flex justify-between"><span class="text-slate-500">Total Corpus</span><span class="font-black" style="color:#7c3aed;">' + _upFmt(r.totalCorpus || 0) + '</span></div>' +
+                '<div class="flex justify-between"><span class="text-slate-500">Monthly Income</span><span class="font-bold">' + _upFmt(r.monthlyIncome || 0) + '/mo</span></div>' +
+                '<div class="flex justify-between"><span class="text-slate-500">Years to Retire</span><span class="font-bold">' + (r.yearsToRetire || '—') + ' yrs (at ' + (r.retirementAge || '—') + ')</span></div>' +
+                '<div class="flex justify-between"><span class="text-slate-500">' + gapLabel + '</span><span class="font-black" style="color:' + gapColor + ';">' + _upFmt(Math.abs(r.gap || 0)) + '/mo</span></div>';
+        }
+
+        // Net Worth
+        var nwEl = document.getElementById('up-networth-summary');
+        if (nwEl && s.netWorth) {
+            var nw = s.netWorth;
+            var nwColor = (nw.netWorth || 0) >= 0 ? '#059669' : '#dc2626';
+            nwEl.innerHTML =
+                '<div class="flex justify-between"><span class="text-slate-500">Total Assets</span><span class="font-bold text-emerald-700">' + _upFmt(nw.totalAssets || 0) + '</span></div>' +
+                '<div class="flex justify-between"><span class="text-slate-500">Total Liabilities</span><span class="font-bold text-red-600">' + _upFmt(nw.totalLiab || 0) + '</span></div>' +
+                '<div class="flex justify-between border-t border-slate-100 pt-1 mt-0.5"><span class="font-black text-slate-600">Net Worth</span><span class="font-black" style="color:' + nwColor + ';">' + _upFmt(nw.netWorth || 0) + '</span></div>';
+        }
+
+        // Financial Health Score
+        var hsEl = document.getElementById('up-health-summary');
+        if (hsEl && s.healthScore) {
+            var hs = s.healthScore;
+            var hsColor = hs.score >= 70 ? '#059669' : hs.score >= 50 ? '#d97706' : '#dc2626';
+            hsEl.innerHTML =
+                '<div class="flex justify-between items-center">' +
+                    '<span class="text-slate-500">Score</span>' +
+                    '<span class="text-lg font-black" style="color:' + hsColor + ';">' + hs.score + '<span class="text-[10px] font-normal">/100</span></span>' +
+                '</div>' +
+                '<div class="text-[10px] font-semibold" style="color:' + hsColor + ';">' + (hs.grade || '') + '</div>';
+        }
+
+        // Financial Plan
+        var fpEl = document.getElementById('up-finplan-summary');
+        if (fpEl && s.finplan) {
+            var fp = s.finplan;
+            fpEl.innerHTML =
+                '<div class="flex justify-between"><span class="text-slate-500">Profile</span><span class="font-black" style="color:#0369a1;">' + (fp.profileLabel || '—') + '</span></div>' +
+                (fp.monthlyInvest > 0 ? '<div class="flex justify-between"><span class="text-slate-500">Monthly SIP</span><span class="font-bold">' + _upFmt(fp.monthlyInvest) + '/mo</span></div>' : '') +
+                '<div class="flex justify-between"><span class="text-slate-500">Goals Planned</span><span class="font-bold">' + (fp.goalCount || 0) + '</span></div>' +
+                '<div class="flex justify-between"><span class="text-slate-500">Expected Return</span><span class="font-bold">' + (fp.blendedReturn || '—') + '%</span></div>';
+        }
+
+        // Emergency Fund
+        var efEl = document.getElementById('up-emergency-summary');
+        if (efEl && s.budgetTracker) {
+            var bt = s.budgetTracker;
+            efEl.innerHTML =
+                '<div class="flex justify-between"><span class="text-slate-500">Target (' + (bt.efMonths || 6) + ' months)</span><span class="font-black" style="color:#b45309;">' + _upFmt(bt.efTarget || 0) + '</span></div>' +
+                '<div class="flex justify-between"><span class="text-slate-500">Monthly Expenses</span><span class="font-bold">' + _upFmt(bt.monthlyExpenses || 0) + '/mo</span></div>';
+        }
+    }
+    window.upRefreshToolSummaries = upRefreshToolSummaries;
 
     // ── Risk profile display helpers ──────────────────────────────────────────
     function _upRiskLabel(key) {

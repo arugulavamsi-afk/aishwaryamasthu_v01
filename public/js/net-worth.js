@@ -97,6 +97,11 @@
         var totalLiab   = liabHome + liabCar + liabPl + liabEdu + liabCc + liabOther;
         var netWorth    = totalAssets - totalLiab;
 
+        if (totalAssets > 0 || totalLiab > 0) {
+            if (typeof window.saveToolSummary === 'function')
+                window.saveToolSummary('netWorth', { totalAssets: totalAssets, totalLiab: totalLiab, netWorth: netWorth });
+        }
+
         // Summary cards
         var nwEl = document.getElementById('nw-net-worth');
         if (nwEl) {

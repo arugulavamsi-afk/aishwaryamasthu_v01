@@ -6,9 +6,12 @@
                     <h2 class="text-base font-black flex items-center gap-2">🏖️ Retirement Hub</h2>
                     <p class="text-blue-200 text-[11px] mt-0.5">EPF + PPF + NPS + SIPs → one corpus & income number · then plan drawdown: SWP strategy, 3-bucket allocation, depletion timeline.</p>
                 </div>
-                <button onclick="resetRetirementHub();resetDrawdown();" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h5M20 20v-5h-5M4 9a9 9 0 0115-3M20 15a9 9 0 01-15 3"/></svg>Reset All
-                </button>
+                <div class="flex items-center gap-2 flex-wrap">
+                    <button onclick="switchMode('myprofile')" class="flex items-center gap-1 px-3 py-1.5 rounded-xl text-[11px] font-bold" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">← My Profile</button>
+                    <button onclick="resetRetirementHub();resetDrawdown();" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h5M20 20v-5h-5M4 9a9 9 0 0115-3M20 15a9 9 0 01-15 3"/></svg>Reset All
+                    </button>
+                </div>
             </div>
 
             <!-- MAIN GRID -->

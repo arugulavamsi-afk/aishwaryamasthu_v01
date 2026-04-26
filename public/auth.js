@@ -731,12 +731,31 @@
                 window._fpRiskCache = snap.data().riskProfile;
                 if (typeof upRefreshRiskDisplay === 'function') upRefreshRiskDisplay();
             }
+            // ── Load tool summaries for My Profile ──
+            if (snap.exists && snap.data() && snap.data().toolSummaries) {
+                window._toolSummaries = snap.data().toolSummaries;
+                if (typeof upRefreshToolSummaries === 'function') upRefreshToolSummaries();
+            }
             const data = snap.exists && snap.data() && snap.data().appData ? snap.data().appData : null;
             if (!data) return;
             window._cachedRestoreData = data;
             _applyData(data);
         }).catch(e => console.warn('loadUserData Firestore failed:', e));
     }
+
+    function saveToolSummary(toolName, data) {
+        window._toolSummaries = window._toolSummaries || {};
+        window._toolSummaries[toolName] = Object.assign({}, data, { updatedAt: new Date().toISOString() });
+        var user = _fbAuth && _fbAuth.currentUser;
+        if (user && _fbDb) {
+            var patch = { toolSummaries: {} };
+            patch.toolSummaries[toolName] = window._toolSummaries[toolName];
+            _fbDb.collection('users').doc(user.uid).set(patch, { merge: true })
+                .catch(function(e){ console.warn('saveToolSummary failed:', e); });
+        }
+        if (typeof upRefreshToolSummaries === 'function') upRefreshToolSummaries();
+    }
+    window.saveToolSummary = saveToolSummary;
 
     // Generic helper: if anchorId is in DOM, call applyFn immediately (inside the
     // caller's _restoring = true context). Otherwise set up a MutationObserver so

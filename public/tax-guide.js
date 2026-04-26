@@ -246,6 +246,16 @@
         var saving   = oldTotal - newTotal;
         var winner   = saving > 0 ? 'new' : (saving < 0 ? 'old' : 'equal');
         var winAmt   = Math.abs(saving);
+        if (typeof window.saveToolSummary === 'function') {
+            window.saveToolSummary('taxGuide', {
+                bestRegime:    winner === 'new' ? 'New Regime' : winner === 'old' ? 'Old Regime' : 'Either',
+                taxOld:        Math.round(oldTotal),
+                taxNew:        Math.round(newTotal),
+                savings:       Math.round(winAmt),
+                takeHomeMonthly: Math.round((winner === 'new' ? newTakeHome : oldTakeHome) / 12),
+                annualIncome:  gross
+            });
+        }
         var winColor = winner === 'new' ? '#059669' : winner === 'old' ? '#7c3aed' : '#6366f1';
         var winLabel = winner === 'new' ? _t('tg.win.new')
                      : winner === 'old' ? _t('tg.win.old')

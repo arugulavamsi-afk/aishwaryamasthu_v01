@@ -133,6 +133,17 @@
         var totalExpInflated = expInflated + medInflated;
         var gap              = totalIncome - totalExpInflated;
 
+        if (totalCorpus > 0 || expToday > 0) {
+            if (typeof window.saveToolSummary === 'function')
+                window.saveToolSummary('retirement', {
+                    totalCorpus:    totalCorpus,
+                    monthlyIncome:  totalIncome,
+                    yearsToRetire:  yrs,
+                    retirementAge:  retAge,
+                    gap:            gap
+                });
+        }
+
         // ── Corpus depletion simulation ────────────────────────────────────
         var depletionAge = null;
         var needMo = Math.max(0, totalExpInflated - npsPension);

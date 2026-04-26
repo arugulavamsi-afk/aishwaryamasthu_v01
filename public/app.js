@@ -3154,6 +3154,8 @@
                 else { scoreEl.textContent = totalScore; badgeEl.textContent = totalScore; }
             }
             requestAnimationFrame(animScore);
+            if (typeof window.saveToolSummary === 'function')
+                window.saveToolSummary('healthScore', { score: totalScore, grade: grade });
             // Store grade key for language switching, then translate
             var _gKey = _HS_GRADE_KEYS[grade] || 'rockstar';
             var _titleEl = document.getElementById('hs-grade-title');
@@ -4465,6 +4467,15 @@
 
             var profileKey = fpGetRiskProfile(totalScore, age);
             var profile    = fpPortfolios[profileKey];
+            if (typeof window.saveToolSummary === 'function')
+                window.saveToolSummary('finplan', {
+                    profileLabel:   profile.label,
+                    profileKey:     profileKey,
+                    blendedReturn:  profile.blendedReturn,
+                    monthlyInvest:  monthlyInvest,
+                    goalCount:      fpState.goals.length,
+                    riskScore:      totalScore
+                });
             var allocs     = fpBlendPortfolio(profileKey, fpState.goals);
             var goalSIPs   = fpBuildGoalSIPs(fpState.goals, monthlyInvest, profile.blendedReturn);
             var roadmap    = fpBuildGoalRoadmap(fpState.goals, profile.roadmap);

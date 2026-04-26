@@ -7,11 +7,14 @@
                         <h2 class="text-xl font-black flex items-center gap-2" data-i18n="page.hs.h">Financial Health Score</h2>
                         <p class="text-blue-200 text-xs mt-1 max-w-xl" data-i18n="page.hs.sub">Enter your financial details below and we'll give you an honest score — no sugar-coating. Think of it as a report card for your money life. 📋</p>
                     </div>
-                    <div class="flex items-center gap-2 bg-white/10 rounded-xl px-4 py-2">
-                        <span class="text-3xl font-black" id="hs-score-badge">--</span>
-                        <div>
-                            <div class="text-[10px] font-bold text-blue-200 uppercase tracking-wider">Your Score</div>
-                            <div class="text-xs font-bold text-white" id="hs-grade-badge">Not scored yet</div>
+                    <div class="flex items-center gap-3 flex-wrap">
+                        <button onclick="switchMode('myprofile')" class="px-3 py-1.5 rounded-xl text-[11px] font-bold" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">← My Profile</button>
+                        <div class="flex items-center gap-2 bg-white/10 rounded-xl px-4 py-2">
+                            <span class="text-3xl font-black" id="hs-score-badge">--</span>
+                            <div>
+                                <div class="text-[10px] font-bold text-blue-200 uppercase tracking-wider">Your Score</div>
+                                <div class="text-xs font-bold text-white" id="hs-grade-badge">Not scored yet</div>
+                            </div>
                         </div>
                     </div>
                 </div>

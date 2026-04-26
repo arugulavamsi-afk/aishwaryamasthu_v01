@@ -517,6 +517,8 @@
         var target = monthly * _btEFMonths;
         resEl.textContent = fmt(target);
         if (lblEl) lblEl.textContent = _btEFMonths + '-month emergency corpus target';
+        if (typeof window.saveToolSummary === 'function')
+            window.saveToolSummary('budgetTracker', { efTarget: target, efMonths: _btEFMonths, monthlyExpenses: monthly });
 
         if (el3)  el3.textContent  = fmt(monthly * 3);
         if (el6)  el6.textContent  = fmt(monthly * 6);
