@@ -138,6 +138,7 @@
         }
 
         function resetGrowthCalc() {
+            showGrowthMsg(null);
             tabState.growth = { invType: 'lumpsum', amount: '', rate: '', years: '', inflationEnabled: false, infRate: '' };
             document.getElementById('inv-type').value = 'lumpsum';
             const amountEl = document.getElementById('amount');
@@ -222,11 +223,18 @@
                 if (n > 0) { str += a[n]; }
                 return str;
             }
+            // For large portions (>999), recurse instead of using convertGroup to avoid
+            // accessing out-of-bounds indices in the `a` array.
+            function groupToWords(n) {
+                return n <= 999 ? convertGroup(n) : numberToWords(n) + ' ';
+            }
             let res = "";
-            let crore = Math.floor(num / 10000000); num %= 10000000;
+            const lakhCrore = Math.floor(num / 1e12); num %= 1e12;
+            const crore = Math.floor(num / 10000000); num %= 10000000;
             let lakh = Math.floor(num / 100000); num %= 100000;
             let thousand = Math.floor(num / 1000); num %= 1000;
-            if (crore > 0) res += convertGroup(crore) + "Crore ";
+            if (lakhCrore > 0) res += groupToWords(lakhCrore) + "Lakh Crore ";
+            if (crore > 0) res += groupToWords(crore) + "Crore ";
             if (lakh > 0) res += convertGroup(lakh) + "Lakh ";
             if (thousand > 0) res += convertGroup(thousand) + "Thousand ";
             if (num > 0) res += convertGroup(num);
@@ -782,6 +790,19 @@
             }
         }
 
+        function showGrowthMsg(type, text) {
+            var el = document.getElementById('growth-validation-msg');
+            if (!el) return;
+            if (!type) { el.style.display = 'none'; el.innerText = ''; return; }
+            var cfg = {
+                error:   { bg: '#fef2f2', border: '#fca5a5', color: '#991b1b', icon: '⚠️' },
+                warning: { bg: '#fffbeb', border: '#fcd34d', color: '#92400e', icon: '⚡' },
+                info:    { bg: '#eff6ff', border: '#93c5fd', color: '#1e40af', icon: 'ℹ️' }
+            }[type];
+            el.style.cssText = 'display:block;padding:6px 10px;border-radius:8px;margin-bottom:8px;border:1px solid ' + cfg.border + ';background:' + cfg.bg + ';color:' + cfg.color + ';';
+            el.innerText = cfg.icon + ' ' + text;
+        }
+
         function calculateFromButton() {
             if (currentMode === 'goal') goalCalculateClicked = true;
             calculate();
@@ -798,6 +819,13 @@
             if (currentMode === 'growth' || currentMode === 'inflation') {
                 const rate = parseFloat(document.getElementById('rate').value) || 0;
                 updateWords('rate', 'rate-words');
+                if (todayCost <= 0) { showGrowthMsg('error', 'Enter a valid amount greater than ₹0.'); return; }
+                if (todayCost > 1000000000) { showGrowthMsg('error', 'Amount must be ₹100 Crore or less for meaningful projections.'); return; }
+                if (years < 1) { showGrowthMsg('error', 'Time Period must be at least 1 year.'); return; }
+                if (years > 100) { showGrowthMsg('error', 'Time Period must be 100 years or less.'); return; }
+                if (rate <= 0) { showGrowthMsg('error', 'Expected Return must be greater than 0%.'); return; }
+                if (rate > 50) { showGrowthMsg('error', 'Expected Return must be 50% or less.'); return; }
+                showGrowthMsg(null);
                 calcGrowthOrInflation(todayCost, rate, years, type);
             } else {
                 // Goal mode: inflate today's cost to future value using goal-specific inflation
@@ -819,7 +847,9 @@
             const mRate = r / 12;
             let infRate = 0;
             if (currentMode === 'inflation') {
-                infRate = (parseFloat(document.getElementById('inf-rate').value) || 0) / 100;
+                const rawInfRate = parseFloat(document.getElementById('inf-rate').value) || 0;
+                if (rawInfRate > 20) { showGrowthMsg('error', 'Expected Inflation must be 20% or less.'); return; }
+                infRate = rawInfRate / 100;
             }
             for (let i = 0; i <= years; i++) {
                 labels.push("Yr " + i);
@@ -868,11 +898,19 @@
             } else {
                 document.getElementById('main-result-title').innerText = "Projected Future Value";
                 document.getElementById('sec-label-1').innerText = "Total Interest";
-                document.getElementById('sec-val-1').innerText = "+" + format(fv - invested);
-                document.getElementById('sec-val-1-words').innerText = numberToWords(Math.round(fv - invested));
+                const interest = Math.max(0, fv - invested);
+                document.getElementById('sec-val-1').innerText = "+" + format(interest);
+                document.getElementById('sec-val-1-words').innerText = numberToWords(Math.round(interest));
                 document.getElementById('sec-val-1').className = 'text-lg sm:text-xl font-bold text-emerald-500 break-all';
                 document.getElementById('chart-title').innerText = "Growth Trajectory";
                 renderLineChart(labels, dataGrowth, dataSecondary, "Total Value", "Amount Invested", '#10b981', '#64748b');
+            }
+
+            // Post-compute warnings
+            if (currentMode === 'inflation' && infRate * 100 >= rate) {
+                showGrowthMsg('warning', 'Inflation rate ≥ return rate — your purchasing power is declining. Consider higher-return investments.');
+            } else if (fv > 1000000000) {
+                showGrowthMsg('info', 'Projected value exceeds ₹100 Crore. At this scale, projections carry high uncertainty — actual returns may differ significantly.');
             }
 
             // ── LTCG / STCG Tax adjustment ─────────────────────────────────────────
