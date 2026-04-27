@@ -243,10 +243,31 @@
 
         function formatInput(el, wordsId) {
             let val = el.value.replace(/[^0-9]/g, "");
+            if (val.length > 10) val = val.slice(0, 10);
             if (val === "") { el.value = ""; document.getElementById(wordsId).innerText = "Zero"; return; }
             let num = parseInt(val, 10);
             el.value = new Intl.NumberFormat('en-IN').format(num);
             document.getElementById(wordsId).innerText = numberToWords(num);
+        }
+
+        function enforceDecimalInput(el, maxInt, maxDec) {
+            const v = el.value;
+            if (!v) return;
+            const dot = v.indexOf('.');
+            if (dot === -1) {
+                if (v.length > maxInt) el.value = v.slice(0, maxInt);
+            } else {
+                const intPart = v.slice(0, dot);
+                const decPart = v.slice(dot + 1);
+                const ci = intPart.length > maxInt ? intPart.slice(0, maxInt) : intPart;
+                const cd = decPart.length > maxDec ? decPart.slice(0, maxDec) : decPart;
+                if (ci !== intPart || cd !== decPart) el.value = ci + '.' + cd;
+            }
+        }
+
+        function enforceIntInput(el, maxDigits) {
+            const v = el.value.replace(/[^0-9]/g, '');
+            if (v.length > maxDigits) el.value = v.slice(0, maxDigits);
         }
 
         function updateWords(inputId, wordsId) {
