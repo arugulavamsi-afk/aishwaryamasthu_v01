@@ -454,7 +454,7 @@
                 <div>
                     <label id="years-label" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1" data-i18n="lbl.gr.years">Time Period (Years)</label>
                     <input type="number" id="years" value="0" inputmode="numeric"
-                        oninput="enforceIntInput(this,4); updateWords('years', 'years-words'); onYearsChange(); this.classList.remove('text-slate-400');"
+                        oninput="enforceIntInput(this,2); updateWords('years', 'years-words'); onYearsChange(); this.classList.remove('text-slate-400');"
                         onfocus="if(parseFloat(this.value)===0){this.value='';this.classList.remove('text-slate-400');}"
                         onblur="if(this.value===''||parseFloat(this.value)===0){this.value='0';this.classList.add('text-slate-400');document.getElementById('years-words').innerText='Zero';}"
                         class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 font-bold text-lg outline-none text-slate-400">
