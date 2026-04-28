@@ -320,6 +320,10 @@
         <!-- GROWTH / GOAL WRAPPER -->
         <div id="growth-wrapper" class="w-full flex flex-col gap-3" style="display:none;">
 
+            <!-- How-to-use injection slots (toggled by app.js when switching modes) -->
+            <div id="howto-growth-slot"></div>
+            <div id="howto-goal-slot" style="display:none;"></div>
+
             <!-- Growth Calculator Header -->
             <div id="growth-panel-header" class="rounded-2xl px-4 py-3 text-white shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:2px solid rgba(245,200,66,0.4);box-shadow:0 4px 18px rgba(0,0,0,0.25);">
                 <h2 class="text-base font-black flex items-center gap-2" data-i18n="page.growth.h">📈 Growth Calculator</h2>
@@ -331,10 +335,6 @@
                 <h2 class="text-base font-black flex items-center gap-2" data-i18n="page.goal.h">🎯 Goal Planner</h2>
                 <p class="text-blue-200 text-[11px] mt-0.5" data-i18n="page.goal.sub">Calculate how much to invest monthly to reach your financial goals.</p>
             </div>
-
-            <!-- How-to-use injection slots (toggled by app.js when switching modes) -->
-            <div id="howto-growth-slot"></div>
-            <div id="howto-goal-slot" style="display:none;"></div>
 
             <!-- Two-column layout -->
             <div class="flex flex-col lg:flex-row gap-4">
