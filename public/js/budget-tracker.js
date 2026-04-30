@@ -128,7 +128,38 @@
         if (el) el.textContent = label;
         var todayBtn = document.getElementById('bt-today-btn');
         if (todayBtn) todayBtn.style.display = (window._btMonth === _btNow()) ? 'none' : '';
+
+        var copyBtn = document.getElementById('bt-copy-prev-btn');
+        if (copyBtn) {
+            var d = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 2, 1);
+            var prevKey = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+            var prevData = window._btData[prevKey] || {};
+            var hasPrevBudget = _btAllCats().some(function (cat) { return (prevData[cat.key] || {}).b > 0; });
+            var prevLabel = _MONTHS_SHORT[d.getMonth()] + ' ' + d.getFullYear();
+            copyBtn.textContent = 'Copy ' + prevLabel + ' budgets';
+            copyBtn.style.display = hasPrevBudget ? '' : 'none';
+        }
     }
+
+    // ── Copy budget from previous month ───────────────────────
+    function _btCopyBudgetFromPrev() {
+        var parts = window._btMonth.split('-');
+        var d = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 2, 1);
+        var prevKey = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+        var prevData = window._btData[prevKey];
+        if (!prevData) return;
+        var curData = _btMonthData();
+        _btAllCats().forEach(function (cat) {
+            var prevEntry = prevData[cat.key];
+            if (prevEntry && prevEntry.b > 0) {
+                if (!curData[cat.key]) curData[cat.key] = { b: 0, a: 0 };
+                curData[cat.key].b = prevEntry.b;
+            }
+        });
+        _btRefreshAll();
+        if (typeof saveUserData === 'function') saveUserData();
+    }
+    window._btCopyBudgetFromPrev = _btCopyBudgetFromPrev;
 
     // ── Render: category table ─────────────────────────────────
     function _btMakeDiffHtml(budget, actual) {
