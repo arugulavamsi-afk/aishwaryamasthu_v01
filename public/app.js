@@ -3762,6 +3762,7 @@
                     '<div class="relative flex-shrink-0">' +
                         '<span class="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold pointer-events-none">₹</span>' +
                         '<input type="text" inputmode="numeric" placeholder="0" value="' + display + '"' +
+                            (key === 'epf' ? ' id="fp-existing-amt-epf"' : '') +
                             ' class="fp-mini-input pl-5 w-32 text-right"' +
                             ' oninput="fpUpdateExistingAmt(this,\'' + key + '\')">' +
                     '</div>' +
@@ -3781,6 +3782,11 @@
             var newCursor = formatted.length - cursorFromEnd;
             if (newCursor < 0) newCursor = 0;
             input.setSelectionRange(newCursor, newCursor);
+            // Keep fp-epf-balance in sync when the rendered amount input is edited
+            if (key === 'epf') {
+                var _balEl = document.getElementById('fp-epf-balance');
+                if (_balEl) _balEl.value = formatted;
+            }
             fpLiveUpdate();
         }
 
@@ -3882,6 +3888,10 @@
 
             fpState.epfBasic = basic;
             fpState.existingAmounts['epf'] = bal;
+
+            // Keep the rendered "EPF Balance" amount input in sync
+            var _amtEl = document.getElementById('fp-existing-amt-epf');
+            if (_amtEl) _amtEl.value = bal > 0 ? bal.toLocaleString('en-IN') : '';
 
             // Update summary chip
             var summary = document.getElementById('fp-epf-summary');
