@@ -372,7 +372,7 @@
                 answers: window._fpState.answers,
                 planGenerated: window._fpState.planGenerated
             } : {};
-            ['fp-name','fp-age','fp-retire-age','fp-income','fp-invest-amt','fp-epf-basic'].forEach(function(id) {
+            ['fp-name','fp-age','fp-retire-age','fp-income','fp-invest-amt','fp-epf-basic','fp-epf-balance'].forEach(function(id) {
                 const el = document.getElementById(id);
                 fpSaveObj[id] = el ? el.value : '';
             });
@@ -901,13 +901,13 @@
                     Object.assign(window._fpState, {
                         step: 1,
                         goals:           dedupedGoals,
-                        existing:        fp.existing        || [],
-                        existingAmounts: fp.existingAmounts || {},
+                        existing:        (fp.existing        || []).slice(),
+                        existingAmounts: Object.assign({}, fp.existingAmounts || {}),
                         existingCustom:  fp.existingCustom  || '',
-                        answers:         fp.answers         || {},
+                        answers:         Object.assign({}, fp.answers || {}),
                         planGenerated:   fp.planGenerated   || false
                     });
-                    ['fp-name','fp-age','fp-retire-age','fp-income','fp-invest-amt','fp-epf-basic'].forEach(function(id) {
+                    ['fp-name','fp-age','fp-retire-age','fp-income','fp-invest-amt','fp-epf-basic','fp-epf-balance'].forEach(function(id) {
                         const el = document.getElementById(id);
                         if (el && fp[id]) el.value = fp[id];
                     });
@@ -921,12 +921,14 @@
                         var epfPanel = document.getElementById('fp-epf-panel');
                         if (epfBtn)   epfBtn.classList.add('fp-existing-active');
                         if (epfPanel) epfPanel.classList.remove('hidden');
-                        // Restore the EPF balance field from existingAmounts (not saved as a DOM field)
+                        // Restore the EPF balance field — prefer direct DOM field value, fall back to existingAmounts
                         var epfBalEl = document.getElementById('fp-epf-balance');
-                        var savedEpfBal = fp.existingAmounts && fp.existingAmounts['epf'];
-                        if (epfBalEl && savedEpfBal) epfBalEl.value = Number(savedEpfBal).toLocaleString('en-IN');
-                        // Sync fpState.epfBasic and the summary chip from the restored DOM values
-                        if (typeof fpEpfSync === 'function') fpEpfSync();
+                        var savedEpfBal = (fp['fp-epf-balance'] && fp['fp-epf-balance'] !== '0') ? fp['fp-epf-balance']
+                            : (fp.existingAmounts && fp.existingAmounts['epf'] ? Number(fp.existingAmounts['epf']).toLocaleString('en-IN') : '');
+                        if (epfBalEl && savedEpfBal) epfBalEl.value = savedEpfBal;
+                        // Only sync when panel is in DOM — fpEpfSync reads fp-epf-balance; calling with
+                        // no panel would zero out fpState.existingAmounts['epf'] via empty input.
+                        if (epfBalEl && typeof fpEpfSync === 'function') fpEpfSync();
                     }
                     // Restore crypto button + active indicator (already confirmed)
                     if (fp.existing && fp.existing.includes('crypto')) {
