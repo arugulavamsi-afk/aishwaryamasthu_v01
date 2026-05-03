@@ -2847,6 +2847,7 @@
         function hsGetPercentile(score, age) {
             var bracket = _HS_PCT_BRACKETS.find(function(b){ return age >= b.min && age <= b.max; }) || _HS_PCT_BRACKETS[1];
             var curve = bracket.curve;
+            if (score >= curve[0][0]) return { pct: curve[0][1], label: bracket.label };
             for (var i = 0; i < curve.length - 1; i++) {
                 var hi = curve[i], lo = curve[i + 1];
                 if (score >= lo[0] && score <= hi[0]) {
