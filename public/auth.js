@@ -911,7 +911,7 @@
                         const el = document.getElementById(id);
                         if (el && fp[id]) el.value = fp[id];
                     });
-                    if (fp.epfMode) fpState.epfMode = fp.epfMode;
+                    if (fp.epfMode) window._fpState.epfMode = fp.epfMode;
                     if (typeof fpGoStep === 'function') fpGoStep(1);
                     // Restore tile visual state after DOM is ready
                     if (typeof fpRestoreGoalTiles === 'function') fpRestoreGoalTiles();
