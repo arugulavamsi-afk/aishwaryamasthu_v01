@@ -483,9 +483,12 @@
                     : 'Metrics & NAV: ' + d + ' (today)';
             }
 
+            const MFE_PRECOMP_EXCLUDE = /\bseries\s+(?:[ivxlcdm]+|\d+)\b/i;
+
             _mfeList = [];
             Object.entries(data.categories).forEach(([cat, funds]) => {
                 funds.forEach(f => {
+                    if (MFE_PRECOMP_EXCLUDE.test(f.name)) return; // skip closed-ended series funds
                     // Re-classify funds that the pipeline mis-tagged as 'Index'.
                     // AMFI lumps all index-tracking funds (sectoral, midcap, international, debt)
                     // into "Index Funds". Re-run name-based parsing and use a more specific result
