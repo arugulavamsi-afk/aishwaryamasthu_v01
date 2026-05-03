@@ -647,7 +647,8 @@
                 'senior citizen',
                 'minor ',              // minor account plans
                 '\(g\)$',            // Growth variant already caught by dedup
-                'unclaimed'            // unclaimed redemption
+                'unclaimed',           // unclaimed redemption
+                '\\bseries\\s+(?:[ivxlcdm]+|\\d+)\\b' // closed-ended series funds (e.g. "Series IV", "Series 1")
             ].join('|'), 'i');
 
             const raw = list.filter(f => {
