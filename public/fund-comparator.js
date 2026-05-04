@@ -23,7 +23,12 @@
                 const f = _mfeList.find(x => x.code === code);
                 if (f && !_mfcFunds.find(x=>x.code===code)) _mfcFunds.push(f);
             });
-            if (_mfcFunds.length) { mfcRenderChips(); mfcFetchAndRender(); }
+            if (_mfcFunds.length) {
+                mfcRenderChips();
+                mfcFetchAndRender();
+                if (typeof mfeUpdateCompareBtns === 'function') mfeUpdateCompareBtns();
+                if (typeof mfeUpdateCompareBridge === 'function') mfeUpdateCompareBridge();
+            }
         } catch {}
     }
 
@@ -79,15 +84,21 @@
         mfcSave();
         mfcRenderChips();
         mfcFetchAndRender();
+        if (typeof mfeUpdateCompareBtns === 'function') mfeUpdateCompareBtns();
+        if (typeof mfeUpdateCompareBridge === 'function') mfeUpdateCompareBridge();
     }
     function mfcRemove(code) {
         _mfcFunds = _mfcFunds.filter(f=>f.code!==code);
         mfcSave();
         mfcRenderChips();
         if (_mfcFunds.length) mfcRenderTable(); else mfcShowEmpty();
+        if (typeof mfeUpdateCompareBtns === 'function') mfeUpdateCompareBtns();
+        if (typeof mfeUpdateCompareBridge === 'function') mfeUpdateCompareBridge();
     }
     function mfcClearAll() {
         _mfcFunds=[]; mfcSave(); mfcRenderChips(); mfcShowEmpty();
+        if (typeof mfeUpdateCompareBtns === 'function') mfeUpdateCompareBtns();
+        if (typeof mfeUpdateCompareBridge === 'function') mfeUpdateCompareBridge();
     }
 
     /* ── Chips ── */

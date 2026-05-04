@@ -268,6 +268,7 @@
                                 <th class="mfe-th" title="Sharpe Ratio — estimated return per unit of total risk vs proxy benchmark. Approximate estimate.">Sharpe ~</th>
                                 <th class="mfe-th" title="Sortino Ratio — estimated return per unit of downside risk vs proxy benchmark. Approximate estimate.">Sortino ~</th>
                                 <th class="mfe-th" style="width:36px;" title="Save to My Mutual Funds">★</th>
+                                <th class="mfe-th" style="width:36px;" title="Add to Fund Comparator — compare up to 5 funds side-by-side">⚖</th>
                             </tr>
                         </thead>
                         <tbody id="mfe-tbody"></tbody>
@@ -326,6 +327,27 @@
                         <p><strong>Most reliable metrics:</strong> Rolling Hit Rate and Rolling Avg Return are <em>benchmark-independent</em> — they measure a fund's absolute consistency and are the most reliable signals here. CAGR and Std Dev are also unaffected by benchmark choice.</p>
                         <p><strong>Before investing:</strong> Always verify Alpha and Sharpe against the fund's own factsheet (benchmarked to its SEBI-mandated index). This tool is for relative screening and comparison — not a substitute for the fund's official performance disclosure.</p>
                     </div>
+                </div>
+            </div>
+
+            <!-- Compare bridge — appears when ≥1 fund is toggled for comparison -->
+            <div id="mfe-cmp-bridge" class="hidden rounded-2xl px-4 py-3 flex items-center gap-3 flex-wrap" style="background:linear-gradient(135deg,#f0fdfa,#ecfdf5);border:2px solid #6ee7b7;">
+                <span class="text-lg flex-shrink-0">⚖️</span>
+                <div class="flex-1 min-w-0">
+                    <p class="text-xs font-black text-teal-700" id="mfe-cmp-bridge-label">1 fund queued for comparison</p>
+                    <div id="mfe-cmp-bridge-chips" class="flex flex-wrap gap-1.5 mt-1"></div>
+                </div>
+                <div class="flex items-center gap-2 flex-shrink-0">
+                    <button onclick="document.getElementById('mfc-section').scrollIntoView({behavior:'smooth',block:'start'})"
+                            class="text-xs font-bold px-3 py-1.5 rounded-xl transition-all"
+                            style="background:linear-gradient(130deg,#0d9488,#059669);color:#fff;border:none;cursor:pointer;">
+                        Scroll to Compare ↓
+                    </button>
+                    <button onclick="mfcClearAll()"
+                            class="text-xs font-bold px-2.5 py-1.5 rounded-xl transition-all"
+                            style="background:rgba(6,95,70,0.08);border:1px solid rgba(6,95,70,0.20);color:#065f46;cursor:pointer;">
+                        Clear ✕
+                    </button>
                 </div>
             </div>
 

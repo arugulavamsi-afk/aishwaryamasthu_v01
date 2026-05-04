@@ -1265,6 +1265,13 @@
             const _bmEscName = _esc(f.name).replace(/'/g,'&#39;');
             const _bmEscAmc  = _esc(f.amc).replace(/'/g,'&#39;');
             const _bmSub = _esc(f.subSect||'').replace(/'/g,'&#39;');
+            // Compare button state
+            const _cmpAdded = typeof _mfcFunds !== 'undefined' && !!_mfcFunds.find(fc => fc.code === f.code);
+            const _cmpAtMax = !_cmpAdded && typeof _mfcFunds !== 'undefined' && _mfcFunds.length >= MFC_MAX;
+            const _cmpIcon  = _cmpAdded ? '⊖' : '⊕';
+            const _cmpColor = _cmpAdded ? '#0d9488' : _cmpAtMax ? '#cbd5e1' : '#94a3b8';
+            const _cmpHover = _cmpAdded ? '#065f46' : _cmpAtMax ? '#cbd5e1' : '#0d9488';
+            const _cmpTitle = _cmpAdded ? 'Remove from Fund Comparator' : _cmpAtMax ? 'Comparator full (5/5)' : 'Add to Fund Comparator';
             return `<tr>
                 <td class="mfe-td mfe-td-rank text-center">${rankHtml}</td>
                 <td class="mfe-td mfe-td-name">
@@ -1283,6 +1290,7 @@
                 <td class="mfe-td text-right">${m&&m.sharpe!=null?mc(m.sharpe,v=>v>1.5?'mfe-good':v>0.8?'mfe-avg':'mfe-bad'):'<span class="mfe-shimmer"></span>'}</td>
                 <td class="mfe-td text-right">${m&&m.sortino!=null?mc(m.sortino,v=>v>1.5?'mfe-good':v>0.8?'mfe-avg':'mfe-bad'):'<span class="mfe-shimmer"></span>'}</td>
                 <td class="mfe-td text-center"><button data-mf-bm="${_esc(f.code)}" onclick="mfToggleWatchlist('${_esc(f.code)}','${_bmEscName}','${_esc(f.cat)}','${_bmSub}','${_bmEscAmc}')" onmouseover="this.style.color='${_bmHover}';this.style.transform='scale(1.25)';" onmouseout="this.style.color='${_bmColor}';this.style.transform='';" style="font-size:17px;line-height:1;background:none;border:none;cursor:pointer;color:${_bmColor};padding:2px 4px;transition:color .15s,transform .15s;" title="${_bmTitle}">${_bmIcon}</button></td>
+                <td class="mfe-td text-center"><button data-mf-cmp="${_esc(f.code)}" onclick="mfcToggleFromExplorer('${_esc(f.code)}','${_bmEscName}','${_bmEscAmc}','${_esc(f.cat)}','${_bmSub}')" onmouseover="this.style.color='${_cmpHover}';this.style.transform='scale(1.25)';" onmouseout="this.style.color='${_cmpColor}';this.style.transform='';" style="font-size:17px;line-height:1;background:none;border:none;cursor:${_cmpAtMax?'not-allowed':'pointer'};color:${_cmpColor};padding:2px 4px;transition:color .15s,transform .15s;" title="${_cmpTitle}">${_cmpIcon}</button></td>
             </tr>`;
         }).join('');
 
@@ -1349,6 +1357,65 @@
         // Sort indicator
         document.querySelectorAll('.mfe-th-sort').forEach(th=>th.classList.remove('mfe-sort-on'));
         document.querySelector(`.mfe-th-sort[onclick="mfeSortBy('${_mfeSortCol}')"]`)?.classList.add('mfe-sort-on');
+
+        // Keep bridge tray in sync after each render
+        mfeUpdateCompareBridge();
+    }
+
+    /* ── Compare toggle helpers ── */
+
+    function mfcToggleFromExplorer(code, name, amc, cat, sub) {
+        if (typeof _mfcFunds === 'undefined') return;
+        const idx = _mfcFunds.findIndex(function(f){ return f.code === code; });
+        if (idx !== -1) {
+            _mfcFunds.splice(idx, 1);
+            if (typeof mfcSave === 'function') mfcSave();
+            if (typeof mfcRenderChips === 'function') mfcRenderChips();
+            if (_mfcFunds.length) { if (typeof mfcRenderTable === 'function') mfcRenderTable(); }
+            else { if (typeof mfcShowEmpty === 'function') mfcShowEmpty(); }
+        } else {
+            if (_mfcFunds.length >= MFC_MAX) { alert('Maximum ' + MFC_MAX + ' funds can be compared at once.'); return; }
+            var f = (typeof _mfeList !== 'undefined' && _mfeList.find(function(x){ return x.code === code; }))
+                    || { code: code, name: name, amc: amc, cat: cat, subSect: sub };
+            _mfcFunds.push(f);
+            if (typeof mfcSave === 'function') mfcSave();
+            if (typeof mfcRenderChips === 'function') mfcRenderChips();
+            if (typeof mfcFetchAndRender === 'function') mfcFetchAndRender();
+        }
+        mfeUpdateCompareBtns();
+        mfeUpdateCompareBridge();
+    }
+
+    function mfeUpdateCompareBtns() {
+        if (typeof _mfcFunds === 'undefined') return;
+        document.querySelectorAll('[data-mf-cmp]').forEach(function(btn) {
+            var code   = btn.dataset.mfCmp;
+            var inCmp  = !!_mfcFunds.find(function(f){ return f.code === code; });
+            var atMax  = !inCmp && _mfcFunds.length >= MFC_MAX;
+            btn.textContent   = inCmp ? '⊖' : '⊕';
+            btn.style.color   = inCmp ? '#0d9488' : atMax ? '#cbd5e1' : '#94a3b8';
+            btn.style.cursor  = atMax ? 'not-allowed' : 'pointer';
+            btn.title         = inCmp ? 'Remove from Fund Comparator' : atMax ? 'Comparator full (5/5)' : 'Add to Fund Comparator';
+        });
+    }
+
+    function mfeUpdateCompareBridge() {
+        var bridge = document.getElementById('mfe-cmp-bridge');
+        if (!bridge) return;
+        if (typeof _mfcFunds === 'undefined' || _mfcFunds.length === 0) {
+            bridge.classList.add('hidden');
+            return;
+        }
+        bridge.classList.remove('hidden');
+        var lbl = document.getElementById('mfe-cmp-bridge-label');
+        if (lbl) lbl.textContent = _mfcFunds.length + ' fund' + (_mfcFunds.length !== 1 ? 's' : '') + ' queued for comparison';
+        var chips = document.getElementById('mfe-cmp-bridge-chips');
+        if (chips) {
+            chips.innerHTML = _mfcFunds.map(function(f) {
+                var short = f.name.replace(/\b(direct|growth|plan|option|fund)\b/gi, '').trim().replace(/\s+/g, ' ');
+                return '<span style="font-size:10px;font-weight:700;padding:1px 8px;border-radius:999px;background:#ccfbf1;border:1px solid #6ee7b7;color:#065f46;">' + _esc(short.length > 26 ? short.slice(0, 24) + '…' : short) + '</span>';
+            }).join('');
+        }
     }
 
     /* ════════════════════════════════════════════════════════
