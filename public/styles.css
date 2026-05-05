@@ -709,6 +709,27 @@
             border-color: rgba(245,200,66,0.3) !important;
         }
 
+        /* ── Consult unread badge ── */
+        .consult-unread-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: #ef4444;
+            color: #fff;
+            font-size: 9px;
+            font-weight: 900;
+            min-width: 16px;
+            height: 16px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 3px;
+            border: 1.5px solid #0c2340;
+            line-height: 1;
+            pointer-events: none;
+        }
+
         /* ── Chat bubbles ── */
         .chat-bubble-user {
             background: linear-gradient(130deg,#0c2340,#1a4a7a);

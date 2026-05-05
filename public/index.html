@@ -318,7 +318,10 @@
                 <button id="consult-tile-btn" onclick="switchMode('consult')"
                     class="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-left transition-all hover:shadow-lg shine-header"
                     style="background:linear-gradient(130deg,#0c2340 0%,#1a4a7a 50%,#0e5c3a 100%);border:1.5px solid rgba(99,179,237,0.45);box-shadow:0 4px 16px rgba(12,35,64,0.28);">
-                    <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0" style="background:rgba(255,255,255,0.12);box-shadow:0 1px 4px rgba(0,0,0,0.15);">🧑‍💼</div>
+                    <div class="relative w-10 h-10 flex-shrink-0">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl" style="background:rgba(255,255,255,0.12);box-shadow:0 1px 4px rgba(0,0,0,0.15);">🧑‍💼</div>
+                        <span id="consult-unread-badge" class="consult-unread-badge" style="display:none;"></span>
+                    </div>
                     <div class="flex-1 min-w-0">
                         <div class="text-xs font-black uppercase tracking-wider" style="color:rgba(255,255,255,0.95);">Consult an Expert</div>
                         <div class="text-[11px] mt-0.5 truncate" style="color:rgba(255,255,255,0.55);">Book a 1-hour session with a certified financial advisor</div>

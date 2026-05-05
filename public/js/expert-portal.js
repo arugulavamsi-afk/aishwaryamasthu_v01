@@ -210,7 +210,14 @@
                 text:       text,
                 sentAt:     Date.now()
             })
-            .then(function() { input.disabled = false; input.focus(); })
+            .then(function() {
+                input.disabled = false;
+                input.focus();
+                // Increment unread counter so user sees the badge on their dashboard
+                db.collection('bookings').doc(_epChatBookingId).update({
+                    unreadForUser: firebase.firestore.FieldValue.increment(1)
+                }).catch(function(){});
+            })
             .catch(function(err) {
                 input.disabled = false;
                 console.error('[expert] send error:', err);
@@ -244,6 +251,10 @@
                 if (btn) btn.disabled = false;
                 var panel = document.getElementById('ep-summary-panel');
                 if (panel) panel.classList.add('hidden');
+                // Increment unread counter for the summary message
+                db.collection('bookings').doc(_epChatBookingId).update({
+                    unreadForUser: firebase.firestore.FieldValue.increment(1)
+                }).catch(function(){});
             })
             .catch(function(err) {
                 input.disabled = false;

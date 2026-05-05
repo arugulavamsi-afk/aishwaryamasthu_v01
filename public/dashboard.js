@@ -135,6 +135,7 @@
         if (ca) ca.textContent = _t('pin.count').replace('{n}', favs.length);
         if (typeof initRoadmap === 'function') initRoadmap();
         consultUpdateTile();
+        if (typeof consultWatchUnread === 'function') consultWatchUnread();
     }
     // Call on first load after auth
     window.addEventListener('DOMContentLoaded', function() {

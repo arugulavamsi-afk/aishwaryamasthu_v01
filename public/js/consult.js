@@ -2,17 +2,48 @@
        CONSULT AN EXPERT — user-side logic
     ═══════════════════════════════════════════════ */
 
-    var _consultExperts      = [];
-    var _consultView         = 'list'; // 'list' | 'slots' | 'bookings' | 'chat'
-    var _consultSelected     = null;
-    var _consultChatBookingId = null;
-    var _consultChatListener  = null;
+    var _consultExperts        = [];
+    var _consultView           = 'list'; // 'list' | 'slots' | 'bookings' | 'chat'
+    var _consultSelected       = null;
+    var _consultChatBookingId  = null;
+    var _consultChatListener   = null;
     var _consultChatExpertName = '';
+    var _consultUnreadListener = null;
 
     function initConsult() {
         _consultView = 'list';
         _consultRenderView();
         _consultLoadExperts();
+    }
+
+    /* ── Unread badge on dashboard tile ── */
+    function consultWatchUnread() {
+        if (_consultUnreadListener) { _consultUnreadListener(); _consultUnreadListener = null; }
+        var db   = window._fbDb;
+        var user = window._fbAuth && window._fbAuth.currentUser;
+        if (!db || !user) return;
+
+        _consultUnreadListener = db.collection('bookings')
+            .where('userId', '==', user.uid)
+            .onSnapshot(function(snap) {
+                var total = 0;
+                snap.forEach(function(doc) {
+                    var b = doc.data();
+                    if ((b.status === 'confirmed' || b.status === 'completed') && b.unreadForUser > 0) {
+                        total += b.unreadForUser;
+                    }
+                });
+                var badge = document.getElementById('consult-unread-badge');
+                if (!badge) return;
+                if (total > 0) {
+                    badge.textContent = total > 9 ? '9+' : String(total);
+                    badge.style.display = '';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }, function(err) {
+                console.error('[consult] unread watch error:', err);
+            });
     }
 
     /* ── Load experts from Firestore ── */
@@ -302,6 +333,9 @@
 
         var db = window._fbDb;
         if (!db) return;
+
+        // Clear unread count as soon as the user opens the chat
+        db.collection('bookings').doc(bookingId).update({ unreadForUser: 0 }).catch(function(){});
 
         _consultChatListener = db.collection('conversations').doc(bookingId)
             .collection('messages').orderBy('sentAt', 'asc')
