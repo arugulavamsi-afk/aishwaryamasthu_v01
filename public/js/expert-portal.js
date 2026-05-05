@@ -95,7 +95,7 @@
                         '</div>' +
                         '<div class="flex flex-wrap gap-2 mt-3">' +
                             '<button onclick="epViewClientProfile(\'' + bid + '\')" class="consult-tab px-3 py-1.5 rounded-xl text-[11px] font-bold">👤 View Profile</button>' +
-                            '<button onclick="epDownloadClientPdf(\'' + bid + '\')" class="px-3 py-1.5 rounded-xl text-[11px] font-bold" style="background:#f0fdf4;color:#065f46;border:1px solid #6ee7b7;">📄 Download PDF</button>' +
+                            '<button onclick="epViewClientPdf(\'' + bid + '\')" class="px-3 py-1.5 rounded-xl text-[11px] font-bold" style="background:#f0fdf4;color:#065f46;border:1px solid #6ee7b7;">📄 View PDF</button>' +
                             (b.status === 'confirmed' || b.status === 'completed'
                                 ? '<button onclick="epOpenChat(\'' + bid + '\',\'' + (b.userName || b.userEmail || 'Client').replace(/'/g, "\\'") + '\')" class="px-3 py-1.5 rounded-xl text-[11px] font-bold" style="background:linear-gradient(130deg,#0c2340,#1a4a7a);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">💬 Chat</button>'
                                 : '') +
@@ -153,9 +153,9 @@
         }).join('');
         if (!html) html = '<div class="text-slate-400 text-[12px] text-center py-4">No profile data captured.</div>';
 
-        html += '<button onclick="epDownloadClientPdf(\'' + bookingId + '\')" ' +
+        html += '<button onclick="epViewClientPdf(\'' + bookingId + '\')" ' +
             'class="mt-4 w-full py-2 rounded-xl text-[12px] font-bold" ' +
-            'style="background:linear-gradient(130deg,#0c2340,#1a4a7a);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">📄 Download Full PDF Profile</button>';
+            'style="background:linear-gradient(130deg,#0c2340,#1a4a7a);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">📄 View Full PDF Profile</button>';
 
         var content = document.getElementById('ep-modal-content');
         if (content) content.innerHTML = html;
@@ -163,13 +163,10 @@
         if (modal) modal.classList.remove('hidden');
     }
 
-    /* ── PDF download ── */
-    function epDownloadClientPdf(bookingId) {
+    /* ── PDF viewer (view-only, opens in browser tab) ── */
+    function epViewClientPdf(bookingId) {
         var b = _epBookingCache[bookingId];
-        if (b) {
-            _epDeliverPdf(b, bookingId);
-            return;
-        }
+        if (b) { _epDeliverPdf(b, bookingId); return; }
         var db = window._fbDb;
         if (!db) return;
         db.collection('bookings').doc(bookingId).get()
@@ -179,22 +176,21 @@
                 _epBookingCache[bookingId] = data;
                 _epDeliverPdf(data, bookingId);
             })
-            .catch(function(err) { console.error('[expert] pdf download error:', err); });
+            .catch(function(err) { console.error('[expert] pdf view error:', err); });
     }
 
     function _epDeliverPdf(bookingData, bookingId) {
         if (bookingData.profilePdfBase64) {
-            _epTriggerPdfDownload(bookingData.profilePdfBase64, bookingData.userName || 'client');
+            _epOpenPdfInTab(bookingData.profilePdfBase64);
             return;
         }
-        // Generate on demand from snapshot (handles bookings made before PDF was stored)
+        // Generate on demand from snapshot (bookings before PDF storage was added)
         if (typeof _consultBuildProfilePdf === 'function') {
             var snap = bookingData.userProfileSnapshot || {};
             var base64 = null;
             try { base64 = _consultBuildProfilePdf(snap); } catch(ex) { console.warn('[expert] pdf gen error:', ex); }
             if (base64) {
-                _epTriggerPdfDownload(base64, bookingData.userName || 'client');
-                // Cache it so subsequent clicks are instant
+                _epOpenPdfInTab(base64);
                 var db = window._fbDb;
                 if (db) db.collection('bookings').doc(bookingId).update({ profilePdfBase64: base64 }).catch(function(){});
                 return;
@@ -203,13 +199,19 @@
         alert('PDF could not be generated for this booking.');
     }
 
-    function _epTriggerPdfDownload(base64, clientName) {
-        var link = document.createElement('a');
-        link.href = 'data:application/pdf;base64,' + base64;
-        link.download = 'profile-' + String(clientName).replace(/\s+/g, '-').toLowerCase() + '.pdf';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+    function _epOpenPdfInTab(base64) {
+        try {
+            var binary = atob(base64);
+            var arr = new Uint8Array(binary.length);
+            for (var i = 0; i < binary.length; i++) arr[i] = binary.charCodeAt(i);
+            var blob = new Blob([arr], { type: 'application/pdf' });
+            var url  = URL.createObjectURL(blob);
+            window.open(url, '_blank');
+            setTimeout(function() { URL.revokeObjectURL(url); }, 60000);
+        } catch(e) {
+            console.error('[expert] pdf open error:', e);
+            alert('Could not open PDF. Please try again.');
+        }
     }
 
     function epCloseProfileModal() {
