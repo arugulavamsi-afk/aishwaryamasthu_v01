@@ -313,6 +313,25 @@
 
             </div>
 
+            <!-- ── CONSULT AN EXPERT TILE ── -->
+            <div style="max-width:460px;margin:16px auto 0;">
+                <button id="consult-tile-btn" onclick="switchMode('consult')"
+                    class="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-left transition-all hover:shadow-lg shine-header"
+                    style="background:linear-gradient(130deg,#0c2340 0%,#1a4a7a 50%,#0e5c3a 100%);border:1.5px solid rgba(99,179,237,0.45);box-shadow:0 4px 16px rgba(12,35,64,0.28);">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0" style="background:rgba(255,255,255,0.12);box-shadow:0 1px 4px rgba(0,0,0,0.15);">🧑‍💼</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="text-xs font-black uppercase tracking-wider" style="color:rgba(255,255,255,0.95);">Consult an Expert</div>
+                        <div class="text-[11px] mt-0.5 truncate" style="color:rgba(255,255,255,0.55);">Book a 1-hour session with a certified financial advisor</div>
+                    </div>
+                    <span class="font-bold text-sm flex-shrink-0" style="color:rgba(255,255,255,0.4);">→</span>
+                </button>
+                <div id="consult-tile-tip" class="items-center gap-1.5 mt-2 px-3 py-2 rounded-xl text-[11px]"
+                     style="display:none;background:rgba(245,200,66,0.1);border:1px solid rgba(245,200,66,0.3);color:#b45309;">
+                    <span style="font-size:13px;flex-shrink:0;">ⓘ</span>
+                    <span>Please complete <strong>My Profile</strong> to enable expert consultations</span>
+                </div>
+            </div>
+
 </div><!-- end centering wrapper -->
         </div>
         <!-- =================== END DASHBOARD PANEL ======================== -->
@@ -708,6 +727,10 @@
         <div id="budgettrack-panel" class="hidden w-full flex flex-col gap-3" data-panel-src="panels/budget-tracker.html"></div>
         <!-- =================== END BUDGET TRACKER PANEL ======================== -->
 
+        <!-- =================== CONSULT AN EXPERT PANEL ======================== -->
+        <div id="consult-panel" class="hidden w-full flex flex-col gap-3" data-panel-src="panels/consult.html"></div>
+        <!-- =================== END CONSULT AN EXPERT PANEL ======================== -->
+
         <!-- =================== CATEGORY: CALCULATORS ======================== -->
         <div id="dashcat-calc-panel" class="hidden w-full panel-fade">
             <div style="max-width:820px;margin:0 auto;">
@@ -810,6 +833,50 @@
         <!-- =================== END CATEGORY: FAVOURITES ======================== -->
 
     </main>
+
+    <!-- ===================== EXPERT DASHBOARD ======================== -->
+    <div id="expert-main" style="display:none;" class="flex-1 w-full max-w-7xl mx-auto p-3 sm:p-4">
+
+        <!-- Header -->
+        <div class="rounded-2xl px-5 py-4 mb-4 text-white shine-header"
+             style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:2px solid rgba(245,200,66,0.3);box-shadow:0 4px 18px rgba(0,0,0,0.25);">
+            <h2 class="text-base font-black flex items-center gap-2">🧑‍💼 Expert Dashboard</h2>
+            <p id="ep-welcome" class="text-blue-200 text-[11px] mt-0.5">Welcome back</p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="flex gap-2 mb-4">
+            <button id="ep-tab-bookings" onclick="epShowTab('bookings')" class="consult-tab consult-tab-active px-4 py-2 rounded-xl text-[12px] font-bold transition-all">Upcoming Bookings</button>
+            <button id="ep-tab-profile"  onclick="epShowTab('profile')"  class="consult-tab px-4 py-2 rounded-xl text-[12px] font-bold transition-all">My Profile</button>
+        </div>
+
+        <!-- Bookings section -->
+        <div id="ep-sec-bookings">
+            <div id="ep-booking-list" class="flex flex-col gap-3">
+                <div class="text-center py-8 text-slate-400 text-[12px]">Loading bookings…</div>
+            </div>
+        </div>
+
+        <!-- Profile section -->
+        <div id="ep-sec-profile" class="hidden">
+            <div class="bg-white rounded-2xl border border-[#f5c842]/30 shadow-sm p-5">
+                <div id="ep-profile-content" class="text-[12px] text-slate-500">Loading…</div>
+            </div>
+        </div>
+
+    </div>
+    <!-- =================== END EXPERT DASHBOARD ======================== -->
+
+    <!-- Client profile modal -->
+    <div id="ep-profile-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4" style="background:rgba(0,0,0,0.5);">
+        <div class="bg-white rounded-2xl w-full overflow-y-auto shadow-2xl" style="max-width:480px;max-height:85vh;">
+            <div class="px-5 py-4 flex items-center justify-between sticky top-0 bg-white rounded-t-2xl border-b border-slate-100">
+                <div class="font-black text-[13px] text-slate-800">👤 Client Profile</div>
+                <button onclick="epCloseProfileModal()" class="text-slate-400 hover:text-slate-600 text-lg leading-none">✕</button>
+            </div>
+            <div id="ep-modal-content" class="px-5 py-4 flex flex-col gap-2 text-[12px] text-slate-700"></div>
+        </div>
+    </div>
 
     <!-- Footer — Regulatory Disclaimer -->
     <footer style="background:#0f172a;border-top:1px solid rgba(255,255,255,0.07);padding:20px 16px 24px;margin-top:8px;">
@@ -2390,6 +2457,8 @@
     <script src="js/roadmap.js"></script>
     <script src="js/how-to-use.js"></script>
     <script src="js/mymfs.js"></script>
+    <script src="js/consult.js"></script>
+    <script src="js/expert-portal.js"></script>
     <!-- ── dashboard core: tool catalog + favs + dashboard render ── -->
     <script src="dashboard.js"></script>
 

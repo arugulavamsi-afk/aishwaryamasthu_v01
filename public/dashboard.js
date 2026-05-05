@@ -101,6 +101,29 @@
             if (arrow) card.insertBefore(span, arrow); else card.appendChild(span);
         });
     }
+    function _consultProfileComplete() {
+        var p = window._userProfile || {};
+        var name = (p.name || '').trim();
+        var age  = parseInt(p.age, 10);
+        var occ  = (p.occupation || '').trim();
+        var dep  = p.dependents;
+        return name.length > 0
+            && !isNaN(age) && age >= 18 && age <= 85
+            && occ.length > 0
+            && dep !== '' && dep !== undefined && dep !== null;
+    }
+
+    function consultUpdateTile() {
+        var btn = document.getElementById('consult-tile-btn');
+        var tip = document.getElementById('consult-tile-tip');
+        if (!btn) return;
+        var ok = _consultProfileComplete();
+        btn.style.opacity       = ok ? '1' : '0.45';
+        btn.style.pointerEvents = ok ? 'auto' : 'none';
+        btn.style.cursor        = ok ? 'pointer' : 'default';
+        if (tip) tip.style.display = ok ? 'none' : 'flex';
+    }
+
     function initDashboard() {
         var greetEl = document.getElementById('dash-user-greeting');
         if (greetEl && window._fbAuth && window._fbAuth.currentUser) {
@@ -111,6 +134,7 @@
         var ca = document.getElementById('dash-fav-count-arrow');
         if (ca) ca.textContent = _t('pin.count').replace('{n}', favs.length);
         if (typeof initRoadmap === 'function') initRoadmap();
+        consultUpdateTile();
     }
     // Call on first load after auth
     window.addEventListener('DOMContentLoaded', function() {

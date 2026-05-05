@@ -695,3 +695,16 @@
             60%  { left: 150%; }
             100% { left: 150%; }
         }
+
+
+        /* ── Consult tabs ── */
+        .consult-tab {
+            background: rgba(255,255,255,0.7);
+            color: #475569;
+            border: 1px solid #e2e8f0;
+        }
+        .consult-tab-active {
+            background: linear-gradient(130deg,#0c2340,#1a4a7a) !important;
+            color: #f5c842 !important;
+            border-color: rgba(245,200,66,0.3) !important;
+        }

@@ -1,0 +1,37 @@
+<div id="consult-panel" class="hidden w-full flex flex-col gap-3">
+
+    <!-- HEADER -->
+    <div class="rounded-2xl px-4 py-3 text-white shine-header"
+         style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:2px solid rgba(99,179,237,0.4);box-shadow:0 4px 18px rgba(0,0,0,0.25);">
+        <h2 class="text-base font-black flex items-center gap-2">🧑‍💼 Consult an Expert</h2>
+        <p class="text-blue-200 text-[11px] mt-0.5">Book a 1-hour session with a certified financial advisor</p>
+    </div>
+
+    <!-- TABS -->
+    <div class="flex gap-2">
+        <button id="consult-tab-list" onclick="consultShowTab('list')"
+            class="consult-tab consult-tab-active px-4 py-2 rounded-xl text-[12px] font-bold transition-all">
+            Find Advisors
+        </button>
+        <button id="consult-tab-bookings" onclick="consultShowTab('bookings')"
+            class="consult-tab px-4 py-2 rounded-xl text-[12px] font-bold transition-all">
+            My Bookings
+        </button>
+    </div>
+
+    <!-- EXPERT LIST SECTION -->
+    <div id="consult-sec-list">
+        <div id="consult-expert-list" class="flex flex-col gap-3">
+            <div class="text-center py-8 text-slate-400 text-[12px]">Loading advisors…</div>
+        </div>
+    </div>
+
+    <!-- SLOT PICKER SECTION (shown when expert selected) -->
+    <div id="consult-sec-slots" style="display:none;"></div>
+
+    <!-- MY BOOKINGS SECTION -->
+    <div id="consult-sec-bookings" style="display:none;">
+        <div id="consult-bookings-list" class="flex flex-col gap-3"></div>
+    </div>
+
+</div>

@@ -69,8 +69,29 @@
                 }
                 // Centre the welcome content vertically in the splash
                 if (splashInner) splashInner.classList.add('splash-inner--centered');
-                // Restore user's saved data — unaffected by guest tile state
-                if (typeof loadUserData === 'function') loadUserData();
+                // Check if this user is a registered expert before loading user data
+                _fbDb.collection('experts').where('email', '==', user.email).limit(1).get()
+                    .then(function(snap) {
+                        console.log('[auth] expert check — docs found:', snap.size, '| email:', user.email);
+                        if (!snap.empty) {
+                            // Expert login — show expert dashboard instead of user app
+                            window._isExpert  = true;
+                            window._expertDoc = Object.assign({ id: snap.docs[0].id }, snap.docs[0].data());
+                            if (typeof epInitDashboard === 'function') epInitDashboard(window._expertDoc);
+                        } else {
+                            // Regular user — restore saved data as normal
+                            window._isExpert  = false;
+                            window._expertDoc = null;
+                            if (typeof loadUserData === 'function') loadUserData();
+                        }
+                    })
+                    .catch(function(err) {
+                        // On error fall back to normal user flow
+                        console.error('[auth] expert check failed:', err.code, err.message);
+                        window._isExpert  = false;
+                        window._expertDoc = null;
+                        if (typeof loadUserData === 'function') loadUserData();
+                    });
             } else {
                 // Not signed in: show auth form and guest tiles
                 if (authPanel)  { authPanel.style.display  = 'block'; }
@@ -78,6 +99,10 @@
 
                 if (bar) { bar.style.display = 'none'; bar.classList.add('hidden'); }
                 if (splashInner) splashInner.classList.remove('splash-inner--centered');
+                // Reset expert state and restore main app visibility
+                window._isExpert  = false;
+                window._expertDoc = null;
+                if (typeof epHideDashboard === 'function') epHideDashboard();
             }
         });
 

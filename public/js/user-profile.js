@@ -104,6 +104,7 @@
         upUpdateSummary();
         upRefreshBanners();
         if (typeof saveUserData === 'function') saveUserData();
+        if (typeof consultUpdateTile === 'function') consultUpdateTile();
     }
 
     function upLoad(p) {
@@ -208,6 +209,7 @@
         upRefreshBanners();
         upRefreshRiskDisplay();
         upRenderProfileGoals();
+        if (typeof consultUpdateTile === 'function') consultUpdateTile();
     }
 
     function upToggle() {

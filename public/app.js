@@ -338,7 +338,8 @@
             hracalc:        { label: 'HRA Calculator',    icon: '🏠' },
             nomtrack:       { label: 'Nomination Tracker', icon: '📜' },
             budgettrack:    { label: 'Budget Tracker',      icon: '📊' },
-            mymfs:          { label: 'My Mutual Funds',     icon: '★'  }
+            mymfs:          { label: 'My Mutual Funds',     icon: '★'  },
+            consult:        { label: 'Consult an Expert',  icon: '🧑‍💼' }
         };
 
         function toggleMobileDropdown() {
@@ -506,17 +507,18 @@
             const isNomTrack      = mode === 'nomtrack';
             const isBudgetTrack   = mode === 'budgettrack';
             const isMyMFs         = mode === 'mymfs';
-            const isFullPanel  = isDashboard || isMFKit || isFundPicker || isHealthScore || isFinPlan || isMFExplorer || isTaxGuide || isHomeLoan || isStepUpSIP || isEPFCalc || isSSAPlanner || isPPFNPS || isCtcOptimizer || isInsure || isGratuity || isDebtPlan || isJointPlan || isCibil || isFinCal || isSelfEmpl || isGoldComp || isDashCalc || isDashMF || isDashTax || isDashFav || isCoffeeCan || isNetWorth || isUlipCheck || isFixedIncome || isRetirementHub || isMyProfile || isCgCalc || isHraCalc || isNomTrack || isBudgetTrack || isMyMFs;
+            const isConsult       = mode === 'consult';
+            const isFullPanel  = isDashboard || isMFKit || isFundPicker || isHealthScore || isFinPlan || isMFExplorer || isTaxGuide || isHomeLoan || isStepUpSIP || isEPFCalc || isSSAPlanner || isPPFNPS || isCtcOptimizer || isInsure || isGratuity || isDebtPlan || isJointPlan || isCibil || isFinCal || isSelfEmpl || isGoldComp || isDashCalc || isDashMF || isDashTax || isDashFav || isCoffeeCan || isNetWorth || isUlipCheck || isFixedIncome || isRetirementHub || isMyProfile || isCgCalc || isHraCalc || isNomTrack || isBudgetTrack || isMyMFs || isConsult;
 
             // Show/hide main panels
             const leftPanel = document.getElementById('growth-left-panel');
             const rightPanel = document.getElementById('growth-right-panel');
             const growthWrapper = document.getElementById('growth-wrapper');
-            ['dashboard-panel','mfkit-panel','fundpicker-panel','healthscore-panel','finplan-panel','mfexplorer-panel','taxguide-panel','homeloan-panel','stepupsip-panel','epfcalc-panel','ssaplanner-panel','ppfnps-panel','ctcoptimizer-panel','insure-panel','gratuity-panel','debtplan-panel','jointplan-panel','cibil-panel','fincal-panel','selfempl-panel','goldcomp-panel','dashcat-calc-panel','dashcat-mf-panel','dashcat-tax-panel','dashcat-fav-panel','coffeecan-panel','networth-panel','ulipcheck-panel','fixedincome-panel','retirementhub-panel','myprofile-panel','cgcalc-panel','hracalc-panel','nomtrack-panel','budgettrack-panel','mymfs-panel'].forEach(id => {
+            ['dashboard-panel','mfkit-panel','fundpicker-panel','healthscore-panel','finplan-panel','mfexplorer-panel','taxguide-panel','homeloan-panel','stepupsip-panel','epfcalc-panel','ssaplanner-panel','ppfnps-panel','ctcoptimizer-panel','insure-panel','gratuity-panel','debtplan-panel','jointplan-panel','cibil-panel','fincal-panel','selfempl-panel','goldcomp-panel','dashcat-calc-panel','dashcat-mf-panel','dashcat-tax-panel','dashcat-fav-panel','coffeecan-panel','networth-panel','ulipcheck-panel','fixedincome-panel','retirementhub-panel','myprofile-panel','cgcalc-panel','hracalc-panel','nomtrack-panel','budgettrack-panel','mymfs-panel','consult-panel'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.classList.add('hidden');
             });
-            const activeId = isDashboard ? 'dashboard-panel' : isMFKit ? 'mfkit-panel' : isFundPicker ? 'fundpicker-panel' : isHealthScore ? 'healthscore-panel' : isFinPlan ? 'finplan-panel' : isMFExplorer ? 'mfexplorer-panel' : isTaxGuide ? 'taxguide-panel' : isHomeLoan ? 'homeloan-panel' : isStepUpSIP ? 'stepupsip-panel' : isEPFCalc ? 'epfcalc-panel' : isSSAPlanner ? 'ssaplanner-panel' : isPPFNPS ? 'ppfnps-panel' : isCtcOptimizer ? 'ctcoptimizer-panel' : isInsure ? 'insure-panel' : isGratuity ? 'gratuity-panel' : isDebtPlan ? 'debtplan-panel' : isJointPlan ? 'jointplan-panel' : isCibil ? 'cibil-panel' : isFinCal ? 'fincal-panel' : isSelfEmpl ? 'selfempl-panel' : isGoldComp ? 'goldcomp-panel' : isDashCalc ? 'dashcat-calc-panel' : isDashMF ? 'dashcat-mf-panel' : isDashTax ? 'dashcat-tax-panel' : isDashFav ? 'dashcat-fav-panel' : isCoffeeCan ? 'coffeecan-panel' : isNetWorth ? 'networth-panel' : isUlipCheck ? 'ulipcheck-panel' : isFixedIncome ? 'fixedincome-panel' : isRetirementHub ? 'retirementhub-panel' : isMyProfile ? 'myprofile-panel' : isCgCalc ? 'cgcalc-panel' : isHraCalc ? 'hracalc-panel' : isNomTrack ? 'nomtrack-panel' : isBudgetTrack ? 'budgettrack-panel' : isMyMFs ? 'mymfs-panel' : null;
+            const activeId = isDashboard ? 'dashboard-panel' : isMFKit ? 'mfkit-panel' : isFundPicker ? 'fundpicker-panel' : isHealthScore ? 'healthscore-panel' : isFinPlan ? 'finplan-panel' : isMFExplorer ? 'mfexplorer-panel' : isTaxGuide ? 'taxguide-panel' : isHomeLoan ? 'homeloan-panel' : isStepUpSIP ? 'stepupsip-panel' : isEPFCalc ? 'epfcalc-panel' : isSSAPlanner ? 'ssaplanner-panel' : isPPFNPS ? 'ppfnps-panel' : isCtcOptimizer ? 'ctcoptimizer-panel' : isInsure ? 'insure-panel' : isGratuity ? 'gratuity-panel' : isDebtPlan ? 'debtplan-panel' : isJointPlan ? 'jointplan-panel' : isCibil ? 'cibil-panel' : isFinCal ? 'fincal-panel' : isSelfEmpl ? 'selfempl-panel' : isGoldComp ? 'goldcomp-panel' : isDashCalc ? 'dashcat-calc-panel' : isDashMF ? 'dashcat-mf-panel' : isDashTax ? 'dashcat-tax-panel' : isDashFav ? 'dashcat-fav-panel' : isCoffeeCan ? 'coffeecan-panel' : isNetWorth ? 'networth-panel' : isUlipCheck ? 'ulipcheck-panel' : isFixedIncome ? 'fixedincome-panel' : isRetirementHub ? 'retirementhub-panel' : isMyProfile ? 'myprofile-panel' : isCgCalc ? 'cgcalc-panel' : isHraCalc ? 'hracalc-panel' : isNomTrack ? 'nomtrack-panel' : isBudgetTrack ? 'budgettrack-panel' : isMyMFs ? 'mymfs-panel' : isConsult ? 'consult-panel' : null;
             // Web Animations API — fires immediately, compositor-driven, no reflow
             function _animatePanel(el) {
                 el.animate(
@@ -576,6 +578,7 @@
             if (isNomTrack)      { initNomTrack();      applyLang(); return; }
             if (isBudgetTrack)   { initBudgetTracker(); applyLang(); return; }
             if (isMyMFs)         { if (typeof initMyMFs === 'function') initMyMFs(); applyLang(); return; }
+            if (isConsult)       { if (typeof initConsult === 'function') initConsult(); applyLang(); return; }
 
             // Show/hide reset buttons
             document.getElementById('reset-growth-btn').style.display = isGoal ? 'none' : 'flex';
