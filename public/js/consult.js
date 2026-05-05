@@ -107,11 +107,35 @@
 
     /* ── Slot picker ── */
     function consultSelectExpert(expertId) {
-        _consultSelected = _consultExperts.find(function(e){ return e.id === expertId; });
-        if (!_consultSelected) return;
-        _consultView = 'slots';
-        _consultRenderView();
-        _consultRenderSlots();
+        var expert = _consultExperts.find(function(e){ return e.id === expertId; });
+        if (!expert) return;
+        var db   = window._fbDb;
+        var user = window._fbAuth && window._fbAuth.currentUser;
+        if (!db || !user) return;
+
+        // Block booking if the user already has an active (confirmed) session
+        db.collection('bookings')
+            .where('userId',  '==', user.uid)
+            .where('status',  '==', 'confirmed')
+            .limit(1).get()
+            .then(function(snap) {
+                if (!snap.empty) {
+                    _consultShowToast('You already have an active booking. It must be completed before you can book again.');
+                    return;
+                }
+                _consultSelected = expert;
+                _consultView = 'slots';
+                _consultRenderView();
+                _consultRenderSlots();
+            })
+            .catch(function(err) {
+                console.error('[consult] active-booking check error:', err);
+                // Fall through and allow booking if the check itself fails
+                _consultSelected = expert;
+                _consultView = 'slots';
+                _consultRenderView();
+                _consultRenderSlots();
+            });
     }
 
     function consultBackToList() {
