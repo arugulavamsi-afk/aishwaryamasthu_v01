@@ -260,6 +260,7 @@
                 listEl.innerHTML = html;
             })
             .catch(function(err) {
+                if (listEl) listEl.innerHTML = '<div class="text-center py-6 text-slate-400 text-[12px]">Could not load bookings. Please try again.</div>';
                 console.error('[consult] bookings load error:', err);
             });
     }

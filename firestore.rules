@@ -19,16 +19,29 @@ service cloud.firestore {
                     && request.resource.data.userId == request.auth.uid;
       allow read, update: if request.auth != null
                           && (resource.data.userId == request.auth.uid
-                              || resource.data.expertId == request.auth.uid);
+                              || expertOwnsBooking(resource.data.expertId));
       allow delete: if false;
     }
 
     // Chat messages — only the booking's user and expert can read/write
     match /conversations/{bookingId}/messages/{msgId} {
       allow read, write: if request.auth != null
-                         && exists(/databases/$(database)/documents/bookings/$(bookingId))
-                         && (get(/databases/$(database)/documents/bookings/$(bookingId)).data.userId == request.auth.uid
-                             || get(/databases/$(database)/documents/bookings/$(bookingId)).data.expertId == request.auth.uid);
+                         && bookingParticipant(bookingId);
+    }
+
+    // Helper: true when the logged-in user is the expert who owns this booking.
+    // Matches by email because expert document IDs are not Firebase Auth UIDs.
+    function expertOwnsBooking(expertDocId) {
+      return exists(/databases/$(database)/documents/experts/$(expertDocId))
+          && get(/databases/$(database)/documents/experts/$(expertDocId)).data.email
+             == request.auth.token.email;
+    }
+
+    // Helper: true when the logged-in user is a participant of the booking.
+    function bookingParticipant(bookingId) {
+      let b = get(/databases/$(database)/documents/bookings/$(bookingId)).data;
+      return b.userId == request.auth.uid
+          || expertOwnsBooking(b.expertId);
     }
   }
 }
