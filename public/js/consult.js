@@ -241,8 +241,21 @@
         var db = window._fbDb;
         if (!db) return;
 
-        // Capture profile snapshot at booking time
+        // Capture profile snapshot — include computed values not stored in _userProfile
         var snap = Object.assign({}, window._userProfile || {});
+        var rc = window._fpRiskCache;
+        if (rc && rc.score !== undefined) {
+            var rKey = rc.score <= 4 ? 'Conservative' : rc.score <= 8 ? 'Moderate' : rc.score <= 11 ? 'Moderate-Aggressive' : 'Aggressive';
+            snap.riskProfile = rKey + ' (Score ' + rc.score + '/15)';
+        }
+        var hs = window._toolSummaries && window._toolSummaries.healthScore;
+        if (hs && hs.score !== undefined) {
+            snap.healthScore = hs.score + ' / 100' + (hs.label ? ' (' + hs.label + ')' : '');
+        }
+
+        // Generate PDF — silent if jsPDF unavailable
+        var pdfBase64 = null;
+        try { pdfBase64 = _consultBuildProfilePdf(snap); } catch (ex) { console.warn('[consult] pdf error:', ex); }
 
         var booking = {
             userId:              user.uid,
@@ -253,6 +266,7 @@
             slot:                { date: date, time: time },
             status:              'confirmed',
             userProfileSnapshot: snap,
+            profilePdfBase64:    pdfBase64,
             createdAt:           Date.now()
         };
 
@@ -419,6 +433,174 @@
 
     function _escHtml(s) {
         return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    /* ── PDF profile builder ── */
+    function _consultBuildProfilePdf(p) {
+        if (!window.jspdf || !window.jspdf.jsPDF) return null;
+        p = p || window._userProfile || {};
+        var doc  = new window.jspdf.jsPDF({ unit: 'mm', format: 'a4' });
+        var W    = 210, L = 14, y = 0, lh = 6.2;
+
+        function pn(v) { return parseFloat(String(v || '0').replace(/,/g, '')) || 0; }
+        function inr(v) { var n = pn(v); return n > 0 ? 'Rs.' + n.toLocaleString('en-IN') : '-'; }
+        function stripEmoji(s) { return String(s || '').replace(/[\u{1F000}-\u{1FFFF}]/gu, '').replace(/[☀-➿]/g, '').trim(); }
+
+        function pageCheck() { if (y > 272) { doc.addPage(); y = 18; } }
+
+        function sectionHead(title) {
+            pageCheck();
+            y += 3;
+            doc.setFillColor(232, 240, 253);
+            doc.rect(L, y - 4.5, W - L * 2, 7.5, 'F');
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(8);
+            doc.setTextColor(12, 35, 64);
+            doc.text(title, L + 2, y);
+            y += 6;
+        }
+
+        function row(label, value) {
+            pageCheck();
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(9);
+            doc.setTextColor(100, 100, 100);
+            doc.text(label, L, y);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(25, 25, 25);
+            doc.text(String(value || '-'), W - L, y, { align: 'right' });
+            y += lh;
+        }
+
+        function divider() {
+            doc.setDrawColor(210);
+            doc.line(L, y, W - L, y);
+            y += 3;
+        }
+
+        // ── Header ──
+        doc.setFillColor(12, 35, 64);
+        doc.rect(0, 0, W, 28, 'F');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(15);
+        doc.setTextColor(245, 200, 66);
+        doc.text('AISHWARYAMASTHU', W / 2, 11, { align: 'center' });
+        doc.setFontSize(9);
+        doc.setTextColor(180, 210, 255);
+        doc.text('Client Financial Profile', W / 2, 18, { align: 'center' });
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7.5);
+        doc.setTextColor(120, 160, 210);
+        doc.text('Generated: ' + new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }), W / 2, 24, { align: 'center' });
+        y = 36;
+
+        // ── Personal Details ──
+        var occMap = { salaried: 'Salaried', 'self-employed': 'Self-Employed', business: 'Business Owner', retired: 'Retired', student: 'Student' };
+        sectionHead('PERSONAL DETAILS');
+        row('Full Name',    p.name || '-');
+        row('Age',         p.age ? p.age + ' years' : '-');
+        row('Occupation',  occMap[p.occupation] || p.occupation || '-');
+        row('Dependents',  p.dependents !== undefined && p.dependents !== '' ? p.dependents : '-');
+        row('City Type',   p.city === 'metro' ? 'Metro' : 'Non-Metro');
+
+        // ── Income & Tax ──
+        sectionHead('INCOME & TAX');
+        row('Monthly In-Hand Income', inr(p.income));
+        row('Annual Income',          inr(p.annualIncome));
+        row('Tax Regime',             p.regime === 'old' ? 'Old Regime' : 'New Regime (Budget 2025)');
+        if (pn(p.basicSalary) > 0) row('Basic Salary (Monthly)', inr(p.basicSalary));
+        if (pn(p.epfBalance)  > 0) row('EPF Balance',            inr(p.epfBalance));
+        if (p.retireAge)            row('Target Retirement Age', p.retireAge + ' years');
+
+        // ── Assets ──
+        var assetKeys = ['assetsBank','assetsMf','assetsStocks','assetsRe','assetsPpf','assetsGold','assetsOther'];
+        var liabKeys  = ['liabHome','liabCar','liabPersonal','liabCc','liabOther'];
+        var totalAssets = assetKeys.reduce(function(s, k) { return s + pn(p[k]); }, 0);
+        var totalLiab   = liabKeys.reduce(function(s, k)  { return s + pn(p[k]); }, 0);
+        var netWorth    = totalAssets - totalLiab;
+        var assetLabels = { assetsBank:'Bank / Savings', assetsMf:'Mutual Funds', assetsStocks:'Stocks / Shares', assetsRe:'Real Estate', assetsPpf:'PPF / EPF', assetsGold:'Gold', assetsOther:'Other Assets' };
+        var liabLabels  = { liabHome:'Home Loan', liabCar:'Car / Vehicle Loan', liabPersonal:'Personal Loan', liabCc:'Credit Card Dues', liabOther:'Other Liabilities' };
+
+        sectionHead('ASSETS');
+        var hasAssets = false;
+        assetKeys.forEach(function(k) { if (pn(p[k]) > 0) { row(assetLabels[k], inr(p[k])); hasAssets = true; } });
+        if (!hasAssets) row('(none recorded)', '');
+        divider();
+        row('Total Assets', 'Rs.' + totalAssets.toLocaleString('en-IN'));
+
+        sectionHead('LIABILITIES');
+        var hasLiab = false;
+        liabKeys.forEach(function(k) { if (pn(p[k]) > 0) { row(liabLabels[k], inr(p[k])); hasLiab = true; } });
+        if (!hasLiab) row('(none recorded)', '');
+        divider();
+        row('Total Liabilities', 'Rs.' + totalLiab.toLocaleString('en-IN'));
+
+        // Net worth highlight
+        pageCheck();
+        y += 2;
+        var pos = netWorth >= 0;
+        doc.setFillColor(pos ? 240 : 254, pos ? 253 : 242, pos ? 244 : 242);
+        doc.rect(L, y - 4.5, W - L * 2, 9, 'F');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(10);
+        doc.setTextColor(pos ? 5 : 185, pos ? 100 : 28, pos ? 60 : 28);
+        doc.text('NET WORTH', L + 2, y + 1);
+        doc.text((netWorth < 0 ? '-Rs.' : 'Rs.') + Math.abs(netWorth).toLocaleString('en-IN'), W - L, y + 1, { align: 'right' });
+        y += 12;
+
+        // ── Risk Profile ──
+        if (p.riskProfile) {
+            sectionHead('RISK PROFILE');
+            row('Risk Category', p.riskProfile);
+        }
+
+        // ── Financial Health Score ──
+        if (p.healthScore) {
+            sectionHead('FINANCIAL HEALTH SCORE');
+            row('Score', p.healthScore);
+        }
+
+        // ── Insurance ──
+        if (p.healthInsurer || pn(p.healthCoverage) > 0) {
+            sectionHead('HEALTH INSURANCE');
+            if (p.healthInsurer)          row('Insurer',       p.healthInsurer);
+            if (pn(p.healthCoverage) > 0) row('Coverage',      inr(p.healthCoverage));
+            if (pn(p.healthPremium)  > 0) row('Annual Premium',inr(p.healthPremium));
+            if (p.healthPolicyNo)         row('Policy No.',    p.healthPolicyNo);
+        }
+        if (p.termInsurer || pn(p.termAssured) > 0) {
+            sectionHead('TERM INSURANCE');
+            if (p.termInsurer)          row('Insurer',       p.termInsurer);
+            if (pn(p.termAssured) > 0) row('Sum Assured',   inr(p.termAssured));
+            if (pn(p.termPremium) > 0) row('Annual Premium',inr(p.termPremium));
+            if (p.termNominee) row('Nominee', p.termNominee + (p.termNomineeRel ? ' (' + p.termNomineeRel + ')' : ''));
+        }
+
+        // ── Goals ──
+        var goals = p.profileGoals || [];
+        if (goals.length > 0) {
+            sectionHead('FINANCIAL GOALS');
+            goals.forEach(function(g) {
+                pageCheck();
+                var label = stripEmoji(g.label || '');
+                var detail = [];
+                if (g.targetAmt > 0) detail.push('Rs.' + Number(g.targetAmt).toLocaleString('en-IN'));
+                if (g.years) detail.push(g.years + ' yr' + (g.years !== 1 ? 's' : ''));
+                row(label || '-', detail.join(' · ') || '-');
+            });
+        }
+
+        // ── Footer ──
+        var fy = Math.max(y + 10, 282);
+        if (fy > 292) { doc.addPage(); fy = 288; }
+        doc.setDrawColor(210);
+        doc.line(L, fy - 5, W - L, fy - 5);
+        doc.setFont('helvetica', 'italic');
+        doc.setFontSize(7);
+        doc.setTextColor(160);
+        doc.text('Aishwaryamasthu  |  For educational purposes only  |  Not SEBI-registered investment advice', W / 2, fy, { align: 'center' });
+
+        return doc.output('datauristring').split(',')[1];
     }
 
     /* ── Toast ── */

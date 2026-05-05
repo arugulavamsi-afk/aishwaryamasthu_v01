@@ -8,6 +8,7 @@
     var _epChatBookingId   = null;
     var _epChatClientName  = '';
     var _epChatListener    = null;
+    var _epBookingCache    = {}; // bookingId → booking data (for PDF download)
 
     function epInitDashboard(expert) {
         // Hide user-facing app, show expert dashboard
@@ -75,9 +76,11 @@
                     return;
                 }
                 var html = '';
+                _epBookingCache = {};
                 snap.forEach(function(doc) {
                     var b   = doc.data();
                     var bid = doc.id;
+                    _epBookingCache[bid] = b;
                     var statusColors = { confirmed:'#059669', completed:'#0891b2', pending:'#b45309', cancelled:'#dc2626' };
                     var sc = statusColors[b.status] || '#64748b';
                     var sl = (b.status || 'pending').charAt(0).toUpperCase() + (b.status || '').slice(1);
@@ -92,6 +95,9 @@
                         '</div>' +
                         '<div class="flex flex-wrap gap-2 mt-3">' +
                             '<button onclick="epViewClientProfile(\'' + bid + '\')" class="consult-tab px-3 py-1.5 rounded-xl text-[11px] font-bold">👤 View Profile</button>' +
+                            (b.profilePdfBase64
+                                ? '<button onclick="epDownloadClientPdf(\'' + bid + '\')" class="px-3 py-1.5 rounded-xl text-[11px] font-bold" style="background:#f0fdf4;color:#065f46;border:1px solid #6ee7b7;">📄 Download PDF</button>'
+                                : '') +
                             (b.status === 'confirmed' || b.status === 'completed'
                                 ? '<button onclick="epOpenChat(\'' + bid + '\',\'' + (b.userName || b.userEmail || 'Client').replace(/'/g, "\\'") + '\')" class="px-3 py-1.5 rounded-xl text-[11px] font-bold" style="background:linear-gradient(130deg,#0c2340,#1a4a7a);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">💬 Chat</button>'
                                 : '') +
@@ -109,39 +115,84 @@
 
     /* ── Client profile modal ── */
     function epViewClientProfile(bookingId) {
+        // Use cache if available, else fetch
+        var cached = _epBookingCache[bookingId];
+        if (cached) {
+            _epRenderProfileModal(bookingId, cached);
+            return;
+        }
         var db = window._fbDb;
         if (!db) return;
         db.collection('bookings').doc(bookingId).get()
             .then(function(doc) {
                 if (!doc.exists) return;
-                var snap = doc.data().userProfileSnapshot || {};
-                var rows = [
-                    ['Full Name',       snap.name         || ''],
-                    ['Age',             snap.age          || ''],
-                    ['Occupation',      snap.occupation   || ''],
-                    ['Dependents',      snap.dependents !== undefined ? snap.dependents : ''],
-                    ['Monthly Income',  snap.income       ? '₹' + Number(snap.income).toLocaleString('en-IN')       : ''],
-                    ['Annual Income',   snap.annualIncome ? '₹' + Number(snap.annualIncome).toLocaleString('en-IN') : ''],
-                    ['Tax Regime',      snap.regime       || ''],
-                    ['Risk Profile',    snap.riskProfile  || ''],
-                    ['Retirement Age',  snap.retireAge    || ''],
-                    ['EPF Balance',     snap.epfBalance   ? '₹' + Number(snap.epfBalance).toLocaleString('en-IN')   : ''],
-                ].filter(function(r) { return r[1] !== ''; });
-
-                var html = rows.map(function(r) {
-                    return '<div class="flex justify-between items-center py-1.5 border-b border-slate-50">' +
-                        '<span class="text-slate-400 font-semibold text-[11px]">' + r[0] + '</span>' +
-                        '<span class="font-bold text-slate-800">' + r[1] + '</span>' +
-                    '</div>';
-                }).join('');
-                if (!html) html = '<div class="text-slate-400 text-[12px] text-center py-4">No profile data captured.</div>';
-
-                var content = document.getElementById('ep-modal-content');
-                if (content) content.innerHTML = html;
-                var modal = document.getElementById('ep-profile-modal');
-                if (modal) modal.classList.remove('hidden');
+                _epRenderProfileModal(bookingId, doc.data());
             })
             .catch(function(err) { console.error('[expert] profile load error:', err); });
+    }
+
+    function _epRenderProfileModal(bookingId, bookingData) {
+        var snap = bookingData.userProfileSnapshot || {};
+        var rows = [
+            ['Full Name',      snap.name         || ''],
+            ['Age',            snap.age          || ''],
+            ['Occupation',     snap.occupation   || ''],
+            ['Dependents',     snap.dependents !== undefined ? snap.dependents : ''],
+            ['Monthly Income', snap.income       ? '₹' + Number(snap.income).toLocaleString('en-IN')       : ''],
+            ['Annual Income',  snap.annualIncome ? '₹' + Number(snap.annualIncome).toLocaleString('en-IN') : ''],
+            ['Tax Regime',     snap.regime       || ''],
+            ['Retirement Age', snap.retireAge    || ''],
+            ['EPF Balance',    snap.epfBalance   ? '₹' + Number(snap.epfBalance).toLocaleString('en-IN')   : ''],
+            ['Risk Profile',   snap.riskProfile  || ''],
+            ['Health Score',   snap.healthScore  || ''],
+        ].filter(function(r) { return r[1] !== ''; });
+
+        var html = rows.map(function(r) {
+            return '<div class="flex justify-between items-center py-1.5 border-b border-slate-50">' +
+                '<span class="text-slate-400 font-semibold text-[11px]">' + r[0] + '</span>' +
+                '<span class="font-bold text-slate-800 text-right ml-2">' + r[1] + '</span>' +
+            '</div>';
+        }).join('');
+        if (!html) html = '<div class="text-slate-400 text-[12px] text-center py-4">No profile data captured.</div>';
+
+        if (bookingData.profilePdfBase64) {
+            html += '<button onclick="epDownloadClientPdf(\'' + bookingId + '\')" ' +
+                'class="mt-4 w-full py-2 rounded-xl text-[12px] font-bold" ' +
+                'style="background:linear-gradient(130deg,#0c2340,#1a4a7a);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">📄 Download Full PDF Profile</button>';
+        }
+
+        var content = document.getElementById('ep-modal-content');
+        if (content) content.innerHTML = html;
+        var modal = document.getElementById('ep-profile-modal');
+        if (modal) modal.classList.remove('hidden');
+    }
+
+    /* ── PDF download ── */
+    function epDownloadClientPdf(bookingId) {
+        var b = _epBookingCache[bookingId];
+        if (b && b.profilePdfBase64) {
+            _epTriggerPdfDownload(b.profilePdfBase64, b.userName || 'client');
+            return;
+        }
+        var db = window._fbDb;
+        if (!db) return;
+        db.collection('bookings').doc(bookingId).get()
+            .then(function(doc) {
+                if (!doc.exists) return;
+                var data = doc.data();
+                if (!data.profilePdfBase64) { alert('PDF not available for this booking.'); return; }
+                _epTriggerPdfDownload(data.profilePdfBase64, data.userName || 'client');
+            })
+            .catch(function(err) { console.error('[expert] pdf download error:', err); });
+    }
+
+    function _epTriggerPdfDownload(base64, clientName) {
+        var link = document.createElement('a');
+        link.href = 'data:application/pdf;base64,' + base64;
+        link.download = 'profile-' + String(clientName).replace(/\s+/g, '-').toLowerCase() + '.pdf';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
 
     function epCloseProfileModal() {
