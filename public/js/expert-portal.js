@@ -4,6 +4,11 @@
        registered expert logs in.
     ═══════════════════════════════════════════════ */
 
+    var _epView            = 'bookings'; // 'bookings' | 'profile' | 'chat'
+    var _epChatBookingId   = null;
+    var _epChatClientName  = '';
+    var _epChatListener    = null;
+
     function epInitDashboard(expert) {
         // Hide user-facing app, show expert dashboard
         var mainEl = document.querySelector('main');
@@ -31,16 +36,29 @@
         if (epEl)   epEl.style.display   = 'none';
     }
 
-    /* ── Tabs ── */
+    /* ── Tabs / view switcher ── */
+    function _epRenderView() {
+        var tabsRow  = document.getElementById('ep-tabs');
+        var secBook  = document.getElementById('ep-sec-bookings');
+        var secProf  = document.getElementById('ep-sec-profile');
+        var secChat  = document.getElementById('ep-sec-chat');
+        var tabBook  = document.getElementById('ep-tab-bookings');
+        var tabProf  = document.getElementById('ep-tab-profile');
+        var showChat = _epView === 'chat';
+
+        if (tabsRow) tabsRow.style.display = showChat ? 'none' : '';
+        if (secBook) secBook.classList.toggle('hidden', _epView !== 'bookings');
+        if (secProf) secProf.classList.toggle('hidden', _epView !== 'profile');
+        if (secChat) secChat.classList.toggle('hidden', !showChat);
+        if (tabBook) tabBook.classList.toggle('consult-tab-active', _epView === 'bookings');
+        if (tabProf) tabProf.classList.toggle('consult-tab-active', _epView === 'profile');
+    }
+
     function epShowTab(tab) {
-        var secBook = document.getElementById('ep-sec-bookings');
-        var secProf = document.getElementById('ep-sec-profile');
-        var tabBook = document.getElementById('ep-tab-bookings');
-        var tabProf = document.getElementById('ep-tab-profile');
-        if (secBook) secBook.classList.toggle('hidden', tab !== 'bookings');
-        if (secProf) secProf.classList.toggle('hidden', tab !== 'profile');
-        if (tabBook) tabBook.classList.toggle('consult-tab-active', tab === 'bookings');
-        if (tabProf) tabProf.classList.toggle('consult-tab-active', tab === 'profile');
+        if (_epChatListener) { _epChatListener(); _epChatListener = null; }
+        _epChatBookingId = null;
+        _epView = tab;
+        _epRenderView();
     }
 
     /* ── Load bookings ── */
@@ -74,6 +92,9 @@
                         '</div>' +
                         '<div class="flex flex-wrap gap-2 mt-3">' +
                             '<button onclick="epViewClientProfile(\'' + bid + '\')" class="consult-tab px-3 py-1.5 rounded-xl text-[11px] font-bold">👤 View Profile</button>' +
+                            (b.status === 'confirmed' || b.status === 'completed'
+                                ? '<button onclick="epOpenChat(\'' + bid + '\',\'' + (b.userName || b.userEmail || 'Client').replace(/'/g, "\\'") + '\')" class="px-3 py-1.5 rounded-xl text-[11px] font-bold" style="background:linear-gradient(130deg,#0c2340,#1a4a7a);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">💬 Chat</button>'
+                                : '') +
                             (b.status === 'confirmed' ? '<button onclick="epMarkComplete(\'' + bid + '\')" class="px-3 py-1.5 rounded-xl text-[11px] font-bold" style="background:#d1fae5;color:#065f46;border:1px solid #6ee7b7;">✓ Mark Complete</button>' : '') +
                         '</div>' +
                     '</div>';
@@ -135,6 +156,138 @@
         db.collection('bookings').doc(bookingId).update({ status: 'completed' })
             .then(function() { epLoadBookings(window._expertDoc.id); })
             .catch(function(err) { console.error('[expert] mark complete error:', err); });
+    }
+
+    /* ── Chat ── */
+    function epOpenChat(bookingId, clientName) {
+        if (_epChatListener) { _epChatListener(); _epChatListener = null; }
+        _epChatBookingId  = bookingId;
+        _epChatClientName = clientName;
+        _epView = 'chat';
+        _epRenderView();
+
+        var headerEl = document.getElementById('ep-chat-header');
+        if (headerEl) headerEl.textContent = '💬 ' + clientName;
+
+        var db = window._fbDb;
+        if (!db) return;
+
+        _epChatListener = db.collection('conversations').doc(bookingId)
+            .collection('messages').orderBy('sentAt', 'asc')
+            .onSnapshot(function(snap) {
+                var msgs = [];
+                snap.forEach(function(d) { msgs.push(Object.assign({ id: d.id }, d.data())); });
+                _epRenderMessages(msgs);
+            }, function(err) {
+                console.error('[expert] chat listener error:', err);
+            });
+    }
+
+    function epCloseChat() {
+        if (_epChatListener) { _epChatListener(); _epChatListener = null; }
+        _epChatBookingId = null;
+        _epView = 'bookings';
+        _epRenderView();
+        if (window._expertDoc) epLoadBookings(window._expertDoc.id);
+    }
+
+    function epSendMessage() {
+        var input = document.getElementById('ep-chat-input');
+        if (!input) return;
+        var text = input.value.trim();
+        if (!text || !_epChatBookingId) return;
+        var db   = window._fbDb;
+        var user = window._fbAuth && window._fbAuth.currentUser;
+        if (!db || !user) return;
+
+        input.value = '';
+        input.disabled = true;
+
+        db.collection('conversations').doc(_epChatBookingId)
+            .collection('messages').add({
+                senderUid:  user.uid,
+                senderRole: 'expert',
+                text:       text,
+                sentAt:     Date.now()
+            })
+            .then(function() { input.disabled = false; input.focus(); })
+            .catch(function(err) {
+                input.disabled = false;
+                console.error('[expert] send error:', err);
+            });
+    }
+
+    function epPostSummary() {
+        var input = document.getElementById('ep-summary-input');
+        if (!input) return;
+        var text = input.value.trim();
+        if (!text || !_epChatBookingId) return;
+        var db   = window._fbDb;
+        var user = window._fbAuth && window._fbAuth.currentUser;
+        if (!db || !user) return;
+
+        var btn = document.getElementById('ep-summary-btn');
+        if (btn) btn.disabled = true;
+        input.disabled = true;
+
+        db.collection('conversations').doc(_epChatBookingId)
+            .collection('messages').add({
+                senderUid:  user.uid,
+                senderRole: 'expert',
+                type:       'summary',
+                text:       text,
+                sentAt:     Date.now()
+            })
+            .then(function() {
+                input.value = '';
+                input.disabled = false;
+                if (btn) btn.disabled = false;
+                var panel = document.getElementById('ep-summary-panel');
+                if (panel) panel.classList.add('hidden');
+            })
+            .catch(function(err) {
+                input.disabled = false;
+                if (btn) btn.disabled = false;
+                console.error('[expert] summary send error:', err);
+            });
+    }
+
+    function _epRenderMessages(msgs) {
+        var listEl = document.getElementById('ep-chat-messages');
+        if (!listEl) return;
+        var user = window._fbAuth && window._fbAuth.currentUser;
+        var myUid = user ? user.uid : '';
+
+        if (msgs.length === 0) {
+            listEl.innerHTML = '<div class="text-center text-slate-400 text-[11px] py-6">No messages yet.</div>';
+            return;
+        }
+
+        listEl.innerHTML = msgs.map(function(m) {
+            var isMe = m.senderUid === myUid;
+            var isSummary = m.type === 'summary';
+
+            if (isSummary) {
+                return '<div class="chat-summary-bubble">' +
+                    '<div class="text-[10px] font-black uppercase tracking-wider mb-1.5" style="color:#b45309;">📋 Session Summary</div>' +
+                    '<div class="text-[12px] text-slate-700 whitespace-pre-wrap leading-relaxed">' + _epEscHtml(m.text) + '</div>' +
+                '</div>';
+            }
+
+            var time = m.sentAt ? new Date(m.sentAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : '';
+            return '<div class="flex ' + (isMe ? 'justify-end' : 'justify-start') + '">' +
+                '<div class="' + (isMe ? 'chat-bubble-user' : 'chat-bubble-expert') + '">' +
+                    '<div class="text-[12px] leading-snug">' + _epEscHtml(m.text) + '</div>' +
+                    '<div class="text-[9px] mt-1 opacity-60 text-right">' + time + '</div>' +
+                '</div>' +
+            '</div>';
+        }).join('');
+
+        listEl.scrollTop = listEl.scrollHeight;
+    }
+
+    function _epEscHtml(s) {
+        return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
     /* ── Expert's own profile ── */

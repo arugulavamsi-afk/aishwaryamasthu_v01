@@ -2,9 +2,12 @@
        CONSULT AN EXPERT — user-side logic
     ═══════════════════════════════════════════════ */
 
-    var _consultExperts = [];   // cached expert list from Firestore
-    var _consultView    = 'list'; // 'list' | 'slots' | 'bookings'
-    var _consultSelected = null; // selected expert object
+    var _consultExperts      = [];
+    var _consultView         = 'list'; // 'list' | 'slots' | 'bookings' | 'chat'
+    var _consultSelected     = null;
+    var _consultChatBookingId = null;
+    var _consultChatListener  = null;
+    var _consultChatExpertName = '';
 
     function initConsult() {
         _consultView = 'list';
@@ -35,25 +38,33 @@
 
     /* ── Main view switcher ── */
     function _consultRenderView() {
-        var tabList = document.getElementById('consult-tab-list');
-        var tabBook = document.getElementById('consult-tab-bookings');
-        var secList = document.getElementById('consult-sec-list');
-        var secBook = document.getElementById('consult-sec-bookings');
-        var secSlot = document.getElementById('consult-sec-slots');
+        var tabList  = document.getElementById('consult-tab-list');
+        var tabBook  = document.getElementById('consult-tab-bookings');
+        var tabsRow  = document.getElementById('consult-tabs');
+        var secList  = document.getElementById('consult-sec-list');
+        var secBook  = document.getElementById('consult-sec-bookings');
+        var secSlot  = document.getElementById('consult-sec-slots');
+        var secChat  = document.getElementById('consult-sec-chat');
         if (!secList) return;
 
         var showList = _consultView === 'list';
         var showBook = _consultView === 'bookings';
         var showSlot = _consultView === 'slots';
+        var showChat = _consultView === 'chat';
 
+        if (tabsRow) tabsRow.style.display = showChat ? 'none' : '';
         if (tabList) tabList.classList.toggle('consult-tab-active', showList);
         if (tabBook) tabBook.classList.toggle('consult-tab-active', showBook);
         if (secList) secList.style.display = (showList || showSlot) ? '' : 'none';
         if (secBook) secBook.style.display = showBook ? '' : 'none';
         if (secSlot) secSlot.style.display = showSlot ? '' : 'none';
+        if (secChat) secChat.style.display = showChat ? '' : 'none';
     }
 
     function consultShowTab(tab) {
+        // Unsubscribe from any open chat listener
+        if (_consultChatListener) { _consultChatListener(); _consultChatListener = null; }
+        _consultChatBookingId = null;
         _consultView = tab;
         _consultRenderView();
         if (tab === 'bookings') _consultLoadMyBookings();
@@ -225,9 +236,16 @@
                 }
                 var html = '';
                 snap.forEach(function(doc) {
-                    var b = doc.data();
+                    var b   = doc.data();
+                    var bid = doc.id;
                     var statusColor = b.status === 'confirmed' ? '#059669' : b.status === 'completed' ? '#0891b2' : '#dc2626';
                     var statusLabel = (b.status || 'pending').charAt(0).toUpperCase() + (b.status || '').slice(1);
+                    var canChat = b.status === 'confirmed' || b.status === 'completed';
+                    var chatBtn = canChat
+                        ? '<button onclick="consultOpenChat(\'' + bid + '\',\'' + (b.expertName || 'Expert').replace(/'/g, "\\'") + '\')" ' +
+                          'class="mt-2.5 w-full py-1.5 rounded-xl text-[11px] font-bold transition-all" ' +
+                          'style="background:linear-gradient(130deg,#0c2340,#1a4a7a);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">💬 Open Chat</button>'
+                        : '';
                     html += '<div class="bg-white rounded-2xl border border-[#f5c842]/30 shadow-sm p-4">' +
                         '<div class="flex items-start justify-between gap-2">' +
                             '<div>' +
@@ -236,6 +254,7 @@
                             '</div>' +
                             '<span class="text-[10px] font-bold px-2 py-1 rounded-full flex-shrink-0" style="background:' + statusColor + '22;color:' + statusColor + ';">' + statusLabel + '</span>' +
                         '</div>' +
+                        chatBtn +
                     '</div>';
                 });
                 listEl.innerHTML = html;
@@ -243,6 +262,104 @@
             .catch(function(err) {
                 console.error('[consult] bookings load error:', err);
             });
+    }
+
+    /* ── Chat ── */
+    function consultOpenChat(bookingId, expertName) {
+        if (_consultChatListener) { _consultChatListener(); _consultChatListener = null; }
+        _consultChatBookingId  = bookingId;
+        _consultChatExpertName = expertName;
+        _consultView = 'chat';
+        _consultRenderView();
+
+        var headerEl = document.getElementById('consult-chat-header');
+        if (headerEl) headerEl.textContent = '💬 ' + expertName;
+
+        var db = window._fbDb;
+        if (!db) return;
+
+        _consultChatListener = db.collection('conversations').doc(bookingId)
+            .collection('messages').orderBy('sentAt', 'asc')
+            .onSnapshot(function(snap) {
+                var msgs = [];
+                snap.forEach(function(d) { msgs.push(Object.assign({ id: d.id }, d.data())); });
+                _consultRenderMessages(msgs);
+            }, function(err) {
+                console.error('[consult] chat listener error:', err);
+            });
+    }
+
+    function consultCloseChat() {
+        if (_consultChatListener) { _consultChatListener(); _consultChatListener = null; }
+        _consultChatBookingId = null;
+        _consultView = 'bookings';
+        _consultRenderView();
+        _consultLoadMyBookings();
+    }
+
+    function consultSendMessage() {
+        var input = document.getElementById('consult-chat-input');
+        if (!input) return;
+        var text = input.value.trim();
+        if (!text || !_consultChatBookingId) return;
+        var db   = window._fbDb;
+        var user = window._fbAuth && window._fbAuth.currentUser;
+        if (!db || !user) return;
+
+        input.value = '';
+        input.disabled = true;
+
+        db.collection('conversations').doc(_consultChatBookingId)
+            .collection('messages').add({
+                senderUid:  user.uid,
+                senderRole: 'user',
+                text:       text,
+                sentAt:     Date.now()
+            })
+            .then(function() { input.disabled = false; input.focus(); })
+            .catch(function(err) {
+                input.disabled = false;
+                console.error('[consult] send error:', err);
+                _consultShowToast('Could not send message. Please try again.');
+            });
+    }
+
+    function _consultRenderMessages(msgs) {
+        var listEl = document.getElementById('consult-chat-messages');
+        if (!listEl) return;
+        var user = window._fbAuth && window._fbAuth.currentUser;
+        var myUid = user ? user.uid : '';
+
+        if (msgs.length === 0) {
+            listEl.innerHTML = '<div class="text-center text-slate-400 text-[11px] py-6">No messages yet. Say hello!</div>';
+            return;
+        }
+
+        listEl.innerHTML = msgs.map(function(m) {
+            var isMe = m.senderUid === myUid;
+            var isSummary = m.type === 'summary';
+
+            if (isSummary) {
+                return '<div class="chat-summary-bubble">' +
+                    '<div class="text-[10px] font-black uppercase tracking-wider mb-1.5" style="color:#b45309;">📋 Session Summary from ' + _consultChatExpertName + '</div>' +
+                    '<div class="text-[12px] text-slate-700 whitespace-pre-wrap leading-relaxed">' + _escHtml(m.text) + '</div>' +
+                '</div>';
+            }
+
+            var time = m.sentAt ? new Date(m.sentAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : '';
+            return '<div class="flex ' + (isMe ? 'justify-end' : 'justify-start') + '">' +
+                '<div class="' + (isMe ? 'chat-bubble-user' : 'chat-bubble-expert') + '">' +
+                    '<div class="text-[12px] leading-snug">' + _escHtml(m.text) + '</div>' +
+                    '<div class="text-[9px] mt-1 opacity-60 text-right">' + time + '</div>' +
+                '</div>' +
+            '</div>';
+        }).join('');
+
+        listEl.scrollTop = listEl.scrollHeight;
+    }
+
+    function _escHtml(s) {
+        return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
     /* ── Toast ── */

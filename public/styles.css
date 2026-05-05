@@ -708,3 +708,29 @@
             color: #f5c842 !important;
             border-color: rgba(245,200,66,0.3) !important;
         }
+
+        /* ── Chat bubbles ── */
+        .chat-bubble-user {
+            background: linear-gradient(130deg,#0c2340,#1a4a7a);
+            color: #f0f9ff;
+            border-radius: 18px 18px 4px 18px;
+            padding: 10px 14px;
+            max-width: 78%;
+            word-break: break-word;
+        }
+        .chat-bubble-expert {
+            background: #ffffff;
+            color: #1e293b;
+            border: 1px solid #e2e8f0;
+            border-radius: 18px 18px 18px 4px;
+            padding: 10px 14px;
+            max-width: 78%;
+            word-break: break-word;
+        }
+        .chat-summary-bubble {
+            background: linear-gradient(135deg,#fffbeb,#fef3c7);
+            border: 1.5px solid #fbbf24;
+            border-radius: 16px;
+            padding: 14px 16px;
+            margin: 4px 0;
+        }

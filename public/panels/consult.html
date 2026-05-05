@@ -7,8 +7,8 @@
         <p class="text-blue-200 text-[11px] mt-0.5">Book a 1-hour session with a certified financial advisor</p>
     </div>
 
-    <!-- TABS -->
-    <div class="flex gap-2">
+    <!-- TABS (hidden when in chat view) -->
+    <div id="consult-tabs" class="flex gap-2">
         <button id="consult-tab-list" onclick="consultShowTab('list')"
             class="consult-tab consult-tab-active px-4 py-2 rounded-xl text-[12px] font-bold transition-all">
             Find Advisors
@@ -32,6 +32,34 @@
     <!-- MY BOOKINGS SECTION -->
     <div id="consult-sec-bookings" style="display:none;">
         <div id="consult-bookings-list" class="flex flex-col gap-3"></div>
+    </div>
+
+    <!-- CHAT SECTION -->
+    <div id="consult-sec-chat" style="display:none;" class="flex flex-col" style="height:calc(100vh - 220px);min-height:400px;">
+        <!-- Chat header -->
+        <div class="flex items-center gap-2 mb-3">
+            <button onclick="consultCloseChat()" class="px-3 py-1.5 rounded-xl text-[11px] font-bold flex-shrink-0"
+                style="background:rgba(255,255,255,0.9);border:1px solid #e2e8f0;color:#475569;">← Back</button>
+            <span id="consult-chat-header" class="text-[13px] font-black text-slate-700 truncate"></span>
+        </div>
+
+        <!-- Messages area -->
+        <div id="consult-chat-messages"
+             class="flex-1 flex flex-col gap-2.5 overflow-y-auto rounded-2xl bg-slate-50 p-3 mb-3"
+             style="min-height:320px;max-height:420px;">
+            <div class="text-center text-slate-400 text-[11px] py-6">Loading messages…</div>
+        </div>
+
+        <!-- Input bar -->
+        <div class="flex gap-2 items-end">
+            <textarea id="consult-chat-input" rows="2" placeholder="Type your message…"
+                onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();consultSendMessage();}"
+                class="flex-1 rounded-xl border border-slate-200 px-3 py-2 text-[12px] resize-none focus:outline-none focus:ring-2"
+                style="focus-ring-color:rgba(245,200,66,0.5);"></textarea>
+            <button onclick="consultSendMessage()"
+                class="flex-shrink-0 px-4 py-2 rounded-xl text-[12px] font-bold"
+                style="background:linear-gradient(130deg,#0c2340,#1a4a7a);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">Send</button>
+        </div>
     </div>
 
 </div>

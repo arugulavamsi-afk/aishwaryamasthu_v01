@@ -845,7 +845,7 @@
         </div>
 
         <!-- Tabs -->
-        <div class="flex gap-2 mb-4">
+        <div id="ep-tabs" class="flex gap-2 mb-4">
             <button id="ep-tab-bookings" onclick="epShowTab('bookings')" class="consult-tab consult-tab-active px-4 py-2 rounded-xl text-[12px] font-bold transition-all">Upcoming Bookings</button>
             <button id="ep-tab-profile"  onclick="epShowTab('profile')"  class="consult-tab px-4 py-2 rounded-xl text-[12px] font-bold transition-all">My Profile</button>
         </div>
@@ -861,6 +861,46 @@
         <div id="ep-sec-profile" class="hidden">
             <div class="bg-white rounded-2xl border border-[#f5c842]/30 shadow-sm p-5">
                 <div id="ep-profile-content" class="text-[12px] text-slate-500">Loading…</div>
+            </div>
+        </div>
+
+        <!-- Chat section -->
+        <div id="ep-sec-chat" class="hidden flex flex-col gap-3">
+            <!-- Chat header -->
+            <div class="flex items-center gap-2">
+                <button onclick="epCloseChat()" class="px-3 py-1.5 rounded-xl text-[11px] font-bold flex-shrink-0"
+                    style="background:rgba(255,255,255,0.9);border:1px solid #e2e8f0;color:#475569;">← Back</button>
+                <span id="ep-chat-header" class="text-[13px] font-black text-slate-700 truncate"></span>
+                <button onclick="document.getElementById('ep-summary-panel').classList.toggle('hidden')"
+                    class="ml-auto px-3 py-1.5 rounded-xl text-[11px] font-bold flex-shrink-0"
+                    style="background:linear-gradient(130deg,#f5c842,#e8a44a);color:#162a10;border:1px solid rgba(245,200,66,0.5);">📋 Session Summary</button>
+            </div>
+
+            <!-- Session summary panel (toggled) -->
+            <div id="ep-summary-panel" class="hidden bg-amber-50 rounded-2xl border border-amber-200 p-4">
+                <div class="text-[11px] font-black text-amber-800 mb-2">Post a Session Summary for the client</div>
+                <textarea id="ep-summary-input" rows="4" placeholder="Write your session notes, action items, and recommendations here…"
+                    class="w-full rounded-xl border border-amber-200 px-3 py-2 text-[12px] resize-none focus:outline-none focus:ring-2 bg-white mb-2"></textarea>
+                <button id="ep-summary-btn" onclick="epPostSummary()"
+                    class="w-full py-2 rounded-xl text-[12px] font-bold"
+                    style="background:linear-gradient(130deg,#0c2340,#1a4a7a);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">Post Summary</button>
+            </div>
+
+            <!-- Messages -->
+            <div id="ep-chat-messages"
+                 class="flex flex-col gap-2.5 overflow-y-auto rounded-2xl bg-slate-50 p-3"
+                 style="min-height:320px;max-height:420px;">
+                <div class="text-center text-slate-400 text-[11px] py-6">Loading messages…</div>
+            </div>
+
+            <!-- Input -->
+            <div class="flex gap-2 items-end">
+                <textarea id="ep-chat-input" rows="2" placeholder="Type your message…"
+                    onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();epSendMessage();}"
+                    class="flex-1 rounded-xl border border-slate-200 px-3 py-2 text-[12px] resize-none focus:outline-none focus:ring-2"></textarea>
+                <button onclick="epSendMessage()"
+                    class="flex-shrink-0 px-4 py-2 rounded-xl text-[12px] font-bold"
+                    style="background:linear-gradient(130deg,#0c2340,#1a4a7a);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">Send</button>
             </div>
         </div>
 
