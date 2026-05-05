@@ -289,6 +289,37 @@
         });
         if (Object.keys(_hsInputs).length > 0) snap.hsInputs = _hsInputs;
 
+        // Net Worth Tracker data — try live DOM first, then cached restore
+        var _nwAssetIds = ['nw-savings','nw-fd','nw-stocks','nw-eq-mf','nw-epf','nw-ppf','nw-nps',
+                           'nw-debt-mf','nw-home','nw-property','nw-gold-phys','nw-gold-paper',
+                           'nw-crypto','nw-ins-sv','nw-other-assets'];
+        var _nwLiabIds  = ['nw-liab-home','nw-liab-car','nw-liab-pl','nw-liab-edu','nw-liab-cc','nw-liab-other'];
+        var _nwData = {};
+        var _nwHasData = false;
+        _nwAssetIds.concat(_nwLiabIds).forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el && el.value) { _nwData[id] = el.value.replace(/,/g, ''); _nwHasData = true; }
+        });
+        if (!_nwHasData && window._cachedRestoreData && window._cachedRestoreData.netWorth) {
+            _nwData = Object.assign({}, window._cachedRestoreData.netWorth);
+            _nwHasData = Object.keys(_nwData).length > 0;
+        }
+        if (_nwHasData) snap.nwData = _nwData;
+
+        // Income fallback — fp-income or tg-income if My Profile income is empty
+        if (!snap.income || parseFloat(String(snap.income).replace(/,/g,'')) === 0) {
+            var _fpIncEl = document.getElementById('fp-income');
+            if (_fpIncEl && _fpIncEl.value) snap.income = _fpIncEl.value.replace(/,/g, '');
+            if (!snap.income || parseFloat(String(snap.income).replace(/,/g,'')) === 0) {
+                var _cachedFp = window._cachedRestoreData && window._cachedRestoreData.finplan;
+                if (_cachedFp && _cachedFp['fp-income']) snap.income = String(_cachedFp['fp-income']).replace(/,/g,'');
+            }
+            if (!snap.income || parseFloat(String(snap.income).replace(/,/g,'')) === 0) {
+                var _tgInc = (window._tgPendingData || {})['tg-income'];
+                if (_tgInc) { var _tgAmt = parseFloat(String(_tgInc).replace(/,/g,'')); if (_tgAmt > 0) snap.income = String(Math.round(_tgAmt / 12)); }
+            }
+        }
+
         // Cached tool data (EPF calc, retirement hub)
         if (window._cachedRestoreData) {
             snap._cached = {
@@ -650,10 +681,22 @@
         y += 18;
 
         /* ── KPI STRIP ── */
-        var assetKeys = ['assetsBank', 'assetsMf', 'assetsStocks', 'assetsRe', 'assetsPpf', 'assetsGold', 'assetsOther'];
-        var liabKeys  = ['liabHome', 'liabCar', 'liabPersonal', 'liabCc', 'liabOther'];
-        var totalAssets = assetKeys.reduce(function(s, k) { return s + pn(p[k]); }, 0);
-        var totalLiab   = liabKeys.reduce(function(s, k)  { return s + pn(p[k]); }, 0);
+        var nwd = p.nwData || {};
+        var _nwAssetKeys  = ['nw-savings','nw-fd','nw-stocks','nw-eq-mf','nw-epf','nw-ppf','nw-nps',
+                             'nw-debt-mf','nw-home','nw-property','nw-gold-phys','nw-gold-paper',
+                             'nw-crypto','nw-ins-sv','nw-other-assets'];
+        var _nwLiabKeys   = ['nw-liab-home','nw-liab-car','nw-liab-pl','nw-liab-edu','nw-liab-cc','nw-liab-other'];
+        var _useNwData    = Object.keys(nwd).length > 0;
+        var assetKeys, liabKeys, totalAssets, totalLiab;
+        if (_useNwData) {
+            totalAssets = _nwAssetKeys.reduce(function(s, k) { return s + pn(nwd[k]); }, 0);
+            totalLiab   = _nwLiabKeys.reduce(function(s, k)  { return s + pn(nwd[k]); }, 0);
+        } else {
+            assetKeys   = ['assetsBank', 'assetsMf', 'assetsStocks', 'assetsRe', 'assetsPpf', 'assetsGold', 'assetsOther'];
+            liabKeys    = ['liabHome', 'liabCar', 'liabPersonal', 'liabCc', 'liabOther'];
+            totalAssets = assetKeys.reduce(function(s, k) { return s + pn(p[k]); }, 0);
+            totalLiab   = liabKeys.reduce(function(s, k)  { return s + pn(p[k]); }, 0);
+        }
         var netWorth    = totalAssets - totalLiab;
 
         var kpis = [
@@ -676,34 +719,75 @@
 
         /* ══════════ 1. NET WORTH ══════════ */
         sHead('1.  NET WORTH ANALYSIS');
-        var assetLabels = { assetsBank: 'Bank / FD / Savings', assetsMf: 'Mutual Funds', assetsStocks: 'Stocks & Equity', assetsRe: 'Real Estate', assetsPpf: 'PPF / EPF', assetsGold: 'Gold', assetsOther: 'Other Assets' };
-        var liabLabels  = { liabHome: 'Home Loan', liabCar: 'Vehicle Loan', liabPersonal: 'Personal Loan', liabCc: 'Credit Card Dues', liabOther: 'Other Liabilities' };
+        var nwAssetLabels = {
+            'nw-savings': 'Savings Account', 'nw-fd': 'Fixed Deposits',
+            'nw-stocks': 'Stocks & Direct Equity', 'nw-eq-mf': 'Equity Mutual Funds',
+            'nw-epf': 'EPF', 'nw-ppf': 'PPF', 'nw-nps': 'NPS',
+            'nw-debt-mf': 'Debt Mutual Funds', 'nw-home': 'Primary Home',
+            'nw-property': 'Other Property', 'nw-gold-phys': 'Physical Gold',
+            'nw-gold-paper': 'Gold ETF / SGB', 'nw-crypto': 'Crypto',
+            'nw-ins-sv': 'Insurance Surrender Value', 'nw-other-assets': 'Other Assets'
+        };
+        var nwLiabLabels = {
+            'nw-liab-home': 'Home Loan', 'nw-liab-car': 'Vehicle Loan',
+            'nw-liab-pl': 'Personal Loan', 'nw-liab-edu': 'Education Loan',
+            'nw-liab-cc': 'Credit Card Dues', 'nw-liab-other': 'Other Liabilities'
+        };
+        var profAssetLabels = { assetsBank: 'Bank / FD / Savings', assetsMf: 'Mutual Funds', assetsStocks: 'Stocks & Equity', assetsRe: 'Real Estate', assetsPpf: 'PPF / EPF', assetsGold: 'Gold', assetsOther: 'Other Assets' };
+        var profLiabLabels  = { liabHome: 'Home Loan', liabCar: 'Vehicle Loan', liabPersonal: 'Personal Loan', liabCc: 'Credit Card Dues', liabOther: 'Other Liabilities' };
 
         subHead('ASSETS');
-        assetKeys.forEach(function(k) {
-            if (pn(p[k]) > 0) {
-                pageCheck(6);
-                doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(70, 70, 70);
-                doc.text(assetLabels[k], L + 3, y);
-                doc.setFont('helvetica', 'bold'); doc.setTextColor(20, 20, 20);
-                var pctStr = pctOf(p[k], totalAssets);
-                doc.text(inr(p[k]) + (pctStr ? '  (' + pctStr + ')' : ''), R, y, { align: 'right' });
-                y += 6;
-            }
-        });
+        if (_useNwData) {
+            _nwAssetKeys.forEach(function(k) {
+                if (pn(nwd[k]) > 0) {
+                    pageCheck(6);
+                    doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(70, 70, 70);
+                    doc.text(nwAssetLabels[k], L + 3, y);
+                    doc.setFont('helvetica', 'bold'); doc.setTextColor(20, 20, 20);
+                    var pctStr = pctOf(nwd[k], totalAssets);
+                    doc.text(inr(nwd[k]) + (pctStr ? '  (' + pctStr + ')' : ''), R, y, { align: 'right' });
+                    y += 6;
+                }
+            });
+        } else {
+            Object.keys(profAssetLabels).forEach(function(k) {
+                if (pn(p[k]) > 0) {
+                    pageCheck(6);
+                    doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(70, 70, 70);
+                    doc.text(profAssetLabels[k], L + 3, y);
+                    doc.setFont('helvetica', 'bold'); doc.setTextColor(20, 20, 20);
+                    var pctStr = pctOf(p[k], totalAssets);
+                    doc.text(inr(p[k]) + (pctStr ? '  (' + pctStr + ')' : ''), R, y, { align: 'right' });
+                    y += 6;
+                }
+            });
+        }
         divider(); row('Total Assets', inr(totalAssets)); y += 2;
 
         subHead('LIABILITIES');
-        liabKeys.forEach(function(k) {
-            if (pn(p[k]) > 0) {
-                pageCheck(6);
-                doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(70, 70, 70);
-                doc.text(liabLabels[k], L + 3, y);
-                doc.setFont('helvetica', 'bold'); doc.setTextColor(20, 20, 20);
-                doc.text(inr(p[k]), R, y, { align: 'right' });
-                y += 6;
-            }
-        });
+        if (_useNwData) {
+            _nwLiabKeys.forEach(function(k) {
+                if (pn(nwd[k]) > 0) {
+                    pageCheck(6);
+                    doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(70, 70, 70);
+                    doc.text(nwLiabLabels[k], L + 3, y);
+                    doc.setFont('helvetica', 'bold'); doc.setTextColor(20, 20, 20);
+                    doc.text(inr(nwd[k]), R, y, { align: 'right' });
+                    y += 6;
+                }
+            });
+        } else {
+            Object.keys(profLiabLabels).forEach(function(k) {
+                if (pn(p[k]) > 0) {
+                    pageCheck(6);
+                    doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(70, 70, 70);
+                    doc.text(profLiabLabels[k], L + 3, y);
+                    doc.setFont('helvetica', 'bold'); doc.setTextColor(20, 20, 20);
+                    doc.text(inr(p[k]), R, y, { align: 'right' });
+                    y += 6;
+                }
+            });
+        }
         divider(); row('Total Liabilities', inr(totalLiab)); y += 2;
         callout('NET WORTH', inr(netWorth), netWorth >= 0);
 
@@ -762,7 +846,7 @@
         var efExp    = pn(p.efMonthlyExpenses) || monthlyInc;
         if (efExp > 0) {
             var efTarget = efExp * efMonths;
-            var liquid   = pn(p.assetsBank);
+            var liquid   = _useNwData ? (pn(nwd['nw-savings']) + pn(nwd['nw-fd'])) : pn(p.assetsBank);
             var efOk     = liquid >= efTarget;
             row('Monthly Expenses (Est.)',     inr(efExp));
             row('Recommended Buffer',          efMonths + ' months');
@@ -883,13 +967,17 @@
                 var eqPct  = pn(hsi['hs-pf-equity']);
                 var dbtPct = pn(hsi['hs-pf-debt']);
                 var glPct  = pn(hsi['hs-pf-gold']);
-                if (eqPct + dbtPct + glPct > 0) {
+                if (eqPct + dbtPct + glPct + pn(hsi['hs-pf-realty']) + pn(hsi['hs-pf-retiral']) + pn(hsi['hs-pf-other']) > 0) {
                     y += 2; subHead('PORTFOLIO ALLOCATION');
                     if (eqPct  > 0) row('Equity', eqPct + '%');
                     if (dbtPct > 0) row('Debt / Fixed Income', dbtPct + '%');
                     if (glPct  > 0) row('Gold', glPct + '%');
-                    var otherPct = pn(hsi['hs-pf-realty']) + pn(hsi['hs-pf-retiral']) + pn(hsi['hs-pf-other']);
-                    if (otherPct > 0) row('Real Estate / Retiral / Other', otherPct.toFixed(1) + '%');
+                    var realtyPct   = pn(hsi['hs-pf-realty']);
+                    var retiralPct  = pn(hsi['hs-pf-retiral']);
+                    var otherPct    = pn(hsi['hs-pf-other']);
+                    if (realtyPct  > 0) row('Real Estate', realtyPct.toFixed(1) + '%');
+                    if (retiralPct > 0) row('Retiral (EPF / PPF / NPS)', retiralPct.toFixed(1) + '%');
+                    if (otherPct   > 0) row('Other', otherPct.toFixed(1) + '%');
                 }
             }
         } else {
