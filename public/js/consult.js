@@ -253,6 +253,29 @@
             snap.healthScore = hs.score + ' / 100' + (hs.label ? ' (' + hs.label + ')' : '');
         }
 
+        // Tax Guide deductions
+        if (window._tgPendingData) snap.taxData = Object.assign({}, window._tgPendingData);
+
+        // Emergency Fund — buffer months + total monthly expenses from the EF panel
+        snap.efMonths = window._efMonths || 6;
+        var _efTotal = 0;
+        document.querySelectorAll('#expense-rows .expense-row').forEach(function(r) {
+            var inp = r.querySelector('.ef-input');
+            if (inp) _efTotal += parseInt(String(inp.value).replace(/,/g, '')) || 0;
+        });
+        document.querySelectorAll('#custom-expense-rows .expense-row').forEach(function(r) {
+            var inp = r.querySelector('.ef-input');
+            if (inp) _efTotal += parseInt(String(inp.value).replace(/,/g, '')) || 0;
+        });
+        if (_efTotal > 0) snap.efMonthlyExpenses = _efTotal;
+
+        // Financial Plan — goals list and monthly investment capacity
+        if (window._fpState) {
+            snap.fpGoals = (window._fpState.goals || []).slice();
+            var _fpInvEl = document.getElementById('fp-invest-amt');
+            if (_fpInvEl && _fpInvEl.value) snap.fpInvestAmt = _fpInvEl.value.replace(/,/g, '');
+        }
+
         // Generate PDF — silent if jsPDF unavailable
         var pdfBase64 = null;
         try { pdfBase64 = _consultBuildProfilePdf(snap); } catch (ex) { console.warn('[consult] pdf error:', ex); }
@@ -531,8 +554,31 @@
         row('Annual Income',          inr(p.annualIncome));
         row('Tax Regime',             p.regime === 'old' ? 'Old Regime' : 'New Regime (Budget 2025)');
         if (pn(p.basicSalary) > 0) row('Basic Salary (Monthly)', inr(p.basicSalary));
-        if (pn(p.epfBalance)  > 0) row('EPF Balance',            inr(p.epfBalance));
-        if (p.retireAge)            row('Target Retirement Age', p.retireAge + ' years');
+
+        // ── Tax Deductions ──
+        if (p.taxData) {
+            var td = p.taxData;
+            var c80   = pn(td['tg-80c']);
+            var c80d  = pn(td['tg-80d']);
+            var cNps  = pn(td['tg-nps']);
+            var cEnps = pn(td['tg-emp-nps']);
+            var cHra  = pn(td['tg-hra']);
+            var cHl   = pn(td['tg-homeloan']);
+            var cOth  = pn(td['tg-other-deduct']);
+            var totalDeduct = c80 + c80d + cNps + cEnps + cHra + cHl + cOth;
+            if (totalDeduct > 0) {
+                sectionHead('TAX DEDUCTIONS (ANNUAL)');
+                if (c80   > 0) row('Sec 80C (ELSS / PPF / LIC etc.)', 'Rs.' + c80.toLocaleString('en-IN'));
+                if (c80d  > 0) row('Sec 80D (Health Insurance)',       'Rs.' + c80d.toLocaleString('en-IN'));
+                if (cNps  > 0) row('NPS — Sec 80CCD(1B)',              'Rs.' + cNps.toLocaleString('en-IN'));
+                if (cEnps > 0) row('Employer NPS — 80CCD(2)',          'Rs.' + cEnps.toLocaleString('en-IN'));
+                if (cHra  > 0) row('HRA Exemption',                    'Rs.' + cHra.toLocaleString('en-IN'));
+                if (cHl   > 0) row('Home Loan Interest — Sec 24B',     'Rs.' + cHl.toLocaleString('en-IN'));
+                if (cOth  > 0) row('Other Deductions',                  'Rs.' + cOth.toLocaleString('en-IN'));
+                divider();
+                row('Total Deductions', 'Rs.' + totalDeduct.toLocaleString('en-IN'));
+            }
+        }
 
         // ── Assets ──
         var assetKeys = ['assetsBank','assetsMf','assetsStocks','assetsRe','assetsPpf','assetsGold','assetsOther'];
@@ -570,6 +616,24 @@
         doc.text((netWorth < 0 ? '-Rs.' : 'Rs.') + Math.abs(netWorth).toLocaleString('en-IN'), W - L, y + 1, { align: 'right' });
         y += 12;
 
+        // ── Emergency Fund ──
+        var efMonthsVal = parseInt(p.efMonths, 10) || 0;
+        var efExpenses  = pn(p.efMonthlyExpenses) || pn(p.income);
+        if (efMonthsVal > 0 || efExpenses > 0) {
+            sectionHead('EMERGENCY FUND');
+            if (efExpenses  > 0) row('Monthly Expenses (Est.)',  inr(efExpenses));
+            if (efMonthsVal > 0) row('Recommended Buffer',       efMonthsVal + ' months');
+            if (efExpenses > 0 && efMonthsVal > 0) {
+                var efTarget = efExpenses * efMonthsVal;
+                row('Target Emergency Fund', 'Rs.' + efTarget.toLocaleString('en-IN'));
+                var liquid = pn(p.assetsBank);
+                if (liquid > 0) {
+                    row('Liquid Savings (Bank / FD)', inr(p.assetsBank));
+                    row('Status', liquid >= efTarget ? 'Adequate' : 'Needs top-up');
+                }
+            }
+        }
+
         // ── Risk Profile ──
         if (p.riskProfile) {
             sectionHead('RISK PROFILE');
@@ -580,6 +644,31 @@
         if (p.healthScore) {
             sectionHead('FINANCIAL HEALTH SCORE');
             row('Score', p.healthScore);
+        }
+
+        // ── Retirement & EPF ──
+        var cAge      = parseInt(p.age,      10) || 0;
+        var rAge      = parseInt(p.retireAge, 10) || 0;
+        var yrsLeft   = (rAge > cAge && cAge > 0) ? rAge - cAge : 0;
+        var epfBal    = pn(p.epfBalance);
+        var epfBasicS = pn(p.basicSalary);
+        if (rAge > 0 || epfBal > 0 || epfBasicS > 0) {
+            sectionHead('RETIREMENT & EPF');
+            if (cAge > 0) row('Current Age',             cAge + ' years');
+            if (rAge > 0) row('Target Retirement Age',   rAge + ' years' + (yrsLeft > 0 ? '  (' + yrsLeft + ' yrs to go)' : ''));
+            if (epfBal > 0)    row('Current EPF Balance',    inr(p.epfBalance));
+            if (epfBasicS > 0) {
+                var monthlyEpf = Math.round(epfBasicS * 0.24);
+                row('Basic Salary (Monthly)',          inr(p.basicSalary));
+                row('Monthly EPF Contribution (est.)', 'Rs.' + monthlyEpf.toLocaleString('en-IN') + '  (24% of basic)');
+                if (yrsLeft > 0) {
+                    var er  = 0.0815 / 12;
+                    var en  = yrsLeft * 12;
+                    var efv = Math.round(epfBal * Math.pow(1 + er, en) +
+                                  monthlyEpf * ((Math.pow(1 + er, en) - 1) / er));
+                    row('Projected EPF Corpus at Retirement', 'Rs.' + efv.toLocaleString('en-IN'));
+                }
+            }
         }
 
         // ── Insurance ──
@@ -598,15 +687,17 @@
             if (p.termNominee) row('Nominee', p.termNominee + (p.termNomineeRel ? ' (' + p.termNomineeRel + ')' : ''));
         }
 
-        // ── Goals ──
-        var goals = p.profileGoals || [];
-        if (goals.length > 0) {
-            sectionHead('FINANCIAL GOALS');
-            goals.forEach(function(g) {
+        // ── Financial Plan & Goals ──
+        var fpGoalList  = (p.fpGoals && p.fpGoals.length > 0) ? p.fpGoals : (p.profileGoals || []);
+        var fpInvestAmt = pn(p.fpInvestAmt);
+        if (fpGoalList.length > 0 || fpInvestAmt > 0) {
+            sectionHead('FINANCIAL PLAN & GOALS');
+            if (fpInvestAmt > 0) row('Monthly Investment Capacity', inr(p.fpInvestAmt));
+            fpGoalList.forEach(function(g) {
                 pageCheck();
-                var label = stripEmoji(g.label || '');
+                var label = stripEmoji(g.label || g.type || '');
                 var detail = [];
-                if (g.targetAmt > 0) detail.push('Rs.' + Number(g.targetAmt).toLocaleString('en-IN'));
+                if (pn(g.targetAmt) > 0) detail.push('Rs.' + Number(g.targetAmt).toLocaleString('en-IN'));
                 if (g.years) detail.push(g.years + ' yr' + (g.years !== 1 ? 's' : ''));
                 row(label || '-', detail.join(' · ') || '-');
             });
