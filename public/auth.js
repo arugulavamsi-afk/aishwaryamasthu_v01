@@ -78,6 +78,7 @@
                             // Expert login — show expert dashboard instead of user app
                             window._isExpert  = true;
                             window._expertDoc = Object.assign({ id: snap.docs[0].id }, snap.docs[0].data());
+                            dismissSplash();
                             if (typeof epInitDashboard === 'function') epInitDashboard(window._expertDoc);
                         } else {
                             // Regular user — restore saved data and show dashboard
