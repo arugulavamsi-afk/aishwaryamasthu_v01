@@ -1,4 +1,4 @@
-    /* ═══════════════════════════════════════════════
+﻿    /* ═══════════════════════════════════════════════
        CONSULT AN EXPERT — user-side logic
     ═══════════════════════════════════════════════ */
 
@@ -253,10 +253,10 @@
             snap.healthScore = hs.score + ' / 100' + (hs.label ? ' (' + hs.label + ')' : '');
         }
 
-        // Tax Guide deductions
+        // Tax Guide
         if (window._tgPendingData) snap.taxData = Object.assign({}, window._tgPendingData);
 
-        // Emergency Fund — buffer months + total monthly expenses from the EF panel
+        // Emergency Fund
         snap.efMonths = window._efMonths || 6;
         var _efTotal = 0;
         document.querySelectorAll('#expense-rows .expense-row').forEach(function(r) {
@@ -269,11 +269,32 @@
         });
         if (_efTotal > 0) snap.efMonthlyExpenses = _efTotal;
 
-        // Financial Plan — goals list and monthly investment capacity
+        // Financial Plan
         if (window._fpState) {
             snap.fpGoals = (window._fpState.goals || []).slice();
             var _fpInvEl = document.getElementById('fp-invest-amt');
             if (_fpInvEl && _fpInvEl.value) snap.fpInvestAmt = _fpInvEl.value.replace(/,/g, '');
+        }
+
+        // Health Score inputs (from pending state or live DOM)
+        var _hsPend = window._hsPendingData || {};
+        var _hsIds  = ['hs-income','hs-emi','hs-expenses','hs-savings','hs-health-ins',
+                       'hs-term-ins','hs-efund','hs-age','hs-pf-equity','hs-pf-debt',
+                       'hs-pf-realty','hs-pf-gold','hs-pf-retiral','hs-pf-other'];
+        var _hsInputs = {};
+        _hsIds.forEach(function(id) {
+            var el = document.getElementById(id);
+            var v  = (el ? el.value : '') || _hsPend[id] || '';
+            if (v) _hsInputs[id] = v;
+        });
+        if (Object.keys(_hsInputs).length > 0) snap.hsInputs = _hsInputs;
+
+        // Cached tool data (EPF calc, retirement hub)
+        if (window._cachedRestoreData) {
+            snap._cached = {
+                epfCalc:       window._cachedRestoreData.epfCalc       || {},
+                retirementHub: window._cachedRestoreData.retirementHub || {}
+            };
         }
 
         // Generate PDF — silent if jsPDF unavailable
@@ -508,235 +529,447 @@
     /* ── PDF profile builder ── */
     function _consultBuildProfilePdf(p) {
         if (!window.jspdf || !window.jspdf.jsPDF) return null;
-        p = p || window._userProfile || {};
-        var doc  = new window.jspdf.jsPDF({ unit: 'mm', format: 'a4' });
-        var W    = 210, L = 14, y = 0, lh = 6.2;
+        p = p || {};
+        var doc = new window.jspdf.jsPDF({ unit: 'mm', format: 'a4' });
+        var W = 210, L = 14, R = 196, y = 0;
 
+        /* ── helpers ── */
         function pn(v) { return parseFloat(String(v || '0').replace(/,/g, '')) || 0; }
-        function inr(v) { var n = pn(v); return n > 0 ? 'Rs.' + n.toLocaleString('en-IN') : '-'; }
-        function stripEmoji(s) { return String(s || '').replace(/[\u{1F000}-\u{1FFFF}]/gu, '').replace(/[☀-➿]/g, '').trim(); }
+        function inr(v) { var n = pn(v); return n ? 'Rs.' + n.toLocaleString('en-IN') : '—'; }
+        function inrA(v) {
+            var n = pn(v); if (!n) return '—';
+            if (n >= 10000000) return 'Rs.' + (n / 10000000).toFixed(2) + ' Cr';
+            if (n >= 100000)   return 'Rs.' + (n / 100000).toFixed(2) + ' L';
+            return 'Rs.' + n.toLocaleString('en-IN');
+        }
+        function pctOf(v, total) { return total > 0 ? (pn(v) / total * 100).toFixed(1) + '%' : ''; }
+        function stripE(s) { return String(s || '').replace(/[\u{1F000}-\u{1FFFF}]/gu, '').replace(/[☀-➿]/g, '').trim(); }
+        function newPage() { doc.addPage(); y = 16; }
+        function pageCheck(h) { if (y > 283 - (h || 10)) newPage(); }
 
-        function pageCheck() { if (y > 272) { doc.addPage(); y = 18; } }
-
-        function sectionHead(title) {
-            pageCheck();
+        function sHead(title) {
+            pageCheck(14);
             y += 3;
-            doc.setFillColor(232, 240, 253);
-            doc.rect(L, y - 4.5, W - L * 2, 7.5, 'F');
-            doc.setFont('helvetica', 'bold');
-            doc.setFontSize(8);
+            doc.setFillColor(12, 35, 64);
+            doc.rect(L, y - 5, R - L, 9, 'F');
+            doc.setFont('helvetica', 'bold'); doc.setFontSize(8);
+            doc.setTextColor(245, 200, 66);
+            doc.text(title, L + 3, y);
+            y += 7;
+        }
+
+        function subHead(title) {
+            pageCheck(8);
+            doc.setFont('helvetica', 'bold'); doc.setFontSize(8);
             doc.setTextColor(12, 35, 64);
-            doc.text(title, L + 2, y);
+            doc.text(title, L, y);
             y += 6;
         }
 
-        function row(label, value) {
-            pageCheck();
-            doc.setFont('helvetica', 'normal');
-            doc.setFontSize(9);
-            doc.setTextColor(100, 100, 100);
-            doc.text(label, L, y);
+        function row(label, value, vcRgb) {
+            pageCheck(7);
+            doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(85, 85, 85);
+            doc.text(String(label), L + 2, y);
             doc.setFont('helvetica', 'bold');
-            doc.setTextColor(25, 25, 25);
-            doc.text(String(value || '-'), W - L, y, { align: 'right' });
-            y += lh;
+            if (vcRgb) doc.setTextColor(vcRgb[0], vcRgb[1], vcRgb[2]);
+            else       doc.setTextColor(20, 20, 20);
+            doc.text(String(value || '—'), R, y, { align: 'right' });
+            y += 6;
         }
 
         function divider() {
-            doc.setDrawColor(210);
-            doc.line(L, y, W - L, y);
+            doc.setDrawColor(215); doc.setLineWidth(0.2);
+            doc.line(L, y - 1, R, y - 1);
             y += 3;
         }
 
-        // ── Header ──
-        doc.setFillColor(12, 35, 64);
-        doc.rect(0, 0, W, 28, 'F');
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(15);
-        doc.setTextColor(245, 200, 66);
-        doc.text('AISHWARYAMASTHU', W / 2, 11, { align: 'center' });
-        doc.setFontSize(9);
-        doc.setTextColor(180, 210, 255);
-        doc.text('Client Financial Profile', W / 2, 18, { align: 'center' });
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(7.5);
-        doc.setTextColor(120, 160, 210);
-        doc.text('Generated: ' + new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }), W / 2, 24, { align: 'center' });
-        y = 36;
-
-        // ── Personal Details ──
-        var occMap = { salaried: 'Salaried', 'self-employed': 'Self-Employed', business: 'Business Owner', retired: 'Retired', student: 'Student' };
-        sectionHead('PERSONAL DETAILS');
-        row('Full Name',    p.name || '-');
-        row('Age',         p.age ? p.age + ' years' : '-');
-        row('Occupation',  occMap[p.occupation] || p.occupation || '-');
-        row('Dependents',  p.dependents !== undefined && p.dependents !== '' ? p.dependents : '-');
-        row('City Type',   p.city === 'metro' ? 'Metro' : 'Non-Metro');
-
-        // ── Income & Tax ──
-        sectionHead('INCOME & TAX');
-        row('Monthly In-Hand Income', inr(p.income));
-        row('Annual Income',          inr(p.annualIncome));
-        row('Tax Regime',             p.regime === 'old' ? 'Old Regime' : 'New Regime (Budget 2025)');
-        if (pn(p.basicSalary) > 0) row('Basic Salary (Monthly)', inr(p.basicSalary));
-
-        // ── Tax Deductions ──
-        if (p.taxData) {
-            var td = p.taxData;
-            var c80   = pn(td['tg-80c']);
-            var c80d  = pn(td['tg-80d']);
-            var cNps  = pn(td['tg-nps']);
-            var cEnps = pn(td['tg-emp-nps']);
-            var cHra  = pn(td['tg-hra']);
-            var cHl   = pn(td['tg-homeloan']);
-            var cOth  = pn(td['tg-other-deduct']);
-            var totalDeduct = c80 + c80d + cNps + cEnps + cHra + cHl + cOth;
-            if (totalDeduct > 0) {
-                sectionHead('TAX DEDUCTIONS (ANNUAL)');
-                if (c80   > 0) row('Sec 80C (ELSS / PPF / LIC etc.)', 'Rs.' + c80.toLocaleString('en-IN'));
-                if (c80d  > 0) row('Sec 80D (Health Insurance)',       'Rs.' + c80d.toLocaleString('en-IN'));
-                if (cNps  > 0) row('NPS — Sec 80CCD(1B)',              'Rs.' + cNps.toLocaleString('en-IN'));
-                if (cEnps > 0) row('Employer NPS — 80CCD(2)',          'Rs.' + cEnps.toLocaleString('en-IN'));
-                if (cHra  > 0) row('HRA Exemption',                    'Rs.' + cHra.toLocaleString('en-IN'));
-                if (cHl   > 0) row('Home Loan Interest — Sec 24B',     'Rs.' + cHl.toLocaleString('en-IN'));
-                if (cOth  > 0) row('Other Deductions',                  'Rs.' + cOth.toLocaleString('en-IN'));
-                divider();
-                row('Total Deductions', 'Rs.' + totalDeduct.toLocaleString('en-IN'));
-            }
+        function callout(label, value, good) {
+            pageCheck(12);
+            y += 1;
+            var bg = good === true ? [236, 253, 245] : good === false ? [254, 226, 226] : [239, 246, 255];
+            var tc = good === true ? [5, 100, 60]    : good === false ? [153, 27, 27]    : [12, 35, 100];
+            doc.setFillColor(bg[0], bg[1], bg[2]);
+            doc.roundedRect(L, y - 4, R - L, 11, 1.5, 1.5, 'F');
+            doc.setFont('helvetica', 'bold'); doc.setFontSize(9.5);
+            doc.setTextColor(tc[0], tc[1], tc[2]);
+            doc.text(String(label), L + 3, y + 2);
+            doc.text(String(value || ''), R - 2, y + 2, { align: 'right' });
+            y += 14;
         }
 
-        // ── Assets ──
-        var assetKeys = ['assetsBank','assetsMf','assetsStocks','assetsRe','assetsPpf','assetsGold','assetsOther'];
-        var liabKeys  = ['liabHome','liabCar','liabPersonal','liabCc','liabOther'];
+        /* ── tax calculators ── */
+        function taxNew2025(gross) {
+            var ti = Math.max(0, gross - 75000);
+            var tax = 0, r = ti;
+            [[400000, 0], [400000, 0.05], [400000, 0.10], [400000, 0.15],
+             [400000, 0.20], [400000, 0.25], [Infinity, 0.30]].forEach(function(s) {
+                var chunk = Math.min(r, s[0]); tax += chunk * s[1]; r -= chunk;
+            });
+            if (ti <= 1200000) tax = 0;
+            return Math.round(tax * 1.04);
+        }
+        function taxOld(gross, deduct) {
+            var ti = Math.max(0, gross - 50000 - (deduct || 0));
+            var tax = 0;
+            if (ti > 1000000)      tax = (ti - 1000000) * 0.30 + 500000 * 0.20 + 250000 * 0.05;
+            else if (ti > 500000)  tax = (ti - 500000)  * 0.20 + 250000 * 0.05;
+            else if (ti > 250000)  tax = (ti - 250000)  * 0.05;
+            if (ti <= 500000) tax = 0;
+            return Math.round(tax * 1.04);
+        }
+
+        /* ── goal SIP (PMT) ── */
+        function goalSIP(target, years, rate) {
+            rate = (rate || 12) / 100 / 12;
+            var n = (years || 1) * 12;
+            return rate > 0 ? Math.round(target * rate / (Math.pow(1 + rate, n) - 1)) : 0;
+        }
+
+        /* ══════════ COVER HEADER ══════════ */
+        doc.setFillColor(12, 35, 64);
+        doc.rect(0, 0, W, 34, 'F');
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(17);
+        doc.setTextColor(245, 200, 66);
+        doc.text('AISHWARYAMASTHU', W / 2, 13, { align: 'center' });
+        doc.setFontSize(10); doc.setTextColor(180, 210, 255);
+        doc.text('Client Financial Summary Report', W / 2, 21, { align: 'center' });
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(120, 160, 210);
+        doc.text('Generated: ' + new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) +
+            '   |   Confidential — For Advisor Use Only', W / 2, 28, { align: 'center' });
+        y = 40;
+
+        var occMap = { salaried: 'Salaried', 'self-employed': 'Self-Employed', business: 'Business Owner', retired: 'Retired', student: 'Student' };
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(14); doc.setTextColor(12, 35, 64);
+        doc.text(p.name || 'Client', L, y);
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(80, 80, 80);
+        doc.text([(occMap[p.occupation] || p.occupation || ''),
+                  (p.age ? 'Age ' + p.age : ''),
+                  (p.city === 'metro' ? 'Metro' : p.city ? 'Non-Metro' : ''),
+                  (p.dependents !== undefined && p.dependents !== '' ? p.dependents + ' dependant(s)' : '')]
+                 .filter(Boolean).join('  ·  '), L, y + 7);
+        y += 18;
+
+        /* ── KPI STRIP ── */
+        var assetKeys = ['assetsBank', 'assetsMf', 'assetsStocks', 'assetsRe', 'assetsPpf', 'assetsGold', 'assetsOther'];
+        var liabKeys  = ['liabHome', 'liabCar', 'liabPersonal', 'liabCc', 'liabOther'];
         var totalAssets = assetKeys.reduce(function(s, k) { return s + pn(p[k]); }, 0);
         var totalLiab   = liabKeys.reduce(function(s, k)  { return s + pn(p[k]); }, 0);
         var netWorth    = totalAssets - totalLiab;
-        var assetLabels = { assetsBank:'Bank / Savings', assetsMf:'Mutual Funds', assetsStocks:'Stocks / Shares', assetsRe:'Real Estate', assetsPpf:'PPF / EPF', assetsGold:'Gold', assetsOther:'Other Assets' };
-        var liabLabels  = { liabHome:'Home Loan', liabCar:'Car / Vehicle Loan', liabPersonal:'Personal Loan', liabCc:'Credit Card Dues', liabOther:'Other Liabilities' };
 
-        sectionHead('ASSETS');
-        var hasAssets = false;
-        assetKeys.forEach(function(k) { if (pn(p[k]) > 0) { row(assetLabels[k], inr(p[k])); hasAssets = true; } });
-        if (!hasAssets) row('(none recorded)', '');
-        divider();
-        row('Total Assets', 'Rs.' + totalAssets.toLocaleString('en-IN'));
+        var kpis = [
+            { lbl: 'Net Worth',       val: inrA(netWorth),  bg: netWorth >= 0 ? [236,253,245] : [254,226,226], tc: netWorth >= 0 ? [6,95,70] : [153,27,27] },
+            { lbl: 'Health Score',    val: p.healthScore ? p.healthScore.split(' ')[0] + '/100' : '—', bg: [219,234,254], tc: [29,78,216] },
+            { lbl: 'Risk Profile',    val: p.riskProfile ? p.riskProfile.split(' ')[0] : '—',         bg: [254,243,199], tc: [146,64,14] },
+            { lbl: 'Monthly Income',  val: inrA(p.income), bg: [243,232,255], tc: [88,28,135] },
+        ];
+        var kW = (R - L - 4.5) / 4;
+        kpis.forEach(function(k, i) {
+            var bx = L + i * (kW + 1.5);
+            doc.setFillColor(k.bg[0], k.bg[1], k.bg[2]);
+            doc.roundedRect(bx, y, kW, 19, 2, 2, 'F');
+            doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(k.tc[0], k.tc[1], k.tc[2]);
+            doc.text(k.val, bx + kW / 2, y + 8, { align: 'center' });
+            doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(80, 80, 80);
+            doc.text(k.lbl, bx + kW / 2, y + 14.5, { align: 'center' });
+        });
+        y += 24;
 
-        sectionHead('LIABILITIES');
-        var hasLiab = false;
-        liabKeys.forEach(function(k) { if (pn(p[k]) > 0) { row(liabLabels[k], inr(p[k])); hasLiab = true; } });
-        if (!hasLiab) row('(none recorded)', '');
-        divider();
-        row('Total Liabilities', 'Rs.' + totalLiab.toLocaleString('en-IN'));
+        /* ══════════ 1. NET WORTH ══════════ */
+        sHead('1.  NET WORTH ANALYSIS');
+        var assetLabels = { assetsBank: 'Bank / FD / Savings', assetsMf: 'Mutual Funds', assetsStocks: 'Stocks & Equity', assetsRe: 'Real Estate', assetsPpf: 'PPF / EPF', assetsGold: 'Gold', assetsOther: 'Other Assets' };
+        var liabLabels  = { liabHome: 'Home Loan', liabCar: 'Vehicle Loan', liabPersonal: 'Personal Loan', liabCc: 'Credit Card Dues', liabOther: 'Other Liabilities' };
 
-        // Net worth highlight
-        pageCheck();
+        subHead('ASSETS');
+        assetKeys.forEach(function(k) {
+            if (pn(p[k]) > 0) {
+                pageCheck(6);
+                doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(70, 70, 70);
+                doc.text(assetLabels[k], L + 3, y);
+                doc.setFont('helvetica', 'bold'); doc.setTextColor(20, 20, 20);
+                var pctStr = pctOf(p[k], totalAssets);
+                doc.text(inr(p[k]) + (pctStr ? '  (' + pctStr + ')' : ''), R, y, { align: 'right' });
+                y += 6;
+            }
+        });
+        divider(); row('Total Assets', inr(totalAssets)); y += 2;
+
+        subHead('LIABILITIES');
+        liabKeys.forEach(function(k) {
+            if (pn(p[k]) > 0) {
+                pageCheck(6);
+                doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(70, 70, 70);
+                doc.text(liabLabels[k], L + 3, y);
+                doc.setFont('helvetica', 'bold'); doc.setTextColor(20, 20, 20);
+                doc.text(inr(p[k]), R, y, { align: 'right' });
+                y += 6;
+            }
+        });
+        divider(); row('Total Liabilities', inr(totalLiab)); y += 2;
+        callout('NET WORTH', inr(netWorth), netWorth >= 0);
+
+        /* ══════════ 2. INCOME & TAX ══════════ */
+        sHead('2.  INCOME & TAX ANALYSIS');
+        var monthlyInc = pn(p.income);
+        var annualInc  = pn(p.annualIncome) || monthlyInc * 12;
+        row('Monthly In-Hand Income', inr(monthlyInc));
+        row('Annual Gross Income',    inr(annualInc));
+        if (pn(p.basicSalary) > 0) row('Basic Salary (Monthly)', inr(p.basicSalary));
+        row('Tax Regime Declared', p.regime === 'old' ? 'Old Regime' : 'New Regime (Budget 2025)');
         y += 2;
-        var pos = netWorth >= 0;
-        doc.setFillColor(pos ? 240 : 254, pos ? 253 : 242, pos ? 244 : 242);
-        doc.rect(L, y - 4.5, W - L * 2, 9, 'F');
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(10);
-        doc.setTextColor(pos ? 5 : 185, pos ? 100 : 28, pos ? 60 : 28);
-        doc.text('NET WORTH', L + 2, y + 1);
-        doc.text((netWorth < 0 ? '-Rs.' : 'Rs.') + Math.abs(netWorth).toLocaleString('en-IN'), W - L, y + 1, { align: 'right' });
-        y += 12;
 
-        // ── Emergency Fund ──
-        var efMonthsVal = parseInt(p.efMonths, 10) || 0;
-        var efExpenses  = pn(p.efMonthlyExpenses) || pn(p.income);
-        if (efMonthsVal > 0 || efExpenses > 0) {
-            sectionHead('EMERGENCY FUND');
-            if (efExpenses  > 0) row('Monthly Expenses (Est.)',  inr(efExpenses));
-            if (efMonthsVal > 0) row('Recommended Buffer',       efMonthsVal + ' months');
-            if (efExpenses > 0 && efMonthsVal > 0) {
-                var efTarget = efExpenses * efMonthsVal;
-                row('Target Emergency Fund', 'Rs.' + efTarget.toLocaleString('en-IN'));
-                var liquid = pn(p.assetsBank);
-                if (liquid > 0) {
-                    row('Liquid Savings (Bank / FD)', inr(p.assetsBank));
-                    row('Status', liquid >= efTarget ? 'Adequate' : 'Needs top-up');
-                }
+        if (p.taxData) {
+            var td = p.taxData;
+            var grossTax = pn(td['tg-income']) || annualInc;
+            grossTax    += pn(td['tg-other-income']);
+            var d80c     = Math.min(pn(td['tg-80c']), 150000);
+            var d80d     = pn(td['tg-80d']);
+            var dNps     = Math.min(pn(td['tg-nps']), 50000);
+            var dENps    = pn(td['tg-emp-nps']);
+            var dHra     = pn(td['tg-hra']);
+            var dHl      = Math.min(pn(td['tg-homeloan']), 200000);
+            var dOth     = pn(td['tg-other-deduct']);
+            var totalOldD = d80c + d80d + dNps + dENps + dHra + dHl + dOth;
+
+            var tNew = taxNew2025(grossTax);
+            var tOld = taxOld(grossTax, totalOldD);
+            var diff = tOld - tNew;
+            var betterR = diff >= 0 ? 'New Regime' : 'Old Regime';
+
+            subHead('TAX COMPARISON');
+            row('Gross Annual Income', inr(grossTax));
+            row('Estimated Tax — New Regime 2025', inr(tNew), tNew <= tOld ? [5, 100, 60] : [185, 28, 28]);
+            row('Estimated Tax — Old Regime',      inr(tOld), tOld <  tNew ? [5, 100, 60] : [185, 28, 28]);
+            divider();
+            callout('Recommended: ' + betterR, 'Annual Saving: ' + inr(Math.abs(diff)), diff >= 0);
+
+            if (totalOldD > 0) {
+                subHead('DEDUCTIONS (OLD REGIME)');
+                if (d80c  > 0) row('Sec 80C — ELSS / PPF / LIC etc.',  inr(d80c));
+                if (d80d  > 0) row('Sec 80D — Health Insurance',        inr(d80d));
+                if (dNps  > 0) row('NPS — Sec 80CCD(1B)',               inr(dNps));
+                if (dENps > 0) row('Employer NPS — Sec 80CCD(2)',       inr(dENps));
+                if (dHra  > 0) row('HRA Exemption',                     inr(dHra));
+                if (dHl   > 0) row('Home Loan Interest — Sec 24B',      inr(dHl));
+                if (dOth  > 0) row('Other Deductions',                   inr(dOth));
+                divider();
+                row('Total Deductions', inr(totalOldD));
             }
         }
 
-        // ── Risk Profile ──
-        if (p.riskProfile) {
-            sectionHead('RISK PROFILE');
-            row('Risk Category', p.riskProfile);
+        /* ══════════ 3. EMERGENCY FUND ══════════ */
+        sHead('3.  EMERGENCY FUND');
+        var efMonths = parseInt(p.efMonths, 10) || 6;
+        var efExp    = pn(p.efMonthlyExpenses) || monthlyInc;
+        if (efExp > 0) {
+            var efTarget = efExp * efMonths;
+            var liquid   = pn(p.assetsBank);
+            var efOk     = liquid >= efTarget;
+            row('Monthly Expenses (Est.)',     inr(efExp));
+            row('Recommended Buffer',          efMonths + ' months');
+            row('Target Emergency Fund',       inr(efTarget));
+            row('Available Liquid Assets',     inr(liquid));
+            divider();
+            callout(efOk ? 'Emergency Fund: Adequate' : 'Emergency Fund: Deficit',
+                    efOk ? 'Surplus ' + inr(liquid - efTarget) : 'Shortfall ' + inr(efTarget - liquid), efOk);
+        } else {
+            row('Status', 'Fill Emergency Fund tool or add income in My Profile');
         }
 
-        // ── Financial Health Score ──
-        if (p.healthScore) {
-            sectionHead('FINANCIAL HEALTH SCORE');
-            row('Score', p.healthScore);
+        /* ══════════ 4. RETIREMENT & EPF ══════════ */
+        sHead('4.  RETIREMENT & EPF PROJECTION');
+        var cAge     = parseInt(p.age, 10) || 0;
+        var rAge     = parseInt(p.retireAge, 10) || 60;
+        var yrsLeft  = (rAge > cAge && cAge > 0) ? rAge - cAge : 0;
+        var epfBal   = pn(p.epfBalance);
+        var epfBasic = pn(p.basicSalary);
+        var cachedEpf = (p._cached && p._cached.epfCalc) ? p._cached.epfCalc : {};
+
+        if (cAge > 0)   row('Current Age',             cAge + ' years');
+        if (rAge > 0)   row('Target Retirement Age',   rAge + ' years' + (yrsLeft > 0 ? '  (' + yrsLeft + ' yrs remaining)' : ''));
+        if (epfBal > 0) row('Current EPF Balance',     inr(epfBal));
+
+        if (epfBasic > 0) {
+            var empEpf     = Math.round(epfBasic * 0.12);
+            var erEpf      = Math.round(epfBasic * 0.12);
+            var totalEpfM  = empEpf + erEpf;
+            row('Basic Salary (Monthly)',          inr(epfBasic));
+            row('Employee Contribution (12%)',     inr(empEpf));
+            row('Employer Contribution (~12%)',    inr(erEpf));
+            row('Total Monthly EPF Contribution', inr(totalEpfM));
         }
 
-        // ── Retirement & EPF ──
-        var cAge      = parseInt(p.age,      10) || 0;
-        var rAge      = parseInt(p.retireAge, 10) || 0;
-        var yrsLeft   = (rAge > cAge && cAge > 0) ? rAge - cAge : 0;
-        var epfBal    = pn(p.epfBalance);
-        var epfBasicS = pn(p.basicSalary);
-        if (rAge > 0 || epfBal > 0 || epfBasicS > 0) {
-            sectionHead('RETIREMENT & EPF');
-            if (cAge > 0) row('Current Age',             cAge + ' years');
-            if (rAge > 0) row('Target Retirement Age',   rAge + ' years' + (yrsLeft > 0 ? '  (' + yrsLeft + ' yrs to go)' : ''));
-            if (epfBal > 0)    row('Current EPF Balance',    inr(p.epfBalance));
-            if (epfBasicS > 0) {
-                var monthlyEpf = Math.round(epfBasicS * 0.24);
-                row('Basic Salary (Monthly)',          inr(p.basicSalary));
-                row('Monthly EPF Contribution (est.)', 'Rs.' + monthlyEpf.toLocaleString('en-IN') + '  (24% of basic)');
-                if (yrsLeft > 0) {
-                    var er  = 0.0815 / 12;
-                    var en  = yrsLeft * 12;
-                    var efv = Math.round(epfBal * Math.pow(1 + er, en) +
-                                  monthlyEpf * ((Math.pow(1 + er, en) - 1) / er));
-                    row('Projected EPF Corpus at Retirement', 'Rs.' + efv.toLocaleString('en-IN'));
+        if (yrsLeft > 0 && epfBasic > 0) {
+            var epfRate = pn(cachedEpf['epf-rate']) || 8.15;
+            var er      = epfRate / 100 / 12;
+            var en      = yrsLeft * 12;
+            var monthlyC = Math.round(epfBasic * 0.24);
+            var fv      = Math.round(epfBal * Math.pow(1 + er, en) + monthlyC * ((Math.pow(1 + er, en) - 1) / er));
+            var mthlyDraw = Math.round(fv * 0.04 / 12);
+            divider();
+            callout('Projected EPF Corpus at Retirement', inr(fv), true);
+            row('Est. Monthly Income from Corpus (4% SWR)', inr(mthlyDraw));
+        }
+
+        /* ══════════ 5. FINANCIAL PLAN & GOALS ══════════ */
+        var fpGoals  = (p.fpGoals && p.fpGoals.length > 0) ? p.fpGoals : (p.profileGoals || []);
+        var fpInvAmt = pn(p.fpInvestAmt);
+        if (fpGoals.length > 0 || fpInvAmt > 0) {
+            sHead('5.  FINANCIAL PLAN & GOALS');
+            if (fpInvAmt > 0) { row('Monthly Investment Capacity', inr(fpInvAmt)); y += 2; }
+
+            var totalSIP = 0;
+            fpGoals.forEach(function(g) {
+                var label = stripE(g.label || g.type || '');
+                var tAmt  = pn(g.targetAmt);
+                var gYrs  = parseInt(g.years, 10) || 0;
+                if (!label && !tAmt) return;
+                pageCheck(22);
+                subHead(label || 'Goal');
+                if (tAmt > 0)  row('  Target Amount',                inr(tAmt));
+                if (gYrs > 0)  row('  Time Horizon',                 gYrs + ' year' + (gYrs !== 1 ? 's' : ''));
+                if (tAmt > 0 && gYrs > 0) {
+                    var sip = goalSIP(tAmt, gYrs, 12);
+                    totalSIP += sip;
+                    row('  Required Monthly SIP  (@12% p.a.)', inr(sip));
                 }
-            }
-        }
-
-        // ── Insurance ──
-        if (p.healthInsurer || pn(p.healthCoverage) > 0) {
-            sectionHead('HEALTH INSURANCE');
-            if (p.healthInsurer)          row('Insurer',       p.healthInsurer);
-            if (pn(p.healthCoverage) > 0) row('Coverage',      inr(p.healthCoverage));
-            if (pn(p.healthPremium)  > 0) row('Annual Premium',inr(p.healthPremium));
-            if (p.healthPolicyNo)         row('Policy No.',    p.healthPolicyNo);
-        }
-        if (p.termInsurer || pn(p.termAssured) > 0) {
-            sectionHead('TERM INSURANCE');
-            if (p.termInsurer)          row('Insurer',       p.termInsurer);
-            if (pn(p.termAssured) > 0) row('Sum Assured',   inr(p.termAssured));
-            if (pn(p.termPremium) > 0) row('Annual Premium',inr(p.termPremium));
-            if (p.termNominee) row('Nominee', p.termNominee + (p.termNomineeRel ? ' (' + p.termNomineeRel + ')' : ''));
-        }
-
-        // ── Financial Plan & Goals ──
-        var fpGoalList  = (p.fpGoals && p.fpGoals.length > 0) ? p.fpGoals : (p.profileGoals || []);
-        var fpInvestAmt = pn(p.fpInvestAmt);
-        if (fpGoalList.length > 0 || fpInvestAmt > 0) {
-            sectionHead('FINANCIAL PLAN & GOALS');
-            if (fpInvestAmt > 0) row('Monthly Investment Capacity', inr(p.fpInvestAmt));
-            fpGoalList.forEach(function(g) {
-                pageCheck();
-                var label = stripEmoji(g.label || g.type || '');
-                var detail = [];
-                if (pn(g.targetAmt) > 0) detail.push('Rs.' + Number(g.targetAmt).toLocaleString('en-IN'));
-                if (g.years) detail.push(g.years + ' yr' + (g.years !== 1 ? 's' : ''));
-                row(label || '-', detail.join(' · ') || '-');
+                y += 2;
             });
+
+            if (totalSIP > 0) {
+                divider();
+                row('Total SIP Required Across All Goals', inr(totalSIP));
+                if (fpInvAmt > 0) {
+                    var surplus = fpInvAmt - totalSIP;
+                    callout(surplus >= 0 ? 'Investment Capacity: Sufficient' : 'Investment Capacity: Short',
+                            surplus >= 0 ? 'Surplus ' + inr(surplus) : 'Shortfall ' + inr(-surplus), surplus >= 0);
+                }
+            }
         }
 
-        // ── Footer ──
-        var fy = Math.max(y + 10, 282);
-        if (fy > 292) { doc.addPage(); fy = 288; }
-        doc.setDrawColor(210);
-        doc.line(L, fy - 5, W - L, fy - 5);
-        doc.setFont('helvetica', 'italic');
-        doc.setFontSize(7);
-        doc.setTextColor(160);
-        doc.text('Aishwaryamasthu  |  For educational purposes only  |  Not SEBI-registered investment advice', W / 2, fy, { align: 'center' });
+        /* ══════════ 6. FINANCIAL HEALTH SCORE ══════════ */
+        sHead('6.  FINANCIAL HEALTH SCORE');
+        if (p.healthScore) {
+            var hsNum = parseInt(p.healthScore, 10) || 0;
+            callout('Overall Score: ' + p.healthScore, '',
+                    hsNum >= 70 ? true : hsNum >= 40 ? null : false);
+
+            var hsi = p.hsInputs || {};
+            var hsInc = pn(hsi['hs-income']) || monthlyInc;
+            if (hsInc > 0) {
+                subHead('KEY METRICS');
+                var hsSav = pn(hsi['hs-savings']);
+                if (hsSav > 0) {
+                    var savR = hsSav / hsInc * 100;
+                    row('Savings Rate', savR.toFixed(1) + '%  (target ≥ 20%)',
+                        savR >= 20 ? [5, 100, 60] : savR >= 10 ? [146, 64, 14] : [185, 28, 28]);
+                }
+                var hsEmi = pn(hsi['hs-emi']);
+                if (hsEmi > 0) {
+                    var emiR = hsEmi / hsInc * 100;
+                    row('EMI-to-Income Ratio', emiR.toFixed(1) + '%  (safe ≤ 40%)',
+                        emiR <= 40 ? [5, 100, 60] : [185, 28, 28]);
+                }
+                var hsEf = pn(hsi['hs-efund']);
+                if (hsEf > 0) {
+                    row('Emergency Fund Buffer', hsEf + ' months  (recommended ≥ 6)',
+                        hsEf >= 6 ? [5, 100, 60] : [185, 28, 28]);
+                }
+                var hsHI = pn(hsi['hs-health-ins']);
+                var hsTI = pn(hsi['hs-term-ins']);
+                if (hsHI > 0) row('Health Insurance Coverage', inr(hsHI));
+                if (hsTI > 0) row('Term Insurance Sum Assured', inr(hsTI));
+
+                // Portfolio allocation check
+                var eqPct  = pn(hsi['hs-pf-equity']);
+                var dbtPct = pn(hsi['hs-pf-debt']);
+                var glPct  = pn(hsi['hs-pf-gold']);
+                if (eqPct + dbtPct + glPct > 0) {
+                    y += 2; subHead('PORTFOLIO ALLOCATION');
+                    if (eqPct  > 0) row('Equity', eqPct + '%');
+                    if (dbtPct > 0) row('Debt / Fixed Income', dbtPct + '%');
+                    if (glPct  > 0) row('Gold', glPct + '%');
+                    var otherPct = pn(hsi['hs-pf-realty']) + pn(hsi['hs-pf-retiral']) + pn(hsi['hs-pf-other']);
+                    if (otherPct > 0) row('Real Estate / Retiral / Other', otherPct.toFixed(1) + '%');
+                }
+            }
+        } else {
+            row('Status', 'Complete the Financial Health Score tool for details');
+        }
+
+        /* ══════════ 7. RISK PROFILE ══════════ */
+        sHead('7.  RISK PROFILE & INVESTMENT APPROACH');
+        if (p.riskProfile) {
+            callout('Risk Category', p.riskProfile, null);
+            var allocs = {
+                'Conservative':        { eq: 20, debt: 60, gold: 10, liq: 10 },
+                'Moderate':            { eq: 50, debt: 35, gold: 10, liq:  5 },
+                'Moderate-Aggressive': { eq: 65, debt: 25, gold:  7, liq:  3 },
+                'Aggressive':          { eq: 80, debt: 15, gold:  5, liq:  0 },
+            };
+            var cat = Object.keys(allocs).find(function(k) { return p.riskProfile.indexOf(k) > -1; });
+            if (cat) {
+                var al = allocs[cat];
+                subHead('RECOMMENDED PORTFOLIO ALLOCATION');
+                row('Equity  (Stocks / Equity MF / ELSS)',  al.eq   + '%');
+                row('Debt    (Bonds / Debt MF / FD / PPF)', al.debt + '%');
+                row('Gold    (SGB / Gold ETF / Physical)',  al.gold + '%');
+                if (al.liq > 0) row('Liquid  (Savings / Liquid Fund)',    al.liq  + '%');
+            }
+            y += 2;
+            doc.setFont('helvetica', 'italic'); doc.setFontSize(8); doc.setTextColor(120, 120, 120);
+            var guidanceMap = {
+                'Conservative':        'Prioritise capital preservation. Focus on debt instruments, PPF, and large-cap funds.',
+                'Moderate':            'Balanced growth. Mix of equity MFs, debt funds, and some gold.',
+                'Moderate-Aggressive': 'Growth-oriented. Flexi-cap / mid-cap MFs with some debt cushion.',
+                'Aggressive':          'High growth. Majority equity (small/mid-cap MFs, direct stocks). Volatility tolerance needed.',
+            };
+            if (cat && guidanceMap[cat]) {
+                var lines = doc.splitTextToSize(guidanceMap[cat], R - L - 4);
+                pageCheck(lines.length * 5 + 4);
+                lines.forEach(function(ln) { doc.text(ln, L + 2, y); y += 5; });
+            }
+        } else {
+            row('Status', 'Complete the Risk Assessment quiz for personalised guidance');
+        }
+
+        /* ══════════ 8. INSURANCE ══════════ */
+        var hasIns = p.healthInsurer || pn(p.healthCoverage) > 0 || p.termInsurer || pn(p.termAssured) > 0;
+        if (hasIns) {
+            sHead('8.  INSURANCE COVERAGE');
+            if (p.healthInsurer || pn(p.healthCoverage) > 0) {
+                subHead('HEALTH INSURANCE');
+                if (p.healthInsurer)          row('Insurer',        p.healthInsurer);
+                if (pn(p.healthCoverage) > 0) row('Coverage',       inr(p.healthCoverage));
+                if (pn(p.healthPremium)  > 0) row('Annual Premium', inr(p.healthPremium));
+                if (p.healthPolicyNo)         row('Policy No.',     p.healthPolicyNo);
+                y += 2;
+            }
+            if (p.termInsurer || pn(p.termAssured) > 0) {
+                subHead('TERM INSURANCE');
+                if (p.termInsurer)           row('Insurer',         p.termInsurer);
+                if (pn(p.termAssured) > 0)   row('Sum Assured',     inr(p.termAssured));
+                if (pn(p.termPremium) > 0)   row('Annual Premium',  inr(p.termPremium));
+                if (p.termNominee)            row('Nominee',         p.termNominee + (p.termNomineeRel ? ' (' + p.termNomineeRel + ')' : ''));
+                var annInc2 = annualInc || monthlyInc * 12;
+                if (pn(p.termAssured) > 0 && annInc2 > 0) {
+                    var adequate = pn(p.termAssured) >= annInc2 * 10;
+                    divider();
+                    callout('Term Cover Adequacy  (10× annual income rule)',
+                            adequate ? 'Adequate' : 'Possibly Insufficient', adequate);
+                }
+            }
+        }
+
+        /* ══════════ FOOTER (all pages) ══════════ */
+        var nPages = doc.getNumberOfPages();
+        for (var pg = 1; pg <= nPages; pg++) {
+            doc.setPage(pg);
+            doc.setDrawColor(200); doc.setLineWidth(0.2);
+            doc.line(L, 290, R, 290);
+            doc.setFont('helvetica', 'italic'); doc.setFontSize(7); doc.setTextColor(160, 160, 160);
+            doc.text('Aishwaryamasthu  |  Confidential — For advisor use only  |  Not SEBI-registered investment advice  |  Page ' + pg + ' of ' + nPages,
+                     W / 2, 295, { align: 'center' });
+        }
 
         return doc.output('datauristring').split(',')[1];
     }
