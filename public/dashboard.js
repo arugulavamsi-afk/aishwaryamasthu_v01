@@ -137,11 +137,13 @@
         consultUpdateTile();
         if (typeof consultWatchUnread === 'function') consultWatchUnread();
     }
-    // Call on first load after auth
+    // Fallback timer — only fires if auth state never resolves (e.g. offline).
+    // Normal init is triggered directly from onAuthStateChanged in auth.js.
     window.addEventListener('DOMContentLoaded', function() {
-        // Small delay to let auth resolve
         setTimeout(function() {
+            if (window._isExpert) return;          // Expert portal already active
+            if (window._authResolved)  return;      // auth.js already called switchMode
             if (typeof switchMode === 'function') switchMode('dashboard');
-        }, 100);
+        }, 2000);
     });
 
