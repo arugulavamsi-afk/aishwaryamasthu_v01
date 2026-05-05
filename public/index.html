@@ -855,6 +855,12 @@
 
         <!-- Bookings section -->
         <div id="ep-sec-bookings">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-[12px] font-black text-slate-600">Client Bookings</span>
+                <button onclick="epLoadBookings(window._expertDoc && window._expertDoc.id)"
+                    class="px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all"
+                    style="background:rgba(255,255,255,0.85);border:1px solid #e2e8f0;color:#475569;">🔄 Refresh</button>
+            </div>
             <div id="ep-booking-list" class="flex flex-col gap-3">
                 <div class="text-center py-8 text-slate-400 text-[12px]">Loading bookings…</div>
             </div>

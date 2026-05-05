@@ -309,11 +309,17 @@
                     var bid = doc.id;
                     var statusColor = b.status === 'confirmed' ? '#059669' : b.status === 'completed' ? '#0891b2' : '#dc2626';
                     var statusLabel = (b.status || 'pending').charAt(0).toUpperCase() + (b.status || '').slice(1);
-                    var canChat = b.status === 'confirmed' || b.status === 'completed';
+                    var canChat   = b.status === 'confirmed' || b.status === 'completed';
+                    var canCancel = b.status === 'confirmed';
                     var chatBtn = canChat
                         ? '<button onclick="consultOpenChat(\'' + bid + '\',\'' + (b.expertName || 'Expert').replace(/'/g, "\\'") + '\')" ' +
-                          'class="mt-2.5 w-full py-1.5 rounded-xl text-[11px] font-bold transition-all" ' +
+                          'class="flex-1 py-1.5 rounded-xl text-[11px] font-bold transition-all" ' +
                           'style="background:linear-gradient(130deg,#0c2340,#1a4a7a);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">💬 Open Chat</button>'
+                        : '';
+                    var cancelBtn = canCancel
+                        ? '<button onclick="consultCancelBooking(\'' + bid + '\')" ' +
+                          'class="py-1.5 px-3 rounded-xl text-[11px] font-bold transition-all" ' +
+                          'style="background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;">✕ Cancel</button>'
                         : '';
                     html += '<div class="bg-white rounded-2xl border border-[#f5c842]/30 shadow-sm p-4">' +
                         '<div class="flex items-start justify-between gap-2">' +
@@ -323,7 +329,7 @@
                             '</div>' +
                             '<span class="text-[10px] font-bold px-2 py-1 rounded-full flex-shrink-0" style="background:' + statusColor + '22;color:' + statusColor + ';">' + statusLabel + '</span>' +
                         '</div>' +
-                        chatBtn +
+                        ((chatBtn || cancelBtn) ? '<div class="flex gap-2 mt-2.5">' + chatBtn + cancelBtn + '</div>' : '') +
                     '</div>';
                 });
                 listEl.innerHTML = html;
@@ -331,6 +337,22 @@
             .catch(function(err) {
                 if (listEl) listEl.innerHTML = '<div class="text-center py-6 text-slate-400 text-[12px]">Could not load bookings. Please try again.</div>';
                 console.error('[consult] bookings load error:', err);
+            });
+    }
+
+    /* ── Cancel booking ── */
+    function consultCancelBooking(bookingId) {
+        if (!confirm('Cancel this booking? This cannot be undone.')) return;
+        var db = window._fbDb;
+        if (!db) return;
+        db.collection('bookings').doc(bookingId).update({ status: 'cancelled' })
+            .then(function() {
+                _consultShowToast('Booking cancelled.');
+                _consultLoadMyBookings();
+            })
+            .catch(function(err) {
+                _consultShowToast('Could not cancel. Please try again.');
+                console.error('[consult] cancel error:', err);
             });
     }
 
