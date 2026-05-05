@@ -327,9 +327,12 @@
                     return;
                 }
                 var html = '';
+                var hasDone = false;
                 snap.forEach(function(doc) {
                     var b   = doc.data();
                     var bid = doc.id;
+                    var isDone    = b.status === 'completed' || b.status === 'cancelled';
+                    if (isDone) hasDone = true;
                     var statusColor = b.status === 'confirmed' ? '#059669' : b.status === 'completed' ? '#0891b2' : '#dc2626';
                     var statusLabel = (b.status || 'pending').charAt(0).toUpperCase() + (b.status || '').slice(1);
                     var canChat   = b.status === 'confirmed' || b.status === 'completed';
@@ -344,23 +347,45 @@
                           'class="py-1.5 px-3 rounded-xl text-[11px] font-bold transition-all" ' +
                           'style="background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;">✕ Cancel</button>'
                         : '';
-                    html += '<div class="bg-white rounded-2xl border border-[#f5c842]/30 shadow-sm p-4">' +
+                    var dismissBtn = isDone
+                        ? '<button onclick="document.getElementById(\'cb-' + bid + '\').remove();_consultUpdateClearBtn();" ' +
+                          'class="text-[10px] text-slate-300 hover:text-red-400 transition-colors ml-1 px-1 leading-none" title="Dismiss">✕</button>'
+                        : '';
+                    html += '<div id="cb-' + bid + '" class="bg-white rounded-2xl border border-[#f5c842]/30 shadow-sm p-4' + (isDone ? ' opacity-70' : '') + '">' +
                         '<div class="flex items-start justify-between gap-2">' +
                             '<div>' +
                                 '<div class="font-black text-[13px] text-slate-800">🧑‍💼 ' + (b.expertName || 'Expert') + '</div>' +
                                 '<div class="text-[11px] text-slate-500 mt-0.5">📅 ' + (b.slot && b.slot.date ? b.slot.date : '') + ' at ' + (b.slot && b.slot.time ? b.slot.time : '') + '</div>' +
                             '</div>' +
-                            '<span class="text-[10px] font-bold px-2 py-1 rounded-full flex-shrink-0" style="background:' + statusColor + '22;color:' + statusColor + ';">' + statusLabel + '</span>' +
+                            '<div class="flex items-center gap-1 flex-shrink-0">' +
+                                '<span class="text-[10px] font-bold px-2 py-1 rounded-full" style="background:' + statusColor + '22;color:' + statusColor + ';">' + statusLabel + '</span>' +
+                                dismissBtn +
+                            '</div>' +
                         '</div>' +
                         ((chatBtn || cancelBtn) ? '<div class="flex gap-2 mt-2.5">' + chatBtn + cancelBtn + '</div>' : '') +
                     '</div>';
                 });
-                listEl.innerHTML = html;
+                var clearAllBtn = hasDone
+                    ? '<div class="flex justify-end mb-2"><button id="consult-clear-done-btn" onclick="_consultClearDone()" ' +
+                      'class="text-[11px] font-bold px-3 py-1 rounded-xl transition-all" ' +
+                      'style="background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;">🗑 Clear finished</button></div>'
+                    : '';
+                listEl.innerHTML = clearAllBtn + html;
             })
             .catch(function(err) {
                 if (listEl) listEl.innerHTML = '<div class="text-center py-6 text-slate-400 text-[12px]">Could not load bookings. Please try again.</div>';
                 console.error('[consult] bookings load error:', err);
             });
+    }
+
+    function _consultClearDone() {
+        document.querySelectorAll('#consult-bookings-list .opacity-70').forEach(function(el) { el.remove(); });
+        _consultUpdateClearBtn();
+    }
+    function _consultUpdateClearBtn() {
+        var btn = document.getElementById('consult-clear-done-btn');
+        if (!btn) return;
+        if (!document.querySelector('#consult-bookings-list .opacity-70')) btn.parentElement.remove();
     }
 
     /* ── Cancel booking ── */

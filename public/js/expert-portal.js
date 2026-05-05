@@ -76,22 +76,32 @@
                     return;
                 }
                 var html = '';
+                var epHasDone = false;
                 _epBookingCache = {};
                 snap.forEach(function(doc) {
                     var b   = doc.data();
                     var bid = doc.id;
                     _epBookingCache[bid] = b;
+                    var isDone = b.status === 'completed' || b.status === 'cancelled';
+                    if (isDone) epHasDone = true;
                     var statusColors = { confirmed:'#059669', completed:'#0891b2', pending:'#b45309', cancelled:'#dc2626' };
                     var sc = statusColors[b.status] || '#64748b';
                     var sl = (b.status || 'pending').charAt(0).toUpperCase() + (b.status || '').slice(1);
-                    html += '<div class="bg-white rounded-2xl border border-[#f5c842]/30 shadow-sm p-4">' +
+                    var dismissBtn = isDone
+                        ? '<button onclick="document.getElementById(\'epb-' + bid + '\').remove();_epUpdateClearBtn();" ' +
+                          'class="text-[10px] text-slate-300 hover:text-red-400 transition-colors ml-1 px-1 leading-none" title="Dismiss">✕</button>'
+                        : '';
+                    html += '<div id="epb-' + bid + '" class="bg-white rounded-2xl border border-[#f5c842]/30 shadow-sm p-4' + (isDone ? ' opacity-70' : '') + '">' +
                         '<div class="flex items-start justify-between gap-3 flex-wrap">' +
                             '<div>' +
                                 '<div class="font-black text-[13px] text-slate-800">👤 ' + (b.userName || b.userEmail || 'Client') + '</div>' +
                                 '<div class="text-[11px] text-slate-500 mt-0.5">📅 ' + (b.slot ? b.slot.date + ' at ' + b.slot.time : 'N/A') + '</div>' +
                                 '<div class="text-[10px] text-slate-400 mt-0.5">' + (b.userEmail || '') + '</div>' +
                             '</div>' +
-                            '<span class="text-[10px] font-bold px-2 py-1 rounded-full flex-shrink-0" style="background:' + sc + '22;color:' + sc + ';">' + sl + '</span>' +
+                            '<div class="flex items-center gap-1 flex-shrink-0">' +
+                                '<span class="text-[10px] font-bold px-2 py-1 rounded-full" style="background:' + sc + '22;color:' + sc + ';">' + sl + '</span>' +
+                                dismissBtn +
+                            '</div>' +
                         '</div>' +
                         '<div class="flex flex-wrap gap-2 mt-3">' +
                             '<button onclick="epViewClientProfile(\'' + bid + '\')" class="consult-tab px-3 py-1.5 rounded-xl text-[11px] font-bold">👤 View Profile</button>' +
@@ -103,12 +113,27 @@
                         '</div>' +
                     '</div>';
                 });
-                listEl.innerHTML = html;
+                var epClearAllBtn = epHasDone
+                    ? '<div class="flex justify-end mb-2"><button id="ep-clear-done-btn" onclick="_epClearDone()" ' +
+                      'class="text-[11px] font-bold px-3 py-1 rounded-xl transition-all" ' +
+                      'style="background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;">🗑 Clear finished</button></div>'
+                    : '';
+                listEl.innerHTML = epClearAllBtn + html;
             })
             .catch(function(err) {
                 listEl.innerHTML = '<div class="text-center py-6 text-slate-400 text-[12px]">Failed to load bookings.</div>';
                 console.error('[expert] bookings error:', err);
             });
+    }
+
+    function _epClearDone() {
+        document.querySelectorAll('#ep-booking-list .opacity-70').forEach(function(el) { el.remove(); });
+        _epUpdateClearBtn();
+    }
+    function _epUpdateClearBtn() {
+        var btn = document.getElementById('ep-clear-done-btn');
+        if (!btn) return;
+        if (!document.querySelector('#ep-booking-list .opacity-70')) btn.parentElement.remove();
     }
 
     /* ── Client profile modal ── */
