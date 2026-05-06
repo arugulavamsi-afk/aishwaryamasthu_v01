@@ -4,11 +4,22 @@
        registered expert logs in.
     ═══════════════════════════════════════════════ */
 
-    var _epView            = 'bookings'; // 'bookings' | 'profile' | 'chat'
+    var _epView            = 'bookings'; // 'bookings' | 'archive' | 'profile' | 'chat'
     var _epChatBookingId   = null;
     var _epChatClientName  = '';
     var _epChatListener    = null;
     var _epBookingCache    = {}; // bookingId → booking data (for PDF download)
+
+    /* ── Archive persistence (localStorage) ── */
+    function _epArchivedKey() {
+        return 'ep_archived_' + (window._expertDoc ? window._expertDoc.id : 'default');
+    }
+    function _epGetArchivedIds() {
+        try { return JSON.parse(localStorage.getItem(_epArchivedKey()) || '[]'); } catch(e) { return []; }
+    }
+    function _epSaveArchivedIds(ids) {
+        try { localStorage.setItem(_epArchivedKey(), JSON.stringify(ids)); } catch(e) {}
+    }
 
     function epInitDashboard(expert) {
         // Hide user-facing app, show expert dashboard
@@ -68,34 +79,42 @@
 
     /* ── Load bookings ── */
     function epLoadBookings(expertId) {
-        var db     = window._fbDb;
-        var listEl = document.getElementById('ep-booking-list');
+        var db          = window._fbDb;
+        var listEl      = document.getElementById('ep-booking-list');
+        var archiveList = document.getElementById('ep-archive-list');
         if (!db || !listEl) return;
         listEl.innerHTML = '<div class="text-center py-8 text-slate-400 text-[12px]">Loading bookings…</div>';
+        if (archiveList) archiveList.innerHTML = '<div class="text-center py-8 text-slate-400 text-[12px]"><div class="text-3xl mb-2">📂</div>No archived bookings yet.</div>';
+
         db.collection('bookings').where('expertId', '==', expertId)
             .orderBy('createdAt', 'desc').limit(30).get()
             .then(function(snap) {
                 if (snap.empty) {
                     listEl.innerHTML = '<div class="text-center py-8 text-slate-400 text-[12px]"><div class="text-3xl mb-2">📭</div>No bookings yet.</div>';
+                    _epUpdateArchiveBadge();
                     return;
                 }
-                var html = '';
-                var epHasDone = false;
-                _epBookingCache = {};
+                var archivedIds  = _epGetArchivedIds();
+                var upcomingHtml = '';
+                var archivedHtml = '';
+                var epHasDone    = false;
+                _epBookingCache  = {};
+
                 snap.forEach(function(doc) {
-                    var b   = doc.data();
-                    var bid = doc.id;
+                    var b          = doc.data();
+                    var bid        = doc.id;
                     _epBookingCache[bid] = b;
-                    var isDone = b.status === 'completed' || b.status === 'cancelled';
-                    if (isDone) epHasDone = true;
+                    var isDone     = b.status === 'completed' || b.status === 'cancelled';
+                    var isArchived = isDone && archivedIds.indexOf(bid) !== -1;
+
                     var statusColors = { confirmed:'#059669', completed:'#0891b2', pending:'#b45309', cancelled:'#dc2626' };
                     var sc = statusColors[b.status] || '#64748b';
                     var sl = (b.status || 'pending').charAt(0).toUpperCase() + (b.status || '').slice(1);
-                    var dismissBtn = isDone
-                        ? '<button onclick="document.getElementById(\'epb-' + bid + '\').remove();_epUpdateClearBtn();" ' +
-                          'class="text-[10px] text-slate-300 hover:text-red-400 transition-colors ml-1 px-1 leading-none" title="Dismiss">✕</button>'
+                    var dismissBtn = (isDone && !isArchived)
+                        ? '<button onclick="_epArchiveSingle(\'' + bid + '\')" ' +
+                          'class="text-[10px] text-slate-300 hover:text-red-400 transition-colors ml-1 px-1 leading-none" title="Archive">✕</button>'
                         : '';
-                    html += '<div id="epb-' + bid + '" class="bg-white rounded-2xl border border-[#f5c842]/30 shadow-sm p-4' + (isDone ? ' opacity-70' : '') + '">' +
+                    var card = '<div id="epb-' + bid + '" class="bg-white rounded-2xl border border-[#f5c842]/30 shadow-sm p-4' + (isDone ? ' opacity-70' : '') + '">' +
                         '<div class="flex items-start justify-between gap-3 flex-wrap">' +
                             '<div>' +
                                 '<div class="font-black text-[13px] text-slate-800">👤 ' + (b.userName || b.userEmail || 'Client') + '</div>' +
@@ -116,13 +135,31 @@
                             (b.status === 'confirmed' ? '<button onclick="epMarkComplete(\'' + bid + '\')" class="px-3 py-1.5 rounded-xl text-[11px] font-bold" style="background:#d1fae5;color:#065f46;border:1px solid #6ee7b7;">✓ Mark Complete</button>' : '') +
                         '</div>' +
                     '</div>';
+
+                    if (isArchived) {
+                        archivedHtml += card;
+                    } else {
+                        if (isDone) epHasDone = true;
+                        upcomingHtml += card;
+                    }
                 });
+
+                if (!upcomingHtml) {
+                    upcomingHtml = '<div class="text-center py-8 text-slate-400 text-[12px]"><div class="text-3xl mb-2">✅</div>All finished bookings have been archived.</div>';
+                    epHasDone = false;
+                }
                 var epClearAllBtn = epHasDone
                     ? '<div class="flex justify-end mb-2"><button id="ep-clear-done-btn" onclick="_epClearDone()" ' +
                       'class="text-[11px] font-bold px-3 py-1 rounded-xl transition-all" ' +
                       'style="background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;">🗑 Clear finished</button></div>'
                     : '';
-                listEl.innerHTML = epClearAllBtn + html;
+                listEl.innerHTML = epClearAllBtn + upcomingHtml;
+
+                if (archiveList) {
+                    archiveList.innerHTML = archivedHtml ||
+                        '<div class="text-center py-8 text-slate-400 text-[12px]"><div class="text-3xl mb-2">📂</div>No archived bookings yet.</div>';
+                }
+                _epUpdateArchiveBadge();
             })
             .catch(function(err) {
                 listEl.innerHTML = '<div class="text-center py-6 text-slate-400 text-[12px]">Failed to load bookings.</div>';
@@ -132,15 +169,43 @@
 
     function _epClearDone() {
         var archiveList = document.getElementById('ep-archive-list');
-        var doneEls = document.querySelectorAll('#ep-booking-list .opacity-70');
-        if (archiveList && doneEls.length > 0) {
-            var placeholder = archiveList.querySelector('.text-center');
-            if (placeholder) placeholder.remove();
-            doneEls.forEach(function(el) { archiveList.appendChild(el); });
+        var doneEls     = document.querySelectorAll('#ep-booking-list .opacity-70');
+        if (doneEls.length > 0) {
+            // Persist IDs so the archive survives refresh / refresh-button clicks
+            var ids = _epGetArchivedIds();
+            doneEls.forEach(function(el) {
+                var bid = el.id.replace('epb-', '');
+                if (bid && ids.indexOf(bid) === -1) ids.push(bid);
+            });
+            _epSaveArchivedIds(ids);
+            // Move DOM nodes to archive
+            if (archiveList) {
+                var placeholder = archiveList.querySelector('.text-center');
+                if (placeholder) placeholder.remove();
+                doneEls.forEach(function(el) { archiveList.appendChild(el); });
+            }
             _epUpdateArchiveBadge();
         }
         _epUpdateClearBtn();
     }
+
+    function _epArchiveSingle(bid) {
+        var el = document.getElementById('epb-' + bid);
+        if (!el) return;
+        var ids = _epGetArchivedIds();
+        if (ids.indexOf(bid) === -1) { ids.push(bid); _epSaveArchivedIds(ids); }
+        var archiveList = document.getElementById('ep-archive-list');
+        if (archiveList) {
+            var placeholder = archiveList.querySelector('.text-center');
+            if (placeholder) placeholder.remove();
+            archiveList.appendChild(el);
+            _epUpdateArchiveBadge();
+        } else {
+            el.remove();
+        }
+        _epUpdateClearBtn();
+    }
+
     function _epUpdateClearBtn() {
         var btn = document.getElementById('ep-clear-done-btn');
         if (!btn) return;
@@ -149,7 +214,8 @@
     function _epUpdateArchiveBadge() {
         var tab = document.getElementById('ep-tab-archive');
         if (!tab) return;
-        var count = document.querySelectorAll('#ep-archive-list > div[id]').length;
+        var ids   = _epGetArchivedIds();
+        var count = ids.length;
         var badge = tab.querySelector('.ep-archive-badge');
         if (count > 0) {
             if (!badge) {
