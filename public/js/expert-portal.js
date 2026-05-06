@@ -41,17 +41,21 @@
     function _epRenderView() {
         var tabsRow  = document.getElementById('ep-tabs');
         var secBook  = document.getElementById('ep-sec-bookings');
+        var secArch  = document.getElementById('ep-sec-archive');
         var secProf  = document.getElementById('ep-sec-profile');
         var secChat  = document.getElementById('ep-sec-chat');
         var tabBook  = document.getElementById('ep-tab-bookings');
+        var tabArch  = document.getElementById('ep-tab-archive');
         var tabProf  = document.getElementById('ep-tab-profile');
         var showChat = _epView === 'chat';
 
         if (tabsRow) tabsRow.style.display = showChat ? 'none' : '';
         if (secBook) secBook.classList.toggle('hidden', _epView !== 'bookings');
+        if (secArch) secArch.classList.toggle('hidden', _epView !== 'archive');
         if (secProf) secProf.classList.toggle('hidden', _epView !== 'profile');
         if (secChat) secChat.classList.toggle('hidden', !showChat);
         if (tabBook) tabBook.classList.toggle('consult-tab-active', _epView === 'bookings');
+        if (tabArch) tabArch.classList.toggle('consult-tab-active', _epView === 'archive');
         if (tabProf) tabProf.classList.toggle('consult-tab-active', _epView === 'profile');
     }
 
@@ -127,13 +131,37 @@
     }
 
     function _epClearDone() {
-        document.querySelectorAll('#ep-booking-list .opacity-70').forEach(function(el) { el.remove(); });
+        var archiveList = document.getElementById('ep-archive-list');
+        var doneEls = document.querySelectorAll('#ep-booking-list .opacity-70');
+        if (archiveList && doneEls.length > 0) {
+            var placeholder = archiveList.querySelector('.text-center');
+            if (placeholder) placeholder.remove();
+            doneEls.forEach(function(el) { archiveList.appendChild(el); });
+            _epUpdateArchiveBadge();
+        }
         _epUpdateClearBtn();
     }
     function _epUpdateClearBtn() {
         var btn = document.getElementById('ep-clear-done-btn');
         if (!btn) return;
         if (!document.querySelector('#ep-booking-list .opacity-70')) btn.parentElement.remove();
+    }
+    function _epUpdateArchiveBadge() {
+        var tab = document.getElementById('ep-tab-archive');
+        if (!tab) return;
+        var count = document.querySelectorAll('#ep-archive-list > div[id]').length;
+        var badge = tab.querySelector('.ep-archive-badge');
+        if (count > 0) {
+            if (!badge) {
+                badge = document.createElement('span');
+                badge.className = 'ep-archive-badge inline-flex items-center justify-center w-4 h-4 rounded-full text-[9px] font-black ml-1';
+                badge.style.cssText = 'background:#dc2626;color:#fff;';
+                tab.appendChild(badge);
+            }
+            badge.textContent = count;
+        } else if (badge) {
+            badge.remove();
+        }
     }
 
     /* ── Client profile modal ── */

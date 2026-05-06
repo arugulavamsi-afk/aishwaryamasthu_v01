@@ -850,6 +850,7 @@
         <!-- Tabs -->
         <div id="ep-tabs" class="flex gap-2 mb-4">
             <button id="ep-tab-bookings" onclick="epShowTab('bookings')" class="consult-tab consult-tab-active px-4 py-2 rounded-xl text-[12px] font-bold transition-all">Upcoming Bookings</button>
+            <button id="ep-tab-archive"  onclick="epShowTab('archive')"  class="consult-tab px-4 py-2 rounded-xl text-[12px] font-bold transition-all">Archive</button>
             <button id="ep-tab-profile"  onclick="epShowTab('profile')"  class="consult-tab px-4 py-2 rounded-xl text-[12px] font-bold transition-all">My Profile</button>
         </div>
 
@@ -863,6 +864,16 @@
             </div>
             <div id="ep-booking-list" class="flex flex-col gap-3">
                 <div class="text-center py-8 text-slate-400 text-[12px]">Loading bookings…</div>
+            </div>
+        </div>
+
+        <!-- Archive section -->
+        <div id="ep-sec-archive" class="hidden">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-[12px] font-black text-slate-600">📂 Archived Bookings</span>
+            </div>
+            <div id="ep-archive-list" class="flex flex-col gap-3">
+                <div class="text-center py-8 text-slate-400 text-[12px]"><div class="text-3xl mb-2">📂</div>No archived bookings yet.</div>
             </div>
         </div>
 

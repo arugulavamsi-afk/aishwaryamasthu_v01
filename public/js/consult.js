@@ -71,23 +71,28 @@
     function _consultRenderView() {
         var tabList  = document.getElementById('consult-tab-list');
         var tabBook  = document.getElementById('consult-tab-bookings');
+        var tabArch  = document.getElementById('consult-tab-archive');
         var tabsRow  = document.getElementById('consult-tabs');
         var secList  = document.getElementById('consult-sec-list');
         var secBook  = document.getElementById('consult-sec-bookings');
+        var secArch  = document.getElementById('consult-sec-archive');
         var secSlot  = document.getElementById('consult-sec-slots');
         var secChat  = document.getElementById('consult-sec-chat');
         if (!secList) return;
 
         var showList = _consultView === 'list';
         var showBook = _consultView === 'bookings';
+        var showArch = _consultView === 'archive';
         var showSlot = _consultView === 'slots';
         var showChat = _consultView === 'chat';
 
         if (tabsRow) tabsRow.style.display = showChat ? 'none' : '';
         if (tabList) tabList.classList.toggle('consult-tab-active', showList);
         if (tabBook) tabBook.classList.toggle('consult-tab-active', showBook);
+        if (tabArch) tabArch.classList.toggle('consult-tab-active', showArch);
         if (secList) secList.style.display = (showList || showSlot) ? '' : 'none';
         if (secBook) secBook.style.display = showBook ? '' : 'none';
+        if (secArch) secArch.style.display = showArch ? '' : 'none';
         if (secSlot) secSlot.style.display = showSlot ? '' : 'none';
         if (secChat) secChat.style.display = showChat ? '' : 'none';
     }
@@ -431,13 +436,37 @@
     }
 
     function _consultClearDone() {
-        document.querySelectorAll('#consult-bookings-list .opacity-70').forEach(function(el) { el.remove(); });
+        var archiveList = document.getElementById('consult-archive-list');
+        var doneEls = document.querySelectorAll('#consult-bookings-list .opacity-70');
+        if (archiveList && doneEls.length > 0) {
+            var placeholder = archiveList.querySelector('.text-center');
+            if (placeholder) placeholder.remove();
+            doneEls.forEach(function(el) { archiveList.appendChild(el); });
+            _consultUpdateArchiveBadge();
+        }
         _consultUpdateClearBtn();
     }
     function _consultUpdateClearBtn() {
         var btn = document.getElementById('consult-clear-done-btn');
         if (!btn) return;
         if (!document.querySelector('#consult-bookings-list .opacity-70')) btn.parentElement.remove();
+    }
+    function _consultUpdateArchiveBadge() {
+        var tab = document.getElementById('consult-tab-archive');
+        if (!tab) return;
+        var count = document.querySelectorAll('#consult-archive-list > div[id]').length;
+        var badge = tab.querySelector('.consult-archive-badge');
+        if (count > 0) {
+            if (!badge) {
+                badge = document.createElement('span');
+                badge.className = 'consult-archive-badge inline-flex items-center justify-center w-4 h-4 rounded-full text-[9px] font-black ml-1';
+                badge.style.cssText = 'background:#dc2626;color:#fff;';
+                tab.appendChild(badge);
+            }
+            badge.textContent = count;
+        } else if (badge) {
+            badge.remove();
+        }
     }
 
     /* ── Cancel booking ── */
