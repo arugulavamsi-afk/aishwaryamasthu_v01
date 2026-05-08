@@ -115,25 +115,25 @@
                 <div class="auth-row-2col">
                     <div>
                         <label class="auth-field-label" data-i18n="splash.fname">First Name</label>
-                        <input class="auth-input" type="text" id="signup-fname" placeholder="Arjun" data-i18n-placeholder="splash.ph.fname" autocomplete="given-name" />
+                        <input class="auth-input" type="text" id="signup-fname" placeholder="Arjun" data-i18n-placeholder="splash.ph.fname" autocomplete="given-name" maxlength="50" />
                     </div>
                     <div>
                         <label class="auth-field-label" data-i18n="splash.lname">Last Name</label>
-                        <input class="auth-input" type="text" id="signup-lname" placeholder="Sharma" data-i18n-placeholder="splash.ph.lname" autocomplete="family-name" />
+                        <input class="auth-input" type="text" id="signup-lname" placeholder="Sharma" data-i18n-placeholder="splash.ph.lname" autocomplete="family-name" maxlength="50" />
                     </div>
                 </div>
                 <div>
                     <label class="auth-field-label" data-i18n="splash.email">Email Address</label>
-                    <input class="auth-input" type="email" id="signup-email" placeholder="you@example.com" data-i18n-placeholder="splash.ph.email" autocomplete="email" />
+                    <input class="auth-input" type="email" id="signup-email" placeholder="you@example.com" data-i18n-placeholder="splash.ph.email" autocomplete="email" maxlength="254" />
                 </div>
                 <div>
                     <label class="auth-field-label" data-i18n="splash.password">Password</label>
-                    <input class="auth-input" type="password" id="signup-password" placeholder="Min. 8 characters" data-i18n-placeholder="splash.ph.pwdmin" autocomplete="new-password" oninput="updatePwdStrength(this.value)" />
+                    <input class="auth-input" type="password" id="signup-password" placeholder="Min. 8 characters" data-i18n-placeholder="splash.ph.pwdmin" autocomplete="new-password" maxlength="128" oninput="updatePwdStrength(this.value)" />
                     <div class="pwd-strength-bar"><div class="pwd-strength-fill" id="pwd-strength-fill"></div></div>
                 </div>
                 <div>
                     <label class="auth-field-label" data-i18n="splash.confirmpassword">Confirm Password</label>
-                    <input class="auth-input" type="password" id="signup-confirm" placeholder="Re-enter password" data-i18n-placeholder="splash.ph.confirm" autocomplete="new-password" />
+                    <input class="auth-input" type="password" id="signup-confirm" placeholder="Re-enter password" data-i18n-placeholder="splash.ph.confirm" autocomplete="new-password" maxlength="128" />
                 </div>
                 <div id="signup-error" class="auth-error"></div>
                 <div id="signup-success" class="auth-success"></div>

@@ -185,7 +185,7 @@
         errEl.style.display = 'none'; okEl.style.display = 'none';
 
         if (!fname || !lname)              return showErr('Please enter your full name.');
-        if (!email || !email.includes('@')) return showErr('Enter a valid email address.');
+        if (!email || !/^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/.test(email)) return showErr('Enter a valid email address.');
         if (pwd.length < 8)                return showErr('Password must be at least 8 characters.');
         if (pwd !== confirm)               return showErr('Passwords do not match.');
         if (!_fbAuth)                      return showErr('Still connecting… please wait a moment and try again.');
