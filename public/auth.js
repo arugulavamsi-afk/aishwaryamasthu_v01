@@ -184,7 +184,10 @@
         }
         errEl.style.display = 'none'; okEl.style.display = 'none';
 
+        const nameRegex = /^[a-zA-ZÀ-ɏ\s'\-\.]+$/;
         if (!fname || !lname)              return showErr('Please enter your full name.');
+        if (!nameRegex.test(fname))        return showErr('First name can only contain letters, spaces, hyphens, apostrophes, or dots.');
+        if (!nameRegex.test(lname))        return showErr('Last name can only contain letters, spaces, hyphens, apostrophes, or dots.');
         if (!email || !/^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/.test(email)) return showErr('Enter a valid email address.');
         if (pwd.length < 8)                return showErr('Password must be at least 8 characters.');
         if (pwd !== confirm)               return showErr('Passwords do not match.');
