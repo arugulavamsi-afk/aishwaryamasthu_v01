@@ -511,14 +511,21 @@
             const isFullPanel  = isDashboard || isMFKit || isFundPicker || isHealthScore || isFinPlan || isMFExplorer || isTaxGuide || isHomeLoan || isStepUpSIP || isEPFCalc || isSSAPlanner || isPPFNPS || isCtcOptimizer || isInsure || isGratuity || isDebtPlan || isJointPlan || isCibil || isFinCal || isSelfEmpl || isGoldComp || isDashCalc || isDashMF || isDashTax || isDashFav || isCoffeeCan || isNetWorth || isUlipCheck || isFixedIncome || isRetirementHub || isMyProfile || isCgCalc || isHraCalc || isNomTrack || isBudgetTrack || isMyMFs || isConsult;
 
             // Show/hide main panels
-            const leftPanel = document.getElementById('growth-left-panel');
-            const rightPanel = document.getElementById('growth-right-panel');
             const growthWrapper = document.getElementById('growth-wrapper');
-            ['dashboard-panel','mfkit-panel','fundpicker-panel','healthscore-panel','finplan-panel','mfexplorer-panel','taxguide-panel','homeloan-panel','stepupsip-panel','epfcalc-panel','ssaplanner-panel','ppfnps-panel','ctcoptimizer-panel','insure-panel','gratuity-panel','debtplan-panel','jointplan-panel','cibil-panel','fincal-panel','selfempl-panel','goldcomp-panel','dashcat-calc-panel','dashcat-mf-panel','dashcat-tax-panel','dashcat-fav-panel','coffeecan-panel','networth-panel','ulipcheck-panel','fixedincome-panel','retirementhub-panel','myprofile-panel','cgcalc-panel','hracalc-panel','nomtrack-panel','budgettrack-panel','mymfs-panel','consult-panel'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.classList.add('hidden');
-            });
+            const _panelIds = ['dashboard-panel','mfkit-panel','fundpicker-panel','healthscore-panel','finplan-panel','mfexplorer-panel','taxguide-panel','homeloan-panel','stepupsip-panel','epfcalc-panel','ssaplanner-panel','ppfnps-panel','ctcoptimizer-panel','insure-panel','gratuity-panel','debtplan-panel','jointplan-panel','cibil-panel','fincal-panel','selfempl-panel','goldcomp-panel','dashcat-calc-panel','dashcat-mf-panel','dashcat-tax-panel','dashcat-fav-panel','coffeecan-panel','networth-panel','ulipcheck-panel','fixedincome-panel','retirementhub-panel','myprofile-panel','cgcalc-panel','hracalc-panel','nomtrack-panel','budgettrack-panel','mymfs-panel','consult-panel'];
+
+            // Find currently visible element for crossfade exit
+            let _outEl = null;
+            for (const _oid of _panelIds) {
+                const _oe = document.getElementById(_oid);
+                if (_oe && !_oe.classList.contains('hidden')) { _outEl = _oe; break; }
+            }
+            if (!_outEl && growthWrapper && growthWrapper.style.display !== 'none') {
+                _outEl = growthWrapper;
+            }
+
             const activeId = isDashboard ? 'dashboard-panel' : isMFKit ? 'mfkit-panel' : isFundPicker ? 'fundpicker-panel' : isHealthScore ? 'healthscore-panel' : isFinPlan ? 'finplan-panel' : isMFExplorer ? 'mfexplorer-panel' : isTaxGuide ? 'taxguide-panel' : isHomeLoan ? 'homeloan-panel' : isStepUpSIP ? 'stepupsip-panel' : isEPFCalc ? 'epfcalc-panel' : isSSAPlanner ? 'ssaplanner-panel' : isPPFNPS ? 'ppfnps-panel' : isCtcOptimizer ? 'ctcoptimizer-panel' : isInsure ? 'insure-panel' : isGratuity ? 'gratuity-panel' : isDebtPlan ? 'debtplan-panel' : isJointPlan ? 'jointplan-panel' : isCibil ? 'cibil-panel' : isFinCal ? 'fincal-panel' : isSelfEmpl ? 'selfempl-panel' : isGoldComp ? 'goldcomp-panel' : isDashCalc ? 'dashcat-calc-panel' : isDashMF ? 'dashcat-mf-panel' : isDashTax ? 'dashcat-tax-panel' : isDashFav ? 'dashcat-fav-panel' : isCoffeeCan ? 'coffeecan-panel' : isNetWorth ? 'networth-panel' : isUlipCheck ? 'ulipcheck-panel' : isFixedIncome ? 'fixedincome-panel' : isRetirementHub ? 'retirementhub-panel' : isMyProfile ? 'myprofile-panel' : isCgCalc ? 'cgcalc-panel' : isHraCalc ? 'hracalc-panel' : isNomTrack ? 'nomtrack-panel' : isBudgetTrack ? 'budgettrack-panel' : isMyMFs ? 'mymfs-panel' : isConsult ? 'consult-panel' : null;
+
             // Web Animations API — fires immediately, compositor-driven, no reflow
             function _animatePanel(el) {
                 el.animate(
@@ -527,124 +534,145 @@
                     { duration: 180, easing: 'cubic-bezier(0.4, 0, 0.2, 1)', fill: 'both' }
                 );
             }
-            if (activeId) {
-                const el = document.getElementById(activeId);
-                el.classList.remove('hidden');
-                _animatePanel(el);
-            }
-            try { if (typeof injectHowToUse === 'function') injectHowToUse(mode); } catch(e) { console.warn('[how-to-use] inject error:', e); }
-            if (!isFullPanel && growthWrapper) {
-                _animatePanel(growthWrapper);
-            }
-            if (growthWrapper) growthWrapper.style.display = isFullPanel ? 'none' : '';
 
-            if (isMFKit) { renderMFKit(); applyLang(); return; }
-            if (isFundPicker) { renderFundPickerPage(); applyLang(); return; }
-            if (isHealthScore) { applyLang(); return; }
-            if (isFinPlan) { fpInitQuestions(); applyLang(); return; }
-            if (isMFExplorer) { initMFExplorer(); applyLang(); return; }
-            if (isDashboard)  {
-                if (typeof initDashboard === 'function') initDashboard();
-                applyLang();
-                return;
-            } // dashboard-panel shown, no init needed
-            if (isTaxGuide)   { initTaxGuide();   applyLang(); return; }
-            if (isHomeLoan)   { initHomeLoan();   applyLang(); return; }
-            if (isStepUpSIP)  { initStepUpSIP();  applyLang(); return; }
-            if (isEPFCalc)    { initEPFCalc();    applyLang(); return; }
-            if (isSSAPlanner) { initSSAPlanner(); applyLang(); return; }
-            if (isPPFNPS)        { initPPFNPS();        applyLang(); return; }
-            if (isCtcOptimizer)  { initCtcOptimizer();  applyLang(); return; }
-            if (isInsure)        { initInsure();        applyLang(); return; }
-            if (isGratuity)      { initGratuity();      applyLang(); return; }
-            if (isDebtPlan)      { initDebtPlan();      applyLang(); return; }
-            if (isJointPlan)     { initJointPlan();     applyLang(); return; }
-            if (isCibil)         { initCibil();         applyLang(); return; }
-            if (isFinCal)        { initFinCal();        applyLang(); return; }
-            if (isSelfEmpl)      { initSelfEmpl();      applyLang(); return; }
-            if (isGoldComp)      { initGoldComp();      applyLang(); return; }
-            if (isDashCalc)      { _dashInjectPinBtns('dashcat-calc-panel'); applyLang(); return; }
-            if (isDashMF)        { _dashInjectPinBtns('dashcat-mf-panel');   applyLang(); return; }
-            if (isDashTax)       { _dashInjectPinBtns('dashcat-tax-panel');  applyLang(); return; }
-            if (isDashFav)       { initDashFav();       applyLang(); return; }
-            if (isCoffeeCan)     { initCoffeeCan();     applyLang(); return; }
-            if (isNetWorth)      { initNetWorth();      applyLang(); return; }
-            if (isUlipCheck)     { initUlipCheck();     applyLang(); return; }
-            if (isFixedIncome)    { initFixedIncome();    applyLang(); return; }
-            if (isRetirementHub) { initRetirementHub(); initDrawdown(); applyLang(); return; }
-            if (isMyProfile)     { if (typeof initMyProfile === 'function') initMyProfile(); applyLang(); return; }
-            if (isCgCalc)        { initCgCalc();    applyLang(); return; }
-            if (isHraCalc)       { initHraCalc();   applyLang(); return; }
-            if (isNomTrack)      { initNomTrack();      applyLang(); return; }
-            if (isBudgetTrack)   { initBudgetTracker(); applyLang(); return; }
-            if (isMyMFs)         { if (typeof initMyMFs === 'function') initMyMFs(); applyLang(); return; }
-            if (isConsult)       { if (typeof initConsult === 'function') initConsult(); applyLang(); return; }
-
-            // Show/hide reset buttons
-            document.getElementById('reset-growth-btn').style.display = isGoal ? 'none' : 'flex';
-            document.getElementById('reset-goal-btn').style.display = isGoal ? 'flex' : 'none';
-
-            // Toggle panel headers
-            document.getElementById('growth-panel-header').classList.toggle('hidden', isGoal);
-            document.getElementById('goal-panel-header').classList.toggle('hidden', !isGoal);
-            document.getElementById('growth-results-header').classList.toggle('hidden', isGoal);
-            document.getElementById('goal-results-header').classList.toggle('hidden', !isGoal);
-            // Toggle how-to-use slots
-            var ghSlot = document.getElementById('howto-growth-slot');
-            var glSlot = document.getElementById('howto-goal-slot');
-            if (ghSlot) ghSlot.style.display = isGoal ? 'none' : '';
-            if (glSlot) glSlot.style.display = isGoal ? '' : 'none';
-
-            document.getElementById('rate-container').style.display = isGoal ? 'none' : 'block';
-            document.getElementById('inflation-toggle-container').style.display = isGoal ? 'none' : 'block';
-            document.getElementById('ltcg-toggle-container').style.display = isGoal ? 'none' : 'block';
-            if (isGoal) {
-                document.getElementById('inflation-rate-container').classList.add('hidden');
-                const toggle = document.getElementById('inflation-toggle');
-                toggle.checked = false;
-                document.getElementById('toggle-track').classList.remove('on');
-                document.getElementById('toggle-thumb').classList.remove('on');
-                currentMode = 'goal';
-                // Hide investment suggestions until Calculate is clicked
-                document.getElementById('invest-suggestions').classList.add('hidden');
-                goalCalculateClicked = false;
-            }
-            document.getElementById('custom-rate-container').style.display = isGoal ? 'block' : 'none';
-            document.getElementById('goal-type-container').style.display = isGoal ? 'block' : 'none';
-            document.getElementById('goal-inflation-section').classList.toggle('hidden', !isGoal);
-            document.getElementById('amount-label').innerText = isGoal ? _t('lbl.gr.todaycost') : _t('lbl.gr.amount');
-            if (isGoal) goalInflSetDefaults();
-            document.getElementById('years-label').innerText = isGoal ? 'Goal Term (Years)' : 'Time Period (Years)';
-            document.getElementById('calc-btn').innerText = isGoal ? 'Calculate Required Investment' : 'Calculate Projection';
-            document.getElementById('growth-results').style.display = isGoal ? 'none' : 'block';
-            document.getElementById('goal-results').style.display = isGoal ? 'block' : 'none';
-
-            // Guard already set at top of switchMode
-            try {
-                restoreTabState(isGoal ? 'goal' : 'growth');
-
-                // After restore: clear amount + years if goal mode has no saved values
-                if (isGoal) {
-                    const amtEl   = document.getElementById('amount');
-                    const yrsEl   = document.getElementById('years');
-                    const wordsEl = document.getElementById('amount-words');
-                    const yWrdsEl = document.getElementById('years-words');
-                    if (amtEl && (amtEl.value === '0' || amtEl.value === '')) {
-                        amtEl.value = '';
-                        amtEl.classList.remove('text-slate-400');
-                        if (wordsEl) wordsEl.innerText = '';
-                    }
-                    if (yrsEl && (yrsEl.value === '0' || yrsEl.value === '')) {
-                        yrsEl.value = '';
-                        yrsEl.classList.remove('text-slate-400');
-                        if (yWrdsEl) yWrdsEl.innerText = '';
-                    }
+            function _doReveal() {
+                _panelIds.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.classList.add('hidden');
+                });
+                if (activeId) {
+                    const el = document.getElementById(activeId);
+                    el.classList.remove('hidden');
+                    _animatePanel(el);
                 }
-            } finally {
-                window._switchingMode = false;
+                try { if (typeof injectHowToUse === 'function') injectHowToUse(mode); } catch(e) { console.warn('[how-to-use] inject error:', e); }
+                if (!isFullPanel && growthWrapper) {
+                    _animatePanel(growthWrapper);
+                }
+                if (growthWrapper) growthWrapper.style.display = isFullPanel ? 'none' : '';
+
+                if (isMFKit) { renderMFKit(); applyLang(); return; }
+                if (isFundPicker) { renderFundPickerPage(); applyLang(); return; }
+                if (isHealthScore) { applyLang(); return; }
+                if (isFinPlan) { fpInitQuestions(); applyLang(); return; }
+                if (isMFExplorer) { initMFExplorer(); applyLang(); return; }
+                if (isDashboard)  {
+                    if (typeof initDashboard === 'function') initDashboard();
+                    applyLang();
+                    return;
+                }
+                if (isTaxGuide)   { initTaxGuide();   applyLang(); return; }
+                if (isHomeLoan)   { initHomeLoan();   applyLang(); return; }
+                if (isStepUpSIP)  { initStepUpSIP();  applyLang(); return; }
+                if (isEPFCalc)    { initEPFCalc();    applyLang(); return; }
+                if (isSSAPlanner) { initSSAPlanner(); applyLang(); return; }
+                if (isPPFNPS)        { initPPFNPS();        applyLang(); return; }
+                if (isCtcOptimizer)  { initCtcOptimizer();  applyLang(); return; }
+                if (isInsure)        { initInsure();        applyLang(); return; }
+                if (isGratuity)      { initGratuity();      applyLang(); return; }
+                if (isDebtPlan)      { initDebtPlan();      applyLang(); return; }
+                if (isJointPlan)     { initJointPlan();     applyLang(); return; }
+                if (isCibil)         { initCibil();         applyLang(); return; }
+                if (isFinCal)        { initFinCal();        applyLang(); return; }
+                if (isSelfEmpl)      { initSelfEmpl();      applyLang(); return; }
+                if (isGoldComp)      { initGoldComp();      applyLang(); return; }
+                if (isDashCalc)      { _dashInjectPinBtns('dashcat-calc-panel'); applyLang(); return; }
+                if (isDashMF)        { _dashInjectPinBtns('dashcat-mf-panel');   applyLang(); return; }
+                if (isDashTax)       { _dashInjectPinBtns('dashcat-tax-panel');  applyLang(); return; }
+                if (isDashFav)       { initDashFav();       applyLang(); return; }
+                if (isCoffeeCan)     { initCoffeeCan();     applyLang(); return; }
+                if (isNetWorth)      { initNetWorth();      applyLang(); return; }
+                if (isUlipCheck)     { initUlipCheck();     applyLang(); return; }
+                if (isFixedIncome)    { initFixedIncome();    applyLang(); return; }
+                if (isRetirementHub) { initRetirementHub(); initDrawdown(); applyLang(); return; }
+                if (isMyProfile)     { if (typeof initMyProfile === 'function') initMyProfile(); applyLang(); return; }
+                if (isCgCalc)        { initCgCalc();    applyLang(); return; }
+                if (isHraCalc)       { initHraCalc();   applyLang(); return; }
+                if (isNomTrack)      { initNomTrack();      applyLang(); return; }
+                if (isBudgetTrack)   { initBudgetTracker(); applyLang(); return; }
+                if (isMyMFs)         { if (typeof initMyMFs === 'function') initMyMFs(); applyLang(); return; }
+                if (isConsult)       { if (typeof initConsult === 'function') initConsult(); applyLang(); return; }
+
+                // Show/hide reset buttons
+                document.getElementById('reset-growth-btn').style.display = isGoal ? 'none' : 'flex';
+                document.getElementById('reset-goal-btn').style.display = isGoal ? 'flex' : 'none';
+
+                // Toggle panel headers
+                document.getElementById('growth-panel-header').classList.toggle('hidden', isGoal);
+                document.getElementById('goal-panel-header').classList.toggle('hidden', !isGoal);
+                document.getElementById('growth-results-header').classList.toggle('hidden', isGoal);
+                document.getElementById('goal-results-header').classList.toggle('hidden', !isGoal);
+                // Toggle how-to-use slots
+                var ghSlot = document.getElementById('howto-growth-slot');
+                var glSlot = document.getElementById('howto-goal-slot');
+                if (ghSlot) ghSlot.style.display = isGoal ? 'none' : '';
+                if (glSlot) glSlot.style.display = isGoal ? '' : 'none';
+
+                document.getElementById('rate-container').style.display = isGoal ? 'none' : 'block';
+                document.getElementById('inflation-toggle-container').style.display = isGoal ? 'none' : 'block';
+                document.getElementById('ltcg-toggle-container').style.display = isGoal ? 'none' : 'block';
+                if (isGoal) {
+                    document.getElementById('inflation-rate-container').classList.add('hidden');
+                    const toggle = document.getElementById('inflation-toggle');
+                    toggle.checked = false;
+                    document.getElementById('toggle-track').classList.remove('on');
+                    document.getElementById('toggle-thumb').classList.remove('on');
+                    currentMode = 'goal';
+                    // Hide investment suggestions until Calculate is clicked
+                    document.getElementById('invest-suggestions').classList.add('hidden');
+                    goalCalculateClicked = false;
+                }
+                document.getElementById('custom-rate-container').style.display = isGoal ? 'block' : 'none';
+                document.getElementById('goal-type-container').style.display = isGoal ? 'block' : 'none';
+                document.getElementById('goal-inflation-section').classList.toggle('hidden', !isGoal);
+                document.getElementById('amount-label').innerText = isGoal ? _t('lbl.gr.todaycost') : _t('lbl.gr.amount');
+                if (isGoal) goalInflSetDefaults();
+                document.getElementById('years-label').innerText = isGoal ? 'Goal Term (Years)' : 'Time Period (Years)';
+                document.getElementById('calc-btn').innerText = isGoal ? 'Calculate Required Investment' : 'Calculate Projection';
+                document.getElementById('growth-results').style.display = isGoal ? 'none' : 'block';
+                document.getElementById('goal-results').style.display = isGoal ? 'block' : 'none';
+
+                // Guard already set at top of switchMode
+                try {
+                    restoreTabState(isGoal ? 'goal' : 'growth');
+
+                    // After restore: clear amount + years if goal mode has no saved values
+                    if (isGoal) {
+                        const amtEl   = document.getElementById('amount');
+                        const yrsEl   = document.getElementById('years');
+                        const wordsEl = document.getElementById('amount-words');
+                        const yWrdsEl = document.getElementById('years-words');
+                        if (amtEl && (amtEl.value === '0' || amtEl.value === '')) {
+                            amtEl.value = '';
+                            amtEl.classList.remove('text-slate-400');
+                            if (wordsEl) wordsEl.innerText = '';
+                        }
+                        if (yrsEl && (yrsEl.value === '0' || yrsEl.value === '')) {
+                            yrsEl.value = '';
+                            yrsEl.classList.remove('text-slate-400');
+                            if (yWrdsEl) yWrdsEl.innerText = '';
+                        }
+                    }
+                } finally {
+                    window._switchingMode = false;
+                }
+                onYearsChange();
+                calculate();
             }
-            onYearsChange();
-            calculate();
+
+            // Crossfade: fade out outgoing panel, then reveal incoming one.
+            // Skip when staying within growth/goal/inflation (same growthWrapper stays visible).
+            const _outIsGrowth = _outEl === growthWrapper;
+            const _shouldFade = _outEl && !(_outIsGrowth && !isFullPanel);
+            if (_shouldFade) {
+                _outEl.animate(
+                    [{ opacity: '1', transform: 'translateY(0)' },
+                     { opacity: '0', transform: 'translateY(-4px)' }],
+                    { duration: 120, easing: 'ease-in', fill: 'forwards' }
+                ).onfinish = _doReveal;
+            } else {
+                _doReveal();
+            }
         }
 
         function onInflationToggle() {
