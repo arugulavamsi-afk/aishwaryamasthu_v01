@@ -681,29 +681,27 @@
         var container = document.getElementById('dash-unified-widget');
         if (!container) return;
 
-        var CARD = 'class="rounded-2xl px-3 py-2 text-white shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:1.5px solid rgba(245,200,66,0.35);box-shadow:0 4px 24px rgba(0,0,0,0.3);"';
-
-        function _cell(b) {
-            return 'style="padding:10px;cursor:pointer;' + b + 'transition:background .15s;" ' +
-                   'onmouseover="this.style.background=\'rgba(255,255,255,0.05)\'" ' +
-                   'onmouseout="this.style.background=\'transparent\'"';
-        }
-        var BR  = 'border-right:1px solid rgba(255,255,255,0.08);';
-        var BB  = 'border-bottom:1px solid rgba(255,255,255,0.08);';
-        var LBL = 'style="font-size:9px;font-weight:800;color:rgba(255,255,255,0.4);margin-bottom:7px;letter-spacing:.04em;display:block;"';
+        var CS  = 'background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 50%,#0e5c3a 100%);border:1.5px solid rgba(245,200,66,0.3);box-shadow:0 3px 16px rgba(0,0,0,0.28);border-radius:14px;padding:12px;display:flex;flex-direction:column;cursor:pointer;transition:border-color .18s,box-shadow .18s;';
+        var LBL = 'style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.6);letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px;display:block;"';
+        var TS  = 'style="font-size:8.5px;color:rgba(255,255,255,0.28);font-weight:600;margin-top:6px;padding-top:7px;border-top:1px solid rgba(255,255,255,0.07);"';
 
         function _noData(emoji, text) {
-            return '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:78px;gap:5px;">' +
-                '<span style="font-size:20px;">' + emoji + '</span>' +
-                '<div style="font-size:9.5px;font-weight:800;color:rgba(255,255,255,0.45);text-align:center;line-height:1.35;">' + text + '</div>' +
+            return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-height:72px;">' +
+                '<span style="font-size:22px;">' + emoji + '</span>' +
+                '<div style="font-size:9.5px;font-weight:800;color:rgba(255,255,255,0.45);text-align:center;line-height:1.4;">' + text + '</div>' +
             '</div>';
+        }
+
+        function _tsLine(ts) {
+            return ts ? 'Updated ' + _dashFmtTs(ts) : 'Not yet updated';
         }
 
         // ── Health Score ─────────────────────────────────────
         var hs = window._hsLastResult;
-        var healthHtml;
+        var healthContent, healthTs;
         if (!hs) {
-            healthHtml = _noData('💗', 'Run Health Score');
+            healthContent = _noData('💗', 'Run Health Score');
+            healthTs = 'Not yet run';
         } else {
             var c2pi   = 2 * Math.PI * 28;
             var arcOff = (c2pi * (1 - hs.score / 100)).toFixed(1);
@@ -713,70 +711,98 @@
             var deltaHtml = delta !== null
                 ? ' <span style="font-size:9px;font-weight:800;color:' + (delta > 0 ? '#22c55e' : '#ef4444') + ';">' + (delta > 0 ? '↑+' : '↓') + Math.abs(delta) + '</span>'
                 : '';
-            healthHtml =
-                '<div style="display:flex;align-items:center;gap:8px;">' +
+            healthContent =
+                '<div style="flex:1;display:flex;align-items:center;gap:10px;">' +
                     '<div style="position:relative;flex-shrink:0;">' +
-                        '<svg viewBox="0 0 72 72" style="width:44px;height:44px;transform:rotate(-90deg);">' +
+                        '<svg viewBox="0 0 72 72" style="width:52px;height:52px;transform:rotate(-90deg);">' +
                             '<circle cx="36" cy="36" r="28" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="8"/>' +
                             '<circle cx="36" cy="36" r="28" fill="none" stroke="' + arcClr + '" stroke-width="8" stroke-linecap="round" stroke-dasharray="' + c2pi.toFixed(1) + '" stroke-dashoffset="' + arcOff + '"/>' +
                         '</svg>' +
-                        '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">' +
-                            '<span style="font-size:13px;font-weight:900;color:#fff;">' + hs.score + '</span>' +
+                        '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">' +
+                            '<span style="font-size:15px;font-weight:900;color:#fff;line-height:1;">' + hs.score + '</span>' +
+                            '<span style="font-size:7px;color:rgba(255,255,255,0.3);font-weight:600;">/100</span>' +
                         '</div>' +
                     '</div>' +
                     '<div>' +
-                        '<div style="font-size:11px;font-weight:900;color:#fff;line-height:1.2;">' + hs.grade + deltaHtml + '</div>' +
-                        '<div style="font-size:12px;margin-top:3px;">' + hs.emoji + '</div>' +
+                        '<div style="font-size:12px;font-weight:900;color:#fff;line-height:1.3;">' + hs.grade + deltaHtml + '</div>' +
+                        '<div style="font-size:14px;margin-top:3px;">' + hs.emoji + '</div>' +
                     '</div>' +
                 '</div>';
+            healthTs = _tsLine(hs.ts);
         }
 
         // ── Net Worth ─────────────────────────────────────────
         var nw    = window._toolSummaries && window._toolSummaries.netWorth;
         var hasNw = nw && (nw.totalAssets || nw.totalLiab);
-        var nwHtml;
+        var nwContent, nwTs;
         if (!hasNw) {
-            nwHtml = _noData('⚖️', 'Track Net Worth');
+            nwContent = _noData('⚖️', 'Track Net Worth');
+            nwTs = 'Not yet tracked';
         } else {
             var nwVal   = nw.netWorth    || 0;
             var assets  = nw.totalAssets || 0;
             var liabs   = nw.totalLiab   || 0;
-            var nwCol   = nwVal >= 0 ? '#10b981' : '#ef4444';
+            var nwCol   = nwVal >= 0 ? '#34d399' : '#f87171';
             var dtar    = assets > 0 ? Math.round(liabs / assets * 100) : 0;
-            var dtarCol = dtar <= 30 ? '#10b981' : dtar <= 50 ? '#f59e0b' : '#ef4444';
-            nwHtml =
-                '<div style="font-size:16px;font-weight:900;color:' + nwCol + ';line-height:1;margin-bottom:7px;">' + _dashFmtNW(nwVal) + '</div>' +
-                '<div style="display:flex;gap:10px;">' +
-                    '<div><div style="font-size:8.5px;color:rgba(255,255,255,0.35);font-weight:600;">Assets</div>' +
-                         '<div style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.75);">' + _dashFmtNW(assets) + '</div></div>' +
-                    '<div><div style="font-size:8.5px;color:rgba(255,255,255,0.35);font-weight:600;">Liab</div>' +
-                         '<div style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.75);">' + _dashFmtNW(liabs) + '</div></div>' +
-                    (dtar > 0 ?
-                    '<div><div style="font-size:8.5px;color:rgba(255,255,255,0.35);font-weight:600;">Debt</div>' +
-                              '<div style="font-size:10px;font-weight:800;color:' + dtarCol + ';">' + dtar + '%</div></div>' : '') +
+            var dtarCol = dtar <= 30 ? '#34d399' : dtar <= 50 ? '#fbbf24' : '#f87171';
+            nwContent =
+                '<div style="flex:1;">' +
+                    '<div style="font-size:20px;font-weight:900;color:' + nwCol + ';line-height:1;margin-bottom:8px;">' + _dashFmtNW(nwVal) + '</div>' +
+                    '<div style="display:flex;flex-direction:column;gap:3px;">' +
+                        '<div style="display:flex;justify-content:space-between;">' +
+                            '<span style="font-size:9px;color:rgba(255,255,255,0.4);font-weight:600;">Assets</span>' +
+                            '<span style="font-size:9.5px;font-weight:800;color:rgba(255,255,255,0.8);">' + _dashFmtNW(assets) + '</span>' +
+                        '</div>' +
+                        '<div style="display:flex;justify-content:space-between;">' +
+                            '<span style="font-size:9px;color:rgba(255,255,255,0.4);font-weight:600;">Liabilities</span>' +
+                            '<span style="font-size:9.5px;font-weight:800;color:rgba(255,255,255,0.8);">' + _dashFmtNW(liabs) + '</span>' +
+                        '</div>' +
+                        (dtar > 0 ?
+                        '<div style="display:flex;justify-content:space-between;">' +
+                            '<span style="font-size:9px;color:rgba(255,255,255,0.4);font-weight:600;">Debt ratio</span>' +
+                            '<span style="font-size:9.5px;font-weight:800;color:' + dtarCol + ';">' + dtar + '%</span>' +
+                        '</div>' : '') +
+                    '</div>' +
                 '</div>';
+            nwTs = _tsLine(nw.updatedAt);
         }
 
         // ── Goals ─────────────────────────────────────────────
         var goals = window._savedGoals || [];
-        var goalsHtml;
+        var goalsContent, goalsTs;
         if (goals.length === 0) {
-            goalsHtml = _noData('🎯', 'Set Your Goals');
+            goalsContent = _noData('🎯', 'Set Your Goals');
+            goalsTs = 'No goals yet';
         } else {
-            goalsHtml = goals.slice(0, 3).map(function(g) {
-                var pct = Math.min(100, Math.round(((g.savedAmt || 0) / (g.targetAmt || 1)) * 100));
-                var bc  = pct >= 75 ? '#10b981' : pct >= 40 ? '#6366f1' : '#f59e0b';
-                return '<div style="margin-bottom:6px;">' +
-                    '<div style="display:flex;justify-content:space-between;margin-bottom:3px;">' +
-                        '<span style="font-size:9.5px;font-weight:700;color:rgba(255,255,255,0.8);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:78%;">' + (g.emoji||'') + ' ' + (g.label||'') + '</span>' +
-                        '<span style="font-size:9px;font-weight:800;color:rgba(255,255,255,0.4);flex-shrink:0;">' + pct + '%</span>' +
-                    '</div>' +
-                    '<div style="height:3px;border-radius:99px;background:rgba(255,255,255,0.1);overflow:hidden;">' +
-                        '<div style="height:3px;border-radius:99px;background:' + bc + ';width:' + pct + '%;"></div>' +
-                    '</div>' +
+            goalsContent =
+                '<div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:7px;">' +
+                goals.slice(0, 3).map(function(g) {
+                    var pct = Math.min(100, Math.round(((g.savedAmt || 0) / (g.targetAmt || 1)) * 100));
+                    var bc  = pct >= 75 ? '#34d399' : pct >= 40 ? '#818cf8' : '#fbbf24';
+                    return '<div>' +
+                        '<div style="display:flex;justify-content:space-between;margin-bottom:3px;">' +
+                            '<span style="font-size:9.5px;font-weight:700;color:rgba(255,255,255,0.85);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:75%;">' + (g.emoji||'') + ' ' + (g.label||'') + '</span>' +
+                            '<span style="font-size:9px;font-weight:900;color:' + bc + ';flex-shrink:0;">' + pct + '%</span>' +
+                        '</div>' +
+                        '<div style="height:4px;border-radius:99px;background:rgba(255,255,255,0.1);">' +
+                            '<div style="height:4px;border-radius:99px;background:' + bc + ';width:' + pct + '%;transition:width .6s;"></div>' +
+                        '</div>' +
+                    '</div>';
+                }).join('') +
+                (goals.length > 3 ? '<div style="font-size:9px;color:rgba(255,255,255,0.3);font-weight:600;">+' + (goals.length - 3) + ' more</div>' : '') +
                 '</div>';
-            }).join('') +
-            (goals.length > 3 ? '<div style="font-size:9px;color:rgba(255,255,255,0.3);font-weight:600;margin-top:2px;">+' + (goals.length - 3) + ' more</div>' : '');
+            var gTs = window._savedGoalsTs;
+            if (!gTs) {
+                var latestTs = null;
+                goals.forEach(function(g) {
+                    if (g.createdAt && (!latestTs || g.createdAt > latestTs)) latestTs = g.createdAt;
+                    (g.checkIns || []).forEach(function(ci) {
+                        if (ci.date && (!latestTs || ci.date > latestTs)) latestTs = ci.date;
+                    });
+                });
+                gTs = latestTs;
+            }
+            goalsTs = _tsLine(gTs);
         }
 
         // ── Budget ─────────────────────────────────────────────
@@ -785,48 +811,54 @@
         var monLabel = new Date().toLocaleString('en-IN', { month: 'short', year: 'numeric' });
         var md       = window._btData && window._btData[curMon];
         var hasBt    = md && Object.keys(md).some(function(k) { var e=md[k]; return (e.b||0)>0||(e.a||0)>0; });
-        var budgetHtml;
+        var budgetContent, budgetTs;
         if (!hasBt) {
-            budgetHtml = _noData('📊', 'Set Up Budget');
+            budgetContent = _noData('📊', 'Set Up Budget');
+            budgetTs = 'No data yet';
         } else {
             var tb=0, ta=0, oc=[];
             Object.keys(md).forEach(function(k) { var e=md[k]||{},b=e.b||0,a=e.a||0; tb+=b; ta+=a; if(b>0&&a>b) oc.push({key:k,icon:_CI[k]||'📌',over:a-b}); });
             oc.sort(function(x,y) { return y.over-x.over; });
             var pctB = tb>0 ? Math.min(110,Math.round(ta/tb*100)) : 0;
             var bpct = Math.min(100, pctB);
-            var bcol = pctB<=75?'#10b981':pctB<=100?'#f59e0b':'#ef4444';
+            var bcol = pctB<=75?'#34d399':pctB<=100?'#fbbf24':'#f87171';
             var stL  = ta===0
-                ? '<div style="font-size:9px;color:rgba(147,197,253,0.7);margin-top:4px;">No spend logged yet</div>'
+                ? '<div style="font-size:9px;color:rgba(147,197,253,0.7);">No spend logged yet</div>'
                 : oc.length>0
-                    ? '<div style="font-size:9px;color:rgba(248,113,113,0.85);margin-top:4px;">⚠ ' + oc[0].icon + ' ' + oc[0].key + ' over</div>'
-                    : '<div style="font-size:9px;color:rgba(52,211,153,0.85);margin-top:4px;">✓ Within budget</div>';
-            budgetHtml =
-                '<div style="font-size:9px;color:rgba(255,255,255,0.35);font-weight:600;margin-bottom:4px;">' + monLabel + '</div>' +
-                (tb>0 ? '<div style="height:4px;border-radius:99px;background:rgba(255,255,255,0.1);overflow:hidden;margin-bottom:5px;">' +
-                    '<div style="height:4px;border-radius:99px;background:' + bcol + ';width:' + bpct + '%;transition:width .5s;"></div></div>' : '') +
-                '<div style="display:flex;align-items:baseline;justify-content:space-between;">' +
-                    '<div style="font-size:11px;font-weight:900;color:#fff;">' + (tb>0 ? _dashFmtNW(ta)+' / '+_dashFmtNW(tb) : _dashFmtNW(ta)+' spent') + '</div>' +
-                    (tb>0 ? '<div style="font-size:10px;font-weight:800;color:' + bcol + ';">' + pctB + '%</div>' : '') +
-                '</div>' + stL;
+                    ? '<div style="font-size:9px;color:#f87171;">⚠ ' + oc[0].icon + ' ' + oc[0].key + ' over</div>'
+                    : '<div style="font-size:9px;color:#34d399;">✓ Within budget</div>';
+            budgetContent =
+                '<div style="flex:1;display:flex;flex-direction:column;justify-content:center;">' +
+                    '<div style="font-size:9px;color:rgba(255,255,255,0.4);font-weight:700;margin-bottom:5px;">' + monLabel + '</div>' +
+                    (tb>0 ? '<div style="height:5px;border-radius:99px;background:rgba(255,255,255,0.1);overflow:hidden;margin-bottom:7px;">' +
+                        '<div style="height:5px;border-radius:99px;background:' + bcol + ';width:' + bpct + '%;transition:width .5s;"></div></div>' : '') +
+                    '<div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:4px;">' +
+                        '<div style="font-size:13px;font-weight:900;color:#fff;">' + _dashFmtNW(ta) + '</div>' +
+                        (tb>0 ? '<div style="font-size:11px;font-weight:900;color:' + bcol + ';">' + pctB + '%</div>' : '') +
+                    '</div>' +
+                    (tb>0 ? '<div style="font-size:8.5px;color:rgba(255,255,255,0.3);margin-bottom:4px;">of ' + _dashFmtNW(tb) + ' budgeted</div>' : '') +
+                    stL +
+                '</div>';
+            budgetTs = _tsLine(window._btLastUpdated);
         }
 
         // ── Assemble ───────────────────────────────────────────
+        function _card(mode, icon, label, content, ts) {
+            return '<div onclick="switchMode(\'' + mode + '\')" style="' + CS + '" ' +
+                   'onmouseover="this.style.borderColor=\'rgba(245,200,66,0.65)\';this.style.boxShadow=\'0 6px 24px rgba(0,0,0,0.4)\'" ' +
+                   'onmouseout="this.style.borderColor=\'rgba(245,200,66,0.3)\';this.style.boxShadow=\'0 3px 16px rgba(0,0,0,0.28)\'">' +
+                '<span ' + LBL + '>' + icon + ' ' + label + '</span>' +
+                content +
+                '<div ' + TS + '>' + ts + '</div>' +
+            '</div>';
+        }
+
         container.innerHTML =
-            '<div ' + CARD + '>' +
-                '<div style="display:grid;grid-template-columns:1fr 1fr;">' +
-                    '<div onclick="switchMode(\'healthscore\')" ' + _cell(BR+BB) + '>' +
-                        '<span ' + LBL + '>💗 HEALTH</span>' + healthHtml +
-                    '</div>' +
-                    '<div onclick="switchMode(\'networth\')" ' + _cell(BB) + '>' +
-                        '<span ' + LBL + '>⚖️ NET WORTH</span>' + nwHtml +
-                    '</div>' +
-                    '<div onclick="switchMode(\'goaltracker\')" ' + _cell(BR) + '>' +
-                        '<span ' + LBL + '>🎯 GOALS</span>' + goalsHtml +
-                    '</div>' +
-                    '<div onclick="switchMode(\'budgettrack\')" ' + _cell('') + '>' +
-                        '<span ' + LBL + '>📊 BUDGET</span>' + budgetHtml +
-                    '</div>' +
-                '</div>' +
+            '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">' +
+                _card('healthscore', '💗', 'Health', healthContent, healthTs) +
+                _card('networth',    '⚖️', 'Net Worth', nwContent, nwTs) +
+                _card('goaltracker', '🎯', 'Goals', goalsContent, goalsTs) +
+                _card('budgettrack', '📊', 'Budget', budgetContent, budgetTs) +
             '</div>';
     }
 

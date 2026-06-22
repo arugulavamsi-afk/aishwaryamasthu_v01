@@ -226,6 +226,7 @@
         g.checkIns  = g.checkIns || [];
         g.checkIns.push(entry);
 
+        window._savedGoalsTs = new Date().toISOString();
         if (typeof saveUserData === 'function') saveUserData();
 
         // Re-render just this card
@@ -281,6 +282,7 @@
         var goals = window._savedGoals;
         if (!goals) return;
         goals.splice(idx, 1);
+        window._savedGoalsTs = new Date().toISOString();
         if (typeof saveUserData === 'function') saveUserData();
         if (typeof gpRenderSavedGoalsBanner === 'function') gpRenderSavedGoalsBanner();
         if (typeof _dashUpdateGoalsWidget === 'function') _dashUpdateGoalsWidget();

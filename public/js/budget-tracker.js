@@ -81,6 +81,7 @@
         _btRenderTable();
         _btRenderSummary();
         _btRenderChart();
+        window._btLastUpdated = new Date().toISOString();
         if (typeof saveUserData === 'function') saveUserData();
     }
     window._btAddCustomCat = _btAddCustomCat;
@@ -92,6 +93,7 @@
         _btRenderTable();
         _btRenderSummary();
         _btRenderChart();
+        window._btLastUpdated = new Date().toISOString();
         if (typeof saveUserData === 'function') saveUserData();
     }
     window._btDeleteCustomCat = _btDeleteCustomCat;
@@ -157,6 +159,7 @@
             }
         });
         _btRefreshAll();
+        window._btLastUpdated = new Date().toISOString();
         if (typeof saveUserData === 'function') saveUserData();
     }
     window._btCopyBudgetFromPrev = _btCopyBudgetFromPrev;
@@ -292,6 +295,7 @@
         _btUpdateRowFromInput(el);
         _btRenderSummary();
         _btRenderChart();
+        window._btLastUpdated = new Date().toISOString();
         if (typeof saveUserData === 'function') saveUserData();
     }
 

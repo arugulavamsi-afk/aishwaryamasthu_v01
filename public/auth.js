@@ -664,10 +664,11 @@
             });
             const budgetTracker = _panelData('bt-month-disp', function() {
                 return {
-                    month:      window._btMonth       || '',
-                    chartType:  window._btChartType   || 'bar',
-                    data:       window._btData        ? JSON.stringify(window._btData)       : '{}',
-                    customCats: window._btCustomCats  ? JSON.stringify(window._btCustomCats) : '[]'
+                    month:       window._btMonth        || '',
+                    chartType:   window._btChartType    || 'bar',
+                    data:        window._btData         ? JSON.stringify(window._btData)       : '{}',
+                    customCats:  window._btCustomCats   ? JSON.stringify(window._btCustomCats) : '[]',
+                    lastUpdated: window._btLastUpdated  || ''
                 };
             });
             const nomTrack = _panelData('nt-bank-status', function() {
@@ -729,7 +730,8 @@
                 ...(fincal       ? { fincal }       : {}),
                 ...(selfEmpl     ? { selfEmpl }     : {}),
                 ...(goldComp     ? { goldComp }     : {}),
-                savedGoals: window._savedGoals || _base.savedGoals || [],
+                savedGoals:   window._savedGoals   || _base.savedGoals   || [],
+                savedGoalsTs: window._savedGoalsTs || _base.savedGoalsTs || '',
                 ...(ulipCheck    ? { ulipCheck }    : {}),
                 ...(netWorth     ? { netWorth }     : {}),
                 ...(cgCalc       ? { cgCalc }       : {}),
@@ -1047,6 +1049,7 @@
             try {
                 if (Array.isArray(data.savedGoals)) {
                     window._savedGoals = data.savedGoals;
+                    if (data.savedGoalsTs) window._savedGoalsTs = data.savedGoalsTs;
                     if (typeof gpRenderSavedGoalsBanner  === 'function') gpRenderSavedGoalsBanner();
                     if (typeof _dashUpdateGoalsWidget    === 'function') _dashUpdateGoalsWidget();
                     if (typeof window._gtRefreshIfOpen  === 'function') window._gtRefreshIfOpen();
@@ -1625,6 +1628,7 @@
                 if (_btRestore.customCats) {
                     try { window._btCustomCats = JSON.parse(_btRestore.customCats); } catch(e2) {}
                 }
+                if (_btRestore.lastUpdated) window._btLastUpdated = _btRestore.lastUpdated;
                 _applyWhenReady('bt-month-disp', function() {
                     try {
                         if (typeof initBudgetTracker === 'function') initBudgetTracker();
