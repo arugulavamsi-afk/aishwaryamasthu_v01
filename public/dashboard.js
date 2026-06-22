@@ -859,10 +859,10 @@
 
         container.innerHTML =
             '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">' +
-                _card('healthscore', '💗', 'Health', healthContent, healthTs) +
-                _card('networth',    '⚖️', 'Net Worth', nwContent, nwTs) +
-                _card('goaltracker', '🎯', 'Goals', goalsContent, goalsTs) +
-                _card('budgettrack', '📊', 'Budget', budgetContent, budgetTs) +
+                _card('healthscore', '💗', 'Your FinHealth Score', healthContent, healthTs) +
+                _card('networth',    '⚖️', 'Your Net Worth', nwContent, nwTs) +
+                _card('goaltracker', '🎯', 'Status of Your Goals', goalsContent, goalsTs) +
+                _card('budgettrack', '📊', 'Your Budget Plan', budgetContent, budgetTs) +
             '</div>';
     }
 
