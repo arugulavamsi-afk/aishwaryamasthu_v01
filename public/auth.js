@@ -819,6 +819,47 @@
         }
     }
 
+    // Compute a score summary from raw healthScore input data without needing DOM elements.
+    // Mirrors the scoring logic in health-score.js so the dashboard widget works on first load.
+    function _hsQuickScore(d) {
+        function pv(v) { return parseInt((v||'').replace(/[^0-9]/g,''),10)||0; }
+        var income=pv(d['hs-income']); if(!income) return null;
+        var emi=pv(d['hs-emi']),exp=pv(d['hs-expenses']),sav=pv(d['hs-savings']);
+        var hi=pv(d['hs-health-ins']),ti=pv(d['hs-term-ins']),ef=pv(d['hs-efund']);
+        var age=parseInt(d['hs-age'],10)||0;
+        var pfEq=pv(d['hs-pf-equity']),pfD=pv(d['hs-pf-debt']),pfR=pv(d['hs-pf-realty']);
+        var pfG=pv(d['hs-pf-gold']),pfRet=pv(d['hs-pf-retiral']),pfOth=pv(d['hs-pf-other']);
+        var pfTotal=pfEq+pfD+pfR+pfG+pfRet+pfOth, annInc=income*12, mthExp=exp+emi;
+        var savR=(sav/income)*100;
+        var cats=[];
+        cats.push({name:'Savings Rate',    pts:savR>=30?20:savR>=20?16:savR>=10?11:savR>=5?6:Math.max(0,Math.round(savR*1.2)), max:20, icon:'💰', mode:'stepupsip'});
+        var ep=(emi/income)*100;
+        cats.push({name:'Debt Burden',     pts:ep===0||ep<20?20:ep<30?15:ep<40?9:ep<50?4:0,                                     max:20, icon:'🏦', mode:'debtplan'});
+        var hiL=hi/100000;
+        cats.push({name:'Health Insurance',pts:hiL>=20?15:hiL>=10?13:hiL>=5?9:hiL>=3?5:hiL>=1?2:0,                             max:15, icon:'🏥', mode:'insure'});
+        var tiM=annInc>0?ti/annInc:0;
+        cats.push({name:'Term Insurance',  pts:tiM>=15?15:tiM>=10?13:tiM>=7?9:tiM>=5?5:tiM>=2?2:0,                             max:15, icon:'🛡️', mode:'insure'});
+        var efM=mthExp>0?ef/mthExp:0;
+        cats.push({name:'Emergency Fund',  pts:efM>=12?15:efM>=9?12:efM>=6?10:efM>=4?7:efM>=2?4:efM>=1?2:0,                   max:15, icon:'🚨', mode:'goal'});
+        var sp=((exp+emi)/income)*100;
+        cats.push({name:'Spending Control',pts:sp<=50?15:sp<=60?12:sp<=70?8:sp<=80?4:sp<=90?1:0,                               max:15, icon:'🛒', mode:'budgettrack'});
+        if(age>=18&&age<=80){var ap=0;if(age<=25)ap=savR>=10?10:savR>=5?8:savR>0?5:2;else if(age<=35)ap=savR>=20?10:savR>=15?8:savR>=10?5:savR>=5?2:0;else if(age<=45)ap=savR>=25?10:savR>=20?7:savR>=15?4:savR>=10?1:0;else if(age<=55)ap=savR>=30?10:savR>=25?6:savR>=20?3:savR>=15?1:0;else ap=savR>=35?10:savR>=30?5:savR>=25?2:0;cats.push({name:'Age Readiness',pts:ap,max:10,icon:'🎂',mode:'finplan'});}
+        if(pfTotal>0){var pfM=annInc>0?pfTotal/annInc:0,nwP=(pfM>=10?7:pfM>=5?6:pfM>=3?5:pfM>=2?4:pfM>=1?3:pfM>=0.5?2:1);var acc=[pfEq>0,(pfD>0||pfRet>0),pfR>0,pfG>0].filter(Boolean).length;nwP+=Math.min(4,acc);var eqPct=pfTotal>0?(pfEq/pfTotal)*100:0,idealEq=Math.max(20,100-(age||35)),eqGap=Math.abs(eqPct-idealEq);nwP+=(eqGap<=10?4:eqGap<=20?3:eqGap<=30?2:0);cats.push({name:'Net Worth Readiness',pts:Math.min(15,nwP),max:15,icon:'📊',mode:'networth'});}
+        var raw=cats.reduce(function(a,c){return a+c.pts;},0), max=cats.reduce(function(a,c){return a+c.max;},0);
+        var score=Math.min(100,Math.round(raw*100/max));
+        var grade,emoji,arcColor;
+        if(score>=90){grade='Financial Rockstar 🤘';emoji='🏆';arcColor='#10b981';}
+        else if(score>=80){grade='Wealth Builder';emoji='🌟';arcColor='#22c55e';}
+        else if(score>=70){grade='On the Right Track';emoji='📈';arcColor='#84cc16';}
+        else if(score>=55){grade='Getting There';emoji='🚀';arcColor='#eab308';}
+        else if(score>=40){grade='Wake-Up Call';emoji='⚡';arcColor='#f97316';}
+        else if(score>=25){grade='SOS Mode';emoji='🚨';arcColor='#ef4444';}
+        else{grade='Financial Emergency';emoji='🆘';arcColor='#dc2626';}
+        var sorted=cats.slice().sort(function(a,b){return(a.pts/a.max)-(b.pts/b.max);}),topActions=[];
+        sorted.forEach(function(c){if(topActions.length>=3||c.pts>=c.max)return;topActions.push({icon:c.icon,name:c.name,color:'',mode:c.mode});});
+        return {score:score,grade:grade,emoji:emoji,arcColor:arcColor,topActions:topActions,ts:Date.now()};
+    }
+
     function _applyData(data) {
         _restoring = true;
         try {
@@ -1592,19 +1633,26 @@
                 if (typeof initRoadmap === 'function') initRoadmap();
             }
 
-            // Health Score snapshot — pre-populate _hsLastResult so dashboard widget
-            // renders immediately when Firestore data arrives (before health score panel opens)
-            if (data.hsLastScore && data.hsLastScore.score) {
-                window._hsPrevScore = { score: data.hsLastScore.score, ts: data.hsLastScore.ts };
-                if (!window._hsLastResult) {
-                    window._hsLastResult = {
+            // Health Score snapshot — pre-populate _hsLastResult so dashboard widget renders
+            // immediately when Firestore data arrives, before the health score panel is opened.
+            // Falls back to computing from raw inputs so it works even on first load after deploy.
+            if (!window._hsLastResult) {
+                var _snap = null;
+                if (data.hsLastScore && data.hsLastScore.score) {
+                    _snap = {
                         score:      data.hsLastScore.score,
-                        grade:      data.hsLastScore.grade    || '',
-                        emoji:      data.hsLastScore.emoji    || '📊',
-                        arcColor:   data.hsLastScore.arcColor || '#10b981',
+                        grade:      data.hsLastScore.grade      || '',
+                        emoji:      data.hsLastScore.emoji      || '📊',
+                        arcColor:   data.hsLastScore.arcColor   || '#10b981',
                         topActions: data.hsLastScore.topActions || [],
                         ts:         data.hsLastScore.ts
                     };
+                } else if (data.healthScore) {
+                    _snap = _hsQuickScore(data.healthScore);
+                }
+                if (_snap) {
+                    if (data.hsLastScore) window._hsPrevScore = { score: data.hsLastScore.score, ts: data.hsLastScore.ts };
+                    window._hsLastResult = _snap;
                     if (typeof _dashUpdateScoreWidget === 'function') _dashUpdateScoreWidget();
                 }
             }
