@@ -719,12 +719,12 @@
                         '<div style="font-size:18px;margin-top:5px;">' + hs.emoji + '</div>' +
                     '</div>' +
                     '<div style="position:relative;flex-shrink:0;">' +
-                        '<svg viewBox="0 0 72 72" style="width:64px;height:64px;transform:rotate(-90deg);filter:drop-shadow(0 0 7px ' + arcClr + ');">' +
+                        '<svg viewBox="0 0 72 72" style="width:64px;height:64px;transform:rotate(-90deg);">' +
                             '<circle cx="36" cy="36" r="28" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="8"/>' +
                             '<circle cx="36" cy="36" r="28" fill="none" stroke="' + arcClr + '" stroke-width="8" stroke-linecap="round" stroke-dasharray="' + c2pi.toFixed(1) + '" stroke-dashoffset="' + arcOff + '"/>' +
                         '</svg>' +
                         '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">' +
-                            '<span style="font-size:22px;font-weight:900;color:' + arcClr + ';line-height:1;text-shadow:0 0 10px ' + arcClr + '99;">' + hs.score + '</span>' +
+                            '<span style="font-size:22px;font-weight:900;color:#fff;line-height:1;">' + hs.score + '</span>' +
                             '<span style="font-size:7px;color:rgba(255,255,255,0.35);font-weight:600;">/100</span>' +
                         '</div>' +
                     '</div>' +
