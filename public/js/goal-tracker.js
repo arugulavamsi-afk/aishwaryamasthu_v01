@@ -86,7 +86,7 @@
         return '<div class="bg-white rounded-2xl shadow-sm" id="gt-card-' + i + '" ' +
             'style="border:1px solid #e2e8f0;padding:18px 20px;margin-bottom:16px;">' +
 
-            // ── Top row: emoji + name + status badge
+            // ── Top row: emoji + name + status badge + delete
             '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px;">' +
                 '<div style="display:flex;align-items:center;gap:12px;">' +
                     '<div style="width:44px;height:44px;border-radius:12px;background:#f8fafc;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">' + g.emoji + '</div>' +
@@ -95,8 +95,13 @@
                         '<div style="font-size:11px;color:#94a3b8;margin-top:2px;">Target ' + _fmt(target) + ' · ' + g.years + ' yr' + (g.years !== 1 ? 's' : '') + '</div>' +
                     '</div>' +
                 '</div>' +
-                '<span style="font-size:10px;font-weight:700;padding:4px 9px;border-radius:20px;white-space:nowrap;flex-shrink:0;' +
-                    'background:' + st.color + '18;color:' + st.color + ';">' + st.icon + ' ' + st.label + '</span>' +
+                '<div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">' +
+                    '<span style="font-size:10px;font-weight:700;padding:4px 9px;border-radius:20px;white-space:nowrap;' +
+                        'background:' + st.color + '18;color:' + st.color + ';">' + st.icon + ' ' + st.label + '</span>' +
+                    '<button onclick="gtDeleteGoal(' + i + ')" title="Delete goal" ' +
+                    'style="width:26px;height:26px;border-radius:8px;border:none;background:#fff1f2;color:#f43f5e;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s;" ' +
+                    'onmouseover="this.style.background=\'#ffe4e6\'" onmouseout="this.style.background=\'#fff1f2\'">🗑</button>' +
+                '</div>' +
             '</div>' +
 
             // ── Progress bar section
@@ -247,6 +252,53 @@
         }
     }
     window.gtCancelUpdate = gtCancelUpdate;
+
+    function gtDeleteGoal(idx) {
+        var card = document.getElementById('gt-card-' + idx);
+        if (!card) return;
+        var g = (window._savedGoals || [])[idx];
+        if (!g) return;
+
+        // Replace card content with inline confirmation
+        card.innerHTML =
+            '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">' +
+                '<div style="font-size:22px;flex-shrink:0;">' + g.emoji + '</div>' +
+                '<div style="flex:1;min-width:0;">' +
+                    '<div style="font-size:13px;font-weight:800;color:#1e293b;margin-bottom:2px;">Remove <em>' + g.label + '</em>?</div>' +
+                    '<div style="font-size:11px;color:#94a3b8;">This will delete the goal and all check-in history.</div>' +
+                '</div>' +
+                '<div style="display:flex;gap:8px;flex-shrink:0;">' +
+                    '<button onclick="gtConfirmDelete(' + idx + ')" ' +
+                    'style="padding:7px 14px;border-radius:10px;background:#ef4444;color:#fff;font-size:12px;font-weight:700;border:none;cursor:pointer;">Delete</button>' +
+                    '<button onclick="gtCancelDelete(' + idx + ')" ' +
+                    'style="padding:7px 14px;border-radius:10px;background:#f1f5f9;color:#64748b;font-size:12px;font-weight:600;border:none;cursor:pointer;">Cancel</button>' +
+                '</div>' +
+            '</div>';
+    }
+    window.gtDeleteGoal = gtDeleteGoal;
+
+    function gtConfirmDelete(idx) {
+        var goals = window._savedGoals;
+        if (!goals) return;
+        goals.splice(idx, 1);
+        if (typeof saveUserData === 'function') saveUserData();
+        if (typeof gpRenderSavedGoalsBanner === 'function') gpRenderSavedGoalsBanner();
+        if (typeof _dashUpdateGoalsWidget === 'function') _dashUpdateGoalsWidget();
+        _renderAll();
+    }
+    window.gtConfirmDelete = gtConfirmDelete;
+
+    function gtCancelDelete(idx) {
+        var g = (window._savedGoals || [])[idx];
+        if (!g) return;
+        var card = document.getElementById('gt-card-' + idx);
+        if (card) {
+            var tmp = document.createElement('div');
+            tmp.innerHTML = _renderCard(g, idx);
+            card.replaceWith(tmp.firstElementChild);
+        }
+    }
+    window.gtCancelDelete = gtCancelDelete;
 
     // Allow dashboard to trigger a re-render after goals load from Firestore
     window._gtRefreshIfOpen = function () {
