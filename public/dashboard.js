@@ -128,9 +128,7 @@
         var favs = _dashGetFavs() || _dashFavDefaults.slice();
         var ca = document.getElementById('dash-fav-count-arrow');
         if (ca) ca.textContent = _t('pin.count').replace('{n}', favs.length);
-        _dashRenderScoreWidget();
-        _dashRenderNetWorthWidget();
-        _dashRenderGoalsWidget();
+        _dashRenderCockpit();
         if (typeof initRoadmap === 'function') initRoadmap();
         consultUpdateTile();
         if (typeof consultWatchUnread === 'function') consultWatchUnread();
@@ -157,15 +155,189 @@
         return labels[name] || name;
     }
 
-    function _dashRenderScoreWidget() {
-        var container = document.getElementById('dash-score-widget');
+    // ── Cockpit gauge SVG (240° speedometer arc) ─────────────────────────────────
+    function _cockpitGaugeSvg(fraction, color) {
+        var cx = 60, cy = 65, r = 46;
+        var startDeg = 150, sweepDeg = 240;
+        fraction = Math.min(1, Math.max(0, fraction || 0));
+        function pt(deg) {
+            var rad = deg * Math.PI / 180;
+            return [(cx + r * Math.cos(rad)).toFixed(1), (cy + r * Math.sin(rad)).toFixed(1)];
+        }
+        var s = pt(startDeg), e = pt(startDeg + sweepDeg);
+        var vDeg = startDeg + sweepDeg * fraction, v = pt(vDeg);
+        var vLarge = (sweepDeg * fraction) > 180 ? 1 : 0;
+        var track = '<path d="M ' + s[0] + ' ' + s[1] + ' A ' + r + ' ' + r + ' 0 1 1 ' + e[0] + ' ' + e[1] + '" stroke="rgba(255,255,255,0.07)" stroke-width="8" fill="none" stroke-linecap="round"/>';
+        var arc   = fraction > 0.01
+            ? '<path d="M ' + s[0] + ' ' + s[1] + ' A ' + r + ' ' + r + ' 0 ' + vLarge + ' 1 ' + v[0] + ' ' + v[1] + '" stroke="' + color + '" stroke-width="8" fill="none" stroke-linecap="round" style="filter:drop-shadow(0 0 4px ' + color + ');"/>'
+            : '';
+        var ticks = [0, 25, 50, 75, 100].map(function(pct) {
+            var td = startDeg + sweepDeg * pct / 100, tr = td * Math.PI / 180;
+            var ri = 37, ro = 44;
+            return '<line x1="' + (cx+ri*Math.cos(tr)).toFixed(1) + '" y1="' + (cy+ri*Math.sin(tr)).toFixed(1) +
+                         '" x2="' + (cx+ro*Math.cos(tr)).toFixed(1) + '" y2="' + (cy+ro*Math.sin(tr)).toFixed(1) +
+                         '" stroke="rgba(255,255,255,0.18)" stroke-width="1.5" stroke-linecap="round"/>';
+        }).join('');
+        var dot = fraction > 0.01
+            ? '<circle cx="' + v[0] + '" cy="' + v[1] + '" r="4.5" fill="' + color + '" style="filter:drop-shadow(0 0 5px ' + color + ');"/>'
+            : '';
+        return '<svg viewBox="0 0 120 115" style="width:100%;display:block;">' + track + arc + ticks + dot + '</svg>';
+    }
+
+    // ── Unified cockpit renderer ──────────────────────────────────────────────────
+    function _dashRenderCockpit() {
+        var container = document.getElementById('dash-cockpit');
         if (!container) return;
+
         var result = window._hsLastResult;
         var prev   = window._hsPrevScore;
+        var nw     = window._toolSummaries && window._toolSummaries.netWorth;
+        var goals  = window._savedGoals || [];
         var name   = _dashGetUserName();
-        var greetHtml = name
-            ? '<span style="color:rgba(245,200,66,0.95);font-weight:900;">Hi ' + name + '!</span> '
-            : '';
+
+        // ── Health Score gauge ────────────────────────────────────────────────────
+        var hsColor    = result ? (result.arcColor || '#10b981') : 'rgba(255,255,255,0.15)';
+        var hsFraction = result ? result.score / 100 : 0;
+        var hsSvg      = _cockpitGaugeSvg(hsFraction, hsColor);
+        var hsInner = result
+            ? '<div style="font-size:20px;font-weight:900;color:#fff;line-height:1;letter-spacing:-1px;">' + result.score + '</div>' +
+              '<div style="font-size:8px;color:rgba(255,255,255,0.35);font-weight:700;">/100</div>' +
+              '<div style="font-size:10px;font-weight:800;color:' + hsColor + ';margin-top:3px;">' + result.grade + '</div>'
+            : '<div style="font-size:10px;color:rgba(255,255,255,0.25);line-height:1.4;text-align:center;">Not<br>set</div>';
+        var hsGauge =
+            '<div onclick="switchMode(\'healthscore\')" style="display:flex;flex-direction:column;align-items:center;background:rgba(0,0,0,0.35);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:10px 6px 8px;cursor:pointer;transition:border-color .2s;" onmouseover="this.style.borderColor=\'rgba(245,200,66,0.35)\'" onmouseout="this.style.borderColor=\'rgba(255,255,255,0.07)\'">' +
+                '<div style="font-size:8px;font-weight:800;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;">Health</div>' +
+                '<div style="position:relative;width:100%;">' + hsSvg +
+                    '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding-bottom:12px;">' + hsInner + '</div>' +
+                '</div>' +
+            '</div>';
+
+        // ── Net Worth gauge ───────────────────────────────────────────────────────
+        var hasNwData = nw && (nw.totalAssets || nw.totalLiab);
+        var nwColor, nwFraction, nwInner;
+        if (hasNwData) {
+            var assets = nw.totalAssets || 0, liabs = nw.totalLiab || 0, nwVal = nw.netWorth || 0;
+            var dRatio = assets > 0 ? liabs / assets : 0;
+            nwFraction = Math.max(0, 1 - dRatio);
+            nwColor    = dRatio <= 0.3 ? '#10b981' : dRatio <= 0.55 ? '#f59e0b' : '#ef4444';
+            nwInner =
+                '<div style="font-size:13px;font-weight:900;color:' + (nwVal >= 0 ? '#10b981' : '#ef4444') + ';line-height:1;letter-spacing:-0.5px;">' + _dashFmtNW(nwVal) + '</div>' +
+                '<div style="font-size:8px;color:rgba(255,255,255,0.3);font-weight:700;margin-top:2px;">net worth</div>' +
+                '<div style="font-size:9px;font-weight:800;color:' + nwColor + ';margin-top:3px;">' + Math.round(nwFraction * 100) + '% equity</div>';
+        } else {
+            nwColor = 'rgba(255,255,255,0.15)'; nwFraction = 0;
+            nwInner = '<div style="font-size:10px;color:rgba(255,255,255,0.25);line-height:1.4;text-align:center;">Add<br>assets</div>';
+        }
+        var nwGauge =
+            '<div onclick="switchMode(\'networth\')" style="display:flex;flex-direction:column;align-items:center;background:rgba(0,0,0,0.35);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:10px 6px 8px;cursor:pointer;transition:border-color .2s;" onmouseover="this.style.borderColor=\'rgba(245,200,66,0.35)\'" onmouseout="this.style.borderColor=\'rgba(255,255,255,0.07)\'">' +
+                '<div style="font-size:8px;font-weight:800;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;">Net Worth</div>' +
+                '<div style="position:relative;width:100%;">' + _cockpitGaugeSvg(nwFraction, nwColor) +
+                    '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding-bottom:12px;">' + nwInner + '</div>' +
+                '</div>' +
+            '</div>';
+
+        // ── Center HUD ────────────────────────────────────────────────────────────
+        var greet = name ? 'Hi ' + name + '! 👋' : 'Welcome! 👋';
+        var delta = (prev && result && prev.score !== result.score) ? (result.score - prev.score) : null;
+        var deltaHtml = '';
+        if (delta !== null) {
+            var dColor = delta > 0 ? '#22c55e' : '#ef4444';
+            deltaHtml = ' <span style="font-size:9px;font-weight:800;color:' + dColor + ';background:' + dColor + '18;padding:1px 5px;border-radius:5px;">' + (delta > 0 ? '↑+' : '↓') + Math.abs(delta) + '</span>';
+        }
+        var topAction = result && (result.topActions || []).filter(function(a) {
+            return !(hasNwData && a.name === 'Net Worth Readiness');
+        })[0];
+        var centerContent;
+        if (result) {
+            centerContent =
+                '<div style="font-size:11px;font-weight:900;color:rgba(245,200,66,0.85);margin-bottom:6px;">' + greet + '</div>' +
+                '<div style="font-size:20px;line-height:1;">' + result.emoji + '</div>' +
+                '<div style="font-size:12px;font-weight:900;color:#fff;margin-top:3px;line-height:1.2;">' + result.grade + deltaHtml + '</div>' +
+                '<div style="font-size:9px;color:rgba(255,255,255,0.3);margin-top:2px;margin-bottom:8px;">Financial Health</div>' +
+                (topAction
+                    ? '<button onclick="switchMode(\'' + topAction.mode + '\')" style="width:100%;padding:7px 4px;border-radius:9px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);cursor:pointer;font-size:10px;font-weight:700;color:rgba(255,255,255,0.75);transition:all .15s;" onmouseover="this.style.background=\'rgba(255,255,255,0.12)\'" onmouseout="this.style.background=\'rgba(255,255,255,0.06)\'">' +
+                      topAction.icon + ' ' + _dashActionLabel(topAction.name) + '</button>'
+                    : '') +
+                '<button onclick="switchMode(\'healthscore\')" style="margin-top:5px;width:100%;padding:6px 4px;border-radius:9px;background:rgba(245,200,66,0.09);border:1px solid rgba(245,200,66,0.22);cursor:pointer;font-size:10px;font-weight:700;color:rgba(245,200,66,0.75);transition:all .15s;" onmouseover="this.style.background=\'rgba(245,200,66,0.16)\'" onmouseout="this.style.background=\'rgba(245,200,66,0.09)\'">↺ Update Score</button>';
+        } else {
+            centerContent =
+                '<div style="font-size:11px;font-weight:900;color:rgba(245,200,66,0.85);margin-bottom:8px;">' + greet + '</div>' +
+                '<div style="font-size:10px;color:rgba(255,255,255,0.35);margin-bottom:10px;line-height:1.6;">Complete Indian<br>wealth toolkit</div>' +
+                '<button onclick="switchMode(\'healthscore\')" style="width:100%;padding:9px 4px;border-radius:9px;background:rgba(225,29,72,0.15);border:1.5px solid rgba(225,29,72,0.35);cursor:pointer;font-size:11px;font-weight:800;color:#fff;transition:all .15s;" onmouseover="this.style.background=\'rgba(225,29,72,0.25)\'" onmouseout="this.style.background=\'rgba(225,29,72,0.15)\'">💗 Get Score →</button>';
+        }
+        var centerPanel =
+            '<div style="background:rgba(0,0,0,0.22);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:12px 10px;text-align:center;display:flex;flex-direction:column;justify-content:center;">' +
+                centerContent +
+            '</div>';
+
+        // ── Goals strip ───────────────────────────────────────────────────────────
+        var goalsHtml;
+        if (goals.length > 0) {
+            var goalRows = goals.slice(0, 3).map(function(g) {
+                var pct = Math.min(100, Math.round(((g.savedAmt||0)/(g.targetAmt||1))*100));
+                var bc  = pct >= 75 ? '#10b981' : pct >= 40 ? '#6366f1' : '#f59e0b';
+                return '<div style="margin-bottom:7px;">' +
+                    '<div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:3px;">' +
+                        '<span style="font-weight:700;color:rgba(255,255,255,0.6);">' + g.emoji + ' ' + g.label + '</span>' +
+                        '<span style="font-weight:800;color:rgba(255,255,255,0.4);">' + pct + '%</span>' +
+                    '</div>' +
+                    '<div style="height:4px;border-radius:99px;background:rgba(255,255,255,0.07);overflow:hidden;">' +
+                        '<div style="height:4px;border-radius:99px;background:' + bc + ';width:' + pct + '%;transition:width .5s;"></div>' +
+                    '</div>' +
+                '</div>';
+            }).join('');
+            goalsHtml =
+                '<div style="margin-top:10px;padding:10px 12px;background:rgba(0,0,0,0.22);border:1px solid rgba(255,255,255,0.06);border-radius:12px;">' +
+                    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">' +
+                        '<span style="font-size:8px;font-weight:800;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:.1em;">🎯 Goals</span>' +
+                        '<button onclick="switchMode(\'goaltracker\')" style="font-size:10px;font-weight:700;color:rgba(245,200,66,0.6);background:none;border:none;cursor:pointer;" onmouseover="this.style.color=\'rgba(245,200,66,0.9)\'" onmouseout="this.style.color=\'rgba(245,200,66,0.6)\'">Track all →</button>' +
+                    '</div>' +
+                    goalRows +
+                '</div>';
+        } else {
+            goalsHtml =
+                '<button onclick="switchMode(\'goal\')" style="margin-top:10px;display:flex;align-items:center;gap:10px;width:100%;padding:9px 12px;border-radius:12px;background:rgba(0,0,0,0.2);border:1px solid rgba(255,255,255,0.06);cursor:pointer;transition:all .15s;" onmouseover="this.style.background=\'rgba(255,255,255,0.05)\'" onmouseout="this.style.background=\'rgba(0,0,0,0.2)\'">' +
+                    '<span style="font-size:18px;">🎯</span>' +
+                    '<div style="flex:1;">' +
+                        '<div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.45);">Set your first financial goal</div>' +
+                        '<div style="font-size:9px;color:rgba(255,255,255,0.22);">Education · Home · Retirement · Marriage</div>' +
+                    '</div>' +
+                    '<span style="color:rgba(255,255,255,0.2);font-size:12px;">→</span>' +
+                '</button>';
+        }
+
+        // ── Assemble ──────────────────────────────────────────────────────────────
+        container.innerHTML =
+            '<div style="padding:14px 12px 12px;">' +
+                '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">' +
+                    '<span style="font-size:8px;font-weight:800;color:rgba(245,200,66,0.45);text-transform:uppercase;letter-spacing:.15em;">⬡ Financial Cockpit</span>' +
+                    '<span style="width:7px;height:7px;border-radius:50%;background:#10b981;display:inline-block;box-shadow:0 0 7px #10b981;"></span>' +
+                '</div>' +
+                '<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr) minmax(0,1fr);gap:8px;align-items:stretch;">' +
+                    hsGauge + centerPanel + nwGauge +
+                '</div>' +
+                goalsHtml +
+            '</div>';
+    }
+
+    window._dashUpdateScoreWidget = function() {
+        if (window._currentMode === 'dashboard') _dashRenderCockpit();
+    };
+
+    function _dashFmtNW(n) {
+        var a = Math.abs(n || 0), s = n < 0 ? '-' : '';
+        if (a >= 1e7) return s + '₹' + (a/1e7).toFixed(2) + ' Cr';
+        if (a >= 1e5) return s + '₹' + (a/1e5).toFixed(1) + ' L';
+        return s + '₹' + Math.round(a).toLocaleString('en-IN');
+    }
+
+    window._dashUpdateNetWorthWidget = function() {
+        if (window._currentMode === 'dashboard') _dashRenderCockpit();
+    };
+
+    window._dashUpdateGoalsWidget = function () {
+        if (window._currentMode === 'dashboard') _dashRenderCockpit();
+    };
 
         if (!result) {
             // No score yet — show greeting + CTA
