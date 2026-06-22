@@ -794,6 +794,7 @@
                 .catch(function(e){ console.warn('saveToolSummary failed:', e); });
         }
         if (typeof upRefreshToolSummaries === 'function') upRefreshToolSummaries();
+        if (typeof _dashUpdateNetWorthWidget === 'function') _dashUpdateNetWorthWidget();
     }
     window.saveToolSummary = saveToolSummary;
 

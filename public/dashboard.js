@@ -129,6 +129,7 @@
         var ca = document.getElementById('dash-fav-count-arrow');
         if (ca) ca.textContent = _t('pin.count').replace('{n}', favs.length);
         _dashRenderScoreWidget();
+        _dashRenderNetWorthWidget();
         if (typeof initRoadmap === 'function') initRoadmap();
         consultUpdateTile();
         if (typeof consultWatchUnread === 'function') consultWatchUnread();
@@ -198,13 +199,18 @@
         var off = (c * (1 - result.score / 100)).toFixed(1);
         var arcClr = result.arcColor || '#10b981';
 
+        var _hasNwData = window._toolSummaries && window._toolSummaries.netWorth &&
+                         (window._toolSummaries.netWorth.totalAssets || window._toolSummaries.netWorth.totalLiab);
         var actionsHtml = '';
-        if (result.topActions && result.topActions.length > 0) {
+        var visibleActions = (result.topActions || []).filter(function(a) {
+            return !(_hasNwData && a.name === 'Net Worth Readiness');
+        });
+        if (visibleActions.length > 0) {
             actionsHtml =
                 '<div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.08);">' +
                     '<div style="font-size:9px;font-weight:800;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:.07em;margin-bottom:7px;">Your Next Actions</div>' +
                     '<div style="display:flex;flex-direction:column;gap:5px;">';
-            result.topActions.forEach(function(a) {
+            visibleActions.forEach(function(a) {
                 actionsHtml +=
                     '<button onclick="switchMode(\'' + a.mode + '\')" ' +
                     'style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);cursor:pointer;text-align:left;transition:all .15s;width:100%;" ' +
@@ -245,6 +251,77 @@
 
     window._dashUpdateScoreWidget = function() {
         if (window._currentMode === 'dashboard') _dashRenderScoreWidget();
+    };
+
+    function _dashFmtNW(n) {
+        var a = Math.abs(n), s = n < 0 ? '-' : '';
+        if (a >= 1e7) return s + '₹' + (a/1e7).toFixed(2) + ' Cr';
+        if (a >= 1e5) return s + '₹' + (a/1e5).toFixed(2) + ' L';
+        return s + '₹' + Math.round(a).toLocaleString('en-IN');
+    }
+
+    function _dashRenderNetWorthWidget() {
+        var container = document.getElementById('dash-nw-widget');
+        if (!container) return;
+        var nw = window._toolSummaries && window._toolSummaries.netWorth;
+        var hasData = nw && (nw.totalAssets || nw.totalLiab);
+
+        if (!hasData) {
+            container.innerHTML =
+                '<button onclick="switchMode(\'networth\')" ' +
+                'style="display:flex;align-items:center;gap:12px;width:100%;padding:10px 14px;border-radius:14px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);cursor:pointer;text-align:left;transition:all .15s;" ' +
+                'onmouseover="this.style.background=\'rgba(255,255,255,0.08)\'" onmouseout="this.style.background=\'rgba(255,255,255,0.04)\'">' +
+                    '<span style="font-size:20px;flex-shrink:0;">⚖️</span>' +
+                    '<div style="flex:1;">' +
+                        '<div style="font-size:12px;font-weight:800;color:rgba(255,255,255,0.6);">Track your Net Worth</div>' +
+                        '<div style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:1px;">Add assets &amp; liabilities to see your complete financial picture</div>' +
+                    '</div>' +
+                    '<span style="font-size:11px;color:rgba(255,255,255,0.25);">→</span>' +
+                '</button>';
+            return;
+        }
+
+        var nwVal  = nw.netWorth    || 0;
+        var assets = nw.totalAssets || 0;
+        var liabs  = nw.totalLiab   || 0;
+        var nwColor = nwVal >= 0 ? '#10b981' : '#ef4444';
+        var dtar = assets > 0 ? (liabs / assets * 100).toFixed(0) : 0;
+        var dtarColor = dtar <= 30 ? '#10b981' : dtar <= 50 ? '#f59e0b' : '#ef4444';
+
+        container.innerHTML =
+            '<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);border-radius:14px;padding:12px 14px;">' +
+                '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">' +
+                    '<span style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:.07em;">⚖️ Net Worth</span>' +
+                    '<button onclick="switchMode(\'networth\')" style="font-size:10px;font-weight:700;color:rgba(245,200,66,0.6);background:none;border:none;cursor:pointer;padding:0;" ' +
+                    'onmouseover="this.style.color=\'rgba(245,200,66,0.9)\'" onmouseout="this.style.color=\'rgba(245,200,66,0.6)\'">Update →</button>' +
+                '</div>' +
+                '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">' +
+                    '<div>' +
+                        '<div style="font-size:24px;font-weight:900;color:' + nwColor + ';line-height:1;">' + _dashFmtNW(nwVal) + '</div>' +
+                        '<div style="font-size:9px;color:rgba(255,255,255,0.3);margin-top:2px;font-weight:600;">Total Net Worth</div>' +
+                    '</div>' +
+                    '<div style="display:flex;gap:14px;">' +
+                        '<div style="text-align:right;">' +
+                            '<div style="font-size:12px;font-weight:800;color:rgba(255,255,255,0.65);">' + _dashFmtNW(assets) + '</div>' +
+                            '<div style="font-size:9px;color:rgba(255,255,255,0.3);font-weight:600;">Assets</div>' +
+                        '</div>' +
+                        '<div style="width:1px;background:rgba(255,255,255,0.07);"></div>' +
+                        '<div style="text-align:right;">' +
+                            '<div style="font-size:12px;font-weight:800;color:rgba(255,255,255,0.65);">' + _dashFmtNW(liabs) + '</div>' +
+                            '<div style="font-size:9px;color:rgba(255,255,255,0.3);font-weight:600;">Liabilities</div>' +
+                        '</div>' +
+                        (dtar > 0 ? '<div style="width:1px;background:rgba(255,255,255,0.07);"></div>' +
+                        '<div style="text-align:right;">' +
+                            '<div style="font-size:12px;font-weight:800;color:' + dtarColor + ';">' + dtar + '%</div>' +
+                            '<div style="font-size:9px;color:rgba(255,255,255,0.3);font-weight:600;">Debt Ratio</div>' +
+                        '</div>' : '') +
+                    '</div>' +
+                '</div>' +
+            '</div>';
+    }
+
+    window._dashUpdateNetWorthWidget = function() {
+        if (window._currentMode === 'dashboard') _dashRenderNetWorthWidget();
     };
     // Fallback timer — only fires if auth state never resolves (e.g. offline).
     // Normal init is triggered directly from onAuthStateChanged in auth.js.
