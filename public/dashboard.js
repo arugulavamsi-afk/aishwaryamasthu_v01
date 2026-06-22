@@ -125,18 +125,127 @@
     }
 
     function initDashboard() {
-        var greetEl = document.getElementById('dash-user-greeting');
-        if (greetEl && window._fbAuth && window._fbAuth.currentUser) {
-            var name = (window._fbAuth.currentUser.displayName || '').split(' ')[0];
-            if (name) greetEl.textContent = _t('dash.greeting').replace('{n}', name);
-        }
         var favs = _dashGetFavs() || _dashFavDefaults.slice();
         var ca = document.getElementById('dash-fav-count-arrow');
         if (ca) ca.textContent = _t('pin.count').replace('{n}', favs.length);
+        _dashRenderScoreWidget();
         if (typeof initRoadmap === 'function') initRoadmap();
         consultUpdateTile();
         if (typeof consultWatchUnread === 'function') consultWatchUnread();
     }
+
+    function _dashGetUserName() {
+        if (window._fbAuth && window._fbAuth.currentUser) {
+            return (window._fbAuth.currentUser.displayName || '').split(' ')[0] || '';
+        }
+        return '';
+    }
+
+    function _dashActionLabel(name) {
+        var labels = {
+            'Savings Rate':        'Boost your monthly SIP',
+            'Debt Burden':         'Plan loan prepayment',
+            'Health Insurance':    'Check insurance coverage',
+            'Term Insurance':      'Check insurance coverage',
+            'Emergency Fund':      'Build your emergency fund',
+            'Spending Control':    'Track your expenses',
+            'Age Readiness':       'Review your financial plan',
+            'Net Worth Readiness': 'Track your net worth'
+        };
+        return labels[name] || name;
+    }
+
+    function _dashRenderScoreWidget() {
+        var container = document.getElementById('dash-score-widget');
+        if (!container) return;
+        var result = window._hsLastResult;
+        var prev   = window._hsPrevScore;
+        var name   = _dashGetUserName();
+        var greetHtml = name
+            ? '<span style="color:rgba(245,200,66,0.95);font-weight:900;">Hi ' + name + '!</span> '
+            : '';
+
+        if (!result) {
+            // No score yet — show greeting + CTA
+            container.innerHTML =
+                '<div class="rounded-2xl px-5 py-4 text-white shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:1.5px solid rgba(245,200,66,0.35);box-shadow:0 4px 24px rgba(0,0,0,0.3);">' +
+                    '<div style="margin-bottom:12px;">' +
+                        '<h2 style="font-size:16px;font-weight:900;color:#fff;">' + greetHtml + '🌟 What would you like to do today?</h2>' +
+                        '<p style="font-size:11px;color:rgba(147,197,253,0.85);margin-top:3px;">Your complete Indian wealth planning toolkit</p>' +
+                    '</div>' +
+                    '<button onclick="switchMode(\'healthscore\')" style="display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;border-radius:12px;background:rgba(225,29,72,0.12);border:1.5px solid rgba(225,29,72,0.35);cursor:pointer;text-align:left;transition:all .15s;" onmouseover="this.style.background=\'rgba(225,29,72,0.22)\'" onmouseout="this.style.background=\'rgba(225,29,72,0.12)\'">' +
+                        '<span style="font-size:24px;flex-shrink:0;">💗</span>' +
+                        '<div style="flex:1;">' +
+                            '<div style="font-size:13px;font-weight:900;color:#fff;">Know Your Financial Health Score</div>' +
+                            '<div style="font-size:11px;color:rgba(147,197,253,0.8);margin-top:2px;">2 min · See where you stand · Get your personal action plan</div>' +
+                        '</div>' +
+                        '<span style="color:rgba(255,255,255,0.4);font-size:13px;flex-shrink:0;">→</span>' +
+                    '</button>' +
+                '</div>';
+            return;
+        }
+
+        // Score exists — show score card + delta + top actions
+        var delta = (prev && prev.score !== undefined && prev.score !== result.score) ? (result.score - prev.score) : null;
+        var deltaHtml = '';
+        if (delta !== null) {
+            var dColor = delta > 0 ? '#22c55e' : '#ef4444';
+            var dSign  = delta > 0 ? '↑ +' : '↓ ';
+            deltaHtml = '<span style="font-size:10px;font-weight:800;color:' + dColor + ';background:' + dColor + '20;padding:2px 7px;border-radius:7px;margin-left:7px;vertical-align:middle;">' + dSign + Math.abs(delta) + ' pts</span>';
+        }
+
+        var c = 2 * Math.PI * 28;
+        var off = (c * (1 - result.score / 100)).toFixed(1);
+        var arcClr = result.arcColor || '#10b981';
+
+        var actionsHtml = '';
+        if (result.topActions && result.topActions.length > 0) {
+            actionsHtml =
+                '<div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.08);">' +
+                    '<div style="font-size:9px;font-weight:800;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:.07em;margin-bottom:7px;">Your Next Actions</div>' +
+                    '<div style="display:flex;flex-direction:column;gap:5px;">';
+            result.topActions.forEach(function(a) {
+                actionsHtml +=
+                    '<button onclick="switchMode(\'' + a.mode + '\')" ' +
+                    'style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);cursor:pointer;text-align:left;transition:all .15s;width:100%;" ' +
+                    'onmouseover="this.style.background=\'rgba(255,255,255,0.11)\'" onmouseout="this.style.background=\'rgba(255,255,255,0.05)\'">' +
+                        '<span style="font-size:16px;flex-shrink:0;">' + a.icon + '</span>' +
+                        '<span style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.85);flex:1;text-align:left;">' + _dashActionLabel(a.name) + '</span>' +
+                        '<span style="font-size:11px;color:rgba(255,255,255,0.3);flex-shrink:0;">Open →</span>' +
+                    '</button>';
+            });
+            actionsHtml += '</div></div>';
+        }
+
+        container.innerHTML =
+            '<div class="rounded-2xl px-5 py-4 text-white shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:1.5px solid rgba(245,200,66,0.35);box-shadow:0 4px 24px rgba(0,0,0,0.3);">' +
+                '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">' +
+                    '<h2 style="font-size:15px;font-weight:900;color:#fff;">' + greetHtml + '🌟 Financial Health</h2>' +
+                    '<button onclick="switchMode(\'healthscore\')" style="font-size:10px;font-weight:700;color:rgba(245,200,66,0.8);background:rgba(245,200,66,0.08);border:1px solid rgba(245,200,66,0.25);padding:4px 10px;border-radius:8px;cursor:pointer;white-space:nowrap;" onmouseover="this.style.background=\'rgba(245,200,66,0.15)\'" onmouseout="this.style.background=\'rgba(245,200,66,0.08)\'">Update Score</button>' +
+                '</div>' +
+                '<div style="display:flex;align-items:center;gap:14px;">' +
+                    '<div style="position:relative;flex-shrink:0;">' +
+                        '<svg viewBox="0 0 72 72" style="width:66px;height:66px;transform:rotate(-90deg);">' +
+                            '<circle cx="36" cy="36" r="28" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="7"/>' +
+                            '<circle cx="36" cy="36" r="28" fill="none" stroke="' + arcClr + '" stroke-width="7" stroke-linecap="round" stroke-dasharray="' + c.toFixed(1) + '" stroke-dashoffset="' + off + '" style="transition:stroke-dashoffset 1s ease;"/>' +
+                        '</svg>' +
+                        '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">' +
+                            '<span style="font-size:18px;font-weight:900;color:#fff;line-height:1;">' + result.score + '</span>' +
+                            '<span style="font-size:8px;color:rgba(255,255,255,0.35);font-weight:700;">/100</span>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div style="flex:1;min-width:0;">' +
+                        '<div style="font-size:18px;line-height:1;">' + result.emoji + '</div>' +
+                        '<div style="font-size:14px;font-weight:900;color:#fff;margin-top:3px;line-height:1.2;">' + result.grade + deltaHtml + '</div>' +
+                    '</div>' +
+                '</div>' +
+                actionsHtml +
+            '</div>';
+    }
+
+    window._dashUpdateScoreWidget = function() {
+        if (window._currentMode === 'dashboard') _dashRenderScoreWidget();
+    };
     // Fallback timer — only fires if auth state never resolves (e.g. offline).
     // Normal init is triggered directly from onAuthStateChanged in auth.js.
     window.addEventListener('DOMContentLoaded', function() {

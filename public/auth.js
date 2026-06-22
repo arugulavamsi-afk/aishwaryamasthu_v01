@@ -741,7 +741,8 @@
                     collapsed: window._rmState.collapsed || false
                 } : (_base.roadmap || {}),
                 nwHistory: (typeof _nwHistory !== 'undefined' && _nwHistory.length) ? _nwHistory.slice() : (_base.nwHistory || []),
-                myMFs: window._myMFs && window._myMFs.length ? window._myMFs.slice() : (_base.myMFs || [])
+                myMFs: window._myMFs && window._myMFs.length ? window._myMFs.slice() : (_base.myMFs || []),
+                hsLastScore: window._hsLastResult ? { score: window._hsLastResult.score, ts: window._hsLastResult.ts } : (_base.hsLastScore || null)
             });
             // Keep in-memory cache in sync so subsequent saves inherit current values
             window._cachedRestoreData = data;
@@ -1586,6 +1587,9 @@
                 window._rmState = Object.assign({ profile: null, visited: [], dismissed: false, collapsed: false }, data.roadmap);
                 if (typeof initRoadmap === 'function') initRoadmap();
             }
+
+            // Health Score snapshot — for dashboard delta tracking
+            if (data.hsLastScore) window._hsPrevScore = data.hsLastScore;
 
             // My Mutual Funds restore
             if (Array.isArray(data.myMFs)) {

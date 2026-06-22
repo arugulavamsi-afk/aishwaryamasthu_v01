@@ -545,6 +545,23 @@
             if (shown === 0) {
                 actList.innerHTML = `<div class="text-center py-6 text-emerald-500 font-bold text-sm">${_t('hs.crushing')}</div>`;
             }
+
+            // Store result globally so dashboard widget can display it
+            var _actionModeMap = {
+                'Savings Rate':'stepupsip','Debt Burden':'debtplan',
+                'Health Insurance':'insure','Term Insurance':'insure',
+                'Emergency Fund':'goal','Spending Control':'budgettrack',
+                'Age Readiness':'finplan','Net Worth Readiness':'networth'
+            };
+            var _topActions = [], _taCount = 0;
+            worstCats.forEach(function(cat) {
+                if (_taCount >= 3 || cat.pts >= cat.max) return;
+                var a = actionMap[cat.name];
+                if (a) { _topActions.push({ icon: a.icon, name: cat.name, color: a.color, mode: _actionModeMap[cat.name] || 'healthscore' }); _taCount++; }
+            });
+            window._hsLastResult = { score: totalScore, grade: grade, emoji: emoji, arcColor: arcColor, topActions: _topActions, ts: Date.now() };
+            if (typeof _dashUpdateScoreWidget === 'function') _dashUpdateScoreWidget();
+
             if (typeof saveUserData === 'function') saveUserData();
         }
         // ==================== END FINANCIAL HEALTH SCORE ====================

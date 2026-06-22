@@ -252,16 +252,8 @@
         <div id="dashboard-panel" class="w-full panel-fade">
             <div style="max-width:820px;margin:0 auto;">
 
-            <!-- Welcome strip -->
-            <div class="rounded-2xl px-6 py-5 mb-5 text-white shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:1.5px solid rgba(245,200,66,0.35);box-shadow:0 4px 24px rgba(0,0,0,0.3);">
-                <div class="flex items-center justify-between flex-wrap gap-3">
-                    <div>
-                        <h2 class="text-xl font-black flex items-center gap-2" data-i18n="dash.welcome.h">🌟 What would you like to do today?</h2>
-                        <p class="text-blue-200 text-xs mt-1" data-i18n="dash.welcome.p">Your complete Indian wealth planning toolkit — pick a category to get started</p>
-                    </div>
-                    <div id="dash-user-greeting" class="text-sm font-bold" style="color:rgba(245,200,66,0.8);"></div>
-                </div>
-            </div>
+            <!-- Score-first dashboard widget — rendered by _dashRenderScoreWidget() in dashboard.js -->
+            <div id="dash-score-widget" class="mb-5"></div>
 
             <!-- ── GUIDED ROADMAP ── -->
             <div id="roadmap-card" class="mb-4"></div>
