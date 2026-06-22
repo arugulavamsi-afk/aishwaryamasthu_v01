@@ -278,37 +278,24 @@
             <!-- Smart discovery: search + situation chips — rendered by _dashRenderSmartSection() in dashboard.js -->
             <div id="dash-smart-section" class="mb-5" style="max-width:460px;margin-left:auto;margin-right:auto;width:100%;"></div>
 
-            <!-- 4 Category tiles — 2×2 grid on all screen sizes -->
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:460px;margin:0 auto;width:100%;">
-
-                <button onclick="switchMode('dashcat-calc')" class="dash-card group" style="width:100%;min-width:0;">
-                    <div class="dash-card-icon" style="font-size:1.6rem;width:48px;height:48px;border-radius:14px;">⚡</div>
-                    <div class="dash-card-title" style="font-size:13px;margin-top:4px;" data-i18n="nav.calc">Calculators</div>
-                    <div class="dash-card-desc" data-i18n="nav.calc.desc">SIP · Goal · Home Loan · EPF · Emergency Fund</div>
-                    <div class="dash-card-arrow" style="font-size:11px;margin-top:6px;">10 tools →</div>
+            <!-- 4 Category tiles — 4×1 row -->
+            <div style="display:flex;gap:8px;max-width:460px;margin:0 auto;width:100%;">
+                <button onclick="switchMode('dashcat-calc')" class="dash-card group" style="flex:1;min-width:0;">
+                    <div class="dash-card-icon" style="font-size:1.4rem;width:36px;height:36px;border-radius:10px;">⚡</div>
+                    <div class="dash-card-title" style="font-size:10.5px;margin-top:5px;" data-i18n="nav.calc">Calculators</div>
                 </button>
-
-                <button onclick="switchMode('dashcat-mf')" class="dash-card group" style="width:100%;min-width:0;">
-                    <div class="dash-card-icon" style="font-size:1.6rem;width:48px;height:48px;border-radius:14px;">📊</div>
-                    <div class="dash-card-title" style="font-size:13px;margin-top:4px;" data-i18n="nav.mf">Mutual Funds & Coffee Can</div>
-                    <div class="dash-card-desc" data-i18n="nav.mf.desc">MF Explorer · MF Kit · Fund Picker · Live NAV</div>
-                    <div class="dash-card-arrow" style="font-size:11px;margin-top:6px;">4 tools →</div>
+                <button onclick="switchMode('dashcat-mf')" class="dash-card group" style="flex:1;min-width:0;">
+                    <div class="dash-card-icon" style="font-size:1.4rem;width:36px;height:36px;border-radius:10px;">📊</div>
+                    <div class="dash-card-title" style="font-size:10.5px;margin-top:5px;" data-i18n="nav.mf">Mutual Funds</div>
                 </button>
-
-                <button onclick="switchMode('dashcat-tax')" class="dash-card group" style="width:100%;min-width:0;">
-                    <div class="dash-card-icon" style="font-size:1.6rem;width:48px;height:48px;border-radius:14px;">🗺️</div>
-                    <div class="dash-card-title" style="font-size:13px;margin-top:4px;" data-i18n="nav.tax">Planning &amp; Tax</div>
-                    <div class="dash-card-desc" data-i18n="nav.tax.desc">Financial Plan · Tax Guide · CIBIL · Gold</div>
-                    <div class="dash-card-arrow" style="font-size:11px;margin-top:6px;">19 tools →</div>
+                <button onclick="switchMode('dashcat-tax')" class="dash-card group" style="flex:1;min-width:0;">
+                    <div class="dash-card-icon" style="font-size:1.4rem;width:36px;height:36px;border-radius:10px;">🗺️</div>
+                    <div class="dash-card-title" style="font-size:10.5px;margin-top:5px;" data-i18n="nav.tax">Planning &amp; Tax</div>
                 </button>
-
-                <button onclick="switchMode('dashcat-fav')" class="dash-card group" style="width:100%;min-width:0;">
-                    <div class="dash-card-icon" style="font-size:1.6rem;width:48px;height:48px;border-radius:14px;">⭐</div>
-                    <div class="dash-card-title" style="font-size:13px;margin-top:4px;" data-i18n="nav.fav">Favourites</div>
-                    <div class="dash-card-desc" data-i18n="nav.fav.desc">Your pinned tools · Quick access favourites</div>
-                    <div class="dash-card-arrow" style="font-size:11px;margin-top:6px;" id="dash-fav-count-arrow">1 pinned →</div>
+                <button onclick="switchMode('dashcat-fav')" class="dash-card group" style="flex:1;min-width:0;">
+                    <div class="dash-card-icon" style="font-size:1.4rem;width:36px;height:36px;border-radius:10px;">⭐</div>
+                    <div class="dash-card-title" style="font-size:10.5px;margin-top:5px;" data-i18n="nav.fav">Favourites</div>
                 </button>
-
             </div>
 
             <!-- ── CONSULT AN EXPERT TILE ── (hidden until experts are onboarded) -->
