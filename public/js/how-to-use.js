@@ -300,6 +300,17 @@
             ],
             tip: 'Consistently over-budget in one category? That\'s where the habit change needs to happen — not everywhere at once.'
         },
+        goaltracker: {
+            what: 'Log your actual savings progress toward each financial goal and see whether you\'re on track to reach it on time.',
+            steps: [
+                '1. First save a goal from the Goal Planner (enter amount, years, then click "Save to Financial Plan")',
+                '2. Open Goal Tracker — your saved goals appear as cards',
+                '3. Click "+ Update Progress" on any goal and enter the total amount saved toward it so far',
+                '4. Add an optional note (e.g. "Added FD maturity proceeds") for your own reference',
+                '5. Check back monthly — each check-in is stored so you can see your savings curve over time'
+            ],
+            tip: 'Enter the total accumulated amount each time, not just the monthly addition. The tracker compares your progress against the time elapsed to tell you if you\'re on track.'
+        },
         emergency: {
             what: 'Calculate exactly how much emergency corpus you need based on your actual monthly spending.',
             steps: [

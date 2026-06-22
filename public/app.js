@@ -338,6 +338,7 @@
             hracalc:        { label: 'HRA Calculator',    icon: '🏠' },
             nomtrack:       { label: 'Nomination Tracker', icon: '📜' },
             budgettrack:    { label: 'Budget Tracker',      icon: '📊' },
+            goaltracker:    { label: 'Goal Tracker',        icon: '🎯' },
             mymfs:          { label: 'My Mutual Funds',     icon: '★'  },
             consult:        { label: 'Consult an Expert',  icon: '🧑‍💼' }
         };
