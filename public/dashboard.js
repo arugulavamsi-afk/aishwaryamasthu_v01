@@ -712,11 +712,19 @@
             var deltaHtml = delta !== null
                 ? ' <span style="font-size:9px;font-weight:800;color:' + (delta > 0 ? '#22c55e' : '#ef4444') + ';">' + (delta > 0 ? '↑+' : '↓') + Math.abs(delta) + '</span>'
                 : '';
+            var _hsAge = parseInt((window._userProfile && window._userProfile.age) || '0', 10);
+            var _hsAgeStr = _hsAge >= 56 ? ' aged 56+' : _hsAge >= 46 ? ' aged 46–55' : _hsAge >= 36 ? ' aged 36–45' : _hsAge >= 26 ? ' aged 26–35' : _hsAge >= 18 ? ' aged 18–25' : '';
+            var _hsPct = hs.score >= 90 ? 95 : hs.score >= 80 ? 82 : hs.score >= 70 ? 68 : hs.score >= 60 ? 52 : hs.score >= 50 ? 38 : 0;
+            var _hsPercentileLine = _hsPct > 0
+                ? '<div style="font-size:8.5px;font-weight:700;color:rgba(245,200,66,0.85);margin-top:6px;line-height:1.35;">Better than ' + _hsPct + '% of Indians' + _hsAgeStr + '</div>'
+                : '';
+
             healthContent =
                 '<div style="flex:1;display:flex;align-items:center;justify-content:space-between;">' +
                     '<div>' +
                         '<div style="font-size:12px;font-weight:900;color:#fff;line-height:1.3;">' + hs.grade + deltaHtml + '</div>' +
                         '<div style="font-size:15px;margin-top:5px;">' + hs.emoji + '</div>' +
+                        _hsPercentileLine +
                     '</div>' +
                     '<div style="position:relative;flex-shrink:0;">' +
                         '<svg viewBox="0 0 72 72" style="width:56px;height:56px;transform:rotate(-90deg);">' +
