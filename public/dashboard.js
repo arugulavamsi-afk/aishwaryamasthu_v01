@@ -299,10 +299,7 @@
         var favs = _dashGetFavs() || _dashFavDefaults.slice();
         var ca = document.getElementById('dash-fav-count-arrow');
         if (ca) ca.textContent = _t('pin.count').replace('{n}', favs.length);
-        _dashRenderScoreWidget();
-        _dashRenderNetWorthWidget();
-        _dashRenderGoalsWidget();
-        _dashRenderBudgetWidget();
+        _dashRenderUnifiedWidget();
         _dashRenderSmartSection();
         consultUpdateTile();
         if (typeof consultWatchUnread === 'function') consultWatchUnread();
@@ -417,10 +414,6 @@
             '</div>';
     }
 
-    window._dashUpdateScoreWidget = function() {
-        if (window._currentMode === 'dashboard') _dashRenderScoreWidget();
-    };
-
     function _dashFmtNW(n) {
         var a = Math.abs(n), s = n < 0 ? '-' : '';
         if (a >= 1e7) return s + '₹' + (a/1e7).toFixed(2) + ' Cr';
@@ -504,7 +497,7 @@
     }
 
     window._dashUpdateNetWorthWidget = function() {
-        if (window._currentMode === 'dashboard') _dashRenderNetWorthWidget();
+        if (window._currentMode === 'dashboard') _dashRenderUnifiedWidget();
     };
 
     function _dashFmtGoal(n) {
@@ -577,7 +570,7 @@
     }
 
     window._dashUpdateGoalsWidget = function () {
-        if (window._currentMode === 'dashboard') _dashRenderGoalsWidget();
+        if (window._currentMode === 'dashboard') _dashRenderUnifiedWidget();
     };
 
     function _dashRenderBudgetWidget() {
@@ -677,8 +670,165 @@
     }
 
     window._dashUpdateBudgetWidget = function() {
-        if (window._currentMode === 'dashboard') _dashRenderBudgetWidget();
+        if (window._currentMode === 'dashboard') _dashRenderUnifiedWidget();
     };
+
+    window._dashUpdateScoreWidget = function() {
+        if (window._currentMode === 'dashboard') _dashRenderUnifiedWidget();
+    };
+
+    function _dashRenderUnifiedWidget() {
+        var container = document.getElementById('dash-unified-widget');
+        if (!container) return;
+
+        var CARD = 'class="rounded-2xl px-3 py-2 text-white shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:1.5px solid rgba(245,200,66,0.35);box-shadow:0 4px 24px rgba(0,0,0,0.3);"';
+
+        function _cell(b) {
+            return 'style="padding:10px;cursor:pointer;' + b + 'transition:background .15s;" ' +
+                   'onmouseover="this.style.background=\'rgba(255,255,255,0.05)\'" ' +
+                   'onmouseout="this.style.background=\'transparent\'"';
+        }
+        var BR  = 'border-right:1px solid rgba(255,255,255,0.08);';
+        var BB  = 'border-bottom:1px solid rgba(255,255,255,0.08);';
+        var LBL = 'style="font-size:9px;font-weight:800;color:rgba(255,255,255,0.4);margin-bottom:7px;letter-spacing:.04em;display:block;"';
+
+        function _noData(emoji, text) {
+            return '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:78px;gap:5px;">' +
+                '<span style="font-size:20px;">' + emoji + '</span>' +
+                '<div style="font-size:9.5px;font-weight:800;color:rgba(255,255,255,0.45);text-align:center;line-height:1.35;">' + text + '</div>' +
+            '</div>';
+        }
+
+        // ── Health Score ─────────────────────────────────────
+        var hs = window._hsLastResult;
+        var healthHtml;
+        if (!hs) {
+            healthHtml = _noData('💗', 'Run Health Score');
+        } else {
+            var c2pi   = 2 * Math.PI * 28;
+            var arcOff = (c2pi * (1 - hs.score / 100)).toFixed(1);
+            var arcClr = hs.arcColor || '#10b981';
+            var prev   = window._hsPrevScore;
+            var delta  = (prev && prev.score !== undefined && prev.score !== hs.score) ? (hs.score - prev.score) : null;
+            var deltaHtml = delta !== null
+                ? ' <span style="font-size:9px;font-weight:800;color:' + (delta > 0 ? '#22c55e' : '#ef4444') + ';">' + (delta > 0 ? '↑+' : '↓') + Math.abs(delta) + '</span>'
+                : '';
+            healthHtml =
+                '<div style="display:flex;align-items:center;gap:8px;">' +
+                    '<div style="position:relative;flex-shrink:0;">' +
+                        '<svg viewBox="0 0 72 72" style="width:44px;height:44px;transform:rotate(-90deg);">' +
+                            '<circle cx="36" cy="36" r="28" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="8"/>' +
+                            '<circle cx="36" cy="36" r="28" fill="none" stroke="' + arcClr + '" stroke-width="8" stroke-linecap="round" stroke-dasharray="' + c2pi.toFixed(1) + '" stroke-dashoffset="' + arcOff + '"/>' +
+                        '</svg>' +
+                        '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">' +
+                            '<span style="font-size:13px;font-weight:900;color:#fff;">' + hs.score + '</span>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div>' +
+                        '<div style="font-size:11px;font-weight:900;color:#fff;line-height:1.2;">' + hs.grade + deltaHtml + '</div>' +
+                        '<div style="font-size:12px;margin-top:3px;">' + hs.emoji + '</div>' +
+                    '</div>' +
+                '</div>';
+        }
+
+        // ── Net Worth ─────────────────────────────────────────
+        var nw    = window._toolSummaries && window._toolSummaries.netWorth;
+        var hasNw = nw && (nw.totalAssets || nw.totalLiab);
+        var nwHtml;
+        if (!hasNw) {
+            nwHtml = _noData('⚖️', 'Track Net Worth');
+        } else {
+            var nwVal   = nw.netWorth    || 0;
+            var assets  = nw.totalAssets || 0;
+            var liabs   = nw.totalLiab   || 0;
+            var nwCol   = nwVal >= 0 ? '#10b981' : '#ef4444';
+            var dtar    = assets > 0 ? Math.round(liabs / assets * 100) : 0;
+            var dtarCol = dtar <= 30 ? '#10b981' : dtar <= 50 ? '#f59e0b' : '#ef4444';
+            nwHtml =
+                '<div style="font-size:16px;font-weight:900;color:' + nwCol + ';line-height:1;margin-bottom:7px;">' + _dashFmtNW(nwVal) + '</div>' +
+                '<div style="display:flex;gap:10px;">' +
+                    '<div><div style="font-size:8.5px;color:rgba(255,255,255,0.35);font-weight:600;">Assets</div>' +
+                         '<div style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.75);">' + _dashFmtNW(assets) + '</div></div>' +
+                    '<div><div style="font-size:8.5px;color:rgba(255,255,255,0.35);font-weight:600;">Liab</div>' +
+                         '<div style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.75);">' + _dashFmtNW(liabs) + '</div></div>' +
+                    (dtar > 0 ?
+                    '<div><div style="font-size:8.5px;color:rgba(255,255,255,0.35);font-weight:600;">Debt</div>' +
+                              '<div style="font-size:10px;font-weight:800;color:' + dtarCol + ';">' + dtar + '%</div></div>' : '') +
+                '</div>';
+        }
+
+        // ── Goals ─────────────────────────────────────────────
+        var goals = window._savedGoals || [];
+        var goalsHtml;
+        if (goals.length === 0) {
+            goalsHtml = _noData('🎯', 'Set Your Goals');
+        } else {
+            goalsHtml = goals.slice(0, 3).map(function(g) {
+                var pct = Math.min(100, Math.round(((g.savedAmt || 0) / (g.targetAmt || 1)) * 100));
+                var bc  = pct >= 75 ? '#10b981' : pct >= 40 ? '#6366f1' : '#f59e0b';
+                return '<div style="margin-bottom:6px;">' +
+                    '<div style="display:flex;justify-content:space-between;margin-bottom:3px;">' +
+                        '<span style="font-size:9.5px;font-weight:700;color:rgba(255,255,255,0.8);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:78%;">' + (g.emoji||'') + ' ' + (g.label||'') + '</span>' +
+                        '<span style="font-size:9px;font-weight:800;color:rgba(255,255,255,0.4);flex-shrink:0;">' + pct + '%</span>' +
+                    '</div>' +
+                    '<div style="height:3px;border-radius:99px;background:rgba(255,255,255,0.1);overflow:hidden;">' +
+                        '<div style="height:3px;border-radius:99px;background:' + bc + ';width:' + pct + '%;"></div>' +
+                    '</div>' +
+                '</div>';
+            }).join('') +
+            (goals.length > 3 ? '<div style="font-size:9px;color:rgba(255,255,255,0.3);font-weight:600;margin-top:2px;">+' + (goals.length - 3) + ' more</div>' : '');
+        }
+
+        // ── Budget ─────────────────────────────────────────────
+        var _CI   = {'Housing':'🏠','Food':'🍽️','Transport':'🚌','EMIs & Loans':'💳','Entertainment':'🎬','Health':'💊','Shopping':'🛍️','Utilities':'⚡','Education':'📚','Others':'💸'};
+        var curMon   = new Date().toISOString().slice(0, 7);
+        var monLabel = new Date().toLocaleString('en-IN', { month: 'short', year: 'numeric' });
+        var md       = window._btData && window._btData[curMon];
+        var hasBt    = md && Object.keys(md).some(function(k) { var e=md[k]; return (e.b||0)>0||(e.a||0)>0; });
+        var budgetHtml;
+        if (!hasBt) {
+            budgetHtml = _noData('📊', 'Set Up Budget');
+        } else {
+            var tb=0, ta=0, oc=[];
+            Object.keys(md).forEach(function(k) { var e=md[k]||{},b=e.b||0,a=e.a||0; tb+=b; ta+=a; if(b>0&&a>b) oc.push({key:k,icon:_CI[k]||'📌',over:a-b}); });
+            oc.sort(function(x,y) { return y.over-x.over; });
+            var pctB = tb>0 ? Math.min(110,Math.round(ta/tb*100)) : 0;
+            var bpct = Math.min(100, pctB);
+            var bcol = pctB<=75?'#10b981':pctB<=100?'#f59e0b':'#ef4444';
+            var stL  = ta===0
+                ? '<div style="font-size:9px;color:rgba(147,197,253,0.7);margin-top:4px;">No spend logged yet</div>'
+                : oc.length>0
+                    ? '<div style="font-size:9px;color:rgba(248,113,113,0.85);margin-top:4px;">⚠ ' + oc[0].icon + ' ' + oc[0].key + ' over</div>'
+                    : '<div style="font-size:9px;color:rgba(52,211,153,0.85);margin-top:4px;">✓ Within budget</div>';
+            budgetHtml =
+                '<div style="font-size:9px;color:rgba(255,255,255,0.35);font-weight:600;margin-bottom:4px;">' + monLabel + '</div>' +
+                (tb>0 ? '<div style="height:4px;border-radius:99px;background:rgba(255,255,255,0.1);overflow:hidden;margin-bottom:5px;">' +
+                    '<div style="height:4px;border-radius:99px;background:' + bcol + ';width:' + bpct + '%;transition:width .5s;"></div></div>' : '') +
+                '<div style="display:flex;align-items:baseline;justify-content:space-between;">' +
+                    '<div style="font-size:11px;font-weight:900;color:#fff;">' + (tb>0 ? _dashFmtNW(ta)+' / '+_dashFmtNW(tb) : _dashFmtNW(ta)+' spent') + '</div>' +
+                    (tb>0 ? '<div style="font-size:10px;font-weight:800;color:' + bcol + ';">' + pctB + '%</div>' : '') +
+                '</div>' + stL;
+        }
+
+        // ── Assemble ───────────────────────────────────────────
+        container.innerHTML =
+            '<div ' + CARD + '>' +
+                '<div style="display:grid;grid-template-columns:1fr 1fr;">' +
+                    '<div onclick="switchMode(\'healthscore\')" ' + _cell(BR+BB) + '>' +
+                        '<span ' + LBL + '>💗 HEALTH</span>' + healthHtml +
+                    '</div>' +
+                    '<div onclick="switchMode(\'networth\')" ' + _cell(BB) + '>' +
+                        '<span ' + LBL + '>⚖️ NET WORTH</span>' + nwHtml +
+                    '</div>' +
+                    '<div onclick="switchMode(\'goaltracker\')" ' + _cell(BR) + '>' +
+                        '<span ' + LBL + '>🎯 GOALS</span>' + goalsHtml +
+                    '</div>' +
+                    '<div onclick="switchMode(\'budgettrack\')" ' + _cell('') + '>' +
+                        '<span ' + LBL + '>📊 BUDGET</span>' + budgetHtml +
+                    '</div>' +
+                '</div>' +
+            '</div>';
+    }
 
     // Fallback timer — only fires if auth state never resolves (e.g. offline).
     // Normal init is triggered directly from onAuthStateChanged in auth.js.
