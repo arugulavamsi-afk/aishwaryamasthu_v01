@@ -682,7 +682,7 @@
         if (!container) return;
 
         var CS  = 'background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 50%,#0e5c3a 100%);border:1.5px solid rgba(245,200,66,0.3);box-shadow:0 3px 16px rgba(0,0,0,0.28);border-radius:14px;padding:12px;display:flex;flex-direction:column;cursor:pointer;transition:border-color .18s,box-shadow .18s;';
-        var LBL = 'style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.6);letter-spacing:.05em;text-transform:uppercase;"';
+        var LBL = 'style="font-size:10.5px;font-weight:800;color:rgba(245,200,66,0.9);letter-spacing:.05em;text-transform:uppercase;"';
         var TS  = 'style="font-size:8.5px;color:rgba(255,255,255,0.28);font-weight:600;margin-top:6px;padding-top:7px;border-top:1px solid rgba(255,255,255,0.07);"';
 
         function _noData(emoji, text) {
