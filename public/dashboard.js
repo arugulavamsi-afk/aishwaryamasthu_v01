@@ -723,7 +723,6 @@
                 '<div style="flex:1;display:flex;align-items:center;justify-content:space-between;">' +
                     '<div>' +
                         '<div style="font-size:12px;font-weight:900;color:#fff;line-height:1.3;">' + hs.grade + deltaHtml + '</div>' +
-                        '<div style="font-size:15px;margin-top:5px;">' + hs.emoji + '</div>' +
                         _hsPercentileLine +
                     '</div>' +
                     '<div style="position:relative;flex-shrink:0;">' +
