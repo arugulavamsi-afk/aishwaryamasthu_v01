@@ -301,8 +301,9 @@
         if (ca) ca.textContent = _t('pin.count').replace('{n}', favs.length);
         _dashRenderScoreWidget();
         _dashRenderNetWorthWidget();
-        _dashRenderSmartSection();
         _dashRenderGoalsWidget();
+        _dashRenderInsightCard();
+        _dashRenderSmartSection();
         consultUpdateTile();
         if (typeof consultWatchUnread === 'function') consultWatchUnread();
     }
@@ -577,6 +578,128 @@
 
     window._dashUpdateGoalsWidget = function () {
         if (window._currentMode === 'dashboard') _dashRenderGoalsWidget();
+    };
+
+    function _dashRenderInsightCard() {
+        var container = document.getElementById('dash-insight-card');
+        if (!container) return;
+
+        var CARD   = 'class="rounded-2xl px-4 py-3 text-white shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:1.5px solid rgba(245,200,66,0.35);box-shadow:0 4px 24px rgba(0,0,0,0.3);"';
+        var ACTBTN = 'style="font-size:10px;font-weight:700;color:rgba(245,200,66,0.8);background:rgba(245,200,66,0.08);border:1px solid rgba(245,200,66,0.25);padding:4px 10px;border-radius:8px;cursor:pointer;white-space:nowrap;" onmouseover="this.style.background=\'rgba(245,200,66,0.15)\'" onmouseout="this.style.background=\'rgba(245,200,66,0.08)\'"';
+
+        // ── NW monthly snapshot (localStorage) ──────────────────
+        var nwDelta = null;
+        var nw = window._toolSummaries && window._toolSummaries.netWorth;
+        if (nw) {
+            var nwTotal = nw.netWorth || 0;
+            try {
+                var snaps = JSON.parse(localStorage.getItem('am_nw_snap') || '[]');
+                var curMon  = new Date().toISOString().slice(0, 7);
+                var prevMon = new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1).toISOString().slice(0, 7);
+                if (!snaps.find(function(s) { return s.m === curMon; })) {
+                    snaps.push({ m: curMon, v: nwTotal });
+                    if (snaps.length > 6) snaps = snaps.slice(-6);
+                    localStorage.setItem('am_nw_snap', JSON.stringify(snaps));
+                }
+                var prevSnap = snaps.find(function(s) { return s.m === prevMon; });
+                if (prevSnap) nwDelta = nwTotal - prevSnap.v;
+            } catch(e) {}
+        }
+
+        // ── Goal schedule analysis ───────────────────────────────
+        var goals = window._savedGoals || [];
+        var behindGoal = null;
+        var allOnTrack = goals.length > 0;
+        goals.forEach(function(g) {
+            var now   = Date.now();
+            var start = new Date(g.createdAt  || 0).getTime();
+            var end   = new Date(g.targetDate || 0).getTime();
+            if (!end || end <= now) return;
+            var timeElapsed = Math.max(0, Math.min(100, (now - start) / (end - start) * 100));
+            var progress    = Math.min(100, ((g.savedAmt || 0) / (g.targetAmt || 1)) * 100);
+            var gap = timeElapsed - progress;
+            if (gap > 15) {
+                allOnTrack = false;
+                if (!behindGoal || gap > behindGoal.gap) {
+                    var remaining  = Math.max(0, (g.targetAmt || 0) - (g.savedAmt || 0));
+                    var monthsLeft = Math.max(1, (end - now) / (1000 * 60 * 60 * 24 * 30.44));
+                    behindGoal = {
+                        emoji: g.emoji || '🎯', label: g.label || 'Goal',
+                        progress: Math.round(progress), timeElapsed: Math.round(timeElapsed),
+                        gap: Math.round(gap), neededPerMonth: remaining / monthsLeft
+                    };
+                }
+            }
+        });
+
+        // ── Health score data ────────────────────────────────────
+        var hs = window._hsLastResult;
+        var weakestArea = null;
+        if (hs && hs.areas && hs.areas.length) {
+            weakestArea = hs.areas.slice().sort(function(a, b) {
+                return (a.score / (a.maxScore || 1)) - (b.score / (b.maxScore || 1));
+            })[0];
+        }
+
+        // ── Pick the best insight ────────────────────────────────
+        var icon, title, subtitle, ctaLabel, ctaMode, dot;
+
+        if (behindGoal) {
+            icon = behindGoal.emoji; dot = '#f59e0b';
+            title    = behindGoal.label + ' is ' + behindGoal.gap + '% behind schedule';
+            subtitle = behindGoal.progress + '% saved but ' + behindGoal.timeElapsed + '% of time has passed. You need ' + _dashFmtNW(behindGoal.neededPerMonth) + '/month to catch up.';
+            ctaLabel = 'Log Progress →'; ctaMode = 'goaltracker';
+        } else if (hs && hs.score < 50 && weakestArea) {
+            icon = '💗'; dot = '#ef4444';
+            title    = 'Health Score ' + hs.score + '/100 — needs attention';
+            subtitle = weakestArea.label + ' is your weakest area. One focused action here will move your score the most.';
+            ctaLabel = 'Improve →'; ctaMode = 'healthscore';
+        } else if (nwDelta !== null) {
+            var grew = nwDelta >= 0;
+            icon = grew ? '📈' : '📉'; dot = grew ? '#10b981' : '#ef4444';
+            title    = 'Net worth ' + (grew ? 'grew' : 'fell') + ' ' + _dashFmtNW(Math.abs(nwDelta)) + ' this month';
+            subtitle = grew
+                ? 'Great momentum! Small monthly gains compound significantly over time.'
+                : 'A dip this month — review your liabilities and revisit your monthly budget.';
+            ctaLabel = grew ? 'View Net Worth →' : 'Review →'; ctaMode = 'networth';
+        } else if (allOnTrack && goals.length > 0) {
+            icon = '✅'; dot = '#10b981';
+            title    = 'All ' + goals.length + ' goal' + (goals.length > 1 ? 's' : '') + ' on track!';
+            subtitle = 'You\'re progressing well across every goal. Log a check-in to keep the streak going.';
+            ctaLabel = 'Check In →'; ctaMode = 'goaltracker';
+        } else if (hs && weakestArea) {
+            icon = '💡'; dot = '#6366f1';
+            title    = 'Score ' + hs.score + '/100 — one gap to close';
+            subtitle = weakestArea.label + ' is dragging your score. One action here has the biggest impact.';
+            ctaLabel = 'See Plan →'; ctaMode = 'healthscore';
+        } else {
+            icon = '🚀'; dot = '#6366f1';
+            title    = 'Get your personalised action plan';
+            subtitle = 'Run your Financial Health Score — 2 minutes to see where you stand and what to fix first.';
+            ctaLabel = 'Run Score →'; ctaMode = 'healthscore';
+        }
+
+        container.innerHTML =
+            '<div ' + CARD + '>' +
+                '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">' +
+                    '<span style="font-size:12px;font-weight:800;color:rgba(255,255,255,0.7);">💡 Monthly Insight</span>' +
+                    '<button onclick="switchMode(\'' + ctaMode + '\')" ' + ACTBTN + '>' + ctaLabel + '</button>' +
+                '</div>' +
+                '<div style="display:flex;align-items:flex-start;gap:10px;">' +
+                    '<div style="font-size:22px;flex-shrink:0;margin-top:1px;">' + icon + '</div>' +
+                    '<div style="flex:1;min-width:0;">' +
+                        '<div style="font-size:13px;font-weight:900;color:#fff;line-height:1.3;">' +
+                            '<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:' + dot + ';margin-right:6px;vertical-align:middle;flex-shrink:0;"></span>' +
+                            title +
+                        '</div>' +
+                        '<div style="font-size:10.5px;color:rgba(255,255,255,0.5);margin-top:5px;line-height:1.55;">' + subtitle + '</div>' +
+                    '</div>' +
+                '</div>' +
+            '</div>';
+    }
+
+    window._dashUpdateInsightCard = function() {
+        if (window._currentMode === 'dashboard') _dashRenderInsightCard();
     };
 
     // Fallback timer — only fires if auth state never resolves (e.g. offline).
