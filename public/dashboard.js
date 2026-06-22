@@ -755,22 +755,25 @@
             var dtar    = assets > 0 ? Math.round(liabs / assets * 100) : 0;
             var dtarCol = dtar <= 30 ? '#34d399' : dtar <= 50 ? '#fbbf24' : '#f87171';
             nwContent =
-                '<div style="flex:1;">' +
-                    '<div style="font-size:20px;font-weight:900;color:' + nwCol + ';line-height:1;margin-bottom:8px;">' + _dashFmtNW(nwVal) + '</div>' +
-                    '<div style="display:flex;flex-direction:column;gap:3px;">' +
-                        '<div style="display:flex;justify-content:space-between;">' +
-                            '<span style="font-size:9px;color:rgba(255,255,255,0.4);font-weight:600;">Assets</span>' +
-                            '<span style="font-size:9.5px;font-weight:800;color:rgba(255,255,255,0.8);">' + _dashFmtNW(assets) + '</span>' +
+                '<div style="flex:1;display:flex;align-items:center;justify-content:space-between;">' +
+                    '<div style="display:flex;flex-direction:column;gap:4px;">' +
+                        '<div>' +
+                            '<div style="font-size:8.5px;color:rgba(255,255,255,0.4);font-weight:600;">Assets</div>' +
+                            '<div style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.85);">' + _dashFmtNW(assets) + '</div>' +
                         '</div>' +
-                        '<div style="display:flex;justify-content:space-between;">' +
-                            '<span style="font-size:9px;color:rgba(255,255,255,0.4);font-weight:600;">Liabilities</span>' +
-                            '<span style="font-size:9.5px;font-weight:800;color:rgba(255,255,255,0.8);">' + _dashFmtNW(liabs) + '</span>' +
+                        '<div>' +
+                            '<div style="font-size:8.5px;color:rgba(255,255,255,0.4);font-weight:600;">Liabilities</div>' +
+                            '<div style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.85);">' + _dashFmtNW(liabs) + '</div>' +
                         '</div>' +
                         (dtar > 0 ?
-                        '<div style="display:flex;justify-content:space-between;">' +
-                            '<span style="font-size:9px;color:rgba(255,255,255,0.4);font-weight:600;">Debt ratio</span>' +
-                            '<span style="font-size:9.5px;font-weight:800;color:' + dtarCol + ';">' + dtar + '%</span>' +
+                        '<div>' +
+                            '<div style="font-size:8.5px;color:rgba(255,255,255,0.4);font-weight:600;">Debt ratio</div>' +
+                            '<div style="font-size:10px;font-weight:800;color:' + dtarCol + ';">' + dtar + '%</div>' +
                         '</div>' : '') +
+                    '</div>' +
+                    '<div style="text-align:right;">' +
+                        '<div style="font-size:9px;color:rgba(255,255,255,0.4);font-weight:600;margin-bottom:3px;">Net Worth</div>' +
+                        '<div style="font-size:20px;font-weight:900;color:' + nwCol + ';line-height:1;">' + _dashFmtNW(nwVal) + '</div>' +
                     '</div>' +
                 '</div>';
             nwTs = _tsLine(nw.updatedAt);
