@@ -713,20 +713,20 @@
                 ? ' <span style="font-size:9px;font-weight:800;color:' + (delta > 0 ? '#22c55e' : '#ef4444') + ';">' + (delta > 0 ? '↑+' : '↓') + Math.abs(delta) + '</span>'
                 : '';
             healthContent =
-                '<div style="flex:1;display:flex;align-items:center;gap:10px;">' +
+                '<div style="flex:1;display:flex;align-items:center;justify-content:space-between;gap:8px;">' +
+                    '<div>' +
+                        '<div style="font-size:13px;font-weight:900;color:#fff;line-height:1.3;">' + hs.grade + deltaHtml + '</div>' +
+                        '<div style="font-size:18px;margin-top:5px;">' + hs.emoji + '</div>' +
+                    '</div>' +
                     '<div style="position:relative;flex-shrink:0;">' +
-                        '<svg viewBox="0 0 72 72" style="width:52px;height:52px;transform:rotate(-90deg);">' +
+                        '<svg viewBox="0 0 72 72" style="width:64px;height:64px;transform:rotate(-90deg);filter:drop-shadow(0 0 7px ' + arcClr + ');">' +
                             '<circle cx="36" cy="36" r="28" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="8"/>' +
                             '<circle cx="36" cy="36" r="28" fill="none" stroke="' + arcClr + '" stroke-width="8" stroke-linecap="round" stroke-dasharray="' + c2pi.toFixed(1) + '" stroke-dashoffset="' + arcOff + '"/>' +
                         '</svg>' +
                         '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">' +
-                            '<span style="font-size:15px;font-weight:900;color:#fff;line-height:1;">' + hs.score + '</span>' +
-                            '<span style="font-size:7px;color:rgba(255,255,255,0.3);font-weight:600;">/100</span>' +
+                            '<span style="font-size:22px;font-weight:900;color:' + arcClr + ';line-height:1;text-shadow:0 0 10px ' + arcClr + '99;">' + hs.score + '</span>' +
+                            '<span style="font-size:7px;color:rgba(255,255,255,0.35);font-weight:600;">/100</span>' +
                         '</div>' +
-                    '</div>' +
-                    '<div>' +
-                        '<div style="font-size:12px;font-weight:900;color:#fff;line-height:1.3;">' + hs.grade + deltaHtml + '</div>' +
-                        '<div style="font-size:14px;margin-top:3px;">' + hs.emoji + '</div>' +
                     '</div>' +
                 '</div>';
             healthTs = _tsLine(hs.ts);
