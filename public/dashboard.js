@@ -302,7 +302,7 @@
         _dashRenderScoreWidget();
         _dashRenderNetWorthWidget();
         _dashRenderGoalsWidget();
-        _dashRenderInsightCard();
+        _dashRenderBudgetWidget();
         _dashRenderSmartSection();
         consultUpdateTile();
         if (typeof consultWatchUnread === 'function') consultWatchUnread();
@@ -580,126 +580,104 @@
         if (window._currentMode === 'dashboard') _dashRenderGoalsWidget();
     };
 
-    function _dashRenderInsightCard() {
-        var container = document.getElementById('dash-insight-card');
+    function _dashRenderBudgetWidget() {
+        var container = document.getElementById('dash-budget-widget');
         if (!container) return;
 
         var CARD   = 'class="rounded-2xl px-3 py-2 text-white shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:1.5px solid rgba(245,200,66,0.35);box-shadow:0 4px 24px rgba(0,0,0,0.3);"';
         var ACTBTN = 'style="font-size:10px;font-weight:700;color:rgba(245,200,66,0.8);background:rgba(245,200,66,0.08);border:1px solid rgba(245,200,66,0.25);padding:4px 10px;border-radius:8px;cursor:pointer;white-space:nowrap;" onmouseover="this.style.background=\'rgba(245,200,66,0.15)\'" onmouseout="this.style.background=\'rgba(245,200,66,0.08)\'"';
 
-        // ── NW monthly snapshot (localStorage) ──────────────────
-        var nwDelta = null;
-        var nw = window._toolSummaries && window._toolSummaries.netWorth;
-        if (nw) {
-            var nwTotal = nw.netWorth || 0;
-            try {
-                var snaps = JSON.parse(localStorage.getItem('am_nw_snap') || '[]');
-                var curMon  = new Date().toISOString().slice(0, 7);
-                var prevMon = new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1).toISOString().slice(0, 7);
-                if (!snaps.find(function(s) { return s.m === curMon; })) {
-                    snaps.push({ m: curMon, v: nwTotal });
-                    if (snaps.length > 6) snaps = snaps.slice(-6);
-                    localStorage.setItem('am_nw_snap', JSON.stringify(snaps));
-                }
-                var prevSnap = snaps.find(function(s) { return s.m === prevMon; });
-                if (prevSnap) nwDelta = nwTotal - prevSnap.v;
-            } catch(e) {}
-        }
+        var _CAT_ICONS = {
+            'Housing':'🏠','Food':'🍽️','Transport':'🚌','EMIs & Loans':'💳',
+            'Entertainment':'🎬','Health':'💊','Shopping':'🛍️','Utilities':'⚡',
+            'Education':'📚','Others':'💸'
+        };
 
-        // ── Goal schedule analysis ───────────────────────────────
-        var goals = window._savedGoals || [];
-        var behindGoal = null;
-        var allOnTrack = goals.length > 0;
-        goals.forEach(function(g) {
-            var now   = Date.now();
-            var start = new Date(g.createdAt  || 0).getTime();
-            var end   = new Date(g.targetDate || 0).getTime();
-            if (!end || end <= now) return;
-            var timeElapsed = Math.max(0, Math.min(100, (now - start) / (end - start) * 100));
-            var progress    = Math.min(100, ((g.savedAmt || 0) / (g.targetAmt || 1)) * 100);
-            var gap = timeElapsed - progress;
-            if (gap > 15) {
-                allOnTrack = false;
-                if (!behindGoal || gap > behindGoal.gap) {
-                    var remaining  = Math.max(0, (g.targetAmt || 0) - (g.savedAmt || 0));
-                    var monthsLeft = Math.max(1, (end - now) / (1000 * 60 * 60 * 24 * 30.44));
-                    behindGoal = {
-                        emoji: g.emoji || '🎯', label: g.label || 'Goal',
-                        progress: Math.round(progress), timeElapsed: Math.round(timeElapsed),
-                        gap: Math.round(gap), neededPerMonth: remaining / monthsLeft
-                    };
-                }
-            }
+        var now = new Date();
+        var curMon    = now.toISOString().slice(0, 7);
+        var monthLabel = now.toLocaleString('en-IN', { month: 'long', year: 'numeric' });
+        var monthData  = (window._btData && window._btData[curMon]) ? window._btData[curMon] : null;
+        var hasAnyEntry = monthData && Object.keys(monthData).some(function(k) {
+            var e = monthData[k]; return (e.b || 0) > 0 || (e.a || 0) > 0;
         });
 
-        // ── Health score data ────────────────────────────────────
-        var hs = window._hsLastResult;
-        var weakestArea = null;
-        if (hs && hs.areas && hs.areas.length) {
-            weakestArea = hs.areas.slice().sort(function(a, b) {
-                return (a.score / (a.maxScore || 1)) - (b.score / (b.maxScore || 1));
-            })[0];
+        // ── No data ──────────────────────────────────────────────
+        if (!hasAnyEntry) {
+            container.innerHTML =
+                '<div ' + CARD + '>' +
+                    '<div style="display:flex;align-items:center;margin-bottom:7px;">' +
+                        '<span style="font-size:12px;font-weight:800;color:rgba(255,255,255,0.7);">📊 Budget · ' + monthLabel + '</span>' +
+                    '</div>' +
+                    '<button onclick="switchMode(\'budgettrack\')" style="display:flex;align-items:center;gap:10px;width:100%;padding:8px 10px;border-radius:10px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);cursor:pointer;text-align:left;transition:all .15s;" onmouseover="this.style.background=\'rgba(255,255,255,0.11)\'" onmouseout="this.style.background=\'rgba(255,255,255,0.06)\'">' +
+                        '<span style="font-size:20px;flex-shrink:0;">📊</span>' +
+                        '<div style="flex:1;">' +
+                            '<div style="font-size:12px;font-weight:800;color:#fff;">Set up ' + monthLabel + ' budget</div>' +
+                            '<div style="font-size:10px;color:rgba(147,197,253,0.75);margin-top:1px;">Track spending · Find where your money goes</div>' +
+                        '</div>' +
+                        '<span style="color:rgba(255,255,255,0.4);font-size:13px;flex-shrink:0;">→</span>' +
+                    '</button>' +
+                '</div>';
+            return;
         }
 
-        // ── Pick the best insight ────────────────────────────────
-        var icon, title, subtitle, ctaLabel, ctaMode, dot;
+        // ── Compute totals ───────────────────────────────────────
+        var totalBudget = 0, totalActual = 0;
+        var overCats = [];
+        Object.keys(monthData).forEach(function(key) {
+            var e = monthData[key] || {};
+            var b = e.b || 0, a = e.a || 0;
+            totalBudget += b;
+            totalActual += a;
+            if (b > 0 && a > b) overCats.push({ key: key, icon: _CAT_ICONS[key] || '📌', over: a - b });
+        });
+        overCats.sort(function(x, y) { return y.over - x.over; });
 
-        if (behindGoal) {
-            icon = behindGoal.emoji; dot = '#f59e0b';
-            title    = behindGoal.label + ' is ' + behindGoal.gap + '% behind schedule';
-            subtitle = behindGoal.progress + '% saved but ' + behindGoal.timeElapsed + '% of time has passed. You need ' + _dashFmtNW(behindGoal.neededPerMonth) + '/month to catch up.';
-            ctaLabel = 'Log Progress →'; ctaMode = 'goaltracker';
-        } else if (hs && hs.score < 50 && weakestArea) {
-            icon = '💗'; dot = '#ef4444';
-            title    = 'Health Score ' + hs.score + '/100 — needs attention';
-            subtitle = weakestArea.label + ' is your weakest area. One focused action here will move your score the most.';
-            ctaLabel = 'Improve →'; ctaMode = 'healthscore';
-        } else if (nwDelta !== null) {
-            var grew = nwDelta >= 0;
-            icon = grew ? '📈' : '📉'; dot = grew ? '#10b981' : '#ef4444';
-            title    = 'Net worth ' + (grew ? 'grew' : 'fell') + ' ' + _dashFmtNW(Math.abs(nwDelta)) + ' this month';
-            subtitle = grew
-                ? 'Great momentum! Small monthly gains compound significantly over time.'
-                : 'A dip this month — review your liabilities and revisit your monthly budget.';
-            ctaLabel = grew ? 'View Net Worth →' : 'Review →'; ctaMode = 'networth';
-        } else if (allOnTrack && goals.length > 0) {
-            icon = '✅'; dot = '#10b981';
-            title    = 'All ' + goals.length + ' goal' + (goals.length > 1 ? 's' : '') + ' on track!';
-            subtitle = 'You\'re progressing well across every goal. Log a check-in to keep the streak going.';
-            ctaLabel = 'Check In →'; ctaMode = 'goaltracker';
-        } else if (hs && weakestArea) {
-            icon = '💡'; dot = '#6366f1';
-            title    = 'Score ' + hs.score + '/100 — one gap to close';
-            subtitle = weakestArea.label + ' is dragging your score. One action here has the biggest impact.';
-            ctaLabel = 'See Plan →'; ctaMode = 'healthscore';
+        var pct      = totalBudget > 0 ? Math.min(110, Math.round(totalActual / totalBudget * 100)) : 0;
+        var barPct   = Math.min(100, pct);
+        var barColor = pct <= 75 ? '#10b981' : pct <= 100 ? '#f59e0b' : '#ef4444';
+        var _TS      = 'style="margin-top:7px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.07);font-size:9px;color:rgba(255,255,255,0.3);font-weight:600;"';
+
+        // ── Status line ──────────────────────────────────────────
+        var statusHtml;
+        if (totalActual === 0) {
+            statusHtml = '<div style="font-size:10px;color:rgba(147,197,253,0.7);margin-top:5px;">Budget set — start logging your actual spend</div>';
+        } else if (overCats.length > 0) {
+            var top = overCats[0];
+            statusHtml = '<div style="font-size:10px;color:rgba(248,113,113,0.85);margin-top:5px;">' +
+                '⚠ ' + (top.icon) + ' ' + top.key + ' ₹' + _dashFmtNW(top.over) + ' over budget' +
+                (overCats.length > 1 ? ' · ' + overCats.length + ' categories' : '') +
+            '</div>';
         } else {
-            icon = '🚀'; dot = '#6366f1';
-            title    = 'Get your personalised action plan';
-            subtitle = 'Run your Financial Health Score — 2 minutes to see where you stand and what to fix first.';
-            ctaLabel = 'Run Score →'; ctaMode = 'healthscore';
+            statusHtml = '<div style="font-size:10px;color:rgba(52,211,153,0.85);margin-top:5px;">✓ All categories within budget</div>';
         }
+
+        // ── Spent / Budget numbers ───────────────────────────────
+        var spentLabel  = totalBudget > 0
+            ? _dashFmtNW(totalActual) + ' of ' + _dashFmtNW(totalBudget)
+            : _dashFmtNW(totalActual) + ' spent';
 
         container.innerHTML =
             '<div ' + CARD + '>' +
                 '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;">' +
-                    '<span style="font-size:12px;font-weight:800;color:rgba(255,255,255,0.7);">💡 Monthly Insight</span>' +
-                    '<button onclick="switchMode(\'' + ctaMode + '\')" ' + ACTBTN + '>' + ctaLabel + '</button>' +
+                    '<span style="font-size:12px;font-weight:800;color:rgba(255,255,255,0.7);">📊 Budget · ' + monthLabel + '</span>' +
+                    '<button onclick="switchMode(\'budgettrack\')" ' + ACTBTN + '>Update →</button>' +
                 '</div>' +
-                '<div style="display:flex;align-items:flex-start;gap:10px;">' +
-                    '<div style="font-size:18px;flex-shrink:0;margin-top:1px;">' + icon + '</div>' +
-                    '<div style="flex:1;min-width:0;">' +
-                        '<div style="font-size:12px;font-weight:900;color:#fff;line-height:1.3;">' +
-                            '<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:' + dot + ';margin-right:6px;vertical-align:middle;flex-shrink:0;"></span>' +
-                            title +
-                        '</div>' +
-                        '<div style="font-size:10.5px;color:rgba(255,255,255,0.5);margin-top:5px;line-height:1.55;">' + subtitle + '</div>' +
-                    '</div>' +
+                (totalBudget > 0
+                    ? '<div style="height:5px;border-radius:99px;background:rgba(255,255,255,0.1);overflow:hidden;margin-bottom:6px;">' +
+                          '<div style="height:5px;border-radius:99px;background:' + barColor + ';width:' + barPct + '%;transition:width .5s ease;"></div>' +
+                      '</div>'
+                    : '') +
+                '<div style="display:flex;align-items:baseline;justify-content:space-between;">' +
+                    '<div style="font-size:16px;font-weight:900;color:#fff;line-height:1;">' + spentLabel + '</div>' +
+                    (totalBudget > 0 ? '<div style="font-size:11px;font-weight:800;color:' + barColor + ';">' + pct + '%</div>' : '') +
                 '</div>' +
+                statusHtml +
+                (totalBudget > 0 ? '<div ' + _TS + '>Budget set for ' + monthLabel + '</div>' : '') +
             '</div>';
     }
 
-    window._dashUpdateInsightCard = function() {
-        if (window._currentMode === 'dashboard') _dashRenderInsightCard();
+    window._dashUpdateBudgetWidget = function() {
+        if (window._currentMode === 'dashboard') _dashRenderBudgetWidget();
     };
 
     // Fallback timer — only fires if auth state never resolves (e.g. offline).
