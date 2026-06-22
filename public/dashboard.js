@@ -339,8 +339,8 @@
             ? '<span style="color:rgba(245,200,66,0.95);font-weight:900;">Hi ' + name + '!</span> '
             : '';
 
-        var _CARD = 'class="rounded-2xl px-4 py-3 text-white shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:1.5px solid rgba(245,200,66,0.35);box-shadow:0 4px 24px rgba(0,0,0,0.3);"';
-        var _HDR  = 'style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;"';
+        var _CARD = 'class="rounded-2xl px-3 py-2 text-white shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:1.5px solid rgba(245,200,66,0.35);box-shadow:0 4px 24px rgba(0,0,0,0.3);"';
+        var _HDR  = 'style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;"';
         var _LBL  = 'style="font-size:12px;font-weight:800;color:rgba(255,255,255,0.7);"';
         var _ACTBTN = 'style="font-size:10px;font-weight:700;color:rgba(245,200,66,0.8);background:rgba(245,200,66,0.08);border:1px solid rgba(245,200,66,0.25);padding:4px 10px;border-radius:8px;cursor:pointer;white-space:nowrap;" onmouseover="this.style.background=\'rgba(245,200,66,0.15)\'" onmouseout="this.style.background=\'rgba(245,200,66,0.08)\'"';
 
@@ -378,10 +378,10 @@
             return !(_hasNwData && a.name === 'Net Worth Readiness');
         })[0];
         var actionHtml = topAction
-            ? '<div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.08);">' +
-                  '<button onclick="switchMode(\'' + topAction.mode + '\')" style="display:flex;align-items:center;gap:8px;width:100%;padding:7px 10px;border-radius:9px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);cursor:pointer;transition:all .15s;" onmouseover="this.style.background=\'rgba(255,255,255,0.11)\'" onmouseout="this.style.background=\'rgba(255,255,255,0.05)\'">' +
-                      '<span style="font-size:14px;flex-shrink:0;">' + topAction.icon + '</span>' +
-                      '<span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.8);flex:1;text-align:left;">' + _dashActionLabel(topAction.name) + '</span>' +
+            ? '<div style="margin-top:7px;padding-top:7px;border-top:1px solid rgba(255,255,255,0.08);">' +
+                  '<button onclick="switchMode(\'' + topAction.mode + '\')" style="display:flex;align-items:center;gap:8px;width:100%;padding:5px 8px;border-radius:9px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);cursor:pointer;transition:all .15s;" onmouseover="this.style.background=\'rgba(255,255,255,0.11)\'" onmouseout="this.style.background=\'rgba(255,255,255,0.05)\'">' +
+                      '<span style="font-size:13px;flex-shrink:0;">' + topAction.icon + '</span>' +
+                      '<span style="font-size:10.5px;font-weight:700;color:rgba(255,255,255,0.8);flex:1;text-align:left;">' + _dashActionLabel(topAction.name) + '</span>' +
                       '<span style="font-size:10px;color:rgba(255,255,255,0.3);">→</span>' +
                   '</button>' +
               '</div>'
@@ -396,20 +396,20 @@
                     '<span ' + _LBL + '>💗 Financial Health</span>' +
                     '<button onclick="switchMode(\'healthscore\')" ' + _ACTBTN + '>Update Score</button>' +
                 '</div>' +
-                '<div style="display:flex;align-items:center;gap:12px;">' +
+                '<div style="display:flex;align-items:center;gap:10px;">' +
                     '<div style="position:relative;flex-shrink:0;">' +
-                        '<svg viewBox="0 0 72 72" style="width:60px;height:60px;transform:rotate(-90deg);">' +
+                        '<svg viewBox="0 0 72 72" style="width:50px;height:50px;transform:rotate(-90deg);">' +
                             '<circle cx="36" cy="36" r="28" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="7"/>' +
                             '<circle cx="36" cy="36" r="28" fill="none" stroke="' + arcClr + '" stroke-width="7" stroke-linecap="round" stroke-dasharray="' + c.toFixed(1) + '" stroke-dashoffset="' + off + '" style="transition:stroke-dashoffset 1s ease;"/>' +
                         '</svg>' +
                         '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">' +
-                            '<span style="font-size:17px;font-weight:900;color:#fff;line-height:1;">' + result.score + '</span>' +
-                            '<span style="font-size:8px;color:rgba(255,255,255,0.35);font-weight:700;">/100</span>' +
+                            '<span style="font-size:14px;font-weight:900;color:#fff;line-height:1;">' + result.score + '</span>' +
+                            '<span style="font-size:7px;color:rgba(255,255,255,0.35);font-weight:700;">/100</span>' +
                         '</div>' +
                     '</div>' +
                     '<div style="flex:1;min-width:0;">' +
-                        '<div style="font-size:16px;line-height:1;">' + result.emoji + '</div>' +
-                        '<div style="font-size:13px;font-weight:900;color:#fff;margin-top:3px;line-height:1.2;">' + result.grade + deltaHtml + '</div>' +
+                        '<div style="font-size:14px;line-height:1;">' + result.emoji + '</div>' +
+                        '<div style="font-size:12px;font-weight:900;color:#fff;margin-top:2px;line-height:1.2;">' + result.grade + deltaHtml + '</div>' +
                     '</div>' +
                 '</div>' +
                 actionHtml +
@@ -441,7 +441,7 @@
         var nw = window._toolSummaries && window._toolSummaries.netWorth;
         var hasData = nw && (nw.totalAssets || nw.totalLiab);
 
-        var _NW_CARD = 'class="rounded-2xl px-4 py-3 text-white shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:1.5px solid rgba(245,200,66,0.35);box-shadow:0 4px 24px rgba(0,0,0,0.3);"';
+        var _NW_CARD = 'class="rounded-2xl px-3 py-2 text-white shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:1.5px solid rgba(245,200,66,0.35);box-shadow:0 4px 24px rgba(0,0,0,0.3);"';
         var _NW_ACTBTN = 'style="font-size:10px;font-weight:700;color:rgba(245,200,66,0.8);background:rgba(245,200,66,0.08);border:1px solid rgba(245,200,66,0.25);padding:4px 10px;border-radius:8px;cursor:pointer;" onmouseover="this.style.background=\'rgba(245,200,66,0.15)\'" onmouseout="this.style.background=\'rgba(245,200,66,0.08)\'"';
 
         if (!hasData) {
@@ -473,13 +473,13 @@
 
         container.innerHTML =
             '<div ' + _NW_CARD + '>' +
-                '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">' +
+                '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;">' +
                     '<span style="font-size:12px;font-weight:800;color:rgba(255,255,255,0.7);">⚖️ Net Worth</span>' +
                     '<button onclick="switchMode(\'networth\')" ' + _NW_ACTBTN + '>Update</button>' +
                 '</div>' +
-                '<div style="display:flex;align-items:center;gap:12px;">' +
+                '<div style="display:flex;align-items:center;gap:10px;">' +
                     '<div>' +
-                        '<div style="font-size:22px;font-weight:900;color:' + nwColor + ';line-height:1;">' + _dashFmtNW(nwVal) + '</div>' +
+                        '<div style="font-size:18px;font-weight:900;color:' + nwColor + ';line-height:1;">' + _dashFmtNW(nwVal) + '</div>' +
                         '<div style="font-size:9px;color:rgba(255,255,255,0.35);margin-top:2px;font-weight:600;">Total Net Worth</div>' +
                     '</div>' +
                     '<div style="margin-left:auto;display:flex;gap:12px;">' +
@@ -519,7 +519,7 @@
         if (!container) return;
         var goals = window._savedGoals || [];
 
-        var _GT_CARD = 'class="rounded-2xl px-4 py-3 text-white shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:1.5px solid rgba(245,200,66,0.35);box-shadow:0 4px 24px rgba(0,0,0,0.3);"';
+        var _GT_CARD = 'class="rounded-2xl px-3 py-2 text-white shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:1.5px solid rgba(245,200,66,0.35);box-shadow:0 4px 24px rgba(0,0,0,0.3);"';
         var _GT_ACTBTN = 'style="font-size:10px;font-weight:700;color:rgba(245,200,66,0.8);background:rgba(245,200,66,0.08);border:1px solid rgba(245,200,66,0.25);padding:4px 10px;border-radius:8px;cursor:pointer;" onmouseover="this.style.background=\'rgba(245,200,66,0.15)\'" onmouseout="this.style.background=\'rgba(245,200,66,0.08)\'"';
 
         if (goals.length === 0) {
@@ -544,7 +544,7 @@
         var rows = shown.map(function (g) {
             var pct = Math.min(100, Math.round(((g.savedAmt || 0) / (g.targetAmt || 1)) * 100));
             var barColor = pct >= 75 ? '#10b981' : pct >= 40 ? '#6366f1' : '#f59e0b';
-            return '<div style="margin-bottom:8px;">' +
+            return '<div style="margin-bottom:5px;">' +
                 '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">' +
                     '<span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.8);">' + g.emoji + ' ' + g.label + '</span>' +
                     '<span style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.5);">' + pct + '%</span>' +
@@ -567,7 +567,7 @@
 
         container.innerHTML =
             '<div ' + _GT_CARD + '>' +
-                '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">' +
+                '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;">' +
                     '<span style="font-size:12px;font-weight:800;color:rgba(255,255,255,0.7);">🎯 My Goals' + moreLabel + '</span>' +
                     '<button onclick="switchMode(\'goaltracker\')" ' + _GT_ACTBTN + '>Track →</button>' +
                 '</div>' +
@@ -584,7 +584,7 @@
         var container = document.getElementById('dash-insight-card');
         if (!container) return;
 
-        var CARD   = 'class="rounded-2xl px-4 py-3 text-white shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:1.5px solid rgba(245,200,66,0.35);box-shadow:0 4px 24px rgba(0,0,0,0.3);"';
+        var CARD   = 'class="rounded-2xl px-3 py-2 text-white shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:1.5px solid rgba(245,200,66,0.35);box-shadow:0 4px 24px rgba(0,0,0,0.3);"';
         var ACTBTN = 'style="font-size:10px;font-weight:700;color:rgba(245,200,66,0.8);background:rgba(245,200,66,0.08);border:1px solid rgba(245,200,66,0.25);padding:4px 10px;border-radius:8px;cursor:pointer;white-space:nowrap;" onmouseover="this.style.background=\'rgba(245,200,66,0.15)\'" onmouseout="this.style.background=\'rgba(245,200,66,0.08)\'"';
 
         // ── NW monthly snapshot (localStorage) ──────────────────
@@ -681,14 +681,14 @@
 
         container.innerHTML =
             '<div ' + CARD + '>' +
-                '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">' +
+                '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;">' +
                     '<span style="font-size:12px;font-weight:800;color:rgba(255,255,255,0.7);">💡 Monthly Insight</span>' +
                     '<button onclick="switchMode(\'' + ctaMode + '\')" ' + ACTBTN + '>' + ctaLabel + '</button>' +
                 '</div>' +
                 '<div style="display:flex;align-items:flex-start;gap:10px;">' +
-                    '<div style="font-size:22px;flex-shrink:0;margin-top:1px;">' + icon + '</div>' +
+                    '<div style="font-size:18px;flex-shrink:0;margin-top:1px;">' + icon + '</div>' +
                     '<div style="flex:1;min-width:0;">' +
-                        '<div style="font-size:13px;font-weight:900;color:#fff;line-height:1.3;">' +
+                        '<div style="font-size:12px;font-weight:900;color:#fff;line-height:1.3;">' +
                             '<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:' + dot + ';margin-right:6px;vertical-align:middle;flex-shrink:0;"></span>' +
                             title +
                         '</div>' +
