@@ -682,13 +682,14 @@
         if (!container) return;
 
         var CS  = 'background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 50%,#0e5c3a 100%);border:1.5px solid rgba(245,200,66,0.3);box-shadow:0 3px 16px rgba(0,0,0,0.28);border-radius:14px;padding:12px;display:flex;flex-direction:column;cursor:pointer;transition:border-color .18s,box-shadow .18s;';
-        var LBL = 'style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.6);letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px;display:block;"';
+        var LBL = 'style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.6);letter-spacing:.05em;text-transform:uppercase;"';
         var TS  = 'style="font-size:8.5px;color:rgba(255,255,255,0.28);font-weight:600;margin-top:6px;padding-top:7px;border-top:1px solid rgba(255,255,255,0.07);"';
 
         function _noData(emoji, text) {
             return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-height:72px;">' +
                 '<span style="font-size:22px;">' + emoji + '</span>' +
                 '<div style="font-size:9.5px;font-weight:800;color:rgba(255,255,255,0.45);text-align:center;line-height:1.4;">' + text + '</div>' +
+                '<div style="font-size:8.5px;font-weight:700;color:rgba(245,200,66,0.55);margin-top:3px;">Tap to open →</div>' +
             '</div>';
         }
 
@@ -847,7 +848,10 @@
             return '<div onclick="switchMode(\'' + mode + '\')" style="' + CS + '" ' +
                    'onmouseover="this.style.borderColor=\'rgba(245,200,66,0.65)\';this.style.boxShadow=\'0 6px 24px rgba(0,0,0,0.4)\'" ' +
                    'onmouseout="this.style.borderColor=\'rgba(245,200,66,0.3)\';this.style.boxShadow=\'0 3px 16px rgba(0,0,0,0.28)\'">' +
-                '<span ' + LBL + '>' + icon + ' ' + label + '</span>' +
+                '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">' +
+                    '<span ' + LBL + '>' + icon + ' ' + label + '</span>' +
+                    '<span style="font-size:12px;color:rgba(245,200,66,0.45);font-weight:700;">→</span>' +
+                '</div>' +
                 content +
                 '<div ' + TS + '>' + ts + '</div>' +
             '</div>';
