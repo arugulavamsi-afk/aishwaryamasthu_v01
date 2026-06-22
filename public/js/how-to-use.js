@@ -389,4 +389,6 @@
         target.insertBefore(outer, target.firstChild);
     };
 
+    window._howToUseData = _HU;
+
 })();

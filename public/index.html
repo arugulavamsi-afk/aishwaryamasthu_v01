@@ -204,19 +204,33 @@
                 </div>
                 <div class="ub-actions">
                     <div class="ub-sep"></div>
-                    <button id="pwa-install-btn" onclick="pwaTriggerInstall()" class="hidden text-[10px] font-bold px-2.5 py-1 rounded-lg border transition-all"
-                        style="background:rgba(245,200,66,0.15);border-color:rgba(245,200,66,0.45);color:#f5c842;white-space:nowrap;">
-                        📲 Install App
-                    </button>
-                    <button onclick="confirmResetAllData()" class="text-[10px] font-bold px-2.5 py-1 rounded-lg border transition-all"
-                        style="background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.3);color:rgba(248,113,113,0.85);white-space:nowrap;"
-                        title="Clear all your saved numbers">
-                        <span data-i18n="nav.resetData">🗑 Reset My Data</span>
-                    </button>
-                    <button onclick="doLogout()" class="text-[10px] font-bold px-2.5 py-1 rounded-lg border transition-all"
-                        style="background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.15);color:rgba(232,213,163,0.5);white-space:nowrap;">
-                        <span data-i18n="nav.signOut">Sign Out</span>
-                    </button>
+                    <div id="user-menu-wrap" style="position:relative;">
+                        <button id="user-menu-btn" onclick="_toggleUserMenu(event)" title="Account"
+                            style="height:28px;padding:0 10px 0 8px;border-radius:99px;background:linear-gradient(135deg,#f5c842,#e8a44a);border:1.5px solid rgba(245,200,66,0.6);cursor:pointer;display:flex;align-items:center;gap:5px;font-size:12px;font-weight:900;color:#162a10;flex-shrink:0;transition:transform .15s;"
+                            onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                            <span id="user-menu-initial" style="font-size:13px;">👤</span>
+                            <span style="font-size:10px;opacity:0.7;">▾</span>
+                        </button>
+                        <div id="user-menu-dropdown" style="display:none;position:absolute;right:0;top:36px;min-width:185px;background:linear-gradient(160deg,#0e1f38 0%,#112a46 100%);border:1.5px solid rgba(245,200,66,0.3);border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,0.5);z-index:9999;padding:5px 0;">
+                            <button onclick="_closeUserMenu();switchMode('myprofile')" class="um-item">
+                                <span>👤</span> My Profile
+                            </button>
+                            <button onclick="_closeUserMenu();switchMode('userguide')" class="um-item">
+                                <span>📖</span> User Guide
+                            </button>
+                            <button id="pwa-install-btn" onclick="pwaTriggerInstall()" class="um-item hidden">
+                                <span>📲</span> Install App
+                            </button>
+                            <div class="um-divider"></div>
+                            <button onclick="_closeUserMenu();confirmResetAllData()" class="um-item um-item--danger">
+                                <span>🗑</span> <span data-i18n="nav.resetData">Reset My Data</span>
+                            </button>
+                            <div class="um-divider"></div>
+                            <button onclick="_closeUserMenu();doLogout()" class="um-item um-item--muted">
+                                <span>🚪</span> <span data-i18n="nav.signOut">Sign Out</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -259,24 +273,10 @@
             <div id="dash-nw-widget" class="mb-3"></div>
 
             <!-- Goal progress strip — rendered by _dashRenderGoalsWidget() in dashboard.js -->
-            <div id="dash-goals-widget" class="mb-5"></div>
+            <div id="dash-goals-widget" class="mb-4"></div>
 
-            <!-- ── GUIDED ROADMAP ── -->
-            <div id="roadmap-card" class="mb-4"></div>
-
-            <!-- ── MY PROFILE TILE ── -->
-            <button onclick="switchMode('myprofile')" class="mb-4 w-full flex items-center gap-3 px-4 py-3 rounded-2xl cursor-pointer text-left transition-all hover:shadow-lg shine-header"
-                style="background:linear-gradient(130deg,#e8d5a3 0%,#f5c842 35%,#e8a44a 60%,#c97f3a 80%,#e8d5a3 100%);border:1.5px solid rgba(245,200,66,0.60);box-shadow:0 4px 16px rgba(245,200,66,0.18);max-width:460px;margin-left:auto;margin-right:auto;">
-                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0" style="background:rgba(255,255,255,0.55);box-shadow:0 1px 4px rgba(0,0,0,0.10);">👤</div>
-                <div class="flex-1 min-w-0">
-                    <div class="text-xs font-black uppercase tracking-wider" style="color:#162a10;" data-i18n="up.title">My Profile</div>
-                    <div id="up-tile-summary" class="text-[11px] mt-0.5 truncate" style="color:rgba(22,42,16,0.65);" data-i18n="up.subtitle">Set your details once — auto-fill any tool instantly</div>
-                </div>
-                <div class="flex items-center gap-2 flex-shrink-0">
-                    <div id="up-risk-badge" class="hidden text-[10px] font-bold px-2 py-0.5 rounded-full" style="background:rgba(255,255,255,0.65);color:#162a10;"></div>
-                    <span class="font-bold text-sm" style="color:rgba(22,42,16,0.45);">→</span>
-                </div>
-            </button>
+            <!-- Smart discovery: search + situation chips — rendered by _dashRenderSmartSection() in dashboard.js -->
+            <div id="dash-smart-section" class="mb-5" style="max-width:460px;margin-left:auto;margin-right:auto;width:100%;"></div>
 
             <!-- 4 Category tiles — 2×2 grid on all screen sizes -->
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:460px;margin:0 auto;width:100%;">
@@ -734,6 +734,11 @@
         <!-- =================== GOAL TRACKER PANEL ======================== -->
         <div id="goaltracker-panel" class="hidden w-full flex flex-col gap-3" data-panel-src="panels/goaltracker.html"></div>
         <!-- =================== END GOAL TRACKER PANEL ======================== -->
+
+        <!-- =================== SITUATION PANEL (dynamic) ======================== -->
+        <div id="dashcat-situation-panel" class="hidden w-full panel-fade"></div>
+        <!-- =================== USER GUIDE PANEL ======================== -->
+        <div id="userguide-panel" class="hidden w-full panel-fade"></div>
         <!-- =================== END CONSULT AN EXPERT PANEL ======================== -->
 
         <!-- =================== CATEGORY: CALCULATORS ======================== -->
@@ -1135,6 +1140,35 @@
             height: 14px;
             background: rgba(255,255,255,0.15);
             flex-shrink: 0;
+        }
+
+        /* ── User account dropdown ── */
+        .um-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            padding: 9px 14px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 700;
+            color: rgba(255,255,255,0.85);
+            font-family: 'Inter', sans-serif;
+            transition: background .12s;
+            white-space: nowrap;
+        }
+        .um-item:hover { background: rgba(255,255,255,0.07); }
+        .um-item.hidden { display: none !important; }
+        .um-item--danger { color: rgba(248,113,113,0.9); }
+        .um-item--danger:hover { background: rgba(239,68,68,0.1); }
+        .um-item--muted { color: rgba(232,213,163,0.55); }
+        .um-divider {
+            height: 1px;
+            background: rgba(255,255,255,0.08);
+            margin: 4px 0;
         }
 
         /* Mobile: stack into 2 rows */
@@ -2518,8 +2552,8 @@
     <script src="js/nom-track.js"></script>
     <script src="js/budget-tracker.js"></script>
     <script src="js/goal-tracker.js"></script>
-    <script src="js/roadmap.js"></script>
     <script src="js/how-to-use.js"></script>
+    <script src="js/user-guide.js"></script>
     <script src="js/mymfs.js"></script>
     <script src="js/consult.js"></script>
     <script src="js/expert-portal.js"></script>
@@ -2556,6 +2590,18 @@
                 _pwaPrompt = null;
             });
         }
+
+        /* ── User account menu ── */
+        function _toggleUserMenu(e) {
+            e.stopPropagation();
+            var d = document.getElementById('user-menu-dropdown');
+            if (d) d.style.display = d.style.display === 'none' ? 'block' : 'none';
+        }
+        function _closeUserMenu() {
+            var d = document.getElementById('user-menu-dropdown');
+            if (d) d.style.display = 'none';
+        }
+        document.addEventListener('click', _closeUserMenu);
 
         /* ── Service Worker registration + update toast ── */
         if ('serviceWorker' in navigator) {

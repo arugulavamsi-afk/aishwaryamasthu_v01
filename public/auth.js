@@ -67,6 +67,8 @@
                     bar.classList.remove('hidden');
                     bar.style.display = 'flex';
                 }
+                var _menuInitial = document.getElementById('user-menu-initial');
+                if (_menuInitial) _menuInitial.textContent = fname ? fname[0].toUpperCase() : '👤';
                 // Centre the welcome content vertically in the splash
                 if (splashInner) splashInner.classList.add('splash-inner--centered');
                 // Check if this user is a registered expert before loading user data
