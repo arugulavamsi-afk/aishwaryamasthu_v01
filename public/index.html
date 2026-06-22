@@ -256,7 +256,10 @@
             <div id="dash-score-widget" class="mb-3"></div>
 
             <!-- Net worth strip — rendered by _dashRenderNetWorthWidget() in dashboard.js -->
-            <div id="dash-nw-widget" class="mb-5"></div>
+            <div id="dash-nw-widget" class="mb-3"></div>
+
+            <!-- Goal progress strip — rendered by _dashRenderGoalsWidget() in dashboard.js -->
+            <div id="dash-goals-widget" class="mb-5"></div>
 
             <!-- ── GUIDED ROADMAP ── -->
             <div id="roadmap-card" class="mb-4"></div>
@@ -727,6 +730,10 @@
 
         <!-- =================== CONSULT AN EXPERT PANEL ======================== -->
         <div id="consult-panel" class="hidden w-full flex flex-col gap-3" data-panel-src="panels/consult.html"></div>
+
+        <!-- =================== GOAL TRACKER PANEL ======================== -->
+        <div id="goaltracker-panel" class="hidden w-full flex flex-col gap-3" data-panel-src="panels/goaltracker.html"></div>
+        <!-- =================== END GOAL TRACKER PANEL ======================== -->
         <!-- =================== END CONSULT AN EXPERT PANEL ======================== -->
 
         <!-- =================== CATEGORY: CALCULATORS ======================== -->
@@ -2509,6 +2516,7 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
     <script src="js/nom-track.js"></script>
     <script src="js/budget-tracker.js"></script>
+    <script src="js/goal-tracker.js"></script>
     <script src="js/roadmap.js"></script>
     <script src="js/how-to-use.js"></script>
     <script src="js/mymfs.js"></script>

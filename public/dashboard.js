@@ -130,6 +130,7 @@
         if (ca) ca.textContent = _t('pin.count').replace('{n}', favs.length);
         _dashRenderScoreWidget();
         _dashRenderNetWorthWidget();
+        _dashRenderGoalsWidget();
         if (typeof initRoadmap === 'function') initRoadmap();
         consultUpdateTile();
         if (typeof consultWatchUnread === 'function') consultWatchUnread();
@@ -323,6 +324,68 @@
     window._dashUpdateNetWorthWidget = function() {
         if (window._currentMode === 'dashboard') _dashRenderNetWorthWidget();
     };
+
+    function _dashFmtGoal(n) {
+        var a = Math.abs(n || 0);
+        if (a >= 1e7) return '₹' + (a / 1e7).toFixed(1) + 'Cr';
+        if (a >= 1e5) return '₹' + (a / 1e5).toFixed(1) + 'L';
+        return '₹' + Math.round(a).toLocaleString('en-IN');
+    }
+
+    function _dashRenderGoalsWidget() {
+        var container = document.getElementById('dash-goals-widget');
+        if (!container) return;
+        var goals = window._savedGoals || [];
+
+        if (goals.length === 0) {
+            container.innerHTML =
+                '<button onclick="switchMode(\'goal\')" ' +
+                'style="display:flex;align-items:center;gap:12px;width:100%;padding:10px 14px;border-radius:14px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);cursor:pointer;text-align:left;transition:all .15s;" ' +
+                'onmouseover="this.style.background=\'rgba(255,255,255,0.08)\'" onmouseout="this.style.background=\'rgba(255,255,255,0.04)\'">' +
+                    '<span style="font-size:20px;flex-shrink:0;">🎯</span>' +
+                    '<div style="flex:1;">' +
+                        '<div style="font-size:12px;font-weight:800;color:rgba(255,255,255,0.6);">Set your first financial goal</div>' +
+                        '<div style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:1px;">Education · Home · Retirement · Marriage and more</div>' +
+                    '</div>' +
+                    '<span style="font-size:11px;color:rgba(255,255,255,0.25);">→</span>' +
+                '</button>';
+            return;
+        }
+
+        var shown = goals.slice(0, 3);
+        var rows = shown.map(function (g) {
+            var pct = Math.min(100, Math.round(((g.savedAmt || 0) / (g.targetAmt || 1)) * 100));
+            var barColor = pct >= 75 ? '#10b981' : pct >= 40 ? '#6366f1' : '#f59e0b';
+            return '<div style="margin-bottom:10px;">' +
+                '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">' +
+                    '<span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);">' + g.emoji + ' ' + g.label + '</span>' +
+                    '<span style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.5);">' +
+                        _dashFmtGoal(g.savedAmt || 0) + ' / ' + _dashFmtGoal(g.targetAmt) + ' &nbsp;' + pct + '%' +
+                    '</span>' +
+                '</div>' +
+                '<div style="height:5px;border-radius:99px;background:rgba(255,255,255,0.08);overflow:hidden;">' +
+                    '<div style="height:5px;border-radius:99px;background:' + barColor + ';width:' + pct + '%;transition:width .5s ease;"></div>' +
+                '</div>' +
+            '</div>';
+        }).join('');
+
+        var moreLabel = goals.length > 3 ? ' (' + goals.length + ' goals)' : '';
+
+        container.innerHTML =
+            '<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);border-radius:14px;padding:12px 14px;">' +
+                '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">' +
+                    '<span style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:.07em;">🎯 My Goals' + moreLabel + '</span>' +
+                    '<button onclick="switchMode(\'goaltracker\')" style="font-size:10px;font-weight:700;color:rgba(245,200,66,0.6);background:none;border:none;cursor:pointer;padding:0;" ' +
+                    'onmouseover="this.style.color=\'rgba(245,200,66,0.9)\'" onmouseout="this.style.color=\'rgba(245,200,66,0.6)\'">Track →</button>' +
+                '</div>' +
+                rows +
+            '</div>';
+    }
+
+    window._dashUpdateGoalsWidget = function () {
+        if (window._currentMode === 'dashboard') _dashRenderGoalsWidget();
+    };
+
     // Fallback timer — only fires if auth state never resolves (e.g. offline).
     // Normal init is triggered directly from onAuthStateChanged in auth.js.
     window.addEventListener('DOMContentLoaded', function() {

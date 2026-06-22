@@ -1045,7 +1045,9 @@
             try {
                 if (Array.isArray(data.savedGoals)) {
                     window._savedGoals = data.savedGoals;
-                    if (typeof gpRenderSavedGoalsBanner === 'function') gpRenderSavedGoalsBanner();
+                    if (typeof gpRenderSavedGoalsBanner  === 'function') gpRenderSavedGoalsBanner();
+                    if (typeof _dashUpdateGoalsWidget    === 'function') _dashUpdateGoalsWidget();
+                    if (typeof window._gtRefreshIfOpen  === 'function') window._gtRefreshIfOpen();
                 }
             } catch(e) { console.warn('loadUserData savedGoals:', e); }
 

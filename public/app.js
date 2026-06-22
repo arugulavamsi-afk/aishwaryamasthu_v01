@@ -508,11 +508,12 @@
             const isBudgetTrack   = mode === 'budgettrack';
             const isMyMFs         = mode === 'mymfs';
             const isConsult       = mode === 'consult';
-            const isFullPanel  = isDashboard || isMFKit || isFundPicker || isHealthScore || isFinPlan || isMFExplorer || isTaxGuide || isHomeLoan || isStepUpSIP || isEPFCalc || isSSAPlanner || isPPFNPS || isCtcOptimizer || isInsure || isGratuity || isDebtPlan || isJointPlan || isCibil || isFinCal || isSelfEmpl || isGoldComp || isDashCalc || isDashMF || isDashTax || isDashFav || isCoffeeCan || isNetWorth || isUlipCheck || isFixedIncome || isRetirementHub || isMyProfile || isCgCalc || isHraCalc || isNomTrack || isBudgetTrack || isMyMFs || isConsult;
+            const isGoalTracker   = mode === 'goaltracker';
+            const isFullPanel  = isDashboard || isMFKit || isFundPicker || isHealthScore || isFinPlan || isMFExplorer || isTaxGuide || isHomeLoan || isStepUpSIP || isEPFCalc || isSSAPlanner || isPPFNPS || isCtcOptimizer || isInsure || isGratuity || isDebtPlan || isJointPlan || isCibil || isFinCal || isSelfEmpl || isGoldComp || isDashCalc || isDashMF || isDashTax || isDashFav || isCoffeeCan || isNetWorth || isUlipCheck || isFixedIncome || isRetirementHub || isMyProfile || isCgCalc || isHraCalc || isNomTrack || isBudgetTrack || isMyMFs || isConsult || isGoalTracker;
 
             // Show/hide main panels
             const growthWrapper = document.getElementById('growth-wrapper');
-            const _panelIds = ['dashboard-panel','mfkit-panel','fundpicker-panel','healthscore-panel','finplan-panel','mfexplorer-panel','taxguide-panel','homeloan-panel','stepupsip-panel','epfcalc-panel','ssaplanner-panel','ppfnps-panel','ctcoptimizer-panel','insure-panel','gratuity-panel','debtplan-panel','jointplan-panel','cibil-panel','fincal-panel','selfempl-panel','goldcomp-panel','dashcat-calc-panel','dashcat-mf-panel','dashcat-tax-panel','dashcat-fav-panel','coffeecan-panel','networth-panel','ulipcheck-panel','fixedincome-panel','retirementhub-panel','myprofile-panel','cgcalc-panel','hracalc-panel','nomtrack-panel','budgettrack-panel','mymfs-panel','consult-panel'];
+            const _panelIds = ['dashboard-panel','mfkit-panel','fundpicker-panel','healthscore-panel','finplan-panel','mfexplorer-panel','taxguide-panel','homeloan-panel','stepupsip-panel','epfcalc-panel','ssaplanner-panel','ppfnps-panel','ctcoptimizer-panel','insure-panel','gratuity-panel','debtplan-panel','jointplan-panel','cibil-panel','fincal-panel','selfempl-panel','goldcomp-panel','dashcat-calc-panel','dashcat-mf-panel','dashcat-tax-panel','dashcat-fav-panel','coffeecan-panel','networth-panel','ulipcheck-panel','fixedincome-panel','retirementhub-panel','myprofile-panel','cgcalc-panel','hracalc-panel','nomtrack-panel','budgettrack-panel','mymfs-panel','consult-panel','goaltracker-panel'];
 
             // Find currently visible element for crossfade exit
             let _outEl = null;
@@ -524,7 +525,7 @@
                 _outEl = growthWrapper;
             }
 
-            const activeId = isDashboard ? 'dashboard-panel' : isMFKit ? 'mfkit-panel' : isFundPicker ? 'fundpicker-panel' : isHealthScore ? 'healthscore-panel' : isFinPlan ? 'finplan-panel' : isMFExplorer ? 'mfexplorer-panel' : isTaxGuide ? 'taxguide-panel' : isHomeLoan ? 'homeloan-panel' : isStepUpSIP ? 'stepupsip-panel' : isEPFCalc ? 'epfcalc-panel' : isSSAPlanner ? 'ssaplanner-panel' : isPPFNPS ? 'ppfnps-panel' : isCtcOptimizer ? 'ctcoptimizer-panel' : isInsure ? 'insure-panel' : isGratuity ? 'gratuity-panel' : isDebtPlan ? 'debtplan-panel' : isJointPlan ? 'jointplan-panel' : isCibil ? 'cibil-panel' : isFinCal ? 'fincal-panel' : isSelfEmpl ? 'selfempl-panel' : isGoldComp ? 'goldcomp-panel' : isDashCalc ? 'dashcat-calc-panel' : isDashMF ? 'dashcat-mf-panel' : isDashTax ? 'dashcat-tax-panel' : isDashFav ? 'dashcat-fav-panel' : isCoffeeCan ? 'coffeecan-panel' : isNetWorth ? 'networth-panel' : isUlipCheck ? 'ulipcheck-panel' : isFixedIncome ? 'fixedincome-panel' : isRetirementHub ? 'retirementhub-panel' : isMyProfile ? 'myprofile-panel' : isCgCalc ? 'cgcalc-panel' : isHraCalc ? 'hracalc-panel' : isNomTrack ? 'nomtrack-panel' : isBudgetTrack ? 'budgettrack-panel' : isMyMFs ? 'mymfs-panel' : isConsult ? 'consult-panel' : null;
+            const activeId = isDashboard ? 'dashboard-panel' : isMFKit ? 'mfkit-panel' : isFundPicker ? 'fundpicker-panel' : isHealthScore ? 'healthscore-panel' : isFinPlan ? 'finplan-panel' : isMFExplorer ? 'mfexplorer-panel' : isTaxGuide ? 'taxguide-panel' : isHomeLoan ? 'homeloan-panel' : isStepUpSIP ? 'stepupsip-panel' : isEPFCalc ? 'epfcalc-panel' : isSSAPlanner ? 'ssaplanner-panel' : isPPFNPS ? 'ppfnps-panel' : isCtcOptimizer ? 'ctcoptimizer-panel' : isInsure ? 'insure-panel' : isGratuity ? 'gratuity-panel' : isDebtPlan ? 'debtplan-panel' : isJointPlan ? 'jointplan-panel' : isCibil ? 'cibil-panel' : isFinCal ? 'fincal-panel' : isSelfEmpl ? 'selfempl-panel' : isGoldComp ? 'goldcomp-panel' : isDashCalc ? 'dashcat-calc-panel' : isDashMF ? 'dashcat-mf-panel' : isDashTax ? 'dashcat-tax-panel' : isDashFav ? 'dashcat-fav-panel' : isCoffeeCan ? 'coffeecan-panel' : isNetWorth ? 'networth-panel' : isUlipCheck ? 'ulipcheck-panel' : isFixedIncome ? 'fixedincome-panel' : isRetirementHub ? 'retirementhub-panel' : isMyProfile ? 'myprofile-panel' : isCgCalc ? 'cgcalc-panel' : isHraCalc ? 'hracalc-panel' : isNomTrack ? 'nomtrack-panel' : isBudgetTrack ? 'budgettrack-panel' : isMyMFs ? 'mymfs-panel' : isConsult ? 'consult-panel' : isGoalTracker ? 'goaltracker-panel' : null;
 
             // Web Animations API — fires immediately, compositor-driven, no reflow
             function _animatePanel(el) {
@@ -592,6 +593,7 @@
                 if (isBudgetTrack)   { initBudgetTracker(); applyLang(); return; }
                 if (isMyMFs)         { if (typeof initMyMFs === 'function') initMyMFs(); applyLang(); return; }
                 if (isConsult)       { if (typeof initConsult === 'function') initConsult(); applyLang(); return; }
+                if (isGoalTracker)   { if (typeof initGoalTracker === 'function') initGoalTracker(); applyLang(); return; }
 
                 // Show/hide reset buttons
                 document.getElementById('reset-growth-btn').style.display = isGoal ? 'none' : 'flex';
@@ -1199,8 +1201,12 @@
             var idx = window._savedGoals.findIndex(function(g) {
                 return g.fpType === fpType && (fpType !== 'custom' || g.label === label);
             });
+            var existing = idx >= 0 ? window._savedGoals[idx] : null;
             var entry = { gpType:gpType, fpType:fpType, label:label, emoji:emoji,
-                          targetAmt:futureTarget, years:years, inflRate:inflRate, invType:invType };
+                          targetAmt:futureTarget, years:years, inflRate:inflRate, invType:invType,
+                          createdAt: (existing && existing.createdAt) || new Date().toISOString(),
+                          savedAmt:  (existing && existing.savedAmt)  || 0,
+                          checkIns:  (existing && existing.checkIns)  || [] };
             if (idx >= 0) window._savedGoals[idx] = entry;
             else          window._savedGoals.push(entry);
 
