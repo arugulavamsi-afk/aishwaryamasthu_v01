@@ -742,7 +742,11 @@
                 } : (_base.roadmap || {}),
                 nwHistory: (typeof _nwHistory !== 'undefined' && _nwHistory.length) ? _nwHistory.slice() : (_base.nwHistory || []),
                 myMFs: window._myMFs && window._myMFs.length ? window._myMFs.slice() : (_base.myMFs || []),
-                hsLastScore: window._hsLastResult ? { score: window._hsLastResult.score, ts: window._hsLastResult.ts } : (_base.hsLastScore || null)
+                hsLastScore: window._hsLastResult ? {
+                    score: window._hsLastResult.score, ts: window._hsLastResult.ts,
+                    grade: window._hsLastResult.grade, emoji: window._hsLastResult.emoji,
+                    arcColor: window._hsLastResult.arcColor, topActions: window._hsLastResult.topActions || []
+                } : (_base.hsLastScore || null)
             });
             // Keep in-memory cache in sync so subsequent saves inherit current values
             window._cachedRestoreData = data;
@@ -1588,8 +1592,22 @@
                 if (typeof initRoadmap === 'function') initRoadmap();
             }
 
-            // Health Score snapshot — for dashboard delta tracking
-            if (data.hsLastScore) window._hsPrevScore = data.hsLastScore;
+            // Health Score snapshot — pre-populate _hsLastResult so dashboard widget
+            // renders immediately when Firestore data arrives (before health score panel opens)
+            if (data.hsLastScore && data.hsLastScore.score) {
+                window._hsPrevScore = { score: data.hsLastScore.score, ts: data.hsLastScore.ts };
+                if (!window._hsLastResult) {
+                    window._hsLastResult = {
+                        score:      data.hsLastScore.score,
+                        grade:      data.hsLastScore.grade    || '',
+                        emoji:      data.hsLastScore.emoji    || '📊',
+                        arcColor:   data.hsLastScore.arcColor || '#10b981',
+                        topActions: data.hsLastScore.topActions || [],
+                        ts:         data.hsLastScore.ts
+                    };
+                    if (typeof _dashUpdateScoreWidget === 'function') _dashUpdateScoreWidget();
+                }
+            }
 
             // My Mutual Funds restore
             if (Array.isArray(data.myMFs)) {
