@@ -162,34 +162,34 @@
     ];
 
     var _situations = [
-        { emoji:'💼', label:'I just got a job or a raise',
+        { emoji:'💼', key:'sit.job', label:'I just got a job or a raise',
           intro:'Decode your salary, benefits, and get your finances right from day one.',
           modes:['ctcoptimizer','hracalc','epfcalc','gratuity','taxguide','insure','healthscore','fincal'] },
-        { emoji:'🏠', label:'I want to buy a house',
+        { emoji:'🏠', key:'sit.house', label:'I want to buy a house',
           intro:'Plan the biggest purchase of your life — EMI, down payment, tax savings.',
           modes:['homeloan','cibil','hracalc','debtplan'] },
-        { emoji:'📈', label:'I want to grow my savings',
+        { emoji:'📈', key:'sit.grow', label:'I want to grow my savings',
           intro:'Put your money to work — from SIPs and FDs to gold and stocks.',
           modes:['mfkit','mfexplorer','fundpicker','growth','stepupsip','fixedincome','goldcomp','coffeecan'] },
-        { emoji:'🎯', label:'I have big goals — home, education, travel',
+        { emoji:'🎯', key:'sit.goals', label:'I have big goals — home, education, travel',
           intro:'Every goal is reachable with the right plan and the right SIP amount.',
           modes:['goal','goaltracker','finplan','ssaplanner','jointplan'] },
-        { emoji:'🏖️', label:'I want to retire comfortably',
+        { emoji:'🏖️', key:'sit.retire', label:'I want to retire comfortably',
           intro:'Build the corpus you need and know exactly when you can stop working.',
           modes:['retirementhub','epfcalc','ppfnps','finplan','goal'] },
-        { emoji:'💳', label:'I have loans I want to clear fast',
+        { emoji:'💳', key:'sit.loans', label:'I have loans I want to clear fast',
           intro:'Get out of debt faster and save lakhs in interest with a clear plan.',
           modes:['debtplan','homeloan','cibil'] },
-        { emoji:'🧾', label:'I want to pay less tax legally',
+        { emoji:'🧾', key:'sit.tax', label:'I want to pay less tax legally',
           intro:'Every rupee saved in tax is a rupee earned — know every option.',
           modes:['taxguide','ctcoptimizer','cgcalc','hracalc','fixedincome','fincal','selfempl'] },
-        { emoji:'🛡️', label:'Is my family financially protected?',
+        { emoji:'🛡️', key:'sit.protect', label:'Is my family financially protected?',
           intro:'Make sure your family is covered — insurance, nominees, and a safety net.',
           modes:['insure','ulipcheck','ssaplanner','nomtrack'] },
-        { emoji:'📊', label:'I want to track where my money goes',
+        { emoji:'📊', key:'sit.track', label:'I want to track where my money goes',
           intro:'See the full picture — spending, net worth, goals, and what to fix.',
           modes:['budgettrack','networth','goaltracker','mymfs','healthscore','fincal'] },
-        { emoji:'🧑‍💻', label:'I run my own business or freelance',
+        { emoji:'🧑‍💻', key:'sit.business', label:'I run my own business or freelance',
           intro:'Tax, GST, cashflow — tools built for self-employed Indians.',
           modes:['selfempl','taxguide','cgcalc','fixedincome','budgettrack'] },
     ];
@@ -204,7 +204,7 @@
                 'onmouseover="this.style.background=\'rgba(255,255,255,0.1)\';this.style.borderColor=\'rgba(245,200,66,0.3)\'" ' +
                 'onmouseout="this.style.background=\'rgba(255,255,255,0.05)\';this.style.borderColor=\'rgba(255,255,255,0.09)\'">' +
                     '<span style="font-size:20px;flex-shrink:0;">' + s.emoji + '</span>' +
-                    '<span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.8);line-height:1.35;">' + s.label + '</span>' +
+                    '<span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.8);line-height:1.35;">' + _t(s.key + '.label') + '</span>' +
                 '</button>';
         }).join('');
 
@@ -212,7 +212,7 @@
             '<div style="margin-bottom:12px;position:relative;">' +
                 '<span style="position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:13px;pointer-events:none;opacity:0.5;">🔍</span>' +
                 '<input id="dash-search-input" type="text" autocomplete="off" ' +
-                    'placeholder="Search all tools — try \'home loan\', \'SIP\', \'tax\', \'gold\'…" ' +
+                    'placeholder="' + _t('dash.search.placeholder').replace(/"/g, '&quot;') + '" ' +
                     'oninput="dashHandleSearch(this.value)" ' +
                     'style="width:100%;padding:10px 12px 10px 34px;border-radius:12px;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);color:#fff;font-size:12px;font-weight:600;font-family:\'Inter\',sans-serif;outline:none;box-sizing:border-box;" ' +
                     'onfocus="this.style.borderColor=\'rgba(245,200,66,0.5)\'" ' +
@@ -220,10 +220,15 @@
             '</div>' +
             '<div id="dash-search-results" style="display:none;"></div>' +
             '<div id="dash-chips-view">' +
-                '<div style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;">What\'s on your mind?</div>' +
+                '<div style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;">' + _t('dash.search.header') + '</div>' +
                 '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">' + chipsHtml + '</div>' +
             '</div>';
     }
+
+    window.dashRefreshHome = function() {
+        _dashRenderUnifiedWidget();
+        _dashRenderSmartSection();
+    };
 
     window.dashHandleSearch = function(query) {
         var resultsEl  = document.getElementById('dash-search-results');
@@ -244,12 +249,13 @@
         if (matches.length === 0) {
             resultsEl.innerHTML =
                 '<div style="text-align:center;padding:24px 0;font-size:12px;color:rgba(255,255,255,0.3);">' +
-                    'No tools found for <strong style="color:rgba(255,255,255,0.5);">"' + query + '"</strong>' +
+                    _t('dash.search.nofound').replace('{q}', query) +
                 '</div>';
         } else {
+            var foundLabel = matches.length === 1 ? _t('dash.search.found1') : _t('dash.search.found').replace('{n}', matches.length);
             resultsEl.innerHTML =
                 '<div style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;">' +
-                    matches.length + ' tool' + (matches.length > 1 ? 's' : '') + ' found' +
+                    foundLabel +
                 '</div>' +
                 '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">' +
                 matches.map(function(t) {
@@ -276,10 +282,10 @@
             '<div style="max-width:820px;margin:0 auto;">' +
                 '<div class="rounded-2xl px-4 py-3 mb-4 text-white flex items-center justify-between gap-3 flex-wrap shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:2px solid rgba(245,200,66,0.4);box-shadow:0 4px 18px rgba(0,0,0,0.25);">' +
                     '<div>' +
-                        '<h2 class="text-base font-black">' + s.emoji + ' ' + s.label + '</h2>' +
-                        '<p class="text-blue-200 text-[11px] mt-0.5">' + s.intro + '</p>' +
+                        '<h2 class="text-base font-black">' + s.emoji + ' ' + _t(s.key + '.label') + '</h2>' +
+                        '<p class="text-blue-200 text-[11px] mt-0.5">' + _t(s.key + '.intro') + '</p>' +
                     '</div>' +
-                    '<button onclick="switchMode(\'dashboard\')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">⬅ Back</button>' +
+                    '<button onclick="switchMode(\'dashboard\')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">' + _t('nav.back') + '</button>' +
                 '</div>' +
                 '<div class="dash-grid">' +
                 tools.map(function(t) {
@@ -689,20 +695,20 @@
             return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-height:72px;">' +
                 '<span style="font-size:22px;">' + emoji + '</span>' +
                 '<div style="font-size:9.5px;font-weight:800;color:rgba(255,255,255,0.45);text-align:center;line-height:1.4;">' + text + '</div>' +
-                '<div style="font-size:8.5px;font-weight:700;color:rgba(245,200,66,0.55);margin-top:3px;">Tap to open →</div>' +
+                '<div style="font-size:8.5px;font-weight:700;color:rgba(245,200,66,0.55);margin-top:3px;">' + _t('dash.tap') + '</div>' +
             '</div>';
         }
 
         function _tsLine(ts) {
-            return ts ? 'Updated ' + _dashFmtTs(ts) : 'Not yet updated';
+            return ts ? _t('dash.ts.updated').replace('{t}', _dashFmtTs(ts)) : _t('dash.ts.notyetupdated');
         }
 
         // ── Health Score ─────────────────────────────────────
         var hs = window._hsLastResult;
         var healthContent, healthTs;
         if (!hs) {
-            healthContent = _noData('💗', 'Run Health Score');
-            healthTs = 'Not yet run';
+            healthContent = _noData('💗', _t('dash.empty.hs'));
+            healthTs = _t('dash.ts.notrun');
         } else {
             var c2pi   = 2 * Math.PI * 28;
             var arcOff = (c2pi * (1 - hs.score / 100)).toFixed(1);
@@ -713,10 +719,10 @@
                 ? ' <span style="font-size:9px;font-weight:800;color:' + (delta > 0 ? '#22c55e' : '#ef4444') + ';">' + (delta > 0 ? '↑+' : '↓') + Math.abs(delta) + '</span>'
                 : '';
             var _hsAge = parseInt((window._userProfile && window._userProfile.age) || '0', 10);
-            var _hsAgeStr = _hsAge >= 56 ? ' aged 56+' : _hsAge >= 46 ? ' aged 46–55' : _hsAge >= 36 ? ' aged 36–45' : _hsAge >= 26 ? ' aged 26–35' : _hsAge >= 18 ? ' aged 18–25' : '';
+            var _hsAgeStr = _hsAge >= 56 ? _t('dash.age.56p') : _hsAge >= 46 ? _t('dash.age.46') : _hsAge >= 36 ? _t('dash.age.36') : _hsAge >= 26 ? _t('dash.age.26') : _hsAge >= 18 ? _t('dash.age.18') : '';
             var _hsPct = hs.score >= 90 ? 95 : hs.score >= 80 ? 82 : hs.score >= 70 ? 68 : hs.score >= 60 ? 52 : hs.score >= 50 ? 38 : 0;
             var _hsPercentileLine = _hsPct > 0
-                ? '<div style="font-size:8.5px;font-weight:700;color:rgba(245,200,66,0.85);margin-top:6px;line-height:1.35;">Better than ' + _hsPct + '% of Indians' + _hsAgeStr + '</div>'
+                ? '<div style="font-size:8.5px;font-weight:700;color:rgba(245,200,66,0.85);margin-top:6px;line-height:1.35;">' + _t('dash.pct.line').replace('{pct}', _hsPct).replace('{age}', _hsAgeStr) + '</div>'
                 : '';
 
             healthContent =
@@ -744,8 +750,8 @@
         var hasNw = nw && (nw.totalAssets || nw.totalLiab);
         var nwContent, nwTs;
         if (!hasNw) {
-            nwContent = _noData('⚖️', 'Track Net Worth');
-            nwTs = 'Not yet tracked';
+            nwContent = _noData('⚖️', _t('dash.empty.nw'));
+            nwTs = _t('dash.ts.nottracked');
         } else {
             var nwVal   = nw.netWorth    || 0;
             var assets  = nw.totalAssets || 0;
@@ -757,21 +763,21 @@
                 '<div style="flex:1;display:flex;align-items:center;justify-content:space-between;">' +
                     '<div style="display:flex;flex-direction:column;gap:4px;">' +
                         '<div>' +
-                            '<div style="font-size:8.5px;color:rgba(255,255,255,0.4);font-weight:600;">Assets</div>' +
+                            '<div style="font-size:8.5px;color:rgba(255,255,255,0.4);font-weight:600;">' + _t('dash.nw.assets') + '</div>' +
                             '<div style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.85);">' + _dashFmtNW(assets) + '</div>' +
                         '</div>' +
                         '<div>' +
-                            '<div style="font-size:8.5px;color:rgba(255,255,255,0.4);font-weight:600;">Liabilities</div>' +
+                            '<div style="font-size:8.5px;color:rgba(255,255,255,0.4);font-weight:600;">' + _t('dash.nw.liab') + '</div>' +
                             '<div style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.85);">' + _dashFmtNW(liabs) + '</div>' +
                         '</div>' +
                         (dtar > 0 ?
                         '<div>' +
-                            '<div style="font-size:8.5px;color:rgba(255,255,255,0.4);font-weight:600;">Debt ratio</div>' +
+                            '<div style="font-size:8.5px;color:rgba(255,255,255,0.4);font-weight:600;">' + _t('dash.nw.debtratio') + '</div>' +
                             '<div style="font-size:10px;font-weight:800;color:' + dtarCol + ';">' + dtar + '%</div>' +
                         '</div>' : '') +
                     '</div>' +
                     '<div style="text-align:right;">' +
-                        '<div style="font-size:9px;color:rgba(255,255,255,0.4);font-weight:600;margin-bottom:3px;">Net Worth</div>' +
+                        '<div style="font-size:9px;color:rgba(255,255,255,0.4);font-weight:600;margin-bottom:3px;">' + _t('dash.nw.val') + '</div>' +
                         '<div style="font-size:20px;font-weight:900;color:' + nwCol + ';line-height:1;">' + _dashFmtNW(nwVal) + '</div>' +
                     '</div>' +
                 '</div>';
@@ -782,8 +788,8 @@
         var goals = window._savedGoals || [];
         var goalsContent, goalsTs;
         if (goals.length === 0) {
-            goalsContent = _noData('🎯', 'Set Your Goals');
-            goalsTs = 'No goals yet';
+            goalsContent = _noData('🎯', _t('dash.empty.goals'));
+            goalsTs = _t('dash.ts.nogoals');
         } else {
             goalsContent =
                 '<div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:7px;">' +
@@ -800,7 +806,7 @@
                         '</div>' +
                     '</div>';
                 }).join('') +
-                (goals.length > 3 ? '<div style="font-size:9px;color:rgba(255,255,255,0.3);font-weight:600;">+' + (goals.length - 3) + ' more</div>' : '') +
+                (goals.length > 3 ? '<div style="font-size:9px;color:rgba(255,255,255,0.3);font-weight:600;">' + _t('dash.goals.more').replace('{n}', goals.length - 3) + '</div>' : '') +
                 '</div>';
             var gTs = window._savedGoalsTs;
             if (!gTs) {
@@ -824,8 +830,8 @@
         var hasBt    = md && Object.keys(md).some(function(k) { var e=md[k]; return (e.b||0)>0||(e.a||0)>0; });
         var budgetContent, budgetTs;
         if (!hasBt) {
-            budgetContent = _noData('📊', 'Set Up Budget');
-            budgetTs = 'No data yet';
+            budgetContent = _noData('📊', _t('dash.empty.budget'));
+            budgetTs = _t('dash.ts.nodata');
         } else {
             var tb=0, ta=0, oc=[];
             Object.keys(md).forEach(function(k) { var e=md[k]||{},b=e.b||0,a=e.a||0; tb+=b; ta+=a; if(b>0&&a>b) oc.push({key:k,icon:_CI[k]||'📌',over:a-b}); });
@@ -834,10 +840,10 @@
             var bpct = Math.min(100, pctB);
             var bcol = pctB<=75?'#34d399':pctB<=100?'#fbbf24':'#f87171';
             var stL  = ta===0
-                ? '<div style="font-size:9px;color:rgba(147,197,253,0.7);">No spend logged yet</div>'
+                ? '<div style="font-size:9px;color:rgba(147,197,253,0.7);">' + _t('dash.budget.nospend') + '</div>'
                 : oc.length>0
-                    ? '<div style="font-size:9px;color:#f87171;">⚠ ' + oc[0].icon + ' ' + oc[0].key + ' over</div>'
-                    : '<div style="font-size:9px;color:#34d399;">✓ Within budget</div>';
+                    ? '<div style="font-size:9px;color:#f87171;">' + _t('dash.budget.over').replace('{icon}', oc[0].icon + ' ').replace('{cat}', oc[0].key) + '</div>'
+                    : '<div style="font-size:9px;color:#34d399;">' + _t('dash.budget.ok') + '</div>';
             budgetContent =
                 '<div style="flex:1;display:flex;flex-direction:column;justify-content:center;">' +
                     '<div style="font-size:9px;color:rgba(255,255,255,0.4);font-weight:700;margin-bottom:5px;">' + monLabel + '</div>' +
@@ -847,7 +853,7 @@
                         '<div style="font-size:13px;font-weight:900;color:#fff;">' + _dashFmtNW(ta) + '</div>' +
                         (tb>0 ? '<div style="font-size:11px;font-weight:900;color:' + bcol + ';">' + pctB + '%</div>' : '') +
                     '</div>' +
-                    (tb>0 ? '<div style="font-size:8.5px;color:rgba(255,255,255,0.3);margin-bottom:4px;">of ' + _dashFmtNW(tb) + ' budgeted</div>' : '') +
+                    (tb>0 ? '<div style="font-size:8.5px;color:rgba(255,255,255,0.3);margin-bottom:4px;">' + _t('dash.budget.of').replace('{n}', _dashFmtNW(tb)) + '</div>' : '') +
                     stL +
                 '</div>';
             budgetTs = _tsLine(window._btLastUpdated);
@@ -869,10 +875,10 @@
 
         container.innerHTML =
             '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">' +
-                _card('healthscore', '💗', 'Your FinHealth Score', healthContent, healthTs) +
-                _card('networth',    '⚖️', 'Your Net Worth', nwContent, nwTs) +
-                _card('goaltracker', '🎯', 'Status of Your Goals', goalsContent, goalsTs) +
-                _card('budgettrack', '📊', 'Your Budget Plan', budgetContent, budgetTs) +
+                _card('healthscore', '💗', _t('dash.card.hs'), healthContent, healthTs) +
+                _card('networth',    '⚖️', _t('dash.card.nw'), nwContent, nwTs) +
+                _card('goaltracker', '🎯', _t('dash.card.goals'), goalsContent, goalsTs) +
+                _card('budgettrack', '📊', _t('dash.card.budget'), budgetContent, budgetTs) +
             '</div>';
     }
 

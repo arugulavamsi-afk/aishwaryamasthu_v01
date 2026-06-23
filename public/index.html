@@ -213,13 +213,13 @@
                         </button>
                         <div id="user-menu-dropdown" style="display:none;position:absolute;right:0;top:36px;min-width:185px;background:linear-gradient(160deg,#0e1f38 0%,#112a46 100%);border:1.5px solid rgba(245,200,66,0.3);border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,0.5);z-index:9999;padding:5px 0;">
                             <button onclick="_closeUserMenu();switchMode('myprofile')" class="um-item">
-                                <span>👤</span> My Profile
+                                <span>👤</span> <span data-i18n="nav.myprofile">My Profile</span>
                             </button>
                             <button onclick="_closeUserMenu();switchMode('userguide')" class="um-item">
-                                <span>📖</span> User Guide
+                                <span>📖</span> <span data-i18n="nav.userguide">User Guide</span>
                             </button>
                             <button id="pwa-install-btn" onclick="pwaTriggerInstall()" class="um-item hidden">
-                                <span>📲</span> Install App
+                                <span>📲</span> <span data-i18n="nav.install">Install App</span>
                             </button>
                             <div class="um-divider"></div>
                             <button onclick="_closeUserMenu();confirmResetAllData()" class="um-item um-item--danger">
@@ -238,8 +238,8 @@
         <!-- Guest mode bar — shown when browsing without an account -->
         <div id="guest-signin-bar" style="display:none;" class="w-full flex items-center justify-between gap-2 px-3 py-1.5 rounded-xl"
             style="background:rgba(245,200,66,0.07);border:1px solid rgba(245,200,66,0.22);">
-            <span style="font-size:10.5px;color:rgba(232,213,163,0.5);font-weight:600;">Exploring as guest</span>
-            <button onclick="returnToSignIn()" style="font-size:10.5px;font-weight:700;padding:5px 13px;border-radius:8px;border:1px solid rgba(245,200,66,0.38);background:rgba(245,200,66,0.12);color:rgba(245,200,66,0.88);cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;">Sign In / Sign Up →</button>
+            <span style="font-size:10.5px;color:rgba(232,213,163,0.5);font-weight:600;" data-i18n="guest.exploring">Exploring as guest</span>
+            <button onclick="returnToSignIn()" style="font-size:10.5px;font-weight:700;padding:5px 13px;border-radius:8px;border:1px solid rgba(245,200,66,0.38);background:rgba(245,200,66,0.12);color:rgba(245,200,66,0.88);cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;" data-i18n="guest.signin">Sign In / Sign Up →</button>
         </div>
 
         <!-- Breadcrumb bar — hidden on dashboard, shown inside modules -->
@@ -302,8 +302,8 @@
                         <span id="consult-unread-badge" class="consult-unread-badge" style="display:none;"></span>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <div class="text-xs font-black uppercase tracking-wider" style="color:rgba(255,255,255,0.95);">Consult an Expert</div>
-                        <div class="text-[11px] mt-0.5 truncate" style="color:rgba(255,255,255,0.55);">Book a 1-hour session with a certified financial advisor</div>
+                        <div class="text-xs font-black uppercase tracking-wider" style="color:rgba(255,255,255,0.95);" data-i18n="consult.tile.title">Consult an Expert</div>
+                        <div class="text-[11px] mt-0.5 truncate" style="color:rgba(255,255,255,0.55);" data-i18n="consult.tile.desc">Book a 1-hour session with a certified financial advisor</div>
                     </div>
                     <span class="font-bold text-sm flex-shrink-0" style="color:rgba(255,255,255,0.4);">→</span>
                 </button>
@@ -728,20 +728,20 @@
             <div class="rounded-2xl px-4 py-3 mb-4 text-white flex items-center justify-between gap-3 flex-wrap shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:2px solid rgba(245,200,66,0.4);box-shadow:0 4px 18px rgba(0,0,0,0.25);">
                 <div>
                     <h2 class="text-base font-black flex items-center gap-2" data-i18n="dashcat.calc.h">⚡ Calculators</h2>
-                    <p class="text-blue-200 text-[11px] mt-0.5">Project growth, plan goals and optimise every financial decision</p>
+                    <p class="text-blue-200 text-[11px] mt-0.5" data-i18n="dashcat.calc.sub">Project growth, plan goals and optimise every financial decision</p>
                 </div>
-                <button onclick="switchMode('dashboard')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">⬅ Back</button>
+                <button onclick="switchMode('dashboard')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);" data-i18n="nav.back">⬅ Dashboard</button>
             </div>
             <div class="dash-grid">
                 <button onclick="switchMode('growth')" class="dash-card group" data-color="#10b981"><div class="dash-card-icon">📈</div><div class="dash-card-title" data-i18n="card.growth.title">Growth Calculator</div><div class="dash-card-desc" data-i18n="card.growth.desc">Compound interest · Lumpsum · SIP · Inflation adjust</div><div class="dash-card-arrow">→</div></button>
                 <button onclick="switchMode('goal')" class="dash-card group" data-color="#6366f1"><div class="dash-card-icon">🎯</div><div class="dash-card-title" data-i18n="card.goal.title">Goal Planner</div><div class="dash-card-desc" data-i18n="card.goal.desc">Education · Marriage · Retirement · Category inflation presets</div><div class="dash-card-arrow">→</div></button>
 <button onclick="switchMode('homeloan')" class="dash-card group" data-color="#3b82f6"><div class="dash-card-icon">🏠</div><div class="dash-card-title" data-i18n="card.hl.title">Home Loan Advisor</div><div class="dash-card-desc" data-i18n="card.hl.desc">EMI · Prepayment benefit · Rent vs Buy · Sec 24(b) tax saving</div><div class="dash-card-arrow">→</div></button>
                 <button onclick="switchMode('stepupsip')" class="dash-card group" data-color="#f59e0b"><div class="dash-card-icon">📈</div><div class="dash-card-title" data-i18n="card.su.title">Step-Up SIP Calculator</div><div class="dash-card-desc" data-i18n="card.su.desc">Flat SIP vs 10% annual step-up · See the staggering corpus gap</div><div class="dash-card-arrow">→</div></button>
-                <button onclick="switchMode('retirementhub')" class="dash-card group" data-color="#7c3aed"><div class="dash-card-icon">🏖️</div><div class="dash-card-title">Retirement Hub ✨</div><div class="dash-card-desc">EPF + PPF + NPS + SIP → corpus · income · surplus — plus Drawdown Planner: SWP strategy, 3-bucket allocation, depletion timeline</div><div class="dash-card-arrow">→</div></button>
+                <button onclick="switchMode('retirementhub')" class="dash-card group" data-color="#7c3aed"><div class="dash-card-icon">🏖️</div><div class="dash-card-title" data-i18n="card.rethub.title">Retirement Hub ✨</div><div class="dash-card-desc" data-i18n="card.rethub.desc">EPF + PPF + NPS + SIP → corpus · income · surplus — plus Drawdown Planner: SWP strategy, 3-bucket allocation, depletion timeline</div><div class="dash-card-arrow">→</div></button>
                 <button onclick="switchMode('epfcalc')" class="dash-card group" data-color="#0891b2"><div class="dash-card-icon">🏦</div><div class="dash-card-title" data-i18n="card.epf.title">EPF Corpus Projector</div><div class="dash-card-desc" data-i18n="card.epf.desc">Basic salary · Employer match · Retirement corpus · India's invisible retirement number</div><div class="dash-card-arrow">→</div></button>
                 <button onclick="switchMode('ppfnps')" class="dash-card group" data-color="#059669"><div class="dash-card-icon">🏛️</div><div class="dash-card-title" data-i18n="card.ppfnps.title">PPF &amp; NPS Calculator</div><div class="dash-card-desc" data-i18n="card.ppfnps.desc">PPF 7.1% tax-free · 15yr lock-in · NPS lumpsum + annuity · 80C + 80CCD deductions</div><div class="dash-card-arrow">→</div></button>
                 <button onclick="switchMode('insure')" class="dash-card group" data-color="#dc2626"><div class="dash-card-icon">🛡️</div><div class="dash-card-title" data-i18n="card.insure.title">Insurance Adequacy</div><div class="dash-card-desc" data-i18n="card.insure.desc">HLV method · Term 10–15× income · Health ₹10L + ₹25L super top-up · Stop underinsurance now</div><div class="dash-card-arrow">→</div></button>
-                <button onclick="switchMode('hracalc')" class="dash-card group" data-color="#0891b2"><div class="dash-card-icon">🏠</div><div class="dash-card-title">HRA Calculator</div><div class="dash-card-desc">Sec 10(13A) · min(Actual HRA, Rent−10% Basic, 50%/40% Basic) · Annual tax saved · Metro vs Non-Metro</div><div class="dash-card-arrow">→</div></button>
+                <button onclick="switchMode('hracalc')" class="dash-card group" data-color="#0891b2"><div class="dash-card-icon">🏠</div><div class="dash-card-title" data-i18n="card.hra.title">HRA Calculator</div><div class="dash-card-desc" data-i18n="card.hra.desc">Sec 10(13A) · min(Actual HRA, Rent−10% Basic, 50%/40% Basic) · Annual tax saved · Metro vs Non-Metro</div><div class="dash-card-arrow">→</div></button>
             </div>
             </div>
         </div>
@@ -753,16 +753,16 @@
             <div class="rounded-2xl px-4 py-3 mb-4 text-white flex items-center justify-between gap-3 flex-wrap shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:2px solid rgba(245,200,66,0.4);box-shadow:0 4px 18px rgba(0,0,0,0.25);">
                 <div>
                     <h2 class="text-base font-black flex items-center gap-2" data-i18n="dashcat.mf.h">📊 Mutual Funds & Coffee Can</h2>
-                    <p class="text-blue-200 text-[11px] mt-0.5">Explore, compare and pick the right funds for your goals</p>
+                    <p class="text-blue-200 text-[11px] mt-0.5" data-i18n="dashcat.mf.sub">Explore, compare and pick the right funds for your goals</p>
                 </div>
-                <button onclick="switchMode('dashboard')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">⬅ Back</button>
+                <button onclick="switchMode('dashboard')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);" data-i18n="nav.back">⬅ Dashboard</button>
             </div>
             <div class="dash-grid">
                 <button onclick="switchMode('mfexplorer')" class="dash-card group" data-color="#0891b2"><div class="dash-card-icon">🔭</div><div class="dash-card-title" data-i18n="card.mfe.title">MF Explorer</div><div class="dash-card-desc" data-i18n="card.mfe.desc">Live NAV · Signal scoring · Fund comparator · 1000+ funds</div><div class="dash-card-arrow">→</div></button>
-                <button onclick="switchMode('mymfs')" class="dash-card group" data-color="#f5c842"><div class="dash-card-icon">★</div><div class="dash-card-title">My Mutual Funds</div><div class="dash-card-desc">Your personal watchlist · Saved ratings · Up to 20 funds · Add from MF Explorer</div><div class="dash-card-arrow">→</div></button>
+                <button onclick="switchMode('mymfs')" class="dash-card group" data-color="#f5c842"><div class="dash-card-icon">★</div><div class="dash-card-title" data-i18n="card.mymfs.title">My Mutual Funds</div><div class="dash-card-desc" data-i18n="card.mymfs.desc">Your personal watchlist · Saved ratings · Up to 20 funds · Add from MF Explorer</div><div class="dash-card-arrow">→</div></button>
                 <button onclick="switchMode('mfkit')" class="dash-card group" data-color="#7c3aed"><div class="dash-card-icon">💼</div><div class="dash-card-title" data-i18n="card.mfk.title">MF Kit</div><div class="dash-card-desc" data-i18n="card.mfk.desc">Which fund type suits you · Equity · Debt · Hybrid explained</div><div class="dash-card-arrow">→</div></button>
                 <button onclick="switchMode('fundpicker')" class="dash-card group" data-color="#059669"><div class="dash-card-icon">🔬</div><div class="dash-card-title" data-i18n="card.fp.title">Fund Picker Guide</div><div class="dash-card-desc" data-i18n="card.fp.desc">Alpha · Sharpe · Sortino · Expense ratio · How to read metrics</div><div class="dash-card-arrow">→</div></button>
-                <button onclick="switchMode('coffeecan')" class="dash-card group" data-color="#7c4a00"><div class="dash-card-icon">☕</div><div class="dash-card-title">The Coffee Can</div><div class="dash-card-desc">Quality compounders · 10-yr ROCE · Revenue CAGR · Debt-free · Moat screener</div><div class="dash-card-arrow">→</div></button>
+                <button onclick="switchMode('coffeecan')" class="dash-card group" data-color="#7c4a00"><div class="dash-card-icon">☕</div><div class="dash-card-title" data-i18n="card.coffeecan.title">The Coffee Can</div><div class="dash-card-desc" data-i18n="card.coffeecan.desc">Quality compounders · 10-yr ROCE · Revenue CAGR · Debt-free · Moat screener</div><div class="dash-card-arrow">→</div></button>
             </div>
             </div>
         </div>
@@ -774,14 +774,14 @@
             <div class="rounded-2xl px-4 py-3 mb-4 text-white flex items-center justify-between gap-3 flex-wrap shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:2px solid rgba(245,200,66,0.4);box-shadow:0 4px 18px rgba(0,0,0,0.25);">
                 <div>
                     <h2 class="text-base font-black flex items-center gap-2" data-i18n="dashcat.tax.h">🗺️ Planning &amp; Tax</h2>
-                    <p class="text-blue-200 text-[11px] mt-0.5">Comprehensive planning tools — tax, salary, debt, gold, CIBIL and more</p>
+                    <p class="text-blue-200 text-[11px] mt-0.5" data-i18n="dashcat.tax.sub">Comprehensive planning tools — tax, salary, debt, gold, CIBIL and more</p>
                 </div>
-                <button onclick="switchMode('dashboard')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">⬅ Back</button>
+                <button onclick="switchMode('dashboard')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);" data-i18n="nav.back">⬅ Dashboard</button>
             </div>
             <div class="dash-grid">
-                <button onclick="switchMode('fixedincome')" class="dash-card group" data-color="#0369a1"><div class="dash-card-icon">🏦</div><div class="dash-card-title">Fixed Income Tools</div><div class="dash-card-desc">FD Calculator (tax-adjusted) · SCSS 8.2% · POMIS · NSC · KVP · Tax FD vs ELSS · For every investor, not just SIP investors</div><div class="dash-card-arrow">→</div></button>
-                <button onclick="switchMode('ulipcheck')" class="dash-card group" data-color="#dc2626"><div class="dash-card-icon">🔍</div><div class="dash-card-title">ULIP / Policy Analyzer</div><div class="dash-card-desc">Should I surrender? · IRR of your LIC/ULIP · Buy Term + Invest the Difference · Saves crores of Indians</div><div class="dash-card-arrow">→</div></button>
-                <button onclick="switchMode('networth')" class="dash-card group" data-color="#059669"><div class="dash-card-icon">⚖️</div><div class="dash-card-title">Net Worth Tracker</div><div class="dash-card-desc">Assets vs Liabilities · Full balance sheet · Allocation chart · Debt ratio · Your financial snapshot</div><div class="dash-card-arrow">→</div></button>
+                <button onclick="switchMode('fixedincome')" class="dash-card group" data-color="#0369a1"><div class="dash-card-icon">🏦</div><div class="dash-card-title" data-i18n="card.fixedincome.title">Fixed Income Tools</div><div class="dash-card-desc" data-i18n="card.fixedincome.desc">FD Calculator (tax-adjusted) · SCSS 8.2% · POMIS · NSC · KVP · Tax FD vs ELSS · For every investor, not just SIP investors</div><div class="dash-card-arrow">→</div></button>
+                <button onclick="switchMode('ulipcheck')" class="dash-card group" data-color="#dc2626"><div class="dash-card-icon">🔍</div><div class="dash-card-title" data-i18n="card.ulip.title">ULIP / Policy Analyzer</div><div class="dash-card-desc" data-i18n="card.ulip.desc">Should I surrender? · IRR of your LIC/ULIP · Buy Term + Invest the Difference · Saves crores of Indians</div><div class="dash-card-arrow">→</div></button>
+                <button onclick="switchMode('networth')" class="dash-card group" data-color="#059669"><div class="dash-card-icon">⚖️</div><div class="dash-card-title" data-i18n="card.networth.title">Net Worth Tracker</div><div class="dash-card-desc" data-i18n="card.networth.desc">Assets vs Liabilities · Full balance sheet · Allocation chart · Debt ratio · Your financial snapshot</div><div class="dash-card-arrow">→</div></button>
                 <button onclick="switchMode('finplan')" class="dash-card group" data-color="#dc2626"><div class="dash-card-icon">📋</div><div class="dash-card-title" data-i18n="card.finplan.title">Financial Plan</div><div class="dash-card-desc" data-i18n="card.finplan.desc">Personalised SIP plan · Goals · Risk profile · EPF · Existing wealth</div><div class="dash-card-arrow">→</div></button>
                 <button onclick="switchMode('taxguide')" class="dash-card group" data-color="#b45309"><div class="dash-card-icon">🧾</div><div class="dash-card-title" data-i18n="card.tax.title">Tax Guide</div><div class="dash-card-desc" data-i18n="card.tax.desc">Old vs New regime · MF capital gains · Crypto tax · Surplus calc</div><div class="dash-card-arrow">→</div></button>
                 <button onclick="switchMode('healthscore')" class="dash-card group" data-color="#e11d48"><div class="dash-card-icon">💗</div><div class="dash-card-title" data-i18n="card.hs.title">Financial Health Score</div><div class="dash-card-desc" data-i18n="card.hs.desc">Get an honest score for your money life · Insurance · EF · Savings</div><div class="dash-card-arrow">→</div></button>
@@ -794,10 +794,10 @@
                 <button onclick="switchMode('fincal')" class="dash-card group" data-color="#0891b2"><div class="dash-card-icon">📅</div><div class="dash-card-title" data-i18n="card.fincal.title">Financial Calendar &amp; Smart Reminders</div><div class="dash-card-desc" data-i18n="card.fincal.desc">Advance tax · ITR deadlines · PPF · ELSS rush · SGB windows · EPF check · Credit card dates · Never miss a deadline again</div><div class="dash-card-arrow">→</div></button>
                 <button onclick="switchMode('selfempl')" class="dash-card group" data-color="#059669"><div class="dash-card-icon">🧾</div><div class="dash-card-title" data-i18n="card.selfempl.title">Self-Employed &amp; Business Planner</div><div class="dash-card-desc" data-i18n="card.selfempl.desc">44AD / 44ADA presumptive tax · Business emergency fund · GST cash-flow · Freelancer vs MSME · Quarterly advance tax</div><div class="dash-card-arrow">→</div></button>
                 <button onclick="switchMode('goldcomp')" class="dash-card group" data-color="#b45309"><div class="dash-card-icon">🥇</div><div class="dash-card-title" data-i18n="card.gold.title">Gold Investment Comparator</div><div class="dash-card-desc" data-i18n="card.gold.desc">ETF vs Gold MF vs Physical Gold · True cost after GST + making charges + locker · Digital Gold warning · GMS idle gold insight</div><div class="dash-card-arrow">→</div></button>
-                <button onclick="switchMode('cgcalc')" class="dash-card group" data-color="#7c3aed"><div class="dash-card-icon">📉</div><div class="dash-card-title">Capital Gains Calculator</div><div class="dash-card-desc">Post-Budget 2024 · Equity LTCG 12.5% · Debt MF slab-rate · Gold 24-mo · SGB exempt at maturity · Indexation vs flat-rate auto-pick</div><div class="dash-card-arrow">→</div></button>
-                <button onclick="switchMode('nomtrack')" class="dash-card group" data-color="#7c3aed"><div class="dash-card-icon">📜</div><div class="dash-card-title">Nomination Tracker &amp; Will Awareness</div><div class="dash-card-desc">~30% EPF accounts have no nominee · Bank · MF · Insurance · EPF · Demat · Will checklist · Estate readiness score</div><div class="dash-card-arrow">→</div></button>
-                <button onclick="switchMode('budgettrack')" class="dash-card group" data-color="#0891b2"><div class="dash-card-icon">📊</div><div class="dash-card-title">Budget &amp; Expense Tracker</div><div class="dash-card-desc">Monthly spend vs budget · Category outliers · 12-month trend line · Donut breakdown · Catch where your money goes</div><div class="dash-card-arrow">→</div></button>
-                <button onclick="switchMode('goaltracker')" class="dash-card group" data-color="#6366f1"><div class="dash-card-icon">🎯</div><div class="dash-card-title">Goal Tracker</div><div class="dash-card-desc">Log savings progress toward every goal · Monthly check-ins · On-track status · History chart · Know if you'll get there in time</div><div class="dash-card-arrow">→</div></button>
+                <button onclick="switchMode('cgcalc')" class="dash-card group" data-color="#7c3aed"><div class="dash-card-icon">📉</div><div class="dash-card-title" data-i18n="card.cgcalc.title">Capital Gains Calculator</div><div class="dash-card-desc" data-i18n="card.cgcalc.desc">Post-Budget 2024 · Equity LTCG 12.5% · Debt MF slab-rate · Gold 24-mo · SGB exempt at maturity · Indexation vs flat-rate auto-pick</div><div class="dash-card-arrow">→</div></button>
+                <button onclick="switchMode('nomtrack')" class="dash-card group" data-color="#7c3aed"><div class="dash-card-icon">📜</div><div class="dash-card-title" data-i18n="card.nomtrack.title">Nomination Tracker &amp; Will Awareness</div><div class="dash-card-desc" data-i18n="card.nomtrack.desc">~30% EPF accounts have no nominee · Bank · MF · Insurance · EPF · Demat · Will checklist · Estate readiness score</div><div class="dash-card-arrow">→</div></button>
+                <button onclick="switchMode('budgettrack')" class="dash-card group" data-color="#0891b2"><div class="dash-card-icon">📊</div><div class="dash-card-title" data-i18n="card.budget.title">Budget &amp; Expense Tracker</div><div class="dash-card-desc" data-i18n="card.budget.desc">Monthly spend vs budget · Category outliers · 12-month trend line · Donut breakdown · Catch where your money goes</div><div class="dash-card-arrow">→</div></button>
+                <button onclick="switchMode('goaltracker')" class="dash-card group" data-color="#6366f1"><div class="dash-card-icon">🎯</div><div class="dash-card-title" data-i18n="card.goaltrack.title">Goal Tracker</div><div class="dash-card-desc" data-i18n="card.goaltrack.desc">Log savings progress toward every goal · Monthly check-ins · On-track status · History chart · Know if you'll get there in time</div><div class="dash-card-arrow">→</div></button>
             </div>
             </div>
         </div>
@@ -809,9 +809,9 @@
             <div class="rounded-2xl px-4 py-3 mb-4 text-white flex items-center justify-between gap-3 flex-wrap shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:2px solid rgba(245,200,66,0.4);box-shadow:0 4px 18px rgba(0,0,0,0.25);">
                 <div>
                     <h2 class="text-base font-black flex items-center gap-2" data-i18n="dashcat.fav.h">⭐ Favourites</h2>
-                    <p class="text-blue-200 text-[11px] mt-0.5">Your pinned tools · Financial Health Score is pinned by default</p>
+                    <p class="text-blue-200 text-[11px] mt-0.5" data-i18n="dashcat.fav.sub">Your pinned tools · Financial Health Score is pinned by default</p>
                 </div>
-                <button onclick="switchMode('dashboard')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">⬅ Back</button>
+                <button onclick="switchMode('dashboard')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);" data-i18n="nav.back">⬅ Dashboard</button>
             </div>
             <div id="dashcat-fav-grid" class="dash-grid">
                 <!-- Rendered by JS -->
