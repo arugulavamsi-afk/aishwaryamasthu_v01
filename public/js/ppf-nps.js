@@ -170,18 +170,21 @@
         document.getElementById('ppf-invested').textContent  = ppfFmt(Math.round(totalInvested));
         document.getElementById('ppf-cagr').textContent      = cagr.toFixed(1) + '%';
         document.getElementById('ppf-multiple').textContent  = multiple.toFixed(2) + 'x';
-        document.getElementById('ppf-partial').textContent   = partialNow > 0 ? ppfFmt(partialNow) : 'Not yet eligible';
-        document.getElementById('ppf-loan').textContent      = loanNow > 0 ? ppfFmt(loanNow) : 'Not in loan window';
+        document.getElementById('ppf-partial').textContent   = partialNow > 0 ? ppfFmt(partialNow) : _t('ppf.partial.na');
+        document.getElementById('ppf-loan').textContent      = loanNow > 0 ? ppfFmt(loanNow) : _t('ppf.loan.na');
 
         // Insight
         var ins = document.getElementById('ppf-insight');
         ins.classList.remove('hidden');
-        ins.innerHTML = '<strong>💡 PPF Insight:</strong> Investing ₹' + Number(annual).toLocaleString('en-IN') +
-            '/yr for <strong>' + remainYears + ' years</strong> at ' + (rate*100).toFixed(1) + '% grows to <strong>' + ppfFmt(maturity) +
-            '</strong> — a <strong>' + multiple.toFixed(2) + 'x</strong> multiple on your investment. ' +
-            'Interest of <strong>' + ppfFmt(Math.round(totalInterest)) + '</strong> is completely tax-free under Sec 10. ' +
-            (extendYrs > 0 ? 'Extension of ' + extendYrs + ' years adds significant compounding benefit. ' : '') +
-            'Annual 80C deduction: ₹' + Math.min(150000, annual).toLocaleString('en-IN') + '.';
+        ins.innerHTML = _t('ppf.insight.html')
+            .replace('{annual}',   Number(annual).toLocaleString('en-IN'))
+            .replace('{years}',    remainYears)
+            .replace('{rate}',     (rate*100).toFixed(1))
+            .replace('{maturity}', ppfFmt(maturity))
+            .replace('{mult}',     multiple.toFixed(2))
+            .replace('{interest}', ppfFmt(Math.round(totalInterest)))
+            .replace('{ext}',      extendYrs > 0 ? _t('ppf.insight.ext').replace('{n}', extendYrs) : '')
+            .replace('{80c}',      Math.min(150000, annual).toLocaleString('en-IN'));
 
         // Year-by-year table
         var rows = '';
@@ -250,37 +253,42 @@
             sec80ccd        = 0;
             annualDeduction = 0;
             totalTaxSaved   = 0;
-            regimeNote      = '<div style="margin-top:8px;padding:8px 10px;border-radius:8px;background:#fff7ed;border:1px solid #fed7aa;font-size:10px;color:#92400e;">' +
-                              '<strong>⚠ New Regime:</strong> 80C and 80CCD(1B) deductions are <strong>not available</strong>. ' +
-                              'Employer NPS contribution (80CCD(2), up to 10% of basic) is still deductible in both regimes. ' +
-                              'Switch to Old Regime above to see the full deduction benefit.</div>';
+            regimeNote      = _t('nps.new.regime.note.html');
         }
 
         // DOM
         document.getElementById('nps-total-corpus').textContent  = ppfFmt(totalCorpus);
         document.getElementById('nps-lumpsum').textContent       = ppfFmt(lumpsum);
-        document.getElementById('nps-pension').textContent       = ppfFmt(monthlyPension) + '/mo';
+        document.getElementById('nps-pension').textContent       = ppfFmt(monthlyPension) + _t('rh.permonth');
         document.getElementById('nps-annuity-corpus').textContent= ppfFmt(annuityCorpus);
-        document.getElementById('nps-tax-saved').textContent     = regime === 'new' ? '₹0 (New Regime)' : ppfFmt(totalTaxSaved);
-        document.getElementById('nps-years').textContent         = years + ' yrs';
+        document.getElementById('nps-tax-saved').textContent     = regime === 'new' ? _t('nps.taxsaved.new') : ppfFmt(totalTaxSaved);
+        document.getElementById('nps-years').textContent         = years + _t('dd.yrs');
         document.getElementById('nps-invested').textContent      = ppfFmt(totalInvested);
 
         // Insight
         var ins = document.getElementById('nps-insight');
         ins.classList.remove('hidden');
         if (regime === 'old') {
-            ins.innerHTML = '<strong>💡 NPS Insight:</strong> ₹' + Number(monthly).toLocaleString('en-IN') +
-                '/mo for <strong>' + years + ' years</strong> at ' + (returnRate*100).toFixed(0) + '% builds a corpus of <strong>' + ppfFmt(totalCorpus) +
-                '</strong>. You get <strong>' + ppfFmt(lumpsum) + ' tax-free</strong> as lumpsum and a monthly pension of <strong>' + ppfFmt(monthlyPension) +
-                '</strong>. Total tax saved over career: <strong>' + ppfFmt(totalTaxSaved) + '</strong> (80C ₹' + ppfFmt(Math.round(sec80c)) +
-                ' + 80CCD(1B) ₹' + ppfFmt(Math.round(sec80ccd)) + ' × ' + (slab*100).toFixed(0) + '% slab). ' +
-                '<span style="color:#b45309;"><strong>⚠ Remember:</strong> Monthly annuity pension is taxable at your slab rate in retirement.</span>';
+            ins.innerHTML = _t('nps.insight.old.html')
+                .replace('{monthly}',  Number(monthly).toLocaleString('en-IN'))
+                .replace('{years}',    years)
+                .replace('{rate}',     (returnRate*100).toFixed(0))
+                .replace('{corpus}',   ppfFmt(totalCorpus))
+                .replace('{lumpsum}',  ppfFmt(lumpsum))
+                .replace('{pension}',  ppfFmt(monthlyPension))
+                .replace('{taxsaved}', ppfFmt(totalTaxSaved))
+                .replace('{s80c}',     ppfFmt(Math.round(sec80c)))
+                .replace('{sccd}',     ppfFmt(Math.round(sec80ccd)))
+                .replace('{slab}',     (slab*100).toFixed(0));
         } else {
-            ins.innerHTML = '<strong>💡 NPS Insight:</strong> ₹' + Number(monthly).toLocaleString('en-IN') +
-                '/mo for <strong>' + years + ' years</strong> at ' + (returnRate*100).toFixed(0) + '% builds a corpus of <strong>' + ppfFmt(totalCorpus) +
-                '</strong>. You get <strong>' + ppfFmt(lumpsum) + ' tax-free</strong> as lumpsum and a monthly pension of <strong>' + ppfFmt(monthlyPension) +
-                '</strong>. ' + regimeNote +
-                '<span style="color:#b45309;"><strong>⚠ Remember:</strong> Monthly annuity pension is taxable at your slab rate in retirement.</span>';
+            ins.innerHTML = _t('nps.insight.new.html')
+                .replace('{monthly}',    Number(monthly).toLocaleString('en-IN'))
+                .replace('{years}',      years)
+                .replace('{rate}',       (returnRate*100).toFixed(0))
+                .replace('{corpus}',     ppfFmt(totalCorpus))
+                .replace('{lumpsum}',    ppfFmt(lumpsum))
+                .replace('{pension}',    ppfFmt(monthlyPension))
+                .replace('{regimeNote}', regimeNote);
         }
 
         if (typeof saveUserData === 'function') saveUserData();

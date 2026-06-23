@@ -323,13 +323,32 @@
         }
     };
 
+    function _tlabel(key, fallback) {
+        return (typeof _t === 'function') ? _t(key) : fallback;
+    }
+
+    function _getContent(mode) {
+        if (typeof _t !== 'function') return _HU[mode];
+        var base = 'howto.' + mode + '.';
+        var what = _t(base + 'what');
+        if (what === base + 'what') return _HU[mode]; // no keys yet — use English
+        var steps = [], i = 1;
+        for (; i <= 8; i++) {
+            var sv = _t(base + 'step' + i);
+            if (sv === base + 'step' + i) break;
+            steps.push(sv);
+        }
+        var tip = _t(base + 'tip');
+        return { what: what, steps: steps, tip: tip === base + 'tip' ? null : tip };
+    }
+
     function _buildCard(content) {
         var stepsHtml = content.steps.map(function (s) {
             return '<li style="padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.05);last-child:border-none;">' + s + '</li>';
         }).join('');
         var tipHtml = content.tip
             ? '<div style="margin-top:10px;padding:8px 10px;background:rgba(245,200,66,0.08);border-left:3px solid rgba(245,200,66,0.45);border-radius:0 8px 8px 0;font-size:10.5px;color:rgba(255,255,255,0.65);line-height:1.6;">' +
-              '<strong style="color:#f5c842;font-size:10px;text-transform:uppercase;letter-spacing:.04em;">Pro tip</strong><br>' + content.tip +
+              '<strong style="color:#f5c842;font-size:10px;text-transform:uppercase;letter-spacing:.04em;">' + _tlabel('howto.protip', 'Pro tip') + '</strong><br>' + content.tip +
               '</div>'
             : '';
 
@@ -341,14 +360,15 @@
     }
 
     window.injectHowToUse = function (mode) {
-        var content = _HU[mode];
+        var content = _getContent(mode);
         if (!content) return;
 
         var cardId  = 'howto-' + mode;
         var bodyId  = 'howto-body-'  + mode;
         var arrowId = 'howto-arrow-' + mode;
 
-        if (document.getElementById(cardId)) return;
+        var existing = document.getElementById(cardId);
+        if (existing) existing.remove();
 
         var outer = document.createElement('div');
         outer.id = cardId;
@@ -363,7 +383,7 @@
             '})()" ' +
             'style="width:100%;display:flex;align-items:center;gap:8px;padding:9px 14px;background:transparent;border:none;cursor:pointer;text-align:left;">' +
                 '<span style="font-size:14px;line-height:1;">📖</span>' +
-                '<span style="font-size:11px;font-weight:700;color:rgba(245,200,66,0.8);flex:1;letter-spacing:.01em;">How to use this tool</span>' +
+                '<span style="font-size:11px;font-weight:700;color:rgba(245,200,66,0.8);flex:1;letter-spacing:.01em;">' + _tlabel('howto.title', 'How to use this tool') + '</span>' +
                 '<span id="' + arrowId + '" style="font-size:11px;color:rgba(255,255,255,0.35);">▾</span>' +
             '</button>' +
             '<div id="' + bodyId + '" style="display:none;padding:0 14px 14px;">' +

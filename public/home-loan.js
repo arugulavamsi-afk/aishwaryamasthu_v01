@@ -73,7 +73,7 @@
         var el = document.getElementById('hl-emi-result');
         var aw = document.getElementById('hl-emi-amort-wrap');
         if (!P || !r || !n) {
-            if (el) el.innerHTML = '<p class="text-xs text-slate-400 text-center font-semibold py-4">Enter loan details to see EMI</p>';
+            if (el) el.innerHTML = '<p class="text-xs text-slate-400 text-center font-semibold py-4">' + _t('hl.ph.emi') + '</p>';
             if (aw) aw.classList.add('hidden');
             var hlActClr = document.getElementById('hl-emi-actions');
             if (hlActClr) hlActClr.innerHTML = '';
@@ -96,16 +96,16 @@
         }
 
         el.innerHTML =
-            '<div class="text-[10px] font-black text-slate-500 uppercase tracking-wider mb-3">Your EMI Breakdown</div>' +
+            '<div class="text-[10px] font-black text-slate-500 uppercase tracking-wider mb-3">' + _t('hl.res.emi.title') + '</div>' +
             '<div class="rounded-2xl p-4 text-center mb-3 shine-header" style="background:linear-gradient(135deg,#1a4a7a,#1e3a5f);">' +
-                '<div class="text-[10px] text-blue-200 font-semibold mb-1">Monthly EMI</div>' +
+                '<div class="text-[10px] text-blue-200 font-semibold mb-1">' + _t('hl.res.emi.monthly') + '</div>' +
                 '<div class="text-3xl font-black text-white">' + hlFmt(emi) + '</div>' +
-                '<div class="text-[10px] text-blue-300 mt-1">per month for ' + (n/12) + ' years' + (endDate ? ' · until ' + endDate : '') + '</div>' +
+                '<div class="text-[10px] text-blue-300 mt-1">' + _t('hl.res.emi.permonth').replace('{n}', n/12) + (endDate ? ' ' + _t('hl.res.emi.until').replace('{date}', endDate) : '') + '</div>' +
             '</div>' +
             '<div class="space-y-1.5">' +
-                '<div class="hl-stat" style="background:#eff6ff;"><span class="text-[11px] text-blue-700 font-semibold">Principal Amount</span><span class="font-black text-blue-800">' + hlFmt(P) + '</span></div>' +
-                '<div class="hl-stat" style="background:#fef2f2;"><span class="text-[11px] text-red-600 font-semibold">Total Interest</span><span class="font-black text-red-700">' + hlFmt(totalInt) + '</span></div>' +
-                '<div class="hl-stat" style="background:#f8fafc;border:1px solid #e2e8f0;"><span class="text-[11px] text-slate-600 font-black">Total Payment</span><span class="font-black text-slate-800">' + hlFmt(totalPay) + '</span></div>' +
+                '<div class="hl-stat" style="background:#eff6ff;"><span class="text-[11px] text-blue-700 font-semibold">' + _t('hl.res.emi.principal') + '</span><span class="font-black text-blue-800">' + hlFmt(P) + '</span></div>' +
+                '<div class="hl-stat" style="background:#fef2f2;"><span class="text-[11px] text-red-600 font-semibold">' + _t('hl.res.emi.totalint') + '</span><span class="font-black text-red-700">' + hlFmt(totalInt) + '</span></div>' +
+                '<div class="hl-stat" style="background:#f8fafc;border:1px solid #e2e8f0;"><span class="text-[11px] text-slate-600 font-black">' + _t('hl.res.emi.totalpay') + '</span><span class="font-black text-slate-800">' + hlFmt(totalPay) + '</span></div>' +
             '</div>' +
             '<div class="mt-3 rounded-xl overflow-hidden" style="border:1px solid #e2e8f0;">' +
                 '<div class="flex" style="height:12px;">' +
@@ -113,11 +113,11 @@
                     '<div style="width:' + intRatio + '%;background:#ef4444;" title="Interest"></div>' +
                 '</div>' +
                 '<div class="flex justify-between px-2 py-1 text-[9px] font-bold">' +
-                    '<span class="text-blue-600">Principal ' + (100-intRatio) + '%</span>' +
-                    '<span class="text-red-500">Interest ' + intRatio + '%</span>' +
+                    '<span class="text-blue-600">' + _t('hl.res.emi.principal.pct').replace('{pct}', 100-intRatio) + '</span>' +
+                    '<span class="text-red-500">' + _t('hl.res.emi.int.pct').replace('{pct}', intRatio) + '</span>' +
                 '</div>' +
             '</div>' +
-            '<div class="mt-2 text-[9px] text-slate-400 text-center">Every 1% rate increase on ' + hlFmt(P) + ' adds ~' + hlFmt(P*0.01/100*12*0.6) + ' to monthly EMI</div>';
+            '<div class="mt-2 text-[9px] text-slate-400 text-center">' + _t('hl.res.emi.ratetip').replace('{amt}', hlFmt(P)).replace('{extra}', hlFmt(P*0.01/100*12*0.6)) + '</div>';
 
         // Amortisation
         if (aw) aw.classList.remove('hidden');
@@ -136,7 +136,7 @@
             }
             var rowBg = yr % 2 === 0 ? 'background:#f8fafc;' : '';
             rows += '<tr style="' + rowBg + '">' +
-                '<td class="px-3 py-1.5 font-bold text-slate-600">Yr ' + yr + '</td>' +
+                '<td class="px-3 py-1.5 font-bold text-slate-600">' + _t('hl.amort.yr').replace('{n}', yr) + '</td>' +
                 '<td class="px-3 py-1.5 text-right text-blue-700 font-semibold">' + hlFmt(prinYr) + '</td>' +
                 '<td class="px-3 py-1.5 text-right text-red-500 font-semibold">'  + hlFmt(intYr)  + '</td>' +
                 '<td class="px-3 py-1.5 text-right font-bold text-slate-700">'    + hlFmt(Math.max(0,bal)) + '</td>' +
@@ -152,20 +152,20 @@
 
             if (intRatio > 55) {
                 var prepayOneEmiSaving = Math.round(totalInt * 0.08);
-                hlActs.push({ icon:'🔥', color:'#dc2626', title:'High interest burden: ' + intRatio + '% of total payment',
-                    tip:'You\'ll pay ' + hlFmt(totalInt) + ' in interest vs ' + hlFmt(P) + ' principal. Paying just 1 extra EMI (' + hlFmt(emi) + ') per year could save ~' + hlFmt(prepayOneEmiSaving) + ' in interest and cut 2–3 years off tenure.' });
+                hlActs.push({ icon:'🔥', color:'#dc2626', title:_t('hl.act.highint.title').replace('{pct}', intRatio),
+                    tip:_t('hl.act.highint.tip').replace('{int}', hlFmt(totalInt)).replace('{prin}', hlFmt(P)).replace('{emi}', hlFmt(emi)).replace('{saving}', hlFmt(prepayOneEmiSaving)) });
             } else {
-                hlActs.push({ icon:'✅', color:'#10b981', title:'Interest-to-principal ratio is manageable',
-                    tip:'At ' + intRatio + '%, your interest burden is reasonable. Keep your EMI below 30% of monthly take-home pay — that\'s the safe zone for loan serviceability.' });
+                hlActs.push({ icon:'✅', color:'#10b981', title:_t('hl.act.okint.title'),
+                    tip:_t('hl.act.okint.tip').replace('{pct}', intRatio) });
             }
 
-            hlActs.push({ icon:'🧾', color:'#7c3aed', title:'Section 24(b): Claim ₹2L interest deduction',
-                tip:'Under Old Regime, home loan interest up to ₹2L/year is deductible (Sec 24b). At 30% slab that\'s ₹60,000 saved per year. Open the Tax Guide to calculate your full tax impact alongside this loan.' });
+            hlActs.push({ icon:'🧾', color:'#7c3aed', title:_t('hl.act.sec24b.title'),
+                tip:_t('hl.act.sec24b.tip') });
 
-            hlActs.push({ icon:'⚡', color:'#f59e0b', title:'Prepay early — interest is front-loaded',
-                tip:'In the first 5 years, 70–80% of each EMI goes to interest. A prepayment now saves far more than the same rupee prepaid in year 10. Use the Prepayment tab above to see exactly how much you\'d save.' });
+            hlActs.push({ icon:'⚡', color:'#f59e0b', title:_t('hl.act.prepayearly.title'),
+                tip:_t('hl.act.prepayearly.tip') });
 
-            hlActEl.innerHTML = '<div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-2"><div class="text-[10px] font-black text-slate-500 uppercase tracking-wider mb-2">⚡ Next Steps</div>' +
+            hlActEl.innerHTML = '<div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-2"><div class="text-[10px] font-black text-slate-500 uppercase tracking-wider mb-2">' + _t('hl.act.nextsteps') + '</div>' +
                 hlActs.map(function(a) {
                     return '<div class="flex items-start gap-2.5 p-3 rounded-xl border" style="background:' + a.color + '12;border-color:' + a.color + '30;">' +
                         '<span class="text-base flex-shrink-0 mt-0.5">' + a.icon + '</span>' +
@@ -182,7 +182,7 @@
         var b = document.getElementById('hl-amort-btn');
         if (!t || !b) return;
         var hidden = t.classList.toggle('hidden');
-        b.textContent = hidden ? 'Show year-by-year' : 'Hide';
+        b.textContent = hidden ? _t('hl.amort.show') : _t('hl.amort.hide');
     }
 
     /* ── PREPAYMENT BENEFIT ── */
@@ -195,7 +195,7 @@
         var choice = document.querySelector('input[name="pp-choice"]:checked')?.value || 'reduce_tenure';
         var el    = document.getElementById('hl-prepay-result');
         if (!P || !rate || !ten || !lump) {
-            if (el) el.innerHTML = '<p class="text-xs text-slate-400 text-center font-semibold py-4">Enter details to see prepayment benefit</p>';
+            if (el) el.innerHTML = '<p class="text-xs text-slate-400 text-center font-semibold py-4">' + _t('hl.ph.prepay') + '</p>';
             return;
         }
         var r   = rate / 100 / 12;
@@ -239,32 +239,32 @@
         }
 
         el.innerHTML =
-            '<div class="text-[10px] font-black text-slate-500 uppercase tracking-wider mb-3">Prepayment Impact</div>' +
+            '<div class="text-[10px] font-black text-slate-500 uppercase tracking-wider mb-3">' + _t('hl.res.pp.title') + '</div>' +
             '<div class="grid grid-cols-2 gap-2 mb-3">' +
                 '<div class="rounded-xl p-3 text-center" style="background:#fef2f2;border:1px solid #fecaca;">' +
-                    '<div class="text-[9px] text-red-500 font-bold mb-0.5">Without Prepayment</div>' +
+                    '<div class="text-[9px] text-red-500 font-bold mb-0.5">' + _t('hl.res.pp.without') + '</div>' +
                     '<div class="text-sm font-black text-red-700">' + hlFmt(totalWithout) + '</div>' +
-                    '<div class="text-[9px] text-red-400">Total payment</div>' +
+                    '<div class="text-[9px] text-red-400">' + _t('hl.res.pp.totalpay') + '</div>' +
                 '</div>' +
                 '<div class="rounded-xl p-3 text-center" style="background:#f0fdf4;border:1px solid #86efac;">' +
-                    '<div class="text-[9px] text-emerald-600 font-bold mb-0.5">With Prepayment</div>' +
+                    '<div class="text-[9px] text-emerald-600 font-bold mb-0.5">' + _t('hl.res.pp.with') + '</div>' +
                     '<div class="text-sm font-black text-emerald-700">' + hlFmt(totalWith) + '</div>' +
-                    '<div class="text-[9px] text-emerald-400">Total payment</div>' +
+                    '<div class="text-[9px] text-emerald-400">' + _t('hl.res.pp.totalpay') + '</div>' +
                 '</div>' +
             '</div>' +
             '<div class="space-y-1.5">' +
                 '<div class="hl-stat" style="background:#f0fdf4;border:1px solid #86efac;">' +
-                    '<span class="text-[11px] text-emerald-700 font-black">Interest Saved</span>' +
+                    '<span class="text-[11px] text-emerald-700 font-black">' + _t('hl.res.pp.intsaved') + '</span>' +
                     '<span class="text-base font-black text-emerald-600">' + hlFmt(intSaved) + '</span>' +
                 '</div>' +
                 (choice === 'reduce_tenure' && timeSaved > 0
-                    ? '<div class="hl-stat" style="background:#eff6ff;"><span class="text-[11px] text-blue-700 font-black">Time Saved</span><span class="font-black text-blue-600">' + Math.floor(timeSaved/12) + ' yrs ' + (timeSaved%12) + ' mo</span></div>'
-                    : '<div class="hl-stat" style="background:#eff6ff;"><span class="text-[11px] text-blue-700 font-black">New EMI</span><span class="font-black text-blue-600">' + hlFmt(newEmi) + '/mo</span></div>') +
-                '<div class="hl-stat" style="background:#faf5ff;"><span class="text-[11px] text-purple-700 font-semibold">Outstanding before prepayment</span><span class="font-bold text-purple-700">' + hlFmt(bal) + '</span></div>' +
-                '<div class="hl-stat" style="background:#faf5ff;"><span class="text-[11px] text-purple-700 font-semibold">Outstanding after prepayment</span><span class="font-bold text-purple-700">' + hlFmt(balAfterPrepay) + '</span></div>' +
+                    ? '<div class="hl-stat" style="background:#eff6ff;"><span class="text-[11px] text-blue-700 font-black">' + _t('hl.res.pp.timesaved') + '</span><span class="font-black text-blue-600">' + Math.floor(timeSaved/12) + ' yrs ' + (timeSaved%12) + ' mo</span></div>'
+                    : '<div class="hl-stat" style="background:#eff6ff;"><span class="text-[11px] text-blue-700 font-black">' + _t('hl.res.pp.newemi') + '</span><span class="font-black text-blue-600">' + hlFmt(newEmi) + '/mo</span></div>') +
+                '<div class="hl-stat" style="background:#faf5ff;"><span class="text-[11px] text-purple-700 font-semibold">' + _t('hl.res.pp.balBefore') + '</span><span class="font-bold text-purple-700">' + hlFmt(bal) + '</span></div>' +
+                '<div class="hl-stat" style="background:#faf5ff;"><span class="text-[11px] text-purple-700 font-semibold">' + _t('hl.res.pp.balAfter') + '</span><span class="font-bold text-purple-700">' + hlFmt(balAfterPrepay) + '</span></div>' +
             '</div>' +
             '<div class="mt-3 rounded-xl px-3 py-2 text-[10px] leading-relaxed" style="background:#fef9c3;border:1px solid #fde68a;color:#92400e;">' +
-                '<strong>Tip:</strong> Prepaying early (years 1–5) saves more interest than the same amount later because interest is front-loaded. Every rupee prepaid in year 1 saves ~' + (rate/100*ten/2).toFixed(1) + 'x in total interest over the loan.' +
+                _t('hl.res.pp.tip').replace('{x}', (rate/100*ten/2).toFixed(1)) +
             '</div>';
         if (typeof saveUserData === 'function') saveUserData();
     }
@@ -287,7 +287,7 @@
         var years    = hlNum('rvb-years');
         var el       = document.getElementById('hl-rvb-result');
         if (!price || !rent || !years) {
-            if (el) el.innerHTML = '<p class="text-xs text-slate-400 text-center font-semibold py-4">Enter details to see Rent vs Buy analysis</p>';
+            if (el) el.innerHTML = '<p class="text-xs text-slate-400 text-center font-semibold py-4">' + _t('hl.ph.rvb') + '</p>';
             return;
         }
 
@@ -347,7 +347,7 @@
         var rentBord = !buyBetter ? '#22c55e'  : '#e2e8f0';
         var rentTxt  = !buyBetter ? '#15803d'  : '#64748b';
         var winColor = buyBetter  ? '#1d4ed8'  : '#15803d';
-        var winLabel = buyBetter  ? '🏠 Buying builds more wealth' : '📈 Renting + investing builds more wealth';
+        var winLabel = buyBetter  ? _t('hl.res.rvb.buywins') : _t('hl.res.rvb.rentwins');
 
         // SVG chart — wealth growth lines
         var W = 340, H = 140, PAD = 10, LPAD = 8;
@@ -431,52 +431,51 @@
 
             // Upfront cost callout — always visible so user knows what's included
             '<div class="rounded-xl px-3 py-2 mb-3 text-[10px] leading-relaxed" style="background:#fff7ed;border:1px solid #fed7aa;color:#92400e;">' +
-                '<strong>📋 Upfront buying costs included:</strong> ' + upfrontBreakdown +
-                ' = <strong>' + hlFmt(totalUpfront) + '</strong> — added to buy-side cost &amp; renter\'s investable capital.' +
+                '<strong>' + _t('hl.res.rvb.upfront.label') + '</strong> ' + upfrontBreakdown +
+                ' = <strong>' + hlFmt(totalUpfront) + '</strong> ' + _t('hl.res.rvb.upfront.suffix') +
             '</div>' +
 
             // Chart
             '<div class="mb-3 rounded-xl overflow-hidden" style="border:1px solid #e2e8f0;">' +
-                '<div class="px-3 pt-2 pb-0 text-[9px] font-black text-slate-400 uppercase tracking-wider">Net Wealth Over ' + years + ' Years</div>' +
+                '<div class="px-3 pt-2 pb-0 text-[9px] font-black text-slate-400 uppercase tracking-wider">' + _t('hl.res.rvb.chart.title').replace('{years}', years) + '</div>' +
                 svg +
             '</div>' +
 
             // Two tiles — only winner highlighted
             '<div class="grid grid-cols-2 gap-2 mb-3">' +
                 '<div class="rounded-xl p-3" style="background:' + buyBg + ';border:2px solid ' + buyBord + ';transition:all .2s;">' +
-                    '<div class="text-[9px] font-black mb-1.5" style="color:' + buyTxt + ';">🏠 Buy Path' + (buyBetter ? ' 🏆' : '') + '</div>' +
+                    '<div class="text-[9px] font-black mb-1.5" style="color:' + buyTxt + ';">' + _t('hl.res.rvb.buy') + (buyBetter ? ' 🏆' : '') + '</div>' +
                     '<div class="text-[10px] space-y-0.5">' +
-                        '<div class="flex justify-between"><span class="text-slate-400">Property value</span><span class="font-bold text-slate-700">' + hlFmt(price * Math.pow(1+apprec,years)) + '</span></div>' +
-                        '<div class="flex justify-between"><span class="text-slate-400">EMI paid</span><span class="font-semibold text-red-400">-' + hlFmt(emi * Math.min(years,tenure) * 12) + '</span></div>' +
-                        '<div class="flex justify-between"><span class="text-slate-400">Stamp + reg</span><span class="font-semibold text-red-400">-' + hlFmt(stampAmt) + '</span></div>' +
-                        (gstAmt > 0 ? '<div class="flex justify-between"><span class="text-slate-400">GST</span><span class="font-semibold text-red-400">-' + hlFmt(gstAmt) + '</span></div>' : '') +
-                        (modtAmt > 0 ? '<div class="flex justify-between"><span class="text-slate-400">MODT + legal</span><span class="font-semibold text-red-400">-' + hlFmt(modtAmt) + '</span></div>' : '') +
-                        '<div class="flex justify-between"><span class="text-slate-400">Prop tax + maint</span><span class="font-semibold text-red-400">-' + hlFmt(totalMaint) + '</span></div>' +
-                        (totalSociety > 0 ? '<div class="flex justify-between"><span class="text-slate-400">Society charges</span><span class="font-semibold text-red-400">-' + hlFmt(totalSociety) + '</span></div>' : '') +
-                        '<div class="flex justify-between pt-1 mt-1 border-t" style="border-color:' + buyBord + ';"><span class="font-black" style="color:' + buyTxt + ';">Net Worth</span><span class="font-black" style="color:' + buyTxt + ';">' + hlFmt(buyNetWorth) + '</span></div>' +
+                        '<div class="flex justify-between"><span class="text-slate-400">' + _t('hl.res.rvb.propval') + '</span><span class="font-bold text-slate-700">' + hlFmt(price * Math.pow(1+apprec,years)) + '</span></div>' +
+                        '<div class="flex justify-between"><span class="text-slate-400">' + _t('hl.res.rvb.emipaid') + '</span><span class="font-semibold text-red-400">-' + hlFmt(emi * Math.min(years,tenure) * 12) + '</span></div>' +
+                        '<div class="flex justify-between"><span class="text-slate-400">' + _t('hl.res.rvb.stamp') + '</span><span class="font-semibold text-red-400">-' + hlFmt(stampAmt) + '</span></div>' +
+                        (gstAmt > 0 ? '<div class="flex justify-between"><span class="text-slate-400">' + _t('hl.res.rvb.gst') + '</span><span class="font-semibold text-red-400">-' + hlFmt(gstAmt) + '</span></div>' : '') +
+                        (modtAmt > 0 ? '<div class="flex justify-between"><span class="text-slate-400">' + _t('hl.res.rvb.modt') + '</span><span class="font-semibold text-red-400">-' + hlFmt(modtAmt) + '</span></div>' : '') +
+                        '<div class="flex justify-between"><span class="text-slate-400">' + _t('hl.res.rvb.propmaint') + '</span><span class="font-semibold text-red-400">-' + hlFmt(totalMaint) + '</span></div>' +
+                        (totalSociety > 0 ? '<div class="flex justify-between"><span class="text-slate-400">' + _t('hl.res.rvb.society') + '</span><span class="font-semibold text-red-400">-' + hlFmt(totalSociety) + '</span></div>' : '') +
+                        '<div class="flex justify-between pt-1 mt-1 border-t" style="border-color:' + buyBord + ';"><span class="font-black" style="color:' + buyTxt + ';">' + _t('hl.res.rvb.networth') + '</span><span class="font-black" style="color:' + buyTxt + ';">' + hlFmt(buyNetWorth) + '</span></div>' +
                     '</div>' +
                 '</div>' +
                 '<div class="rounded-xl p-3" style="background:' + rentBg + ';border:2px solid ' + rentBord + ';transition:all .2s;">' +
-                    '<div class="text-[9px] font-black mb-1.5" style="color:' + rentTxt + ';">📈 Rent + Invest' + (!buyBetter ? ' 🏆' : '') + '</div>' +
+                    '<div class="text-[9px] font-black mb-1.5" style="color:' + rentTxt + ';">' + _t('hl.res.rvb.rent') + (!buyBetter ? ' 🏆' : '') + '</div>' +
                     '<div class="text-[10px] space-y-0.5">' +
-                        '<div class="flex justify-between"><span class="text-slate-400">Invested</span><span class="font-bold text-slate-700">' + hlFmt(down + totalUpfront) + '</span></div>' +
-                        '<div class="flex justify-between"><span class="text-slate-400">(Down + saved costs)</span><span class="text-[9px] text-slate-400">' + hlFmt(down) + ' + ' + hlFmt(totalUpfront) + '</span></div>' +
-                        '<div class="flex justify-between"><span class="text-slate-400">Investment corpus</span><span class="font-bold text-slate-700">' + hlFmt(investCorpus) + '</span></div>' +
-                        '<div class="flex justify-between"><span class="text-slate-400">Total rent paid</span><span class="font-semibold text-red-400">-' + hlFmt(totalRent) + '</span></div>' +
-                        '<div class="flex justify-between pt-1 mt-1 border-t" style="border-color:' + rentBord + ';"><span class="font-black" style="color:' + rentTxt + ';">Net Worth</span><span class="font-black" style="color:' + rentTxt + ';">' + hlFmt(rentNetWorth) + '</span></div>' +
+                        '<div class="flex justify-between"><span class="text-slate-400">' + _t('hl.res.rvb.invested') + '</span><span class="font-bold text-slate-700">' + hlFmt(down + totalUpfront) + '</span></div>' +
+                        '<div class="flex justify-between"><span class="text-slate-400">' + _t('hl.res.rvb.downsaved') + '</span><span class="text-[9px] text-slate-400">' + hlFmt(down) + ' + ' + hlFmt(totalUpfront) + '</span></div>' +
+                        '<div class="flex justify-between"><span class="text-slate-400">' + _t('hl.res.rvb.corpus') + '</span><span class="font-bold text-slate-700">' + hlFmt(investCorpus) + '</span></div>' +
+                        '<div class="flex justify-between"><span class="text-slate-400">' + _t('hl.res.rvb.rentpaid') + '</span><span class="font-semibold text-red-400">-' + hlFmt(totalRent) + '</span></div>' +
+                        '<div class="flex justify-between pt-1 mt-1 border-t" style="border-color:' + rentBord + ';"><span class="font-black" style="color:' + rentTxt + ';">' + _t('hl.res.rvb.networth') + '</span><span class="font-black" style="color:' + rentTxt + ';">' + hlFmt(rentNetWorth) + '</span></div>' +
                     '</div>' +
                 '</div>' +
             '</div>' +
 
             // Crossover note
             (crossover > 0 && crossover <= years
-                ? '<div class="rounded-xl px-3 py-2 mb-2 text-[10px]" style="background:#fef9c3;border:1px solid #fde68a;color:#92400e;"><strong>Crossover at Year ' + crossover + ':</strong> This is when ' + (buyBetter ? 'buying overtakes renting' : 'renting overtakes buying') + ' in net wealth. Before that point the other path was ahead.</div>'
+                ? '<div class="rounded-xl px-3 py-2 mb-2 text-[10px]" style="background:#fef9c3;border:1px solid #fde68a;color:#92400e;">' + _t('hl.res.rvb.crossover').replace('{yr}', crossover).replace('{label}', buyBetter ? _t('hl.res.rvb.crossover.buy') : _t('hl.res.rvb.crossover.rent')) + '</div>'
                 : '') +
 
             // Disclaimer
             '<div class="rounded-xl px-3 py-2 text-[10px] leading-relaxed" style="background:#f8fafc;border:1px solid #e2e8f0;color:#64748b;">' +
-                '<strong>Includes:</strong> stamp duty, registration, GST (if under-construction), MODT/legal, property tax, society maintenance. ' +
-                '<strong>Note:</strong> Owning provides security, customisation &amp; no landlord risk — not captured here. Returns vary by city. Consult a financial advisor.' +
+                _t('hl.res.rvb.disclaimer') +
             '</div>';
         if (typeof saveUserData === 'function') saveUserData();
     }
@@ -491,7 +490,7 @@
         var regime = document.getElementById('tx-regime')?.value || 'new';
         var el     = document.getElementById('hl-tax-result');
         if (!P || !rate || !tenure) {
-            if (el) el.innerHTML = '<p class="text-xs text-slate-400 text-center font-semibold py-4">Enter details to see tax saving</p>';
+            if (el) el.innerHTML = '<p class="text-xs text-slate-400 text-center font-semibold py-4">' + _t('hl.ph.tax') + '</p>';
             return;
         }
 
@@ -501,10 +500,9 @@
         if (regime === 'new' && type === 'self') {
             el.innerHTML =
                 '<div class="rounded-xl p-4 text-sm leading-relaxed" style="background:#fff7ed;border:1px solid #fed7aa;">' +
-                '<div class="font-black text-orange-700 mb-1">⚠ Section 24(b) not available under New Regime</div>' +
-                '<div class="text-orange-800 text-[11px]">The ₹2L interest deduction on self-occupied home loans under Section 24(b) is <strong>not allowed</strong> under the New Tax Regime (FY 2025-26). ' +
-                'Switch to <strong>Old Regime</strong> above to claim this benefit — but compare your total tax outgo first using the Tax Guide calculator.</div>' +
-                '<div class="mt-2 text-[10px] text-orange-600">For <strong>let-out / rented</strong> properties, interest is deductible against house property income in both regimes.</div>' +
+                '<div class="font-black text-orange-700 mb-1">' + _t('hl.res.tax.newreg.title') + '</div>' +
+                '<div class="text-orange-800 text-[11px]">' + _t('hl.res.tax.newreg.body') + '</div>' +
+                '<div class="mt-2 text-[10px] text-orange-600">' + _t('hl.res.tax.newreg.foot') + '</div>' +
                 '</div>';
             return;
         }
@@ -531,7 +529,7 @@
             totalTaxSaved += taxSaved;
             var rowBg = yr % 2 === 0 ? 'background:#f8fafc;' : '';
             rows += '<tr style="' + rowBg + '">' +
-                '<td class="px-3 py-1.5 font-bold text-slate-600">Yr ' + yr + '</td>' +
+                '<td class="px-3 py-1.5 font-bold text-slate-600">' + _t('hl.amort.yr').replace('{n}', yr) + '</td>' +
                 '<td class="px-3 py-1.5 text-right text-red-500">'     + hlFmt(intYr)    + '</td>' +
                 '<td class="px-3 py-1.5 text-right text-emerald-600">' + hlFmt(deduction) + '</td>' +
                 '<td class="px-3 py-1.5 text-right font-bold text-blue-600">' + hlFmt(taxSaved) + '</td>' +
@@ -540,32 +538,44 @@
 
         var effectiveRate = P > 0 ? (rate - (totalTaxSaved/tenure) / (P/100)).toFixed(2) : rate;
         el.innerHTML =
-            '<div class="text-[10px] font-black text-slate-500 uppercase tracking-wider mb-3">Section 24(b) Tax Saving</div>' +
+            '<div class="text-[10px] font-black text-slate-500 uppercase tracking-wider mb-3">' + _t('hl.res.tax.title') + '</div>' +
             '<div class="grid grid-cols-2 gap-2 mb-3">' +
                 '<div class="rounded-xl p-3 text-center" style="background:#f0fdf4;border:1px solid #86efac;">' +
-                    '<div class="text-[9px] text-emerald-600 font-bold">Total Tax Saved</div>' +
+                    '<div class="text-[9px] text-emerald-600 font-bold">' + _t('hl.res.tax.saved') + '</div>' +
                     '<div class="text-xl font-black text-emerald-700">' + hlFmt(totalTaxSaved) + '</div>' +
-                    '<div class="text-[9px] text-emerald-400">over ' + tenure + ' yrs (incl. cess)</div>' +
+                    '<div class="text-[9px] text-emerald-400">' + _t('hl.res.tax.saved.sub').replace('{yrs}', tenure) + '</div>' +
                 '</div>' +
                 '<div class="rounded-xl p-3 text-center" style="background:#eff6ff;border:1px solid #bfdbfe;">' +
-                    '<div class="text-[9px] text-blue-600 font-bold">Effective Loan Rate</div>' +
+                    '<div class="text-[9px] text-blue-600 font-bold">' + _t('hl.res.tax.effrate') + '</div>' +
                     '<div class="text-xl font-black text-blue-700">' + effectiveRate + '%</div>' +
-                    '<div class="text-[9px] text-blue-400">after tax benefit</div>' +
+                    '<div class="text-[9px] text-blue-400">' + _t('hl.res.tax.effrate.sub') + '</div>' +
                 '</div>' +
             '</div>' +
             (type === 'self'
-                ? '<div class="rounded-lg px-3 py-2 mb-3 text-[10px] font-semibold text-amber-800" style="background:#fef3c7;border:1px solid #fde68a;">Self-occupied: max ₹2L/yr deduction. Years when interest > ₹2L, excess is not deductible.</div>'
-                : '<div class="rounded-lg px-3 py-2 mb-3 text-[10px] font-semibold text-blue-800" style="background:#eff6ff;border:1px solid #bfdbfe;">Let-out: Full interest deductible (no cap). Rental income is taxable.</div>') +
+                ? '<div class="rounded-lg px-3 py-2 mb-3 text-[10px] font-semibold text-amber-800" style="background:#fef3c7;border:1px solid #fde68a;">' + _t('hl.res.tax.self.note') + '</div>'
+                : '<div class="rounded-lg px-3 py-2 mb-3 text-[10px] font-semibold text-blue-800" style="background:#eff6ff;border:1px solid #bfdbfe;">' + _t('hl.res.tax.letout.note') + '</div>') +
             '<div class="overflow-x-auto rounded-xl" style="border:1px solid #e2e8f0;">' +
                 '<table class="w-full text-[10px]" style="min-width:360px;">' +
                     '<thead><tr style="background:#f1f5f9;">' +
-                        '<th class="px-3 py-2 text-left font-black text-slate-500">Year</th>' +
-                        '<th class="px-3 py-2 text-right font-black text-slate-500">Interest</th>' +
-                        '<th class="px-3 py-2 text-right font-black text-slate-500">Deduction</th>' +
-                        '<th class="px-3 py-2 text-right font-black text-slate-500">Tax Saved</th>' +
+                        '<th class="px-3 py-2 text-left font-black text-slate-500">' + _t('hl.amort.th.year') + '</th>' +
+                        '<th class="px-3 py-2 text-right font-black text-slate-500">' + _t('hl.res.tax.th.int') + '</th>' +
+                        '<th class="px-3 py-2 text-right font-black text-slate-500">' + _t('hl.res.tax.th.ded') + '</th>' +
+                        '<th class="px-3 py-2 text-right font-black text-slate-500">' + _t('hl.res.tax.th.saved') + '</th>' +
                     '</tr></thead>' +
                     '<tbody>' + rows + '</tbody>' +
                 '</table>' +
             '</div>';
         if (typeof saveUserData === 'function') saveUserData();
     }
+
+    window.hlApplyLang = function() {
+        var b = document.getElementById('hl-amort-btn');
+        if (b) {
+            var hidden = !document.getElementById('hl-amort-table') || document.getElementById('hl-amort-table').classList.contains('hidden');
+            b.textContent = hidden ? _t('hl.amort.show') : _t('hl.amort.hide');
+        }
+        try { hlEmiCalc(); } catch(e) {}
+        try { hlPrepayCalc(); } catch(e) {}
+        try { hlRvbCalc(); } catch(e) {}
+        try { hlTaxCalc(); } catch(e) {}
+    };

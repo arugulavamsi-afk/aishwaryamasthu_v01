@@ -636,8 +636,8 @@
                 document.getElementById('goal-inflation-section').classList.toggle('hidden', !isGoal);
                 document.getElementById('amount-label').innerText = isGoal ? _t('lbl.gr.todaycost') : _t('lbl.gr.amount');
                 if (isGoal) goalInflSetDefaults();
-                document.getElementById('years-label').innerText = isGoal ? 'Goal Term (Years)' : 'Time Period (Years)';
-                document.getElementById('calc-btn').innerText = isGoal ? 'Calculate Required Investment' : 'Calculate Projection';
+                document.getElementById('years-label').innerText = isGoal ? _t('lbl.gr.goaltermyrs') : _t('lbl.gr.timeyrs');
+                document.getElementById('calc-btn').innerText = isGoal ? _t('calc.reqinv') : _t('calc.projection');
                 document.getElementById('growth-results').style.display = isGoal ? 'none' : 'block';
                 document.getElementById('goal-results').style.display = isGoal ? 'block' : 'none';
 
@@ -720,13 +720,13 @@
 
         function getGoalLabel() {
             const gt = document.getElementById('goal-type');
-            if (!gt) return 'Your Goal';
-            const map = { vehicle:'🚗 Buy a Vehicle', marriage:'💍 Marriage', education:"🎓 Child's Education", retirement:'🏖️ Retirement', custom:'✏️ Custom', home:'🏠 Home Purchase', healthcare:'🏥 Healthcare Fund' };
+            if (!gt) return _t('goal.type.custom');
             if (gt.value === 'custom') {
                 const txt = document.getElementById('custom-goal-text')?.value.trim();
-                return txt ? '✏️ ' + txt : '✏️ Custom Goal';
+                return txt ? '✏️ ' + txt : _t('goal.type.custom');
             }
-            return map[gt.value] || 'Your Goal';
+            const opt = gt.options[gt.selectedIndex];
+            return opt ? opt.textContent.trim() : _t('goal.type.custom');
         }
 
         function getRiskDots(level) {
@@ -869,6 +869,16 @@
             calculate();
         }
 
+        window.growthApplyLang = function() {
+            var isGoal = currentMode === 'goal';
+            var amtLbl  = document.getElementById('amount-label');
+            var yrsLbl  = document.getElementById('years-label');
+            var calcBtn = document.getElementById('calc-btn');
+            if (amtLbl)  amtLbl.innerText  = isGoal ? _t('lbl.gr.todaycost') : _t('lbl.gr.amount');
+            if (yrsLbl)  yrsLbl.innerText  = isGoal ? _t('lbl.gr.goaltermyrs') : _t('lbl.gr.timeyrs');
+            if (calcBtn) calcBtn.innerText  = isGoal ? _t('calc.reqinv') : _t('calc.projection');
+        };
+
         function calculate() {
             const randIndex = Math.floor(Math.random() * quotes.length);
             document.getElementById('motivation').innerText = `"${quotes[randIndex]}"`;
@@ -948,23 +958,23 @@
             document.getElementById('sec-val-2').innerText = format(invested);
             document.getElementById('sec-val-2-words').innerText = numberToWords(Math.round(invested));
             if (currentMode === 'inflation') {
-                document.getElementById('main-result-title').innerText = "Real Value (Purchasing Power)";
-                document.getElementById('sec-label-1').innerText = "Nominal Value (Unadjusted)";
+                document.getElementById('main-result-title').innerText = _t('chart.realvalue');
+                document.getElementById('sec-label-1').innerText = _t('chart.nominal.unadj');
                 let nominalFv = dataSecondary[dataSecondary.length - 1];
                 document.getElementById('sec-val-1').innerText = format(nominalFv);
                 document.getElementById('sec-val-1-words').innerText = numberToWords(Math.round(nominalFv));
                 document.getElementById('sec-val-1').className = 'text-lg sm:text-xl font-bold text-slate-500 break-all';
-                document.getElementById('chart-title').innerText = "Purchasing Power vs Nominal Value";
-                renderLineChart(labels, dataGrowth, dataSecondary, "Real Value (Adjusted)", "Nominal Value", '#10b981', '#f43f5e');
+                document.getElementById('chart-title').innerText = _t('chart.ppvsnominal');
+                renderLineChart(labels, dataGrowth, dataSecondary, _t('chart.realvalue.adj'), _t('chart.nominal'), '#10b981', '#f43f5e');
             } else {
-                document.getElementById('main-result-title').innerText = "Projected Future Value";
-                document.getElementById('sec-label-1').innerText = "Total Interest";
+                document.getElementById('main-result-title').innerText = _t('res.gr.title');
+                document.getElementById('sec-label-1').innerText = _t('res.gr.interest');
                 const interest = Math.max(0, fv - invested);
                 document.getElementById('sec-val-1').innerText = "+" + format(interest);
                 document.getElementById('sec-val-1-words').innerText = numberToWords(Math.round(interest));
                 document.getElementById('sec-val-1').className = 'text-lg sm:text-xl font-bold text-emerald-500 break-all';
-                document.getElementById('chart-title').innerText = "Growth Trajectory";
-                renderLineChart(labels, dataGrowth, dataSecondary, "Total Value", "Amount Invested", '#10b981', '#64748b');
+                document.getElementById('chart-title').innerText = _t('chart.growthtraj');
+                renderLineChart(labels, dataGrowth, dataSecondary, _t('chart.totalvalue'), _t('chart.amtinvested'), '#10b981', '#64748b');
             }
 
             // Post-compute warnings
@@ -1047,7 +1057,7 @@
 
                 if (growActs.length > 0) {
                     growActEl.classList.remove('hidden');
-                    growActEl.innerHTML = '<div class="text-[10px] font-black text-slate-500 uppercase tracking-wider mb-2">⚡ Investment Action Plan</div>' +
+                    growActEl.innerHTML = '<div class="text-[10px] font-black text-slate-500 uppercase tracking-wider mb-2">⚡ ' + _t('lbl.action.plan') + '</div>' +
                         growActs.slice(0, 4).map(function(a) {
                             return '<div class="flex items-start gap-2.5 p-3 rounded-xl border mb-2" style="background:' + a.color + '12;border-color:' + a.color + '30;">' +
                                 '<span class="text-base flex-shrink-0 mt-0.5">' + a.icon + '</span>' +
@@ -1083,8 +1093,8 @@
             const catEl  = document.getElementById('goal-infl-category');
             const noteEl = document.getElementById('goal-infl-note');
             if (rateEl) rateEl.value = cfg.rate;
-            if (catEl)  catEl.textContent = cfg.category;
-            if (noteEl) noteEl.textContent = cfg.note;
+            if (catEl)  catEl.textContent = _t('goal.infl.cat.' + gt);
+            if (noteEl) noteEl.textContent = _t('goal.infl.note.' + gt);
             goalInflUpdate();
         }
 
@@ -1110,10 +1120,10 @@
             if (!el) return;
             const fmt = n => '&#8377;' + new Intl.NumberFormat('en-IN',{maximumFractionDigits:0}).format(Math.round(n));
             if (todayCost > 0 && years > 0 && inflRate > 0 && futureTarget !== todayCost) {
-                el.innerHTML = fmt(todayCost) + ' today &nbsp;&#8594;&nbsp; <strong>' + fmt(futureTarget) + '</strong> in ' + years + ' yrs at ' + inflRate + '% inflation &nbsp;&#9888;&#65039; This is your real target';
+                el.innerHTML = fmt(todayCost) + ' ' + _t('goal.infl.word.today') + ' &nbsp;&#8594;&nbsp; <strong>' + fmt(futureTarget) + '</strong> ' + _t('goal.infl.trend').replace('{yrs}', years).replace('{rate}', inflRate) + ' &nbsp;&#9888;&#65039; ' + _t('goal.infl.realtarget');
                 el.classList.remove('hidden');
             } else if (todayCost > 0 && (inflRate === 0 || years === 0)) {
-                el.innerHTML = 'Enter years &amp; rate above to see the inflation-adjusted target.';
+                el.innerHTML = _t('goal.infl.enter');
                 el.classList.remove('hidden');
             } else {
                 el.classList.add('hidden');
@@ -1133,7 +1143,7 @@
             const container = document.getElementById('goal-cards-container');
             container.innerHTML = '';
             const format = (val) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(val);
-            const periodText = type === 'sip' ? '/mo' : (type === 'annually' ? '/yr' : ' today');
+            const periodText = type === 'sip' ? _t('goal.period.mo') : (type === 'annually' ? _t('goal.period.yr') : ' ' + _t('goal.period.today'));
             let barLabels = [], barData = [];
             ratesToCompare.forEach(rate => {
                 let required = 0, r = rate / 100;
@@ -1152,22 +1162,22 @@
                 const textCol = isCustom ? 'text-indigo-600' : 'text-emerald-600';
                 container.insertAdjacentHTML('beforeend', `
                     <div class="${cardBorder} border rounded-xl p-3 flex-1 min-w-[120px] flex flex-col justify-center">
-                        <div class="text-[11px] font-bold text-slate-500 mb-1">If ${rate}% Return ${isCustom ? '(Custom)' : ''}</div>
+                        <div class="text-[11px] font-bold text-slate-500 mb-1">${_t('goal.card.if.return').replace('{rate}', rate)}${isCustom ? ' ' + _t('goal.card.custom.tag') : ''}</div>
                         <div class="text-lg font-black ${textCol}">${format(required)}<span class="text-[10px] font-semibold text-slate-500">${periodText}</span></div>
                         <div class="num-word mt-1">${numberToWords(Math.round(required))}</div>
                     </div>
                 `);
             });
             const inflNote = (todayCost && todayCost > 0 && inflRate > 0 && todayCost !== target)
-                ? ` — ₹${new Intl.NumberFormat('en-IN',{maximumFractionDigits:0}).format(Math.round(todayCost))} today @ ${inflRate}% inflation`
+                ? ` — ₹${new Intl.NumberFormat('en-IN',{maximumFractionDigits:0}).format(Math.round(todayCost))} ` + _t('goal.infl.subtitle.note').replace('{rate}', inflRate)
                 : '';
-            document.getElementById('goal-subtitle').innerText = `To reach ${format(target)} in ${years} Years via ${type.toUpperCase()}:${inflNote}`;
+            document.getElementById('goal-subtitle').innerText = _t('goal.subtitle').replace('{amt}', format(target)).replace('{yrs}', years).replace('{type}', type.toUpperCase()) + inflNote;
 
             // Update goal badge
             const badge = document.getElementById('goal-type-badge');
             if (badge) badge.innerText = getGoalLabel();
 
-            document.getElementById('chart-title').innerText = "Required Investment vs Expected Return";
+            document.getElementById('chart-title').innerText = _t('chart.reqinvreturn');
             renderBarChart(barLabels, barData, type);
 
             renderInvestmentSuggestions(years);
@@ -1192,7 +1202,7 @@
 
             if (todayCost <= 0 || years <= 0) {
                 var btn = document.getElementById('gp-save-fp-btn');
-                if (btn) { btn.textContent = '⚠ Enter amount & years first'; setTimeout(function(){ btn.textContent = '📌 Save to Financial Plan'; }, 2200); }
+                if (btn) { btn.textContent = _t('goal.savefp.warn'); setTimeout(function(){ btn.textContent = '📌 ' + _t('btn.save.fp'); }, 2200); }
                 return;
             }
 
@@ -1354,7 +1364,7 @@
             const isShortTerm = years < 7;
 
             if (termBadge) {
-                termBadge.innerText = isShortTerm ? '⏱ Short-Term (<7 yrs) — Debt Focus' : '📆 Long-Term (≥7 yrs) — Balanced/Equity';
+                termBadge.innerText = isShortTerm ? _t('inv.badge.short') : _t('inv.badge.long');
                 termBadge.className = isShortTerm
                     ? 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700'
                     : 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700';
@@ -1382,9 +1392,9 @@
                         <div class="flex items-center justify-between gap-2 pt-2 border-t border-slate-100">
                             <div class="flex items-center gap-1.5">
                                 <div class="flex items-center gap-0.5">${dots}</div>
-                                <span class="text-[10px] font-bold" style="color:${color}">${inv.riskLabel} Risk</span>
+                                <span class="text-[10px] font-bold" style="color:${color}">${inv.riskLabel} ${_t('inv.modal.risk.suffix')}</span>
                             </div>
-                            <span class="text-[10px] font-semibold text-slate-400 group-hover:text-emerald-600 transition-colors flex items-center gap-0.5 shrink-0">Details <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+                            <span class="text-[10px] font-semibold text-slate-400 group-hover:text-emerald-600 transition-colors flex items-center gap-0.5 shrink-0">${_t('inv.card.details')} <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
                         </div>
                         <div class="absolute inset-0 rounded-xl ring-2 ring-transparent group-hover:ring-emerald-300 transition-all pointer-events-none"></div>
                     </div>
@@ -1415,7 +1425,7 @@
             document.getElementById('modal-name').innerText = inv.name;
             document.getElementById('modal-returns').innerText = inv.returns;
             document.getElementById('modal-returns').style.color = color;
-            document.getElementById('modal-risk-label').innerText = inv.riskLabel + ' Risk';
+            document.getElementById('modal-risk-label').innerText = inv.riskLabel + ' ' + _t('inv.modal.risk.suffix');
             document.getElementById('modal-risk-label').style.color = color;
 
             let dots = '';
@@ -1429,7 +1439,7 @@
             document.getElementById('modal-example').innerText = inv.example;
 
             // Counter badge
-            document.getElementById('modal-counter').innerText = `${idx + 1} of ${suggestions.length}`;
+            document.getElementById('modal-counter').innerText = _t('inv.modal.counter').replace('{n}', idx + 1).replace('{total}', suggestions.length);
 
             // Navigation dots
             let navDots = '';
@@ -3401,6 +3411,20 @@
             if (shown === 0) {
                 actList.innerHTML = `<div class="text-center py-6 text-emerald-500 font-bold text-sm">${_t('hs.crushing')}</div>`;
             }
+            var _actionModeMap = {
+                'Savings Rate':'stepupsip','Debt Burden':'debtplan',
+                'Health Insurance':'insure','Term Insurance':'insure',
+                'Emergency Fund':'goal','Spending Control':'budgettrack',
+                'Age Readiness':'finplan','Net Worth Readiness':'networth'
+            };
+            var _topActions = [], _taCount = 0;
+            worstCats.forEach(function(cat) {
+                if (_taCount >= 3 || cat.pts >= cat.max) return;
+                var a = actionMap[cat.name];
+                if (a) { _topActions.push({ icon: a.icon, name: cat.name, color: a.color, mode: _actionModeMap[cat.name] || 'healthscore' }); _taCount++; }
+            });
+            window._hsLastResult = { score: totalScore, grade: grade, emoji: emoji, arcColor: arcColor, topActions: _topActions, ts: Date.now() };
+            if (typeof _dashUpdateScoreWidget === 'function') _dashUpdateScoreWidget();
             if (typeof saveUserData === 'function') saveUserData();
         }
         // ==================== END FINANCIAL HEALTH SCORE ====================

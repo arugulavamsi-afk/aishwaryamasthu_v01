@@ -145,23 +145,26 @@
         document.getElementById('su-stepup-invested').textContent = suFmt(suInvested);
         document.getElementById('su-stepup-gains').textContent    = suFmt(suDispCorpus - suInvested);
 
+        var postTaxSuffix = ltcgEnabled ? ' ' + _t('su.posttax') : '';
         document.getElementById('su-extra-wealth').textContent = suFmt(dispExtraWealth);
-        document.getElementById('su-multiplier').textContent   = dispMultiplier + 'x the corpus of a flat SIP — with just ' + stepup + '% annual increase' + (ltcgEnabled ? ' (post-tax)' : '');
+        document.getElementById('su-multiplier').textContent   = dispMultiplier + _t('su.mult.suffix').replace('{stepup}', stepup) + postTaxSuffix;
 
         document.getElementById('su-extra-invested').textContent = suFmt(extraInvested);
         document.getElementById('su-final-sip').textContent      = suFmt(Math.round(finalSIP));
-        document.getElementById('su-xirr').textContent           = '+' + ((dispMultiplier - 1) * 100 / years).toFixed(1) + '% p.a. extra' + (ltcgEnabled ? ' (post-tax)' : '');
+        document.getElementById('su-xirr').textContent           = '+' + ((dispMultiplier - 1) * 100 / years).toFixed(1) + _t('su.xirr.suffix') + postTaxSuffix;
 
         // ── Insight box ───────────────────────────────────────────
         var insightEl = document.getElementById('su-insight');
         insightEl.classList.remove('hidden');
         var extraRatio = dispExtraWealth > 0 ? (dispExtraWealth / (suInvested - flatInvested)).toFixed(1) : 0;
-        insightEl.innerHTML =
-            '<strong>💡 The Insight:</strong> By stepping up ₹' + Math.round(sip * stepup / 100).toLocaleString('en-IN') +
-            ' more every year, you invest an extra ' + suFmt(extraInvested) + ' total over ' + years + ' years — ' +
-            'but you earn an additional <strong>' + suFmt(dispExtraWealth) + ' corpus</strong>' + (ltcgEnabled ? ' (post-tax)' : '') + '. ' +
-            'Every extra rupee invested via step-up generates ₹' + extraRatio + ' in corpus. ' +
-            'Your final monthly SIP of ' + suFmt(Math.round(finalSIP)) + ' still feels affordable — it grows with your salary!';
+        insightEl.innerHTML = _t('su.insight.html')
+            .replace('{extra_mo}', Math.round(sip * stepup / 100).toLocaleString('en-IN'))
+            .replace('{extraInv}', suFmt(extraInvested))
+            .replace('{years}',    years)
+            .replace('{extraWealth}', suFmt(dispExtraWealth))
+            .replace('{posttax}',  ltcgEnabled ? ' ' + _t('su.posttax') : '')
+            .replace('{ratio}',    extraRatio)
+            .replace('{finalSIP}', suFmt(Math.round(finalSIP)));
 
         // ── Build SVG chart ───────────────────────────────────────
         suRenderChart(flatData, suData, years);
@@ -173,8 +176,8 @@
             var bg   = i % 2 === 0 ? 'background:#fffbeb;' : '';
             var gap  = suData[i].corpus - flatData[i].corpus;
             rows += '<tr style="' + bg + '">' +
-                '<td class="px-3 py-1.5 font-black text-slate-600">Yr ' + (i+1) + '</td>' +
-                '<td class="px-3 py-1.5 text-right font-semibold text-amber-700">' + suFmt(Math.round(suData[i].sip)) + '/mo</td>' +
+                '<td class="px-3 py-1.5 font-black text-slate-600">' + _t('su.table.yr').replace('{n}', i+1) + '</td>' +
+                '<td class="px-3 py-1.5 text-right font-semibold text-amber-700">' + suFmt(Math.round(suData[i].sip)) + _t('su.table.mo') + '</td>' +
                 '<td class="px-3 py-1.5 text-right text-slate-500">' + suFmt(flatData[i].invested) + '</td>' +
                 '<td class="px-3 py-1.5 text-right font-bold text-slate-700">' + suFmt(flatData[i].corpus) + '</td>' +
                 '<td class="px-3 py-1.5 text-right text-amber-600">' + suFmt(suData[i].invested) + '</td>' +
@@ -193,7 +196,7 @@
         var canvas = document.getElementById('su-chart-canvas');
         if (!canvas) return;
 
-        var labels = flatData.map(function(_, i) { return 'Yr ' + (i + 1); });
+        var labels = flatData.map(function(_, i) { return _t('su.table.yr').replace('{n}', i + 1); });
 
         var flatCorpusData  = flatData.map(function(d) { return Math.round(d.corpus); });
         var suCorpusData    = suData.map(function(d)   { return Math.round(d.corpus); });
@@ -213,7 +216,7 @@
                 labels: labels,
                 datasets: [
                     {
-                        label: 'Flat SIP',
+                        label: _t('su.chart.flat'),
                         data: flatCorpusData,
                         borderColor: '#94a3b8',
                         backgroundColor: 'rgba(148,163,184,0.08)',
@@ -228,7 +231,7 @@
                         order: 2
                     },
                     {
-                        label: 'Step-Up SIP',
+                        label: _t('su.chart.stepup'),
                         data: suCorpusData,
                         borderColor: '#f59e0b',
                         backgroundColor: 'rgba(245,158,11,0.10)',
@@ -243,7 +246,7 @@
                         order: 1
                     },
                     {
-                        label: 'Extra Wealth (Gap)',
+                        label: _t('su.chart.gap'),
                         data: gapData,
                         borderColor: '#10b981',
                         backgroundColor: 'rgba(16,185,129,0.10)',
@@ -296,7 +299,7 @@
                             afterBody: function(items) {
                                 var yr = items[0].dataIndex;
                                 var sipAmt = suData[yr] ? suData[yr].sip : 0;
-                                return ['', ' Monthly SIP this year: ' + INR(Math.round(sipAmt))];
+                                return ['', ' ' + _t('su.chart.monthly.tip').replace('{amt}', INR(Math.round(sipAmt)))];
                             }
                         }
                     }
@@ -323,5 +326,9 @@
             }
         });
     }
+
+window.suApplyLang = function() {
+    try { stepUpCalc(); } catch(e) {}
+};
 
 

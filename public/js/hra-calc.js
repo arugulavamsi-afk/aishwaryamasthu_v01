@@ -29,23 +29,23 @@
             rulesEl.dataset.rendered = '1';
             rulesEl.innerHTML =
                 '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:12px;">' +
-                  '<div style="font-size:10px;font-weight:900;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">📌 HRA Rules Every Salaried Employee Must Know</div>' +
+                  '<div style="font-size:10px;font-weight:900;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">' + _t('hra.rules') + '</div>' +
                   '<div style="display:flex;flex-wrap:wrap;gap:8px;">' +
                     '<div style="flex:1 1 45%;background:#dcfce7;border:1px solid #86efac;border-radius:10px;padding:8px;min-width:140px;">' +
-                      '<div style="font-size:12px;font-weight:900;color:#166534;margin-bottom:4px;">✅ Eligibility</div>' +
-                      '<div style="font-size:11px;color:#166534;line-height:1.5;">Old Regime only. Must be salaried and actually paying rent. Cannot claim if living in own property.</div>' +
+                      '<div style="font-size:12px;font-weight:900;color:#166534;margin-bottom:4px;">' + _t('hra.rule.elig.h') + '</div>' +
+                      '<div style="font-size:11px;color:#166534;line-height:1.5;">' + _t('hra.rule.elig.b') + '</div>' +
                     '</div>' +
                     '<div style="flex:1 1 45%;background:#dbeafe;border:1px solid #93c5fd;border-radius:10px;padding:8px;min-width:140px;">' +
-                      '<div style="font-size:12px;font-weight:900;color:#1e3a8a;margin-bottom:4px;">🏙️ Metro vs Non-Metro</div>' +
-                      '<div style="font-size:11px;color:#1e3a8a;line-height:1.5;">Delhi, Mumbai, Kolkata, Chennai = 50% of basic. All other cities (Bangalore, Pune, Hyderabad) = 40%.</div>' +
+                      '<div style="font-size:12px;font-weight:900;color:#1e3a8a;margin-bottom:4px;">' + _t('hra.rule.metro.h') + '</div>' +
+                      '<div style="font-size:11px;color:#1e3a8a;line-height:1.5;">' + _t('hra.rule.metro.b') + '</div>' +
                     '</div>' +
                     '<div style="flex:1 1 45%;background:#fef9c3;border:1px solid #f59e0b;border-radius:10px;padding:8px;min-width:140px;">' +
-                      '<div style="font-size:12px;font-weight:900;color:#713f12;margin-bottom:4px;">🧾 Rent Receipts</div>' +
-                      '<div style="font-size:11px;color:#713f12;line-height:1.5;">Landlord PAN required if rent exceeds ₹1L/yr. Keep receipts as proof. Rent paid to family is allowed if genuine.</div>' +
+                      '<div style="font-size:12px;font-weight:900;color:#713f12;margin-bottom:4px;">' + _t('hra.rule.receipt.h') + '</div>' +
+                      '<div style="font-size:11px;color:#713f12;line-height:1.5;">' + _t('hra.rule.receipt.b') + '</div>' +
                     '</div>' +
                     '<div style="flex:1 1 45%;background:#f3e8ff;border:1px solid #a78bfa;border-radius:10px;padding:8px;min-width:140px;">' +
-                      '<div style="font-size:12px;font-weight:900;color:#4c1d95;margin-bottom:4px;">💡 Home Loan + HRA</div>' +
-                      '<div style="font-size:11px;color:#4c1d95;line-height:1.5;">Both HRA and home loan deductions (Sec 24b/80C) can be claimed simultaneously if renting in one city and owning in another.</div>' +
+                      '<div style="font-size:12px;font-weight:900;color:#4c1d95;margin-bottom:4px;">' + _t('hra.rule.homeloan.h') + '</div>' +
+                      '<div style="font-size:11px;color:#4c1d95;line-height:1.5;">' + _t('hra.rule.homeloan.b') + '</div>' +
                     '</div>' +
                   '</div>' +
                 '</div>';
@@ -99,12 +99,12 @@
         var annualTaxable  = hraTaxable * 12;
         var annualTaxSaved = annualExempt * (slab / 100);
 
-        // Limiting factor
+        // Limiting factor (translated)
         var limiting = '';
         if (regime !== 'new') {
-            if (hraExempt === compA) limiting = 'Actual HRA received';
-            else if (hraExempt === compB) limiting = 'Rent − 10% of Basic';
-            else limiting = metaLabel + ' of Basic (' + (city === 'metro' ? 'Metro' : 'Non-Metro') + ')';
+            if (hraExempt === compA) limiting = _t('hra.limit.a');
+            else if (hraExempt === compB) limiting = _t('hra.limit.b');
+            else limiting = metaLabel + _t('hra.limit.ofbasic') + ' (' + (city === 'metro' ? _t('hra.limit.metro') : _t('hra.limit.nonmetro')) + ')';
         }
 
         // DOM updates
@@ -115,8 +115,8 @@
         set('hra-comp-a',  hraFmt(compA) + '/mo');
         set('hra-comp-b',  hraFmt(compB) + '/mo');
         set('hra-comp-c',  hraFmt(compC) + '/mo');
-        set('hra-comp-c-label', metaLabel + ' of Basic');
-        set('hra-limiting', regime === 'new' ? 'N/A (New Regime)' : (limiting || '—'));
+        set('hra-comp-c-label', metaLabel + _t('hra.limit.ofbasic'));
+        set('hra-limiting', regime === 'new' ? _t('hra.na.new') : (limiting || '—'));
 
         // Annual summary row
         set('hra-annual-exempt',  hraFmt(annualExempt));
@@ -124,21 +124,21 @@
 
         // Workings
         var wLines = [];
-        wLines.push('Basic Salary (monthly): ' + hraFmt(basic));
-        wLines.push('HRA Received (monthly): ' + hraFmt(received));
-        wLines.push('Rent Paid (monthly): ' + hraFmt(rent));
+        wLines.push(_t('hra.work.basic') + ': ' + hraFmt(basic));
+        wLines.push(_t('hra.work.received') + ': ' + hraFmt(received));
+        wLines.push(_t('hra.work.rent') + ': ' + hraFmt(rent));
         wLines.push('');
-        wLines.push('Component A — Actual HRA received: <strong>' + hraFmt(compA) + '</strong>');
-        wLines.push('Component B — Rent − 10% of Basic (' + hraFmt(basic * 0.10) + '): <strong>' + hraFmt(compB) + '</strong>');
-        wLines.push('Component C — ' + metaLabel + ' of Basic (' + city + '): <strong>' + hraFmt(compC) + '</strong>');
+        wLines.push(_t('hra.work.compa') + ': <strong>' + hraFmt(compA) + '</strong>');
+        wLines.push(_t('hra.work.compb') + ' (' + hraFmt(basic * 0.10) + '): <strong>' + hraFmt(compB) + '</strong>');
+        wLines.push(_t('hra.work.compc') + ' — ' + metaLabel + _t('hra.limit.ofbasic') + ' (' + (city === 'metro' ? _t('hra.limit.metro') : _t('hra.limit.nonmetro')) + '): <strong>' + hraFmt(compC) + '</strong>');
         wLines.push('');
         if (regime === 'new') {
-            wLines.push('<span style="color:#991b1b;font-weight:700">HRA exemption = ₹0</span> — not available under New Regime (Budget 2020+).');
+            wLines.push(_t('hra.work.new.regime.html'));
         } else {
-            wLines.push('HRA Exempt = min(A, B, C) = <strong>' + hraFmt(hraExempt) + '/mo</strong> [limited by: ' + limiting + ']');
-            wLines.push('HRA Taxable = HRA Received − HRA Exempt = <strong>' + hraFmt(hraTaxable) + '/mo</strong>');
+            wLines.push(_t('hra.work.exempt.html').replace('{exempt}', hraFmt(hraExempt)).replace('{limiting}', limiting));
+            wLines.push(_t('hra.work.taxable.html').replace('{taxable}', hraFmt(hraTaxable)));
             if (annualTaxSaved > 0)
-                wLines.push('Annual Tax Saved = ' + hraFmt(annualExempt) + ' × ' + slab + '% = <strong>' + hraFmt(annualTaxSaved) + '</strong>');
+                wLines.push(_t('hra.work.taxsaved.html').replace('{exempt}', hraFmt(annualExempt)).replace('{slab}', slab).replace('{taxsaved}', hraFmt(annualTaxSaved)));
         }
 
         html('hra-workings', wLines.map(function(l) {
@@ -150,23 +150,22 @@
         if (insEl) {
             var lines = [];
             if (regime === 'new') {
-                lines.push('⚠️ Under the <strong>New Tax Regime</strong>, HRA exemption is <strong>not available</strong> regardless of rent paid. Switch to Old Regime to claim the HRA benefit.');
+                lines.push(_t('hra.insight.new.regime'));
             } else {
                 if (hraExempt === 0 && rent === 0) {
-                    lines.push('Enter rent paid per month to calculate your HRA exemption.');
+                    lines.push(_t('hra.insight.no_rent'));
                 } else if (hraExempt === 0 && rent > 0 && rent <= basic * 0.10) {
-                    lines.push('⚠️ Your rent (' + hraFmt(rent) + '/mo) is less than or equal to 10% of your basic (' + hraFmt(basic * 0.10) + '/mo). No HRA exemption applies — Component B = ₹0.');
+                    lines.push(_t('hra.insight.low_rent.html').replace('{rent}', hraFmt(rent)).replace('{basic10pct}', hraFmt(basic * 0.10)));
                 } else {
                     if (annualTaxSaved > 0)
-                        lines.push('✅ You save <strong>' + hraFmt(annualTaxSaved) + ' annually</strong> in income tax by claiming HRA exemption of ' + hraFmt(annualExempt) + '/yr.');
-                    // Breakeven rent advice
-                    if (limiting !== 'Rent − 10% of Basic') {
+                        lines.push(_t('hra.insight.save.html').replace('{taxsaved}', hraFmt(annualTaxSaved)).replace('{exempt}', hraFmt(annualExempt)));
+                    if (limiting !== _t('hra.limit.b')) {
                         var optimalRent = Math.min(compA, compC) + basic * 0.10;
                         if (optimalRent > rent)
-                            lines.push('💡 Increase rent to <strong>' + hraFmt(Math.round(optimalRent)) + '/mo</strong> to maximise the HRA exemption (currently limited by ' + limiting + ').');
+                            lines.push(_t('hra.insight.increase.html').replace('{optrent}', hraFmt(Math.round(optimalRent))).replace('{limiting}', limiting));
                     }
-                    if (limiting === 'Actual HRA received')
-                        lines.push('💡 Negotiate a higher HRA component in your CTC structure to claim more exemption — your rent qualifies for more.');
+                    if (limiting === _t('hra.limit.a'))
+                        lines.push(_t('hra.insight.negotiate'));
                 }
             }
             insEl.innerHTML = lines.map(function(l) { return '<p style="margin-bottom:4px">' + l + '</p>'; }).join('');

@@ -31,7 +31,7 @@
                                 onfocus="if(this.value==='50,000'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                 onblur="if(this.value===''||this.value==='50,000'){this.value='50,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
                             </div>
-                            <div class="text-[9px] text-slate-400 mt-0.5">EPF = 12% of Basic+DA only</div>
+                            <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="epf.hint.basic">EPF = 12% of Basic+DA only</div>
                         </div>
 
                         <div>
@@ -42,7 +42,7 @@
                                 onfocus="if(this.value==='2,00,000'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                 onblur="if(this.value===''||this.value==='2,00,000'){this.value='2,00,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
                             </div>
-                            <div class="text-[9px] text-slate-400 mt-0.5">Check EPFO passbook / UAN portal</div>
+                            <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="epf.hint.balance">Check EPFO passbook / UAN portal</div>
                         </div>
 
                         <div>
@@ -67,7 +67,7 @@
                                 oninput="epfCalc(); this.classList.remove('text-slate-400');"
                                 onfocus="if(this.value==='8'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                 onblur="if(this.value===''||this.value==='8'){this.value='8';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
-                            <div class="text-[9px] text-slate-400 mt-0.5">India avg: 8–10% p.a.</div>
+                            <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="epf.hint.growth">India avg: 8–10% p.a.</div>
                         </div>
 
                         <div>
@@ -76,7 +76,7 @@
                                 oninput="epfCalc(); this.classList.remove('text-slate-400');"
                                 onfocus="if(this.value==='8.15'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                 onblur="if(this.value===''||this.value==='8.15'){this.value='8.15';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
-                            <div class="text-[9px] text-slate-400 mt-0.5">FY24: 8.25% · FY23: 8.15%</div>
+                            <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="epf.hint.rate">FY24: 8.25% · FY23: 8.15%</div>
                         </div>
                     </div>
 
@@ -100,17 +100,17 @@
                         <div class="rounded-2xl p-3 text-center shine-header" style="background:linear-gradient(135deg,#0c4a6e,#075985);border:2px solid #0ea5e9;">
                             <div class="text-[9px] font-black text-sky-200 uppercase tracking-wider" data-i18n="res.epf.corpus">EPF Corpus at Retirement</div>
                             <div id="epf-total-corpus" class="text-xl font-black text-white mt-0.5">—</div>
-                            <div class="text-[9px] text-sky-300 mt-0.5">Employee + Employer</div>
+                            <div class="text-[9px] text-sky-300 mt-0.5" data-i18n="epf.sub.empemployer">Employee + Employer</div>
                         </div>
                         <div class="rounded-2xl p-3 text-center shine-header" style="background:linear-gradient(135deg,#14532d,#166534);border:2px solid #22c55e;">
                             <div class="text-[9px] font-black text-emerald-200 uppercase tracking-wider" data-i18n="res.epf.interest">Total Interest Earned</div>
                             <div id="epf-total-interest" class="text-xl font-black text-white mt-0.5">—</div>
-                            <div class="text-[9px] text-emerald-300 mt-0.5">Tax-free under Sec 10</div>
+                            <div class="text-[9px] text-emerald-300 mt-0.5" data-i18n="epf.sub.taxfree">Tax-free under Sec 10</div>
                         </div>
                         <div class="rounded-2xl p-3 text-center shine-header" style="background:linear-gradient(135deg,#3b0764,#581c87);border:2px solid #a855f7;">
                             <div class="text-[9px] font-black text-purple-200 uppercase tracking-wider" data-i18n="res.epf.contrib">Total Contributions</div>
                             <div id="epf-total-contrib" class="text-xl font-black text-white mt-0.5">—</div>
-                            <div class="text-[9px] text-purple-300 mt-0.5">Emp + Employer over career</div>
+                            <div class="text-[9px] text-purple-300 mt-0.5" data-i18n="epf.sub.overcareer">Emp + Employer over career</div>
                         </div>
                     </div>
 
@@ -122,7 +122,7 @@
                             <div id="epf-monthly-contrib" class="text-2xl font-black text-white leading-tight">—</div>
                         </div>
                         <div class="text-right">
-                            <div class="text-[9px] text-emerald-400 uppercase font-black">Final year contribution</div>
+                            <div class="text-[9px] text-emerald-400 uppercase font-black" data-i18n="epf.sub.finalyear">Final year contribution</div>
                             <div id="epf-final-contrib" class="text-base font-black text-emerald-300">—</div>
                         </div>
                     </div>
@@ -159,9 +159,9 @@
                 <div class="rounded-2xl p-3" style="background:#fffbeb;border:1.5px solid #fcd34d;">
                     <div class="flex items-center gap-1.5 mb-2">
                         <span class="text-base">🧓</span>
-                        <span class="text-[10px] font-black text-amber-800 uppercase tracking-wider">EPS Pension — How It Works</span>
+                        <span class="text-[10px] font-black text-amber-800 uppercase tracking-wider" data-i18n="epf.sec.eps">EPS Pension — How It Works</span>
                     </div>
-                    <div class="text-[10px] text-amber-900 leading-relaxed space-y-1.5">
+                    <div class="text-[10px] text-amber-900 leading-relaxed space-y-1.5" data-i18n-html="epf.eps.body">
                         <div class="flex gap-1.5"><span class="text-amber-500 font-bold mt-0.5">▸</span><span>Of your employer's <strong>12% contribution</strong>, only <strong>₹1,250/mo</strong> (8.33% of ₹15,000 wage ceiling) goes to the <strong>EPS pension fund</strong> — the rest goes to your EPF balance.</span></div>
                         <div class="flex gap-1.5"><span class="text-amber-500 font-bold mt-0.5">▸</span><span><strong>Pension formula:</strong> Monthly Pension = (Pensionable Salary × Service Years) ÷ 70, where Pensionable Salary = min(Basic, ₹15,000) and max service counted is 35 years.</span></div>
                         <div class="flex gap-1.5"><span class="text-amber-500 font-bold mt-0.5">▸</span><span>Example: ₹15,000 × 30 years ÷ 70 = <strong>~₹6,428/mo pension</strong>. Pension is <em>not</em> tax-free — it is taxed at your slab rate after retirement.</span></div>
@@ -172,9 +172,9 @@
                 <div class="rounded-2xl p-3" style="background:#fef2f2;border:1.5px solid #fca5a5;">
                     <div class="flex items-center gap-1.5 mb-2">
                         <span class="text-base">⚠️</span>
-                        <span class="text-[10px] font-black text-red-700 uppercase tracking-wider">EPF Withdrawal — Tax Rules</span>
+                        <span class="text-[10px] font-black text-red-700 uppercase tracking-wider" data-i18n="epf.sec.rules">EPF Withdrawal — Tax Rules</span>
                     </div>
-                    <div class="text-[10px] text-red-900 leading-relaxed space-y-1.5">
+                    <div class="text-[10px] text-red-900 leading-relaxed space-y-1.5" data-i18n-html="epf.rules.body">
                         <div class="flex gap-1.5"><span class="text-red-400 font-black mt-0.5">✗</span><span><strong>Before 5 years of continuous service:</strong> Entire EPF withdrawal is <strong>taxable as per your income-tax slab</strong> in the year of withdrawal. TDS is deducted at <strong>10%</strong> (u/s 192A) if withdrawal exceeds ₹50,000. No PAN? TDS jumps to <strong>30%</strong>.</span></div>
                         <div class="flex gap-1.5"><span class="text-green-600 font-black mt-0.5">✓</span><span><strong>After 5 years of continuous service:</strong> EPF withdrawal is <strong>fully tax-free</strong> (Sec 10(12)). No TDS, no income-tax liability — whether withdrawn at retirement or before.</span></div>
                         <div class="flex gap-1.5"><span class="text-amber-600 font-bold mt-0.5">▸</span><span><strong>Key decision:</strong> If you're switching jobs before 5 years, <em>do not withdraw EPF</em> — transfer it via EPFO's online portal (Form 13) to preserve tax exemption and compound interest.</span></div>
@@ -186,11 +186,11 @@
             <!-- INTERACTIVE CHART -->
             <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-3">
                 <div class="flex items-center justify-between mb-2 flex-wrap gap-2">
-                    <div class="text-[10px] font-black text-slate-500 uppercase tracking-wider">📊 EPF Growth Over Career <span class="text-blue-500 font-bold normal-case">(hover for details)</span></div>
+                    <div class="text-[10px] font-black text-slate-500 uppercase tracking-wider"><span data-i18n="epf.chart.title">📊 EPF Growth Over Career</span> <span class="text-blue-500 font-bold normal-case" data-i18n="su.chart.hover">(hover for details)</span></div>
                     <div class="flex gap-2">
-                        <button onclick="epfChartView('corpus')"  id="epf-btn-corpus"  class="epf-chart-btn epf-chart-btn-active">Corpus</button>
-                        <button onclick="epfChartView('contrib')" id="epf-btn-contrib" class="epf-chart-btn">Contributions</button>
-                        <button onclick="epfChartView('salary')"  id="epf-btn-salary"  class="epf-chart-btn">Salary Track</button>
+                        <button onclick="epfChartView('corpus')"  id="epf-btn-corpus"  class="epf-chart-btn epf-chart-btn-active" data-i18n="epf.chart.btn.corpus">Corpus</button>
+                        <button onclick="epfChartView('contrib')" id="epf-btn-contrib" class="epf-chart-btn" data-i18n="epf.chart.btn.contrib">Contributions</button>
+                        <button onclick="epfChartView('salary')"  id="epf-btn-salary"  class="epf-chart-btn" data-i18n="epf.chart.btn.salary">Salary Track</button>
                     </div>
                 </div>
                 <div style="position:relative;height:250px;">
@@ -202,18 +202,18 @@
             <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-3">
                 <div class="flex items-center justify-between mb-2">
                     <div class="text-[10px] font-black text-slate-500 uppercase tracking-wider" data-i18n="res.epf.table">Year-by-Year EPF Passbook</div>
-                    <button id="epf-table-btn" onclick="epfToggleTable()" class="text-[10px] font-bold text-slate-400 hover:text-blue-600 transition-all">Show ▾</button>
+                    <button id="epf-table-btn" onclick="epfToggleTable()" class="text-[10px] font-bold text-slate-400 hover:text-blue-600 transition-all" data-i18n="common.show">Show ▾</button>
                 </div>
                 <div id="epf-table-wrap" class="hidden overflow-x-auto">
                     <table class="w-full text-[10px]" style="min-width:620px;">
                         <thead>
                             <tr style="background:#e0f2fe;">
-                                <th class="px-2 py-1.5 text-left font-black text-sky-800">Age</th>
-                                <th class="px-2 py-1.5 text-right font-black text-sky-800">Basic Salary</th>
-                                <th class="px-2 py-1.5 text-right font-black text-slate-600">Emp Contrib</th>
-                                <th class="px-2 py-1.5 text-right font-black text-slate-600">Employer Contrib</th>
-                                <th class="px-2 py-1.5 text-right font-black text-emerald-700">Interest</th>
-                                <th class="px-2 py-1.5 text-right font-black text-blue-700">Year-End Balance</th>
+                                <th class="px-2 py-1.5 text-left font-black text-sky-800" data-i18n="epf.table.th.age">Age</th>
+                                <th class="px-2 py-1.5 text-right font-black text-sky-800" data-i18n="epf.table.th.basic">Basic Salary</th>
+                                <th class="px-2 py-1.5 text-right font-black text-slate-600" data-i18n="epf.table.th.emp">Emp Contrib</th>
+                                <th class="px-2 py-1.5 text-right font-black text-slate-600" data-i18n="epf.table.th.employer">Employer Contrib</th>
+                                <th class="px-2 py-1.5 text-right font-black text-emerald-700" data-i18n="epf.table.th.interest">Interest</th>
+                                <th class="px-2 py-1.5 text-right font-black text-blue-700" data-i18n="epf.table.th.balance">Year-End Balance</th>
                             </tr>
                         </thead>
                         <tbody id="epf-table-body"></tbody>

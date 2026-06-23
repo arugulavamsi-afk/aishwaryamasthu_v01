@@ -4,7 +4,7 @@
             <div class="rounded-2xl px-4 py-3 text-white flex items-center justify-between gap-3 flex-wrap shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:2px solid rgba(245,200,66,0.4);box-shadow:0 4px 18px rgba(0,0,0,0.25);">
                 <div>
                     <h2 class="text-base font-black flex items-center gap-2" data-i18n="page.insure.h">🛡️ Insurance Adequacy Calculator</h2>
-                    <p class="text-blue-200 text-[11px] mt-0.5">HLV method (assets-netted) · Health ₹35L+ · Critical Illness ₹25–50L · Disability income · Senior parent floater · Stop India's #1 vulnerability — underinsurance.</p>
+                    <p class="text-blue-200 text-[11px] mt-0.5" data-i18n="page.insure.sub">HLV method (assets-netted) · Health ₹35L+ · Critical Illness ₹25–50L · Disability income · Senior parent floater · Stop India's #1 vulnerability — underinsurance.</p>
                 </div>
                 <button onclick="resetInsure()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">
                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h5M20 20v-5h-5M4 9a9 9 0 0115-3M20 15a9 9 0 01-15 3"/></svg><span data-i18n="common.reset">Reset</span>
@@ -111,7 +111,7 @@
                     <div class="grid grid-cols-2 gap-x-3 gap-y-2">
 
                         <div>
-                            <label class="epf-label">Liquid Assets (₹)</label>
+                            <label class="epf-label" data-i18n="insure.lbl.liquid_assets">Liquid Assets (₹)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
                             <input id="ins-assets" type="text" inputmode="numeric" maxlength="15" value="0" class="epf-input pl-7 text-slate-400"
                                 oninput="insFormat(this);insureCalc();this.classList.remove('text-slate-400');"
@@ -122,7 +122,7 @@
                         </div>
 
                         <div>
-                            <label class="epf-label">Illiquid Assets (₹)</label>
+                            <label class="epf-label" data-i18n="insure.lbl.illiquid_assets">Illiquid Assets (₹)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
                             <input id="ins-illiquid-assets" type="text" inputmode="numeric" maxlength="15" value="0" class="epf-input pl-7 text-slate-400"
                                 oninput="insFormat(this);insureCalc();this.classList.remove('text-slate-400');"

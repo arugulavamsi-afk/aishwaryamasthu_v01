@@ -85,8 +85,8 @@
         var hint = document.getElementById('dd-future-exp-hint');
         if (hint) {
             hint.textContent = yearsToRetire > 0
-                ? '→ At retirement (' + yearsToRetire + ' yrs): ₹' + Math.round(expAtRetirement).toLocaleString('en-IN') + '/mo'
-                : '→ Retiring now — expenses used as-is';
+                ? _t('dd.hint.retiring').replace('{n}', yearsToRetire).replace('{amt}', Math.round(expAtRetirement).toLocaleString('en-IN'))
+                : _t('dd.hint.retiringnow');
         }
 
         var MAX_AGE  = 100;
@@ -155,11 +155,11 @@
         var sdLbl = document.getElementById('dd-stress-label');
         var sbLbl = document.getElementById('dd-base-label');
         if (sbLbl) {
-            sbLbl.textContent = depletionAge ? 'Depletes age ' + depletionAge : 'Outlasts age 100';
+            sbLbl.textContent = depletionAge ? _t('dd.stress.depletes').replace('{n}', depletionAge) : _t('dd.stress.outlasts100');
             sbLbl.style.color = depletionAge ? '#fbbf24' : '#86efac';
         }
         if (sdLbl) {
-            sdLbl.textContent = stressDepletionAge ? 'Depletes age ' + stressDepletionAge : 'Outlasts age 100';
+            sdLbl.textContent = stressDepletionAge ? _t('dd.stress.depletes').replace('{n}', stressDepletionAge) : _t('dd.stress.outlasts100');
             sdLbl.style.color = stressDepletionAge ? '#fca5a5' : '#86efac';
         }
         var stressIns = document.getElementById('dd-stress-insight');
@@ -168,11 +168,11 @@
                 ? (depletionAge ? (stressDepletionAge - depletionAge) : (stressDepletionAge - 100))
                 : 0;
             if (stressDepletionAge && !depletionAge) {
-                stressIns.innerHTML = '⚠️ A 30% crash in Year 1 turns a <strong>healthy corpus into depletion at age ' + stressDepletionAge + '</strong>. Your base case survives to 100+ — but a bad sequence erases that entirely. The 3-bucket strategy (Bucket 1 = 1yr liquid) is your defence: you never sell equity in a crash.';
+                stressIns.innerHTML = _t('dd.stress.insight.a').replace('{n}', stressDepletionAge);
             } else if (stressDepletionAge && depletionAge) {
-                stressIns.innerHTML = '⚠️ A 30% crash in Year 1 moves depletion from age <strong>' + depletionAge + ' → ' + stressDepletionAge + '</strong> — ' + Math.abs(gapYrs) + ' years earlier. Holding 1–2 years of expenses in liquid assets (Bucket 1) avoids forced selling at the worst time.';
+                stressIns.innerHTML = _t('dd.stress.insight.b').replace('{base}', depletionAge).replace('{stress}', stressDepletionAge).replace('{n}', Math.abs(gapYrs));
             } else {
-                stressIns.innerHTML = '✅ Even with a 30% crash in Year 1, your corpus outlasts age 100. <strong>Excellent resilience.</strong> Your withdrawal rate is conservative enough to absorb severe sequence-of-returns risk.';
+                stressIns.innerHTML = _t('dd.stress.insight.c');
             }
         }
 
@@ -200,12 +200,12 @@
 
         // DOM updates
         document.getElementById('dd-depletion-age').textContent  = deplAgeDisp;
-        document.getElementById('dd-years-last').textContent     = yearsLast + ' yrs';
-        document.getElementById('dd-swp-start').textContent      = ddFmt(swpStart) + '/mo';
+        document.getElementById('dd-years-last').textContent     = yearsLast + _t('dd.yrs');
+        document.getElementById('dd-swp-start').textContent      = ddFmt(swpStart) + _t('rh.permonth');
         document.getElementById('dd-real-return').textContent    = realReturn.toFixed(1) + '%';
         document.getElementById('dd-swr').textContent            = swrDisplay;
         document.getElementById('dd-corpus-at-85').textContent   = ddFmt(corpusAt85);
-        document.getElementById('dd-swp-75').textContent         = ddFmt(swpAt75) + '/mo';
+        document.getElementById('dd-swp-75').textContent         = ddFmt(swpAt75) + _t('rh.permonth');
 
         var deplLabel = document.getElementById('dd-depletion-label');
         var surpDefEl = document.getElementById('dd-surplus-deficit');
@@ -222,22 +222,21 @@
             surpDefEl.style.color = '#86efac';
         }
 
-        document.getElementById('dd-b1-amount').textContent = ddFmt(b1) + '/yr';
+        document.getElementById('dd-b1-amount').textContent = ddFmt(b1) + _t('dd.peryear');
         document.getElementById('dd-b2-amount').textContent = ddFmt(b2);
         document.getElementById('dd-b3-amount').textContent = ddFmt(b3);
 
         var ins = document.getElementById('dd-insight');
         ins.classList.remove('hidden');
         var corpusPct = corpus > 0 ? ((swpStart * 12 / corpus) * 100).toFixed(1) : 0;
-        ins.innerHTML =
-            '<strong>💡 Insight:</strong> Your first-year withdrawal rate is <strong>' + corpusPct + '%</strong> of corpus. ' +
-            (depletionAge
-                ? '⚠ At current spending &amp; returns, corpus depletes at age <strong>' + depletionAge + '</strong>. To stretch to 90+, reduce withdrawal ~10–15%, increase return by 1–2%, or add other income.'
-                : '✅ Your corpus is projected to last <strong>beyond age 100</strong> — you\'re in great shape. Consider leaving a legacy or increasing spending in early retirement when health is best.') +
-            ' Real return after inflation: <strong>' + realReturn.toFixed(1) + '%</strong>. ' +
-            'Bucket 1 (liquid, 1yr): <strong>' + ddFmt(b1) + '</strong> · ' +
-            'Bucket 2 (debt, 3yr): <strong>' + ddFmt(b2) + '</strong> · ' +
-            'Bucket 3 (equity, rest): <strong>' + ddFmt(b3) + '</strong>.';
+        var insKey = depletionAge ? 'dd.insight.html.dep' : 'dd.insight.html.nodep';
+        ins.innerHTML = _t(insKey)
+            .replace('{pct}',        corpusPct)
+            .replace('{age}',        depletionAge || '')
+            .replace('{realReturn}', realReturn.toFixed(1))
+            .replace('{b1}',         ddFmt(b1))
+            .replace('{b2}',         ddFmt(b2))
+            .replace('{b3}',         ddFmt(b3));
 
         // Table
         var rows = '';
@@ -248,7 +247,7 @@
             rows += '<tr style="' + bg + '">' +
                 '<td class="px-2 py-1 font-black text-slate-600">' + d.age + '</td>' +
                 '<td class="px-2 py-1 text-right text-slate-600">' + ddFmt(d.openBal) + '</td>' +
-                '<td class="px-2 py-1 text-right text-orange-600">' + ddFmt(d.netMonthly) + '/mo</td>' +
+                '<td class="px-2 py-1 text-right text-orange-600">' + ddFmt(d.netMonthly) + _t('rh.permonth') + '</td>' +
                 '<td class="px-2 py-1 text-right text-slate-500">' + ddFmt(d.annualW) + '</td>' +
                 '<td class="px-2 py-1 text-right text-emerald-600">' + (d.otherInc > 0 ? ddFmt(d.otherInc) : '—') + '</td>' +
                 '<td class="px-2 py-1 text-right text-emerald-700 font-bold">' + ddFmt(d.returns) + '</td>' +
@@ -331,7 +330,7 @@
         var panel   = document.getElementById('dd-stress-panel');
         var chevron = document.getElementById('dd-stress-chevron');
         var hidden  = panel.classList.toggle('hidden');
-        if (chevron) chevron.textContent = hidden ? '▼ Show' : '▲ Hide';
+        if (chevron) chevron.textContent = hidden ? _t('rh.stress.show') : _t('rh.stress.hide');
     }
 
     function ddToggleTable() {

@@ -15,14 +15,12 @@
             <div class="flex gap-2">
                 <button id="ppfnps-tab-ppf" onclick="ppfnpsTab('ppf')"
                     class="flex-1 py-2 rounded-xl text-[11px] font-black transition-all"
-                    style="background:#f0fdf4;color:#166534;border:2px solid #86efac;">
-                    🟢 PPF Calculator
-                </button>
+                    style="background:#f0fdf4;color:#166534;border:2px solid #86efac;"
+                    data-i18n="ppf.tab.ppf">🟢 PPF Calculator</button>
                 <button id="ppfnps-tab-nps" onclick="ppfnpsTab('nps')"
                     class="flex-1 py-2 rounded-xl text-[11px] font-black transition-all"
-                    style="background:#f8fafc;color:#64748b;border:2px solid #e2e8f0;">
-                    🔵 NPS Projector
-                </button>
+                    style="background:#f8fafc;color:#64748b;border:2px solid #e2e8f0;"
+                    data-i18n="ppf.tab.nps">🔵 NPS Projector</button>
             </div>
 
             <!-- ── PPF SECTION ── -->
@@ -108,41 +106,41 @@
                         <div class="rounded-2xl p-3 text-center shine-header" style="background:linear-gradient(135deg,#14532d,#166534);border:2px solid #22c55e;">
                             <div class="text-[9px] font-black text-emerald-200 uppercase tracking-wider" data-i18n="res.ppf.maturity">Maturity Value</div>
                             <div id="ppf-maturity" class="text-xl font-black text-white mt-0.5">—</div>
-                            <div class="text-[9px] text-emerald-300 mt-0.5">Fully tax-free</div>
+                            <div class="text-[9px] text-emerald-300 mt-0.5" data-i18n="res.ppf.taxfree">Fully tax-free</div>
                         </div>
                         <div class="rounded-2xl p-3 text-center shine-header" style="background:linear-gradient(135deg,#0c4a6e,#075985);border:2px solid #0ea5e9;">
                             <div class="text-[9px] font-black text-sky-200 uppercase tracking-wider" data-i18n="res.ppf.interest">Total Interest</div>
                             <div id="ppf-interest" class="text-xl font-black text-white mt-0.5">—</div>
-                            <div class="text-[9px] text-sky-300 mt-0.5">Sec 10 exempt</div>
+                            <div class="text-[9px] text-sky-300 mt-0.5" data-i18n="res.ppf.sec10">Sec 10 exempt</div>
                         </div>
                         <div class="rounded-2xl p-3 text-center shine-header" style="background:linear-gradient(135deg,#3b0764,#581c87);border:2px solid #a855f7;">
                             <div class="text-[9px] font-black text-purple-200 uppercase tracking-wider" data-i18n="res.ppf.invested">Total Invested</div>
                             <div id="ppf-invested" class="text-xl font-black text-white mt-0.5">—</div>
-                            <div class="text-[9px] text-purple-300 mt-0.5">80C deductible</div>
+                            <div class="text-[9px] text-purple-300 mt-0.5" data-i18n="res.ppf.80c">80C deductible</div>
                         </div>
                     </div>
 
                     <!-- 4 stat pills -->
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
                         <div class="rounded-xl p-2 text-center" style="background:#f0fdf4;border:1px solid #86efac;">
-                            <div class="text-[9px] font-black text-emerald-700 uppercase">Effective CAGR</div>
+                            <div class="text-[9px] font-black text-emerald-700 uppercase" data-i18n="ppf.stat.cagr">Effective CAGR</div>
                             <div id="ppf-cagr" class="text-sm font-black text-emerald-800">—</div>
-                            <div class="text-[8px] text-emerald-600">on invested capital</div>
+                            <div class="text-[8px] text-emerald-600" data-i18n="ppf.stat.cagr.sub">on invested capital</div>
                         </div>
                         <div class="rounded-xl p-2 text-center" style="background:#fef9c3;border:1px solid #fde047;">
-                            <div class="text-[9px] font-black text-yellow-700 uppercase">Wealth Multiple</div>
+                            <div class="text-[9px] font-black text-yellow-700 uppercase" data-i18n="ppf.stat.mult">Wealth Multiple</div>
                             <div id="ppf-multiple" class="text-sm font-black text-yellow-800">—</div>
-                            <div class="text-[8px] text-yellow-600">maturity ÷ invested</div>
+                            <div class="text-[8px] text-yellow-600" data-i18n="ppf.stat.mult.sub">maturity ÷ invested</div>
                         </div>
                         <div class="rounded-xl p-2 text-center" style="background:#fff7ed;border:1px solid #fed7aa;">
-                            <div class="text-[9px] font-black text-orange-700 uppercase">Partial Withdrawal</div>
+                            <div class="text-[9px] font-black text-orange-700 uppercase" data-i18n="ppf.stat.partial">Partial Withdrawal</div>
                             <div id="ppf-partial" class="text-sm font-black text-orange-800">—</div>
-                            <div class="text-[8px] text-orange-600">available from Yr 7</div>
+                            <div class="text-[8px] text-orange-600" data-i18n="ppf.stat.partial.sub">available from Yr 7</div>
                         </div>
                         <div class="rounded-xl p-2 text-center" style="background:#f0f9ff;border:1px solid #bae6fd;">
-                            <div class="text-[9px] font-black text-sky-700 uppercase">Loan Eligibility</div>
+                            <div class="text-[9px] font-black text-sky-700 uppercase" data-i18n="ppf.stat.loan">Loan Eligibility</div>
                             <div id="ppf-loan" class="text-sm font-black text-sky-800">—</div>
-                            <div class="text-[8px] text-sky-600">from Yr 3 to Yr 6</div>
+                            <div class="text-[8px] text-sky-600" data-i18n="ppf.stat.loan.sub">from Yr 3 to Yr 6</div>
                         </div>
                     </div>
 
@@ -164,13 +162,13 @@
                     <table class="w-full text-[10px]" style="min-width:580px;">
                         <thead>
                             <tr style="background:#f0fdf4;">
-                                <th class="px-2 py-1.5 text-left font-black text-emerald-800">Year</th>
-                                <th class="px-2 py-1.5 text-right font-black text-emerald-800">Opening Bal</th>
-                                <th class="px-2 py-1.5 text-right font-black text-slate-600">Contribution</th>
-                                <th class="px-2 py-1.5 text-right font-black text-emerald-700">Interest</th>
-                                <th class="px-2 py-1.5 text-right font-black text-blue-700">Closing Bal</th>
-                                <th class="px-2 py-1.5 text-right font-black text-orange-600">Partial W/D</th>
-                                <th class="px-2 py-1.5 text-right font-black text-sky-600">Loan Limit</th>
+                                <th class="px-2 py-1.5 text-left font-black text-emerald-800" data-i18n="ppf.tbl.yr">Year</th>
+                                <th class="px-2 py-1.5 text-right font-black text-emerald-800" data-i18n="ppf.tbl.open">Opening Bal</th>
+                                <th class="px-2 py-1.5 text-right font-black text-slate-600" data-i18n="ppf.tbl.contrib">Contribution</th>
+                                <th class="px-2 py-1.5 text-right font-black text-emerald-700" data-i18n="ppf.tbl.interest">Interest</th>
+                                <th class="px-2 py-1.5 text-right font-black text-blue-700" data-i18n="ppf.tbl.close">Closing Bal</th>
+                                <th class="px-2 py-1.5 text-right font-black text-orange-600" data-i18n="ppf.tbl.partial">Partial W/D</th>
+                                <th class="px-2 py-1.5 text-right font-black text-sky-600" data-i18n="ppf.tbl.loan">Loan Limit</th>
                             </tr>
                         </thead>
                         <tbody id="ppf-table-body"></tbody>
@@ -183,20 +181,20 @@
                 <div class="text-[9px] font-black text-slate-500 uppercase tracking-wider mb-2" data-i18n="ppf.rules">📌 PPF Key Rules</div>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10px]">
                     <div class="rounded-xl p-2" style="background:#f0fdf4;border:1px solid #86efac;">
-                        <div class="font-black text-emerald-800 mb-0.5">🔒 Lock-in</div>
-                        <div class="text-emerald-700">15 years. Extendable in 5-yr blocks indefinitely. Cannot close before maturity except in extreme cases.</div>
+                        <div class="font-black text-emerald-800 mb-0.5" data-i18n="ppf.rule.lockin.h">🔒 Lock-in</div>
+                        <div class="text-emerald-700" data-i18n="ppf.rule.lockin.b">15 years. Extendable in 5-yr blocks indefinitely. Cannot close before maturity except in extreme cases.</div>
                     </div>
                     <div class="rounded-xl p-2" style="background:#fff7ed;border:1px solid #fed7aa;">
-                        <div class="font-black text-orange-800 mb-0.5">💸 Partial Withdrawal</div>
-                        <div class="text-orange-700">From Year 7 onwards: up to 50% of balance at end of Year 4 or Year 6 (whichever is lower). Once per year.</div>
+                        <div class="font-black text-orange-800 mb-0.5" data-i18n="ppf.rule.partial.h">💸 Partial Withdrawal</div>
+                        <div class="text-orange-700" data-i18n="ppf.rule.partial.b">From Year 7 onwards: up to 50% of balance at end of Year 4 or Year 6 (whichever is lower). Once per year.</div>
                     </div>
                     <div class="rounded-xl p-2" style="background:#f0f9ff;border:1px solid #bae6fd;">
-                        <div class="font-black text-sky-800 mb-0.5">🏦 Loan Against PPF</div>
-                        <div class="text-sky-700">Year 3 to Year 6: up to 25% of balance at end of Year 2 (or Year N-2). Interest = PPF rate + 1%.</div>
+                        <div class="font-black text-sky-800 mb-0.5" data-i18n="ppf.rule.loan.h">🏦 Loan Against PPF</div>
+                        <div class="text-sky-700" data-i18n="ppf.rule.loan.b">Year 3 to Year 6: up to 25% of balance at end of Year 2 (or Year N-2). Interest = PPF rate + 1%.</div>
                     </div>
                     <div class="rounded-xl p-2" style="background:#fdf4ff;border:1px solid #e9d5ff;">
-                        <div class="font-black text-purple-800 mb-0.5">🧾 Tax Benefits</div>
-                        <div class="text-purple-700">EEE status: contribution (80C up to ₹1.5L), interest earned, and maturity amount — all fully tax-free.</div>
+                        <div class="font-black text-purple-800 mb-0.5" data-i18n="ppf.rule.tax.h">🧾 Tax Benefits</div>
+                        <div class="text-purple-700" data-i18n="ppf.rule.tax.b">EEE status: contribution (80C up to ₹1.5L), interest earned, and maturity amount — all fully tax-free.</div>
                     </div>
                 </div>
             </div>
@@ -307,41 +305,41 @@
                         <div class="rounded-2xl p-3 text-center shine-header" style="background:linear-gradient(135deg,#0c4a6e,#075985);border:2px solid #0ea5e9;">
                             <div class="text-[9px] font-black text-sky-200 uppercase tracking-wider" data-i18n="res.nps.corpus">Total NPS Corpus</div>
                             <div id="nps-total-corpus" class="text-xl font-black text-white mt-0.5">—</div>
-                            <div class="text-[9px] text-sky-300 mt-0.5">at age 60</div>
+                            <div class="text-[9px] text-sky-300 mt-0.5" data-i18n="res.nps.at60">at age 60</div>
                         </div>
                         <div class="rounded-2xl p-3 text-center shine-header" style="background:linear-gradient(135deg,#14532d,#166534);border:2px solid #22c55e;">
                             <div class="text-[9px] font-black text-emerald-200 uppercase tracking-wider" data-i18n="res.nps.lumpsum">Tax-Free Lumpsum</div>
                             <div id="nps-lumpsum" class="text-xl font-black text-white mt-0.5">—</div>
-                            <div class="text-[9px] text-emerald-300 mt-0.5">60% of corpus</div>
+                            <div class="text-[9px] text-emerald-300 mt-0.5" data-i18n="res.nps.60pct">60% of corpus</div>
                         </div>
                         <div class="rounded-2xl p-3 text-center shine-header" style="background:linear-gradient(135deg,#3b0764,#581c87);border:2px solid #a855f7;">
                             <div class="text-[9px] font-black text-purple-200 uppercase tracking-wider" data-i18n="res.nps.pension">Monthly Pension</div>
                             <div id="nps-pension" class="text-xl font-black text-white mt-0.5">—</div>
-                            <div class="text-[9px] text-purple-300 mt-0.5">from 40% annuity</div>
+                            <div class="text-[9px] text-purple-300 mt-0.5" data-i18n="res.nps.40pct">from 40% annuity</div>
                         </div>
                     </div>
 
                     <!-- 4 stat pills -->
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
                         <div class="rounded-xl p-2 text-center" style="background:#f0f9ff;border:1px solid #bae6fd;">
-                            <div class="text-[9px] font-black text-sky-700 uppercase">Annuity Corpus</div>
+                            <div class="text-[9px] font-black text-sky-700 uppercase" data-i18n="nps.stat.annuity">Annuity Corpus</div>
                             <div id="nps-annuity-corpus" class="text-sm font-black text-sky-800">—</div>
-                            <div class="text-[8px] text-sky-600">40% mandatory</div>
+                            <div class="text-[8px] text-sky-600" data-i18n="nps.stat.annuity.sub">40% mandatory</div>
                         </div>
                         <div class="rounded-xl p-2 text-center" style="background:#fef9c3;border:1px solid #fde047;">
-                            <div class="text-[9px] font-black text-yellow-700 uppercase">Tax Saved (80C+CCD)</div>
+                            <div class="text-[9px] font-black text-yellow-700 uppercase" data-i18n="nps.stat.tax">Tax Saved (80C+CCD)</div>
                             <div id="nps-tax-saved" class="text-sm font-black text-yellow-800">—</div>
-                            <div class="text-[8px] text-yellow-600">total over career</div>
+                            <div class="text-[8px] text-yellow-600" data-i18n="nps.stat.tax.sub">total over career</div>
                         </div>
                         <div class="rounded-xl p-2 text-center" style="background:#f0fdf4;border:1px solid #86efac;">
-                            <div class="text-[9px] font-black text-emerald-700 uppercase">Years to Retire</div>
+                            <div class="text-[9px] font-black text-emerald-700 uppercase" data-i18n="nps.stat.years">Years to Retire</div>
                             <div id="nps-years" class="text-sm font-black text-emerald-800">—</div>
-                            <div class="text-[8px] text-emerald-600">till age 60</div>
+                            <div class="text-[8px] text-emerald-600" data-i18n="nps.stat.years.sub">till age 60</div>
                         </div>
                         <div class="rounded-xl p-2 text-center" style="background:#fdf4ff;border:1px solid #e9d5ff;">
-                            <div class="text-[9px] font-black text-purple-700 uppercase">Total Invested</div>
+                            <div class="text-[9px] font-black text-purple-700 uppercase" data-i18n="nps.stat.invested">Total Invested</div>
                             <div id="nps-invested" class="text-sm font-black text-purple-800">—</div>
-                            <div class="text-[8px] text-purple-600">your contributions</div>
+                            <div class="text-[8px] text-purple-600" data-i18n="nps.stat.invested.sub">your contributions</div>
                         </div>
                     </div>
 
@@ -359,20 +357,20 @@
                 <div class="text-[9px] font-black text-slate-500 uppercase tracking-wider mb-2" data-i18n="nps.rules">📌 NPS Key Rules</div>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10px]">
                     <div class="rounded-xl p-2" style="background:#f0fdf4;border:1px solid #86efac;">
-                        <div class="font-black text-emerald-800 mb-0.5">🎯 At Retirement (60)</div>
-                        <div class="text-emerald-700">Withdraw 60% as tax-free lumpsum. Remaining 40% must buy annuity for monthly pension.</div>
+                        <div class="font-black text-emerald-800 mb-0.5" data-i18n="nps.rule.retire.h">🎯 At Retirement (60)</div>
+                        <div class="text-emerald-700" data-i18n="nps.rule.retire.b">Withdraw 60% as tax-free lumpsum. Remaining 40% must buy annuity for monthly pension.</div>
                     </div>
                     <div class="rounded-xl p-2" style="background:#fef9c3;border:1px solid #fde047;">
-                        <div class="font-black text-yellow-800 mb-0.5">🧾 Tax Deductions</div>
-                        <div class="text-yellow-700">80C: up to ₹1.5L. Extra 80CCD(1B): ₹50,000 more. Employer contribution u/s 80CCD(2): 10% of basic, no cap.</div>
+                        <div class="font-black text-yellow-800 mb-0.5" data-i18n="nps.rule.tax.h">🧾 Tax Deductions</div>
+                        <div class="text-yellow-700" data-i18n="nps.rule.tax.b">80C: up to ₹1.5L. Extra 80CCD(1B): ₹50,000 more. Employer contribution u/s 80CCD(2): 10% of basic, no cap.</div>
                     </div>
                     <div class="rounded-xl p-2" style="background:#fff7ed;border:1px solid #fed7aa;">
-                        <div class="font-black text-orange-800 mb-0.5">💸 Partial Withdrawal</div>
-                        <div class="text-orange-700">Up to 25% after 3 years for specific purposes (education, marriage, home, illness). Max 3 times.</div>
+                        <div class="font-black text-orange-800 mb-0.5" data-i18n="nps.rule.partial.h">💸 Partial Withdrawal</div>
+                        <div class="text-orange-700" data-i18n="nps.rule.partial.b">Up to 25% after 3 years for specific purposes (education, marriage, home, illness). Max 3 times.</div>
                     </div>
                     <div class="rounded-xl p-2" style="background:#fdf4ff;border:1px solid #e9d5ff;">
-                        <div class="font-black text-purple-800 mb-0.5">⚠ Annuity Taxation</div>
-                        <div class="text-purple-700">Monthly pension from annuity is taxable at slab rate. Only lumpsum 60% is tax-free. Plan accordingly.</div>
+                        <div class="font-black text-purple-800 mb-0.5" data-i18n="nps.rule.annuity.h">⚠ Annuity Taxation</div>
+                        <div class="text-purple-700" data-i18n="nps.rule.annuity.b">Monthly pension from annuity is taxable at slab rate. Only lumpsum 60% is tax-free. Plan accordingly.</div>
                     </div>
                 </div>
             </div>

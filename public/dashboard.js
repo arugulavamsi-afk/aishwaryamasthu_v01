@@ -680,7 +680,7 @@
     };
 
     window._dashUpdateScoreWidget = function() {
-        if (window._currentMode === 'dashboard') _dashRenderUnifiedWidget();
+        _dashRenderUnifiedWidget();
     };
 
     function _dashRenderUnifiedWidget() {

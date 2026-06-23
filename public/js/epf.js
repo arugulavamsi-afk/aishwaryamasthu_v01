@@ -165,30 +165,33 @@
         document.getElementById('epf-total-corpus').textContent  = epfFmt(corpus);
         document.getElementById('epf-total-interest').textContent = epfFmt(totalInterest);
         document.getElementById('epf-total-contrib').textContent  = epfFmt(totalContrib);
-        document.getElementById('epf-monthly-contrib').textContent = epfFmt(Math.round(curTotal)) + '/mo';
-        document.getElementById('epf-final-contrib').textContent   = epfFmt(Math.round((finalYr.empC + finalYr.erC) / 12)) + '/mo';
-        document.getElementById('epf-years-left').textContent    = years + ' yrs';
+        var pm = _t('rh.permonth');
+        document.getElementById('epf-monthly-contrib').textContent = epfFmt(Math.round(curTotal)) + pm;
+        document.getElementById('epf-final-contrib').textContent   = epfFmt(Math.round((finalYr.empC + finalYr.erC) / 12)) + pm;
+        document.getElementById('epf-years-left').textContent    = years + _t('dd.yrs');
         document.getElementById('epf-interest-mult').textContent  = mult + 'x';
         document.getElementById('epf-final-salary').textContent   = epfFmt(Math.round(lastBasic));
-        document.getElementById('epf-pension').textContent        = epfFmt(monthlyPension) + '/mo';
-        // Pension formula sub-note: (pensionSalary × service) / 70
+        document.getElementById('epf-pension').textContent        = epfFmt(monthlyPension) + pm;
         document.getElementById('epf-pension-formula').textContent =
-            '(' + epfFmt(pensionSalary) + ' × ' + Math.min(years, 35) + ' yrs) ÷ 70';
+            _t('epf.pension.formula').replace('{salary}', epfFmt(pensionSalary)).replace('{yrs}', Math.min(years, 35));
 
         // Insight
         var ins = document.getElementById('epf-insight');
         ins.classList.remove('hidden');
         var curEPSMonthly = Math.min(basic, EPS_CEILING) * EPS_RATE;
         var curErEPFMonthly = (basic * EPF_RATE) - curEPSMonthly;
-        ins.innerHTML =
-            '<strong>💡 Insight:</strong> Your EPF is an <strong>automatic, compulsory, tax-free</strong> retirement fund. ' +
-            'Employee + employer together contribute ' + epfFmt(Math.round(curTotal)) + '/mo today ' +
-            '(you: ' + epfFmt(Math.round(curEmpC)) + ' + employer EPF: ' + epfFmt(Math.round(curErEPFMonthly)) + ' + EPS pension: ' + epfFmt(Math.round(curEPSMonthly)) + '). ' +
-            'At ' + iRate * 100 + '% compounded for ' + years + ' years, interest alone adds ' + epfFmt(totalInterest) + ' — ' +
-            '<strong>' + mult + 'x your total contributions</strong>. ' +
-            'You\'ll also receive an EPS pension of ~' + epfFmt(monthlyPension) + '/mo after retirement, calculated as ' +
-            '(' + epfFmt(pensionSalary) + ' × ' + Math.min(years, 35) + ' yrs) ÷ 70. ' +
-            '<span style="color:#b91c1c;"><strong>⚠ Tax reminder:</strong> Withdrawing before 5 years of service makes the entire amount taxable at your slab rate with 10% TDS (u/s 192A) if &gt;₹50K. After 5 years it is fully tax-free.</span>';
+        ins.innerHTML = _t('epf.insight.html')
+            .replace('{total}',        epfFmt(Math.round(curTotal)))
+            .replace('{emp}',          epfFmt(Math.round(curEmpC)))
+            .replace('{erEPF}',        epfFmt(Math.round(curErEPFMonthly)))
+            .replace('{eps}',          epfFmt(Math.round(curEPSMonthly)))
+            .replace('{rate}',         iRate * 100)
+            .replace('{yrs}',          years)
+            .replace('{interest}',     epfFmt(totalInterest))
+            .replace('{mult}',         mult)
+            .replace('{pension}',      epfFmt(monthlyPension))
+            .replace('{pensionSalary}',epfFmt(pensionSalary))
+            .replace('{serviceYrs}',   Math.min(years, 35));
 
         // Table
         var rows = '';
@@ -196,7 +199,7 @@
             var bg = i % 2 === 0 ? 'background:#f0f9ff;' : '';
             rows += '<tr style="' + bg + '">' +
                 '<td class="px-2 py-1 font-black text-slate-600">' + d.age + '</td>' +
-                '<td class="px-2 py-1 text-right text-slate-600">' + epfFmt(d.basic) + '/mo</td>' +
+                '<td class="px-2 py-1 text-right text-slate-600">' + epfFmt(d.basic) + _t('rh.permonth') + '</td>' +
                 '<td class="px-2 py-1 text-right text-slate-500">' + epfFmt(d.empC) + '</td>' +
                 '<td class="px-2 py-1 text-right text-blue-600">' + epfFmt(d.erC) + '</td>' +
                 '<td class="px-2 py-1 text-right text-emerald-600 font-bold">' + epfFmt(d.interest) + '</td>' +
@@ -218,7 +221,7 @@
 
         if (_epfChart) { _epfChart.destroy(); _epfChart = null; }
 
-        var labels = yearData.map(function(d) { return 'Age ' + d.age; });
+        var labels = yearData.map(function(d) { return _t('rh.age.prefix') + d.age; });
 
         var INR = function(v) {
             if (v >= 1e7) return '₹' + (v/1e7).toFixed(2) + ' Cr';
@@ -241,23 +244,23 @@
                 runBal.push(d.balance);
             });
             datasets = [
-                { label: 'EPF Balance',        data: runBal, borderColor: '#0ea5e9', backgroundColor: 'rgba(14,165,233,0.12)', fill: true,  tension: 0.35, borderWidth: 2.5, pointRadius: 0, pointHoverRadius: 5 },
-                { label: 'Employee Contrib (cum)', data: cumEmp, borderColor: '#6366f1', backgroundColor: 'rgba(99,102,241,0.08)', fill: true, tension: 0.35, borderWidth: 1.5, pointRadius: 0, pointHoverRadius: 4, borderDash: [4,3] },
-                { label: 'Employer Contrib (cum)', data: cumEr,  borderColor: '#22c55e', backgroundColor: 'rgba(34,197,94,0.06)', fill: true, tension: 0.35, borderWidth: 1.5, pointRadius: 0, pointHoverRadius: 4, borderDash: [4,3] }
+                { label: _t('epf.chart.balance'),   data: runBal, borderColor: '#0ea5e9', backgroundColor: 'rgba(14,165,233,0.12)', fill: true,  tension: 0.35, borderWidth: 2.5, pointRadius: 0, pointHoverRadius: 5 },
+                { label: _t('epf.chart.emp.cum'),   data: cumEmp, borderColor: '#6366f1', backgroundColor: 'rgba(99,102,241,0.08)', fill: true, tension: 0.35, borderWidth: 1.5, pointRadius: 0, pointHoverRadius: 4, borderDash: [4,3] },
+                { label: _t('epf.chart.er.cum'),    data: cumEr,  borderColor: '#22c55e', backgroundColor: 'rgba(34,197,94,0.06)', fill: true, tension: 0.35, borderWidth: 1.5, pointRadius: 0, pointHoverRadius: 4, borderDash: [4,3] }
             ];
         } else if (_epfView === 'contrib') {
             // Annual contributions bar chart
             datasets = [
-                { type: 'bar', label: 'Employee Annual',  data: yearData.map(function(d){return d.empC;}), backgroundColor: 'rgba(99,102,241,0.75)', borderRadius: 4, order: 2 },
-                { type: 'bar', label: 'Employer Annual',  data: yearData.map(function(d){return d.erC;}),  backgroundColor: 'rgba(34,197,94,0.75)',  borderRadius: 4, order: 2 },
-                { type: 'bar', label: 'Interest Earned',  data: yearData.map(function(d){return d.interest;}), backgroundColor: 'rgba(245,158,11,0.75)', borderRadius: 4, order: 2 }
+                { type: 'bar', label: _t('epf.chart.emp.ann'),  data: yearData.map(function(d){return d.empC;}), backgroundColor: 'rgba(99,102,241,0.75)', borderRadius: 4, order: 2 },
+                { type: 'bar', label: _t('epf.chart.er.ann'),   data: yearData.map(function(d){return d.erC;}),  backgroundColor: 'rgba(34,197,94,0.75)',  borderRadius: 4, order: 2 },
+                { type: 'bar', label: _t('epf.chart.interest'), data: yearData.map(function(d){return d.interest;}), backgroundColor: 'rgba(245,158,11,0.75)', borderRadius: 4, order: 2 }
             ];
         } else {
             // Salary track line
             datasets = [
-                { label: 'Basic Salary/mo', data: yearData.map(function(d){return d.basic;}),            borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.10)', fill: true, tension: 0.35, borderWidth: 2.5, pointRadius: 0, pointHoverRadius: 5 },
-                { label: 'Employee EPF/mo', data: yearData.map(function(d){return Math.round(d.empC/12);}), borderColor: '#6366f1', backgroundColor: 'rgba(99,102,241,0.08)', fill: true, tension: 0.35, borderWidth: 1.5, pointRadius: 0, pointHoverRadius: 4 },
-                { label: 'Employer EPF/mo', data: yearData.map(function(d){return Math.round(d.erC/12);}),  borderColor: '#22c55e', backgroundColor: 'rgba(34,197,94,0.06)',  fill: true, tension: 0.35, borderWidth: 1.5, pointRadius: 0, pointHoverRadius: 4 }
+                { label: _t('epf.chart.basic'),  data: yearData.map(function(d){return d.basic;}),            borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.10)', fill: true, tension: 0.35, borderWidth: 2.5, pointRadius: 0, pointHoverRadius: 5 },
+                { label: _t('epf.chart.emp.mo'), data: yearData.map(function(d){return Math.round(d.empC/12);}), borderColor: '#6366f1', backgroundColor: 'rgba(99,102,241,0.08)', fill: true, tension: 0.35, borderWidth: 1.5, pointRadius: 0, pointHoverRadius: 4 },
+                { label: _t('epf.chart.er.mo'),  data: yearData.map(function(d){return Math.round(d.erC/12);}),  borderColor: '#22c55e', backgroundColor: 'rgba(34,197,94,0.06)',  fill: true, tension: 0.35, borderWidth: 1.5, pointRadius: 0, pointHoverRadius: 4 }
             ];
         }
 
@@ -288,7 +291,7 @@
                                 var i = items[0].dataIndex;
                                 var d = _epfYearData[i];
                                 if (!d) return [];
-                                return ['', ' Monthly SIP equiv: ' + INR(Math.round((d.empC + d.erC) / 12))];
+                                return ['', ' ' + _t('epf.chart.siph') + ': ' + INR(Math.round((d.empC + d.erC) / 12))];
                             }
                         }
                     }

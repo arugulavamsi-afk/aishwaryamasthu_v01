@@ -35,7 +35,7 @@
         var panel   = document.getElementById('rh-stress-panel');
         var chevron = document.getElementById('rh-stress-chevron');
         var hidden  = panel.classList.toggle('hidden');
-        if (chevron) chevron.textContent = hidden ? '▼ Show' : '▲ Hide';
+        if (chevron) chevron.textContent = hidden ? _t('rh.stress.show') : _t('rh.stress.hide');
     }
 
     function resetRetirementHub() {
@@ -178,7 +178,7 @@
         set('rh-nps-result',    rhFmt(npsLumpsum));
         set('rh-sip-result',    rhFmt(sipCorpus));
         set('rh-other-result',  rhFmt(otherFV));
-        set('rh-nps-total-note', '(' + Math.round(npsLumpsumPct * 100) + '% lumpsum · annuity pool ' + rhFmt(npsAnnPool) + ')');
+        set('rh-nps-total-note', _t('rh.nps.note').replace('{pct}', Math.round(npsLumpsumPct * 100)).replace('{amt}', rhFmt(npsAnnPool)));
 
         var items = { epf: epfCorpus, ppf: ppfCorpus, nps: npsLumpsum, sip: sipCorpus, other: otherFV };
         Object.keys(items).forEach(function(k) {
@@ -189,11 +189,12 @@
             if (pEl) pEl.textContent = p + '%';
         });
 
-        set('rh-swp',           rhFmt(swp) + '/mo');
-        set('rh-nps-pension-d', rhFmt(npsPension) + '/mo');
-        set('rh-total-income',  rhFmt(totalIncome) + '/mo');
-        set('rh-exp-inflated',  rhFmt(totalExpInflated) + '/mo');
-        set('rh-exp-note',      'General ₹' + expInflated.toLocaleString('en-IN') + ' + Medical ₹' + medInflated.toLocaleString('en-IN') + ' (at ' + (medInflation * 100).toFixed(0) + '% p.a.)');
+        var pm = _t('rh.permonth');
+        set('rh-swp',           rhFmt(swp) + pm);
+        set('rh-nps-pension-d', rhFmt(npsPension) + pm);
+        set('rh-total-income',  rhFmt(totalIncome) + pm);
+        set('rh-exp-inflated',  rhFmt(totalExpInflated) + pm);
+        set('rh-exp-note',      _t('rh.exp.note').replace('{gen}', expInflated.toLocaleString('en-IN')).replace('{med}', medInflated.toLocaleString('en-IN')).replace('{pct}', (medInflation * 100).toFixed(0)));
 
         var gapEl = document.getElementById('rh-gap');
         if (gapEl) {
@@ -210,29 +211,28 @@
         var insEl = document.getElementById('rh-insight');
         if (insEl) {
             var lines = [];
-            lines.push('At <strong>age ' + retAge + '</strong>, your total withdrawable corpus is <strong>' + rhFmt(totalCorpus) + '</strong>. ' +
-                'This supports <strong>' + rhFmt(swp) + '/mo</strong> via SWP for ' + drawYrs + ' years at ' + (retReturn * 100).toFixed(0) + '% post-retirement return.');
+            lines.push(_t('rh.insight.line1').replace('{retAge}', retAge).replace('{corpus}', rhFmt(totalCorpus)).replace('{swp}', rhFmt(swp)).replace('{drawYrs}', drawYrs).replace('{retReturn}', (retReturn * 100).toFixed(0)));
             if (npsPension > 0)
-                lines.push('NPS: ' + Math.round(npsLumpsumPct * 100) + '% lumpsum (' + rhFmt(npsLumpsum) + ') + annuity pool ' + rhFmt(npsAnnPool) + ' adds <strong>' + rhFmt(npsPension) + '/mo</strong> pension — total income <strong>' + rhFmt(totalIncome) + '/mo</strong>.');
+                lines.push(_t('rh.insight.nps').replace('{lumpsumPct}', Math.round(npsLumpsumPct * 100)).replace('{lumpsum}', rhFmt(npsLumpsum)).replace('{annPool}', rhFmt(npsAnnPool)).replace('{pension}', rhFmt(npsPension)).replace('{totalIncome}', rhFmt(totalIncome)));
             if (gap >= 0)
-                lines.push('<span style="color:#065f46;font-weight:700">✅ Surplus: ' + rhFmt(gap) + '/mo</span> — retirement income exceeds projected expenses of ' + rhFmt(totalExpInflated) + '/mo (general ' + rhFmt(expInflated) + ' + medical ' + rhFmt(medInflated) + '). You\'re on track.');
+                lines.push(_t('rh.insight.surplus').replace('{gap}', rhFmt(gap)).replace('{totalExp}', rhFmt(totalExpInflated)).replace('{genExp}', rhFmt(expInflated)).replace('{medExp}', rhFmt(medInflated)));
             else {
                 var shortfall = -gap;
-                lines.push('<span style="color:#991b1b;font-weight:700">⚠️ Shortfall: ' + rhFmt(shortfall) + '/mo</span> vs projected expenses of ' + rhFmt(totalExpInflated) + '/mo at retirement (general ' + rhFmt(expInflated) + ' + medical ' + rhFmt(medInflated) + ' at ' + (medInflation * 100).toFixed(0) + '% p.a.).');
+                lines.push(_t('rh.insight.shortfall').replace('{gap}', rhFmt(shortfall)).replace('{totalExp}', rhFmt(totalExpInflated)).replace('{genExp}', rhFmt(expInflated)).replace('{medExp}', rhFmt(medInflated)).replace('{medPct}', (medInflation * 100).toFixed(0)));
                 if (sipMonthly > 0 && yrs > 0 && smr > 0 && rMo > 0) {
                     var corpusNeeded = (totalExpInflated - npsPension) * (1 - Math.pow(1 + rMo, -n)) / rMo;
                     var corpusGap    = Math.max(0, corpusNeeded - totalCorpus);
                     var addlSip      = corpusGap * smr / ((Math.pow(1 + smr, yrs * 12) - 1) * (1 + smr));
                     if (addlSip > 500)
-                        lines.push('💡 Increase SIP by ~<strong>' + rhFmt(Math.round(addlSip)) + '/mo</strong> at ' + (sipReturn * 100).toFixed(0) + '% return to bridge the gap.');
+                        lines.push(_t('rh.insight.addsip').replace('{amount}', rhFmt(Math.round(addlSip))).replace('{pct}', (sipReturn * 100).toFixed(0)));
                 }
             }
             if (depletionAge && depletionAge < lifeExp)
-                lines.push('<span style="color:#92400e;font-weight:700">⚠️ Warning:</span> Corpus depletes at <strong>age ' + depletionAge + '</strong> — ' + (lifeExp - depletionAge) + ' years short of life expectancy (' + lifeExp + ').');
+                lines.push(_t('rh.insight.corpusshort').replace('{age}', depletionAge).replace('{n}', lifeExp - depletionAge).replace('{lifeExp}', lifeExp));
             else if (!depletionAge && totalCorpus > 0)
-                lines.push('✅ Corpus <strong>outlasts life expectancy</strong> (age ' + lifeExp + '). Strong retirement foundation.');
+                lines.push(_t('rh.insight.corpuslasts').replace('{n}', lifeExp));
             if (medExpToday > 0)
-                lines.push('<span style="color:#be123c;font-weight:700">🏥 Healthcare note:</span> Medical costs projected at <strong>' + (medInflation * 100).toFixed(0) + '% p.a.</strong> (vs ' + (inflation * 100).toFixed(0) + '% general inflation). Today\'s ₹' + medExpToday.toLocaleString('en-IN') + '/mo medical spend inflates to <strong>' + rhFmt(medInflated) + '/mo</strong> by retirement — included in the numbers above.');
+                lines.push(_t('rh.insight.medical').replace('{pct}', (medInflation * 100).toFixed(0)).replace('{genPct}', (inflation * 100).toFixed(0)).replace('{today}', medExpToday.toLocaleString('en-IN')).replace('{inflated}', rhFmt(medInflated)));
             insEl.innerHTML = lines.map(function(l) { return '<p style="margin-bottom:4px">' + l + '</p>'; }).join('');
         }
 
@@ -246,20 +246,20 @@
         if (rhBd) rhBd.textContent = depletionAge ? String(depletionAge) : '100+';
         if (rhSd) rhSd.textContent = stressDeplDisp;
         if (rhBl) {
-            rhBl.textContent = depletionAge ? 'Depletes age ' + depletionAge : 'Outlasts life expectancy';
+            rhBl.textContent = depletionAge ? _t('rh.stress.depletes').replace('{n}', depletionAge) : _t('rh.stress.outlasts');
             rhBl.style.color = depletionAge ? '#fbbf24' : '#86efac';
         }
         if (rhSl) {
-            rhSl.textContent = stressDepletionAge ? 'Depletes age ' + stressDepletionAge : 'Outlasts life expectancy';
+            rhSl.textContent = stressDepletionAge ? _t('rh.stress.depletes').replace('{n}', stressDepletionAge) : _t('rh.stress.outlasts');
             rhSl.style.color = stressDepletionAge ? '#fca5a5' : '#86efac';
         }
         if (rhSi) {
             if (stressDepletionAge && !depletionAge) {
-                rhSi.innerHTML = '⚠️ A 30% crash in Year 1 turns a <strong>healthy corpus into depletion at age ' + stressDepletionAge + '</strong>. Your base case outlasts life expectancy — but a bad sequence erases that advantage. The 3-bucket strategy keeps 1–2 years of expenses in liquid assets so you never sell equity at the worst time.';
+                rhSi.innerHTML = _t('rh.stress.insight.a').replace('{n}', stressDepletionAge);
             } else if (stressDepletionAge && depletionAge) {
-                rhSi.innerHTML = '⚠️ A 30% crash in Year 1 moves depletion from age <strong>' + depletionAge + ' → ' + stressDepletionAge + '</strong>. Keeping Bucket 1 (liquid, 1yr) intact means you ride out crashes without forced selling.';
+                rhSi.innerHTML = _t('rh.stress.insight.b').replace('{base}', depletionAge).replace('{stress}', stressDepletionAge);
             } else {
-                rhSi.innerHTML = '✅ Even with a 30% crash in Year 1, your corpus outlasts life expectancy. <strong>Excellent resilience.</strong> Your plan absorbs severe sequence-of-returns risk.';
+                rhSi.innerHTML = _t('rh.stress.insight.c');
             }
         }
 

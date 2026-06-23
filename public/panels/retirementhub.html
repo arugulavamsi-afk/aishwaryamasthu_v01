@@ -3,13 +3,13 @@
             <!-- HEADER -->
             <div class="rounded-2xl px-4 py-3 text-white flex items-center justify-between gap-3 flex-wrap shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#3b0764 100%);border:2px solid rgba(245,200,66,0.4);box-shadow:0 4px 18px rgba(0,0,0,0.25);">
                 <div>
-                    <h2 class="text-base font-black flex items-center gap-2">🏖️ Retirement Hub</h2>
-                    <p class="text-blue-200 text-[11px] mt-0.5">EPF + PPF + NPS + SIPs → one corpus & income number · then plan drawdown: SWP strategy, 3-bucket allocation, depletion timeline.</p>
+                    <h2 class="text-base font-black flex items-center gap-2" data-i18n="page.rh.h">🏖️ Retirement Hub</h2>
+                    <p class="text-blue-200 text-[11px] mt-0.5" data-i18n="page.rh.sub">EPF + PPF + NPS + SIPs → one corpus & income number · then plan drawdown: SWP strategy, 3-bucket allocation, depletion timeline.</p>
                 </div>
                 <div class="flex items-center gap-2 flex-wrap">
-                    <button onclick="switchMode('myprofile')" class="flex items-center gap-1 px-3 py-1.5 rounded-xl text-[11px] font-bold" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">← My Profile</button>
+                    <button onclick="switchMode('myprofile')" class="flex items-center gap-1 px-3 py-1.5 rounded-xl text-[11px] font-bold" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);" data-i18n="btn.myprofile">← My Profile</button>
                     <button onclick="resetRetirementHub();resetDrawdown();" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h5M20 20v-5h-5M4 9a9 9 0 0115-3M20 15a9 9 0 01-15 3"/></svg>Reset All
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h5M20 20v-5h-5M4 9a9 9 0 0115-3M20 15a9 9 0 01-15 3"/></svg><span data-i18n="btn.reset.rh">Reset All</span>
                     </button>
                 </div>
             </div>
@@ -26,82 +26,82 @@
                             <span class="text-[10px] text-sky-700 font-semibold">👤 Profile data available</span>
                             <button class="up-apply-btn" onclick="upApply('retirementhub')">↙ Apply Profile</button>
                         </div>
-                        <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">You</div>
+                        <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2" data-i18n="rh.sec.you">You</div>
                         <div class="grid grid-cols-2 gap-x-3 gap-y-2">
                             <div>
-                                <label class="epf-label">Current Age</label>
+                                <label class="epf-label" data-i18n="lbl.rh.age">Current Age</label>
                                 <input id="rh-age" type="number" min="18" max="59" value="30" class="epf-input text-slate-400"
                                     oninput="retHubCalc();this.classList.remove('text-slate-400');var r=document.getElementById('rh-ret-age');r.min=Math.max(45,+this.value+1);if(+r.value<=+this.value)r.value=+this.value+1;"
                                     onfocus="if(this.value==='30'){this.value='';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');"
                                     onblur="if(!this.value){this.value='30';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');">
                             </div>
                             <div>
-                                <label class="epf-label">Retire At</label>
+                                <label class="epf-label" data-i18n="lbl.rh.retage">Retire At</label>
                                 <input id="rh-ret-age" type="number" min="45" max="70" value="60" class="epf-input text-slate-400"
                                     oninput="retHubCalc();this.classList.remove('text-slate-400');"
                                     onfocus="if(this.value==='60'){this.value='';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');"
                                     onblur="if(!this.value){this.value='60';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');">
                             </div>
                             <div>
-                                <label class="epf-label">Live Till (age)</label>
+                                <label class="epf-label" data-i18n="lbl.rh.livetill">Live Till (age)</label>
                                 <input id="rh-life-exp" type="number" min="60" max="100" value="90" class="epf-input text-slate-400"
                                     oninput="retHubCalc();this.classList.remove('text-slate-400');"
                                     onfocus="if(this.value==='90'){this.value='';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');"
                                     onblur="if(!this.value){this.value='90';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');">
-                                <div class="text-[9px] text-amber-600 mt-0.5 font-semibold">Use 95 for conservative planning</div>
+                                <div class="text-[9px] text-amber-600 mt-0.5 font-semibold" data-i18n="rh.hint.conservative">Use 95 for conservative planning</div>
                             </div>
                             <div>
-                                <label class="epf-label">Inflation % p.a.</label>
+                                <label class="epf-label" data-i18n="lbl.rh.inflation">Inflation % p.a.</label>
                                 <input id="rh-inflation" type="text" inputmode="decimal" value="6" class="epf-input text-slate-400"
                                     oninput="retHubCalc();this.classList.remove('text-slate-400');"
                                     onfocus="if(this.value==='6'){this.value='';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');"
                                     onblur="if(!this.value){this.value='6';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');">
                             </div>
                             <div>
-                                <label class="epf-label">Post-Ret Return % p.a.</label>
+                                <label class="epf-label" data-i18n="lbl.rh.retreturn">Post-Ret Return % p.a.</label>
                                 <input id="rh-ret-return" type="text" inputmode="decimal" value="7" class="epf-input text-slate-400"
                                     oninput="retHubCalc();this.classList.remove('text-slate-400');"
                                     onfocus="if(this.value==='7'){this.value='';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');"
                                     onblur="if(!this.value){this.value='7';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');">
-                                <div class="text-[9px] text-slate-400 mt-0.5">On retirement corpus</div>
+                                <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="rh.hint.oncorpus">On retirement corpus</div>
                             </div>
                             <div class="col-span-2">
-                                <label class="epf-label">Monthly General Expenses (₹ today)</label>
+                                <label class="epf-label" data-i18n="lbl.rh.expenses">Monthly General Expenses (₹ today)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
                                 <input id="rh-expenses" type="text" inputmode="numeric" maxlength="15" value="60,000" class="epf-input pl-7 text-slate-400"
                                     oninput="rhFormatInput(this);retHubCalc();this.classList.remove('text-slate-400');"
                                     onfocus="if(this.value==='60,000'){this.value='';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');"
                                     onblur="if(!this.value){this.value='60,000';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');">
                                 </div>
-                                <div class="text-[9px] text-slate-400 mt-0.5">Inflated at general inflation rate to retirement</div>
+                                <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="rh.hint.expinflated">Inflated at general inflation rate to retirement</div>
                             </div>
                             <div>
-                                <label class="epf-label">Monthly Medical (₹ today)</label>
+                                <label class="epf-label" data-i18n="lbl.rh.medical">Monthly Medical (₹ today)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
                                 <input id="rh-medical-expenses" type="text" inputmode="numeric" maxlength="15" value="5,000" class="epf-input pl-7 text-slate-400"
                                     oninput="rhFormatInput(this);retHubCalc();this.classList.remove('text-slate-400');"
                                     onfocus="if(this.value==='5,000'){this.value='';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');"
                                     onblur="if(!this.value){this.value='5,000';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');">
                                 </div>
-                                <div class="text-[9px] text-rose-500 mt-0.5 font-semibold">Grows faster — see rate →</div>
+                                <div class="text-[9px] text-rose-500 mt-0.5 font-semibold" data-i18n="rh.hint.medgrows">Grows faster — see rate →</div>
                             </div>
                             <div>
-                                <label class="epf-label">Healthcare Inflation % p.a.</label>
+                                <label class="epf-label" data-i18n="lbl.rh.medinfl">Healthcare Inflation % p.a.</label>
                                 <input id="rh-medical-inflation" type="text" inputmode="decimal" value="12" class="epf-input text-slate-400"
                                     oninput="retHubCalc();this.classList.remove('text-slate-400');"
                                     onfocus="if(this.value==='12'){this.value='';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');"
                                     onblur="if(!this.value){this.value='12';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');">
-                                <div class="text-[9px] text-rose-500 mt-0.5 font-semibold">India avg ~12% p.a.</div>
+                                <div class="text-[9px] text-rose-500 mt-0.5 font-semibold" data-i18n="rh.hint.medindia">India avg ~12% p.a.</div>
                             </div>
                         </div>
                     </div>
 
                     <!-- EPF -->
                     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
-                        <div class="text-[10px] font-black uppercase tracking-wider mb-2" style="color:#0891b2;">🏢 EPF (Employee Provident Fund) <span class="text-[8px] font-semibold normal-case text-slate-400">· 8.25% rate as of Q1 FY26</span></div>
+                        <div class="text-[10px] font-black uppercase tracking-wider mb-2" style="color:#0891b2;"><span data-i18n="rh.sec.epf">🏢 EPF (Employee Provident Fund)</span> <span class="text-[8px] font-semibold normal-case text-slate-400" data-i18n="rh.epf.rate">· 8.25% rate as of Q1 FY26</span></div>
                         <div class="grid grid-cols-2 gap-x-3 gap-y-2">
                             <div>
-                                <label class="epf-label">Current Balance (₹)</label>
+                                <label class="epf-label" data-i18n="lbl.rh.currentbal">Current Balance (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
                                 <input id="rh-epf-balance" type="text" inputmode="numeric" maxlength="15" value="2,00,000" class="epf-input pl-7 text-slate-400"
                                     oninput="rhFormatInput(this);retHubCalc();this.classList.remove('text-slate-400');"
@@ -110,24 +110,24 @@
                                 </div>
                             </div>
                             <div>
-                                <label class="epf-label">Monthly Basic (₹)</label>
+                                <label class="epf-label" data-i18n="lbl.rh.epfbasic">Monthly Basic (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
                                 <input id="rh-epf-basic" type="text" inputmode="numeric" maxlength="15" value="50,000" class="epf-input pl-7 text-slate-400"
                                     oninput="rhFormatInput(this);retHubCalc();this.classList.remove('text-slate-400');"
                                     onfocus="if(this.value==='50,000'){this.value='';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');"
                                     onblur="if(!this.value){this.value='50,000';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');">
                                 </div>
-                                <div class="text-[9px] text-slate-400 mt-0.5">For ongoing 12%+12% contribution</div>
+                                <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="rh.hint.epfcontrib">For ongoing 12%+12% contribution</div>
                             </div>
                         </div>
                     </div>
 
                     <!-- PPF -->
                     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
-                        <div class="text-[10px] font-black uppercase tracking-wider mb-2" style="color:#059669;">🔒 PPF (Public Provident Fund) — 7.1% tax-free <span class="text-[8px] font-semibold normal-case text-slate-400">· as of Q1 FY26</span></div>
+                        <div class="text-[10px] font-black uppercase tracking-wider mb-2" style="color:#059669;"><span data-i18n="rh.sec.ppf">🔒 PPF (Public Provident Fund) — 7.1% tax-free</span> <span class="text-[8px] font-semibold normal-case text-slate-400" data-i18n="rh.ppf.rate">· as of Q1 FY26</span></div>
                         <div class="grid grid-cols-3 gap-x-2 gap-y-2">
                             <div>
-                                <label class="epf-label">Balance (₹)</label>
+                                <label class="epf-label" data-i18n="lbl.rh.balance">Balance (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
                                 <input id="rh-ppf-balance" type="text" inputmode="numeric" maxlength="15" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="rhFormatInput(this);retHubCalc();this.classList.remove('text-slate-400');"
@@ -136,7 +136,7 @@
                                 </div>
                             </div>
                             <div>
-                                <label class="epf-label">Annual (₹)</label>
+                                <label class="epf-label" data-i18n="lbl.rh.annual">Annual (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
                                 <input id="rh-ppf-annual" type="text" inputmode="numeric" maxlength="15" value="1,50,000" class="epf-input pl-7 text-slate-400"
                                     oninput="rhFormatInput(this);retHubCalc();this.classList.remove('text-slate-400');"
@@ -145,7 +145,7 @@
                                 </div>
                             </div>
                             <div>
-                                <label class="epf-label">Years Done</label>
+                                <label class="epf-label" data-i18n="lbl.rh.yrsdone">Years Done</label>
                                 <input id="rh-ppf-years-done" type="number" min="0" max="30" value="0" class="epf-input text-slate-400"
                                     oninput="retHubCalc();this.classList.remove('text-slate-400');"
                                     onfocus="if(this.value==='0'){this.value='';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');"
@@ -156,10 +156,10 @@
 
                     <!-- NPS -->
                     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
-                        <div class="text-[10px] font-black uppercase tracking-wider mb-2" style="color:#1e40af;">🛡️ NPS</div>
+                        <div class="text-[10px] font-black uppercase tracking-wider mb-2" style="color:#1e40af;" data-i18n="rh.sec.nps">🛡️ NPS</div>
                         <div class="grid grid-cols-2 gap-x-3 gap-y-2">
                             <div>
-                                <label class="epf-label">Current Balance (₹)</label>
+                                <label class="epf-label" data-i18n="lbl.rh.currentbal">Current Balance (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
                                 <input id="rh-nps-balance" type="text" inputmode="numeric" maxlength="15" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="rhFormatInput(this);retHubCalc();this.classList.remove('text-slate-400');"
@@ -168,7 +168,7 @@
                                 </div>
                             </div>
                             <div>
-                                <label class="epf-label">Monthly Contribution (₹)</label>
+                                <label class="epf-label" data-i18n="lbl.rh.npsmonthly">Monthly Contribution (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
                                 <input id="rh-nps-monthly" type="text" inputmode="numeric" maxlength="15" value="5,000" class="epf-input pl-7 text-slate-400"
                                     oninput="rhFormatInput(this);retHubCalc();this.classList.remove('text-slate-400');"
@@ -177,37 +177,37 @@
                                 </div>
                             </div>
                             <div>
-                                <label class="epf-label">Expected Return % p.a.</label>
+                                <label class="epf-label" data-i18n="lbl.rh.expreturn">Expected Return % p.a.</label>
                                 <input id="rh-nps-return" type="text" inputmode="decimal" value="10" class="epf-input text-slate-400"
                                     oninput="retHubCalc();this.classList.remove('text-slate-400');"
                                     onfocus="if(this.value==='10'){this.value='';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');"
                                     onblur="if(!this.value){this.value='10';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');">
                             </div>
                             <div>
-                                <label class="epf-label">Annuity Rate % p.a.</label>
+                                <label class="epf-label" data-i18n="lbl.rh.npsannuity">Annuity Rate % p.a.</label>
                                 <input id="rh-nps-annuity" type="text" inputmode="decimal" value="6" class="epf-input text-slate-400"
                                     oninput="retHubCalc();this.classList.remove('text-slate-400');"
                                     onfocus="if(this.value==='6'){this.value='';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');"
                                     onblur="if(!this.value){this.value='6';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');">
-                                <div class="text-[9px] text-slate-400 mt-0.5">LIC / NPS annuity ~6% p.a.</div>
+                                <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="rh.hint.npsannuity">LIC / NPS annuity ~6% p.a.</div>
                             </div>
                             <div class="col-span-2">
-                                <label class="epf-label">Lumpsum % at exit</label>
+                                <label class="epf-label" data-i18n="lbl.rh.npslumpsum">Lumpsum % at exit</label>
                                 <input id="rh-nps-lumpsum-pct" type="text" inputmode="decimal" value="60" class="epf-input text-slate-400"
                                     oninput="retHubCalc();this.classList.remove('text-slate-400');"
                                     onfocus="if(this.value==='60'){this.value='';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');"
                                     onblur="if(!this.value){this.value='60';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');">
-                                <div class="text-[9px] text-sky-600 mt-0.5 font-semibold">Default 60% (old rule). Post Apr 2024: up to 100% lumpsum allowed if corpus ≤₹5L, or on meeting exit conditions — check with your NPS CRA.</div>
+                                <div class="text-[9px] text-sky-600 mt-0.5 font-semibold" data-i18n="rh.hint.npslumpsum">Default 60% (old rule). Post Apr 2024: up to 100% lumpsum allowed if corpus ≤₹5L, or on meeting exit conditions — check with your NPS CRA.</div>
                             </div>
                         </div>
                     </div>
 
                     <!-- SIP -->
                     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
-                        <div class="text-[10px] font-black uppercase tracking-wider mb-2" style="color:#7c3aed;">📈 SIP / Mutual Funds</div>
+                        <div class="text-[10px] font-black uppercase tracking-wider mb-2" style="color:#7c3aed;" data-i18n="rh.sec.sip">📈 SIP / Mutual Funds</div>
                         <div class="grid grid-cols-2 gap-x-3 gap-y-2">
                             <div>
-                                <label class="epf-label">Monthly SIP (₹)</label>
+                                <label class="epf-label" data-i18n="lbl.rh.sipmonthly">Monthly SIP (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
                                 <input id="rh-sip-monthly" type="text" inputmode="numeric" maxlength="15" value="10,000" class="epf-input pl-7 text-slate-400"
                                     oninput="rhFormatInput(this);retHubCalc();this.classList.remove('text-slate-400');"
@@ -216,7 +216,7 @@
                                 </div>
                             </div>
                             <div>
-                                <label class="epf-label">Expected Return % p.a.</label>
+                                <label class="epf-label" data-i18n="lbl.rh.expreturn">Expected Return % p.a.</label>
                                 <input id="rh-sip-return" type="text" inputmode="decimal" value="12" class="epf-input text-slate-400"
                                     oninput="retHubCalc();this.classList.remove('text-slate-400');"
                                     onfocus="if(this.value==='12'){this.value='';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');"
@@ -227,10 +227,10 @@
 
                     <!-- Other -->
                     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
-                        <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">💰 Other Assets (FDs, Gold, Real Estate)</div>
+                        <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2" data-i18n="rh.sec.other">💰 Other Assets (FDs, Gold, Real Estate)</div>
                         <div class="grid grid-cols-2 gap-x-3 gap-y-2">
                             <div>
-                                <label class="epf-label">Current Value (₹)</label>
+                                <label class="epf-label" data-i18n="lbl.rh.otherval">Current Value (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
                                 <input id="rh-other-corpus" type="text" inputmode="numeric" maxlength="15" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="rhFormatInput(this);retHubCalc();this.classList.remove('text-slate-400');"
@@ -239,7 +239,7 @@
                                 </div>
                             </div>
                             <div>
-                                <label class="epf-label">Expected Return % p.a.</label>
+                                <label class="epf-label" data-i18n="lbl.rh.expreturn">Expected Return % p.a.</label>
                                 <input id="rh-other-return" type="text" inputmode="decimal" value="7" class="epf-input text-slate-400"
                                     oninput="retHubCalc();this.classList.remove('text-slate-400');"
                                     onfocus="if(this.value==='7'){this.value='';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');"
@@ -257,7 +257,7 @@
                     <div class="rounded-2xl p-4 shine-header" style="background:linear-gradient(135deg,#0c2340,#1a4a7a,#3b0764);border:2px solid rgba(245,200,66,0.4);">
                         <div class="flex items-start justify-between flex-wrap gap-2">
                             <div>
-                                <div class="text-[10px] font-black text-blue-300 uppercase tracking-wider">Total Corpus at Retirement</div>
+                                <div class="text-[10px] font-black text-blue-300 uppercase tracking-wider" data-i18n="rh.res.totalcorpus">Total Corpus at Retirement</div>
                                 <div id="rh-total-corpus" class="text-3xl font-black text-white mt-1">—</div>
                             </div>
                             <div class="text-right">
@@ -270,7 +270,7 @@
 
                     <!-- Breakdown Bars -->
                     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
-                        <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2.5">How It Breaks Down</div>
+                        <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2.5" data-i18n="rh.res.breakdown">How It Breaks Down</div>
                         <div class="flex flex-col gap-2">
 
                             <div class="flex items-center gap-2">
@@ -327,33 +327,33 @@
                     <!-- Monthly Income Row -->
                     <div class="grid grid-cols-3 gap-2">
                         <div class="rounded-2xl p-3 text-center" style="background:linear-gradient(135deg,#0c2340,#1a4a7a);border:1px solid rgba(147,197,253,0.3);">
-                            <div class="text-[9px] font-black text-blue-300 uppercase">SWP from Pool</div>
+                            <div class="text-[9px] font-black text-blue-300 uppercase" data-i18n="rh.res.swppool">SWP from Pool</div>
                             <div id="rh-swp" class="text-lg font-black text-white mt-0.5">—</div>
-                            <div class="text-[8px] text-blue-400 mt-0.5">From EPF+PPF+SIP+Other</div>
+                            <div class="text-[8px] text-blue-400 mt-0.5" data-i18n="rh.res.swpfrom">From EPF+PPF+SIP+Other</div>
                         </div>
                         <div class="rounded-2xl p-3 text-center" style="background:linear-gradient(135deg,#0c2340,#1e3a8a);border:1px solid rgba(147,197,253,0.3);">
-                            <div class="text-[9px] font-black text-indigo-300 uppercase">NPS Pension</div>
+                            <div class="text-[9px] font-black text-indigo-300 uppercase" data-i18n="rh.res.npspension">NPS Pension</div>
                             <div id="rh-nps-pension-d" class="text-lg font-black text-white mt-0.5">—</div>
-                            <div class="text-[8px] text-indigo-400 mt-0.5">Guaranteed annuity</div>
+                            <div class="text-[8px] text-indigo-400 mt-0.5" data-i18n="rh.res.guarannuity">Guaranteed annuity</div>
                         </div>
                         <div class="rounded-2xl p-3 text-center" style="background:linear-gradient(135deg,#1a1a2e,#3b0764);border:2px solid rgba(245,200,66,0.5);">
-                            <div class="text-[9px] font-black text-yellow-300 uppercase">Total Income</div>
+                            <div class="text-[9px] font-black text-yellow-300 uppercase" data-i18n="rh.res.totalincome">Total Income</div>
                             <div id="rh-total-income" class="text-lg font-black text-white mt-0.5">—</div>
-                            <div class="text-[8px] text-purple-300 mt-0.5">SWP + NPS pension</div>
+                            <div class="text-[8px] text-purple-300 mt-0.5" data-i18n="rh.res.swpnps">SWP + NPS pension</div>
                         </div>
                     </div>
 
                     <!-- Expenses vs Gap Row -->
                     <div class="grid grid-cols-2 gap-2">
                         <div class="rounded-2xl p-3" style="background:linear-gradient(135deg,#1a1a2e,#0c4a6e);border:1px solid rgba(147,197,253,0.25);">
-                            <div class="text-[9px] font-black text-sky-300 uppercase">Expenses at Retirement</div>
+                            <div class="text-[9px] font-black text-sky-300 uppercase" data-i18n="rh.res.expretirem">Expenses at Retirement</div>
                             <div id="rh-exp-inflated" class="text-xl font-black text-white mt-0.5">—</div>
-                            <div id="rh-exp-note" class="text-[8px] text-sky-400 mt-0.5">Inflation-adjusted</div>
+                            <div id="rh-exp-note" class="text-[8px] text-sky-400 mt-0.5"></div>
                         </div>
                         <div class="rounded-2xl p-3" style="background:linear-gradient(135deg,#1a1a2e,#0c2340);border:2px solid rgba(245,200,66,0.35);">
                             <div id="rh-gap-label" class="text-[9px] font-black uppercase" style="color:#fde68a;">Monthly Surplus</div>
                             <div id="rh-gap" class="text-2xl font-black text-emerald-400 mt-0.5">—</div>
-                            <div class="text-[8px] text-slate-400 mt-0.5">Income minus expenses</div>
+                            <div class="text-[8px] text-slate-400 mt-0.5" data-i18n="rh.res.incomeminus">Income minus expenses</div>
                         </div>
                     </div>
 
@@ -362,22 +362,22 @@
 
                     <!-- Stress Test: Sequence of Returns -->
                     <button id="rh-stress-toggle" onclick="rhToggleStress()" class="w-full rounded-xl px-3 py-2 text-left flex items-center justify-between gap-2 text-[11px] font-bold transition-all" style="background:linear-gradient(135deg,#431407,#7c2d12);color:#fed7aa;border:1.5px solid rgba(239,68,68,0.4);">
-                        <span>⚠️ Stress Test: market drops 30% in Year 1 of retirement</span>
+                        <span data-i18n="rh.stress.title">⚠️ Stress Test: market drops 30% in Year 1 of retirement</span>
                         <span id="rh-stress-chevron" style="font-size:10px;opacity:0.7;white-space:nowrap;">▼ Show</span>
                     </button>
                     <div id="rh-stress-panel" class="hidden flex flex-col gap-1.5">
                         <div class="grid grid-cols-2 gap-2">
                             <div class="rounded-xl p-3 text-center" style="background:linear-gradient(135deg,#0c2340,#1a4a7a);border:2px solid rgba(147,197,253,0.3);">
-                                <div class="text-[9px] font-black text-blue-300 uppercase mb-1">Base Case</div>
-                                <div class="text-[8px] text-blue-400 mb-2">Flat return every year</div>
-                                <div class="text-[9px] font-black text-slate-300 uppercase">Corpus Lasts Until</div>
+                                <div class="text-[9px] font-black text-blue-300 uppercase mb-1" data-i18n="rh.stress.basecase">Base Case</div>
+                                <div class="text-[8px] text-blue-400 mb-2" data-i18n="rh.stress.baseflat">Flat return every year</div>
+                                <div class="text-[9px] font-black text-slate-300 uppercase" data-i18n="rh.stress.corpuslasts">Corpus Lasts Until</div>
                                 <div id="rh-base-depletion" class="text-2xl font-black text-white mt-0.5">—</div>
                                 <div id="rh-base-label" class="text-[9px] mt-0.5">—</div>
                             </div>
                             <div class="rounded-xl p-3 text-center" style="background:linear-gradient(135deg,#431407,#7c2d12);border:2px solid rgba(239,68,68,0.4);">
-                                <div class="text-[9px] font-black text-orange-300 uppercase mb-1">Stress Case</div>
-                                <div class="text-[8px] text-orange-400 mb-2">−30% crash in Year 1</div>
-                                <div class="text-[9px] font-black text-slate-300 uppercase">Corpus Lasts Until</div>
+                                <div class="text-[9px] font-black text-orange-300 uppercase mb-1" data-i18n="rh.stress.stresscase">Stress Case</div>
+                                <div class="text-[8px] text-orange-400 mb-2" data-i18n="rh.stress.crash30">−30% crash in Year 1</div>
+                                <div class="text-[9px] font-black text-slate-300 uppercase" data-i18n="rh.stress.corpuslasts">Corpus Lasts Until</div>
                                 <div id="rh-stress-depletion" class="text-2xl font-black text-white mt-0.5">—</div>
                                 <div id="rh-stress-label" class="text-[9px] mt-0.5">—</div>
                             </div>
@@ -397,10 +397,10 @@
             <!-- ── SECTION DIVIDER: Drawdown ── -->
             <div class="flex items-center gap-3 py-1 mt-1">
                 <div class="flex-1 h-px" style="background:linear-gradient(90deg,transparent,rgba(234,88,12,0.35),transparent);"></div>
-                <div class="flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest" style="background:linear-gradient(135deg,#fff7ed,#fef3c7);color:#c2410c;border:1px solid rgba(234,88,12,0.25);">🧮 Retirement Drawdown Planner</div>
+                <div class="flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest" style="background:linear-gradient(135deg,#fff7ed,#fef3c7);color:#c2410c;border:1px solid rgba(234,88,12,0.25);" data-i18n="dd.sec.title">🧮 Retirement Drawdown Planner</div>
                 <div class="flex-1 h-px" style="background:linear-gradient(90deg,transparent,rgba(234,88,12,0.35),transparent);"></div>
             </div>
-            <p class="text-[11px] text-slate-500 -mt-1 mb-1 px-0.5">How long will your corpus last? · SWP strategy · 3-bucket allocation · Inflation-adjusted depletion timeline.</p>
+            <p class="text-[11px] text-slate-500 -mt-1 mb-1 px-0.5" data-i18n="dd.sec.sub">How long will your corpus last? · SWP strategy · 3-bucket allocation · Inflation-adjusted depletion timeline.</p>
 
             <!-- DRAWDOWN: MAIN GRID -->
             <div class="grid grid-cols-1 lg:grid-cols-5 gap-3">
@@ -412,11 +412,11 @@
                         <span class="text-[11px] font-bold text-sky-700">👤 Fill from My Profile?</span>
                         <button class="up-apply-btn" onclick="upApply('drawdown')" data-i18n="up.apply">↙ Apply Profile</button>
                     </div>
-                    <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">Your Retirement Inputs</div>
+                    <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2" data-i18n="dd.sec.inputs">Your Retirement Inputs</div>
                     <div class="grid grid-cols-2 gap-x-3 gap-y-2">
 
                         <div class="col-span-2">
-                            <label class="epf-label">Retirement Corpus (₹)</label>
+                            <label class="epf-label" data-i18n="lbl.dd.corpus">Retirement Corpus (₹)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
                             <input id="dd-corpus" type="text" inputmode="numeric" maxlength="15" value="1,00,00,000"
                                 class="epf-input pl-7 text-slate-400"
@@ -424,31 +424,31 @@
                                 onfocus="if(this.value==='1,00,00,000'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                 onblur="if(this.value===''||this.value==='1,00,00,000'){this.value='1,00,00,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
                             </div>
-                            <div class="text-[9px] text-slate-400 mt-0.5">EPF + PPF + MF + savings at retirement</div>
+                            <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="dd.hint.corpussource">EPF + PPF + MF + savings at retirement</div>
                         </div>
 
                         <div>
-                            <label class="epf-label">Current Age</label>
+                            <label class="epf-label" data-i18n="lbl.rh.age">Current Age</label>
                             <input id="dd-current-age" type="number" min="20" max="74" value="30"
                                 class="epf-input text-slate-400"
                                 oninput="drawdownCalc();this.classList.remove('text-slate-400');var r=document.getElementById('dd-ret-age');r.min=Math.max(40,+this.value+1);if(+r.value<=+this.value)r.value=+this.value+1;"
                                 onfocus="if(this.value==='30'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                 onblur="if(this.value===''||this.value==='30'){this.value='30';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
-                            <div class="text-[9px] text-slate-400 mt-0.5">Your age today</div>
+                            <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="dd.hint.today">Your age today</div>
                         </div>
 
                         <div>
-                            <label class="epf-label">Retirement Age</label>
+                            <label class="epf-label" data-i18n="lbl.dd.retage">Retirement Age</label>
                             <input id="dd-ret-age" type="number" min="40" max="75" value="60"
                                 class="epf-input text-slate-400"
                                 oninput="drawdownCalc();this.classList.remove('text-slate-400');"
                                 onfocus="if(this.value==='60'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                 onblur="if(this.value===''||this.value==='60'){this.value='60';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
-                            <div class="text-[9px] text-slate-400 mt-0.5">Plan to age 90+</div>
+                            <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="dd.hint.planage">Plan to age 90+</div>
                         </div>
 
                         <div class="col-span-2">
-                            <label class="epf-label">Today's Monthly Expenses (₹)</label>
+                            <label class="epf-label" data-i18n="lbl.dd.expenses">Today's Monthly Expenses (₹)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
                             <input id="dd-expenses" type="text" inputmode="numeric" maxlength="15" value="60,000"
                                 class="epf-input pl-7 text-slate-400"
@@ -460,27 +460,27 @@
                         </div>
 
                         <div>
-                            <label class="epf-label">Inflation (%/yr)</label>
+                            <label class="epf-label" data-i18n="lbl.dd.inflation">Inflation (%/yr)</label>
                             <input id="dd-inflation" type="number" min="2" max="15" step="0.5" value="6"
                                 class="epf-input text-slate-400"
                                 oninput="drawdownCalc();this.classList.remove('text-slate-400');"
                                 onfocus="if(this.value==='6'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                 onblur="if(this.value===''||this.value==='6'){this.value='6';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
-                            <div class="text-[9px] text-slate-400 mt-0.5">India CPI ~5–7%</div>
+                            <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="dd.hint.cpi">India CPI ~5–7%</div>
                         </div>
 
                         <div>
-                            <label class="epf-label">Portfolio Return (%/yr)</label>
+                            <label class="epf-label" data-i18n="lbl.dd.return">Portfolio Return (%/yr)</label>
                             <input id="dd-return" type="number" min="1" max="18" step="0.5" value="8"
                                 class="epf-input text-slate-400"
                                 oninput="drawdownCalc();this.classList.remove('text-slate-400');"
                                 onfocus="if(this.value==='8'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                 onblur="if(this.value===''||this.value==='8'){this.value='8';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
-                            <div class="text-[9px] text-slate-400 mt-0.5">Blended all buckets</div>
+                            <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="dd.hint.blended">Blended all buckets</div>
                         </div>
 
                         <div class="col-span-2">
-                            <label class="epf-label">Other Monthly Income (₹) <span class="normal-case font-semibold text-slate-400">optional</span></label>
+                            <label class="epf-label"><span data-i18n="lbl.dd.otherincome">Other Monthly Income (₹)</span> <span class="normal-case font-semibold text-slate-400" data-i18n="lbl.dd.optional">optional</span></label>
                             <div class="relative"><span class="epf-prefix">₹</span>
                             <input id="dd-other-income" type="text" inputmode="numeric" maxlength="15" value="" placeholder="e.g. pension, rent"
                                 class="epf-input pl-7 text-slate-400"
@@ -488,14 +488,14 @@
                                 onfocus="this.classList.remove('text-slate-400');"
                                 onblur="if(!this.value){this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
                             </div>
-                            <div class="text-[9px] text-slate-400 mt-0.5">EPS pension, rental, annuity</div>
+                            <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="dd.hint.otherincsrc">EPS pension, rental, annuity</div>
                         </div>
 
                     </div>
 
                     <!-- Quick Scenarios -->
                     <div class="mt-3">
-                        <div class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1.5">Quick Scenarios</div>
+                        <div class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1.5" data-i18n="common.quickscen">Quick Scenarios</div>
                         <div class="flex flex-wrap gap-1">
                             <button onclick="ddPreset(10000000,60,60000,6,8,0)"      class="dd-preset">₹1Cr · 60yr</button>
                             <button onclick="ddPreset(30000000,60,80000,6,8,6428)"   class="dd-preset">₹3Cr · EPS pension</button>
@@ -511,40 +511,40 @@
                     <!-- Big depletion card -->
                     <div class="rounded-2xl px-4 py-3 flex items-center justify-between gap-3 flex-wrap shine-header" style="background:linear-gradient(135deg,#0c2340,#1a4a7a);border:2px solid rgba(245,200,66,0.35);">
                         <div>
-                            <div class="text-[9px] font-black text-blue-200 uppercase tracking-wider">Corpus Lasts Until Age</div>
+                            <div class="text-[9px] font-black text-blue-200 uppercase tracking-wider" data-i18n="dd.res.corpuslastage">Corpus Lasts Until Age</div>
                             <div id="dd-depletion-age" class="text-3xl font-black text-white mt-0.5">—</div>
                             <div id="dd-depletion-label" class="text-[10px] text-blue-300 mt-0.5">—</div>
                         </div>
                         <div class="text-right">
-                            <div class="text-[9px] font-black text-blue-200 uppercase tracking-wider">Years it Lasts</div>
+                            <div class="text-[9px] font-black text-blue-200 uppercase tracking-wider" data-i18n="dd.res.yearslast">Years it Lasts</div>
                             <div id="dd-years-last" class="text-3xl font-black text-white mt-0.5">—</div>
                             <div id="dd-surplus-deficit" class="text-[10px] mt-0.5 font-black">—</div>
                         </div>
                         <div class="text-right">
-                            <div class="text-[9px] font-black text-blue-200 uppercase tracking-wider">SWP at Retirement</div>
+                            <div class="text-[9px] font-black text-blue-200 uppercase tracking-wider" data-i18n="dd.res.swpatret">SWP at Retirement</div>
                             <div id="dd-swp-start" class="text-2xl font-black text-white mt-0.5">—</div>
-                            <div class="text-[9px] text-blue-300 mt-0.5">first month withdrawal</div>
+                            <div class="text-[9px] text-blue-300 mt-0.5" data-i18n="dd.res.firstmonth">first month withdrawal</div>
                         </div>
                     </div>
 
                     <!-- Stress Test: Sequence of Returns -->
                     <button id="dd-stress-toggle" onclick="ddToggleStress()" class="w-full rounded-xl px-3 py-2 text-left flex items-center justify-between gap-2 text-[11px] font-bold transition-all" style="background:linear-gradient(135deg,#431407,#7c2d12);color:#fed7aa;border:1.5px solid rgba(239,68,68,0.4);">
-                        <span>⚠️ Stress Test: market drops 30% in Year 1 of retirement</span>
+                        <span data-i18n="rh.stress.title">⚠️ Stress Test: market drops 30% in Year 1 of retirement</span>
                         <span id="dd-stress-chevron" style="font-size:10px;opacity:0.7;white-space:nowrap;">▼ Show</span>
                     </button>
                     <div id="dd-stress-panel" class="hidden flex flex-col gap-1.5">
                         <div class="grid grid-cols-2 gap-2">
                             <div class="rounded-xl p-3 text-center" style="background:linear-gradient(135deg,#0c2340,#1a4a7a);border:2px solid rgba(147,197,253,0.3);">
-                                <div class="text-[9px] font-black text-blue-300 uppercase mb-1">Base Case</div>
-                                <div class="text-[8px] text-blue-400 mb-2">Flat return every year</div>
-                                <div class="text-[9px] font-black text-slate-300 uppercase">Corpus Lasts Until</div>
+                                <div class="text-[9px] font-black text-blue-300 uppercase mb-1" data-i18n="rh.stress.basecase">Base Case</div>
+                                <div class="text-[8px] text-blue-400 mb-2" data-i18n="rh.stress.baseflat">Flat return every year</div>
+                                <div class="text-[9px] font-black text-slate-300 uppercase" data-i18n="rh.stress.corpuslasts">Corpus Lasts Until</div>
                                 <div id="dd-base-depletion" class="text-2xl font-black text-white mt-0.5">—</div>
                                 <div id="dd-base-label" class="text-[9px] mt-0.5">—</div>
                             </div>
                             <div class="rounded-xl p-3 text-center" style="background:linear-gradient(135deg,#431407,#7c2d12);border:2px solid rgba(239,68,68,0.4);">
-                                <div class="text-[9px] font-black text-orange-300 uppercase mb-1">Stress Case</div>
-                                <div class="text-[8px] text-orange-400 mb-2">−30% crash in Year 1</div>
-                                <div class="text-[9px] font-black text-slate-300 uppercase">Corpus Lasts Until</div>
+                                <div class="text-[9px] font-black text-orange-300 uppercase mb-1" data-i18n="rh.stress.stresscase">Stress Case</div>
+                                <div class="text-[8px] text-orange-400 mb-2" data-i18n="rh.stress.crash30">−30% crash in Year 1</div>
+                                <div class="text-[9px] font-black text-slate-300 uppercase" data-i18n="rh.stress.corpuslasts">Corpus Lasts Until</div>
                                 <div id="dd-stress-depletion" class="text-2xl font-black text-white mt-0.5">—</div>
                                 <div id="dd-stress-label" class="text-[9px] mt-0.5">—</div>
                             </div>
@@ -555,24 +555,24 @@
                     <!-- 4 stat pills -->
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
                         <div class="rounded-xl p-2 text-center" style="background:#f0f9ff;border:1px solid #bae6fd;">
-                            <div class="text-[9px] font-black text-sky-700 uppercase">Real Return</div>
+                            <div class="text-[9px] font-black text-sky-700 uppercase" data-i18n="dd.stat.realreturn">Real Return</div>
                             <div id="dd-real-return" class="text-sm font-black text-sky-800">—</div>
-                            <div class="text-[8px] text-sky-500">Return − inflation</div>
+                            <div class="text-[8px] text-sky-500" data-i18n="dd.stat.returninfl">Return − inflation</div>
                         </div>
                         <div class="rounded-xl p-2 text-center" style="background:#fef9c3;border:1px solid #fde047;">
-                            <div class="text-[9px] font-black text-yellow-700 uppercase">Safe SWR</div>
+                            <div class="text-[9px] font-black text-yellow-700 uppercase" data-i18n="dd.stat.safeswr">Safe SWR</div>
                             <div id="dd-swr" class="text-sm font-black text-yellow-800">—</div>
-                            <div class="text-[8px] text-yellow-600">for 30yr horizon</div>
+                            <div class="text-[8px] text-yellow-600" data-i18n="dd.stat.for30yr">for 30yr horizon</div>
                         </div>
                         <div class="rounded-xl p-2 text-center" style="background:#f0fdf4;border:1px solid #86efac;">
-                            <div class="text-[9px] font-black text-emerald-700 uppercase">Corpus at 85</div>
+                            <div class="text-[9px] font-black text-emerald-700 uppercase" data-i18n="dd.stat.corpusat85">Corpus at 85</div>
                             <div id="dd-corpus-at-85" class="text-sm font-black text-emerald-800">—</div>
-                            <div class="text-[8px] text-emerald-600">projected balance</div>
+                            <div class="text-[8px] text-emerald-600" data-i18n="dd.stat.projbal">projected balance</div>
                         </div>
                         <div class="rounded-xl p-2 text-center" style="background:#fdf4ff;border:1px solid #e9d5ff;">
-                            <div class="text-[9px] font-black text-purple-700 uppercase">SWP at 75</div>
+                            <div class="text-[9px] font-black text-purple-700 uppercase" data-i18n="dd.stat.swpat75">SWP at 75</div>
                             <div id="dd-swp-75" class="text-sm font-black text-purple-800">—</div>
-                            <div class="text-[8px] text-purple-600">inflation-adjusted</div>
+                            <div class="text-[8px] text-purple-600" data-i18n="dd.stat.inflationadj">inflation-adjusted</div>
                         </div>
                     </div>
 
@@ -581,37 +581,37 @@
 
                     <!-- 3-BUCKET STRATEGY -->
                     <div class="rounded-2xl border border-slate-100 shadow-sm p-2.5" style="background:#f8fafc;">
-                        <div class="text-[9px] font-black text-slate-500 uppercase tracking-wider mb-2">🪣 3-Bucket Strategy</div>
+                        <div class="text-[9px] font-black text-slate-500 uppercase tracking-wider mb-2" data-i18n="dd.bucket.title">🪣 3-Bucket Strategy</div>
                         <div class="grid grid-cols-3 gap-2">
                             <div class="rounded-xl p-2" style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1.5px solid #86efac;">
                                 <div class="flex items-center gap-1.5 mb-1">
                                     <div class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black text-white flex-shrink-0" style="background:#16a34a;">1</div>
-                                    <div class="text-[9px] font-black text-emerald-800 leading-tight">LIQUID<br><span class="font-semibold">1 Yr Expenses</span></div>
+                                    <div class="text-[9px] font-black text-emerald-800 leading-tight"><span data-i18n="dd.bucket1.name">LIQUID</span><br><span class="font-semibold" data-i18n="dd.bucket1.sub">1 Yr Expenses</span></div>
                                 </div>
                                 <div id="dd-b1-amount" class="text-base font-black text-emerald-700 mb-0.5">—</div>
-                                <div class="text-[8px] text-emerald-700 leading-snug">Savings / liquid MF / sweep FD. Zero market risk.</div>
-                                <div class="text-[8px] font-black text-emerald-600 mt-1">~6–7% · Negligible risk</div>
-                                <div class="mt-1 text-[8px] bg-emerald-100 rounded p-1 text-emerald-800">Refill from Bucket 2 yearly.</div>
+                                <div class="text-[8px] text-emerald-700 leading-snug" data-i18n="dd.bucket1.desc">Savings / liquid MF / sweep FD. Zero market risk.</div>
+                                <div class="text-[8px] font-black text-emerald-600 mt-1" data-i18n="dd.bucket1.rate">~6–7% · Negligible risk</div>
+                                <div class="mt-1 text-[8px] bg-emerald-100 rounded p-1 text-emerald-800" data-i18n="dd.bucket1.tip">Refill from Bucket 2 yearly.</div>
                             </div>
                             <div class="rounded-xl p-2" style="background:linear-gradient(135deg,#eff6ff,#dbeafe);border:1.5px solid #93c5fd;">
                                 <div class="flex items-center gap-1.5 mb-1">
                                     <div class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black text-white flex-shrink-0" style="background:#2563eb;">2</div>
-                                    <div class="text-[9px] font-black text-blue-800 leading-tight">STABILITY<br><span class="font-semibold">2–4 Yr Expenses</span></div>
+                                    <div class="text-[9px] font-black text-blue-800 leading-tight"><span data-i18n="dd.bucket2.name">STABILITY</span><br><span class="font-semibold" data-i18n="dd.bucket2.sub">2–4 Yr Expenses</span></div>
                                 </div>
                                 <div id="dd-b2-amount" class="text-base font-black text-blue-700 mb-0.5">—</div>
-                                <div class="text-[8px] text-blue-700 leading-snug">Debt MF, FDs, RBI bonds, SCSS. Low volatility.</div>
-                                <div class="text-[8px] font-black text-blue-600 mt-1">~7–8% · Low risk</div>
-                                <div class="mt-1 text-[8px] bg-blue-100 rounded p-1 text-blue-800">Replenish from B3 in bull runs.</div>
+                                <div class="text-[8px] text-blue-700 leading-snug" data-i18n="dd.bucket2.desc">Debt MF, FDs, RBI bonds, SCSS. Low volatility.</div>
+                                <div class="text-[8px] font-black text-blue-600 mt-1" data-i18n="dd.bucket2.rate">~7–8% · Low risk</div>
+                                <div class="mt-1 text-[8px] bg-blue-100 rounded p-1 text-blue-800" data-i18n="dd.bucket2.tip">Replenish from B3 in bull runs.</div>
                             </div>
                             <div class="rounded-xl p-2" style="background:linear-gradient(135deg,#fdf4ff,#f3e8ff);border:1.5px solid #c4b5fd;">
                                 <div class="flex items-center gap-1.5 mb-1">
                                     <div class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black text-white flex-shrink-0" style="background:#7c3aed;">3</div>
-                                    <div class="text-[9px] font-black text-purple-800 leading-tight">GROWTH<br><span class="font-semibold">Remaining</span></div>
+                                    <div class="text-[9px] font-black text-purple-800 leading-tight"><span data-i18n="dd.bucket3.name">GROWTH</span><br><span class="font-semibold" data-i18n="dd.bucket3.sub">Remaining</span></div>
                                 </div>
                                 <div id="dd-b3-amount" class="text-base font-black text-purple-700 mb-0.5">—</div>
-                                <div class="text-[8px] text-purple-700 leading-snug">Flexi-cap / BAF equity. Fights inflation long-term.</div>
-                                <div class="text-[8px] font-black text-purple-600 mt-1">~10–12% · Mod-high risk</div>
-                                <div class="mt-1 text-[8px] bg-purple-100 rounded p-1 text-purple-800">Don't touch for 5+ yrs.</div>
+                                <div class="text-[8px] text-purple-700 leading-snug" data-i18n="dd.bucket3.desc">Flexi-cap / BAF equity. Fights inflation long-term.</div>
+                                <div class="text-[8px] font-black text-purple-600 mt-1" data-i18n="dd.bucket3.rate">~10–12% · Mod-high risk</div>
+                                <div class="mt-1 text-[8px] bg-purple-100 rounded p-1 text-purple-800" data-i18n="dd.bucket3.tip">Don't touch for 5+ yrs.</div>
                             </div>
                         </div>
                     </div>
@@ -624,10 +624,10 @@
             <!-- DRAWDOWN: CHART -->
             <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-3">
                 <div class="flex items-center justify-between mb-2 flex-wrap gap-2">
-                    <div class="text-[10px] font-black text-slate-500 uppercase tracking-wider">📉 Corpus Depletion Over Retirement <span class="text-slate-400 font-semibold normal-case">(hover for details)</span></div>
+                    <div class="text-[10px] font-black text-slate-500 uppercase tracking-wider"><span data-i18n="dd.chart.depletion.title">📉 Corpus Depletion Over Retirement</span> <span class="text-slate-400 font-semibold normal-case" data-i18n="su.chart.hover">(hover for details)</span></div>
                     <div class="flex gap-2">
-                        <button onclick="ddChartView('corpus')"  id="dd-btn-corpus"  class="dd-chart-btn dd-chart-btn-active">Corpus</button>
-                        <button onclick="ddChartView('monthly')" id="dd-btn-monthly" class="dd-chart-btn">Monthly SWP</button>
+                        <button onclick="ddChartView('corpus')"  id="dd-btn-corpus"  class="dd-chart-btn dd-chart-btn-active" data-i18n="dd.chart.btn.corpus">Corpus</button>
+                        <button onclick="ddChartView('monthly')" id="dd-btn-monthly" class="dd-chart-btn" data-i18n="dd.chart.btn.monthly">Monthly SWP</button>
                     </div>
                 </div>
                 <div style="position:relative;height:240px;">
@@ -638,20 +638,20 @@
             <!-- DRAWDOWN: YEAR-BY-YEAR TABLE -->
             <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-3">
                 <button onclick="ddToggleTable()" class="flex items-center justify-between w-full mb-2 group">
-                    <div class="text-[10px] font-black text-slate-500 uppercase tracking-wider">📋 Year-by-Year Drawdown Passbook</div>
-                    <span id="dd-table-btn" class="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all" style="background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;">Show ▾</span>
+                    <div class="text-[10px] font-black text-slate-500 uppercase tracking-wider" data-i18n="dd.table.title">📋 Year-by-Year Drawdown Passbook</div>
+                    <span id="dd-table-btn" class="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all" style="background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;" data-i18n="common.show">Show ▾</span>
                 </button>
                 <div id="dd-table-wrap" class="hidden overflow-x-auto">
                     <table class="w-full text-[10px]" style="min-width:640px;">
                         <thead>
                             <tr style="background:#e0f2fe;">
-                                <th class="px-2 py-1.5 text-left font-black text-sky-800">Age</th>
-                                <th class="px-2 py-1.5 text-right font-black text-sky-800">Opening Balance</th>
-                                <th class="px-2 py-1.5 text-right font-black text-slate-600">Monthly SWP</th>
-                                <th class="px-2 py-1.5 text-right font-black text-slate-600">Annual Withdrawal</th>
-                                <th class="px-2 py-1.5 text-right font-black text-slate-600">Other Income</th>
-                                <th class="px-2 py-1.5 text-right font-black text-emerald-700">Returns Earned</th>
-                                <th class="px-2 py-1.5 text-right font-black text-blue-700">Year-End Balance</th>
+                                <th class="px-2 py-1.5 text-left font-black text-sky-800" data-i18n="dd.table.th.age">Age</th>
+                                <th class="px-2 py-1.5 text-right font-black text-sky-800" data-i18n="dd.table.th.openbal">Opening Balance</th>
+                                <th class="px-2 py-1.5 text-right font-black text-slate-600" data-i18n="dd.table.th.swp">Monthly SWP</th>
+                                <th class="px-2 py-1.5 text-right font-black text-slate-600" data-i18n="dd.table.th.annualw">Annual Withdrawal</th>
+                                <th class="px-2 py-1.5 text-right font-black text-slate-600" data-i18n="dd.table.th.otherinc">Other Income</th>
+                                <th class="px-2 py-1.5 text-right font-black text-emerald-700" data-i18n="dd.table.th.returns">Returns Earned</th>
+                                <th class="px-2 py-1.5 text-right font-black text-blue-700" data-i18n="dd.table.th.yearendbal">Year-End Balance</th>
                             </tr>
                         </thead>
                         <tbody id="dd-table-body"></tbody>
@@ -661,19 +661,19 @@
 
             <!-- DRAWDOWN: SWR GUIDE -->
             <div class="rounded-2xl p-3" style="background:#f8fafc;border:1px solid #e2e8f0;">
-                <div class="text-[9px] font-black text-slate-500 uppercase tracking-wider mb-2">📌 Safe Withdrawal Rate Guide for Indian Retirees</div>
+                <div class="text-[9px] font-black text-slate-500 uppercase tracking-wider mb-2" data-i18n="dd.swr.title">📌 Safe Withdrawal Rate Guide for Indian Retirees</div>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[10px]">
                     <div class="rounded-xl p-2" style="background:#fef9c3;border:1px solid #fde047;">
-                        <div class="font-black text-yellow-800 mb-0.5">🎯 4% Rule (US origin)</div>
-                        <div class="text-yellow-700">Withdraw 4% Year 1, adjust for inflation. <strong>Risky for India</strong> — higher inflation &amp; sequence-of-returns risk.</div>
+                        <div class="font-black text-yellow-800 mb-0.5" data-i18n="dd.swr.4pct.title">🎯 4% Rule (US origin)</div>
+                        <div class="text-yellow-700" data-i18n-html="dd.swr.4pct.body">Withdraw 4% Year 1, adjust for inflation. <strong>Risky for India</strong> — higher inflation &amp; sequence-of-returns risk.</div>
                     </div>
                     <div class="rounded-xl p-2" style="background:#f0fdf4;border:1px solid #86efac;">
-                        <div class="font-black text-emerald-800 mb-0.5">✅ 3% Rule (India-safe)</div>
-                        <div class="text-emerald-700">Withdraw 3% Year 1. Corpus survives 35+ years with 8% blended return — suits India's 5–7% inflation.</div>
+                        <div class="font-black text-emerald-800 mb-0.5" data-i18n="dd.swr.3pct.title">✅ 3% Rule (India-safe)</div>
+                        <div class="text-emerald-700" data-i18n="dd.swr.3pct.body">Withdraw 3% Year 1. Corpus survives 35+ years with 8% blended return — suits India's 5–7% inflation.</div>
                     </div>
                     <div class="rounded-xl p-2" style="background:#fdf4ff;border:1px solid #e9d5ff;">
-                        <div class="font-black text-purple-800 mb-0.5">💡 Dynamic SWR</div>
-                        <div class="text-purple-700">Withdraw less in downturns (2–2.5%), more in booms (4–5%). Most resilient with bucket strategy.</div>
+                        <div class="font-black text-purple-800 mb-0.5" data-i18n="dd.swr.dyn.title">💡 Dynamic SWR</div>
+                        <div class="text-purple-700" data-i18n="dd.swr.dyn.body">Withdraw less in downturns (2–2.5%), more in booms (4–5%). Most resilient with bucket strategy.</div>
                     </div>
                 </div>
             </div>
