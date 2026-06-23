@@ -32,7 +32,7 @@
                             <div>
                                 <label class="epf-label" data-i18n="lbl.nw.savings">Savings / Bank (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
-                                <input id="nw-savings" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                <input id="nw-savings" type="text" inputmode="numeric" maxlength="15" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="nwFmtInput(this);nwCalc();"
                                     onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                     onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
@@ -42,7 +42,7 @@
                             <div>
                                 <label class="epf-label" data-i18n="lbl.nw.fd">Fixed Deposits (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
-                                <input id="nw-fd" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                <input id="nw-fd" type="text" inputmode="numeric" maxlength="15" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="nwFmtInput(this);nwCalc();"
                                     onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                     onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
@@ -57,7 +57,7 @@
                             <div>
                                 <label class="epf-label" data-i18n="lbl.nw.stocks">Direct Stocks (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
-                                <input id="nw-stocks" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                <input id="nw-stocks" type="text" inputmode="numeric" maxlength="15" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="nwFmtInput(this);nwCalc();"
                                     onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                     onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
@@ -67,7 +67,7 @@
                             <div>
                                 <label class="epf-label" data-i18n="lbl.nw.eq_mf">Equity Mutual Funds (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
-                                <input id="nw-eq-mf" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                <input id="nw-eq-mf" type="text" inputmode="numeric" maxlength="15" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="nwFmtInput(this);nwCalc();"
                                     onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                     onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
@@ -82,7 +82,7 @@
                             <div>
                                 <label class="epf-label" data-i18n="lbl.nw.epf">EPF Balance (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
-                                <input id="nw-epf" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                <input id="nw-epf" type="text" inputmode="numeric" maxlength="15" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="nwFmtInput(this);nwCalc();"
                                     onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                     onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
@@ -92,7 +92,7 @@
                             <div>
                                 <label class="epf-label" data-i18n="lbl.nw.ppf">PPF Balance (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
-                                <input id="nw-ppf" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                <input id="nw-ppf" type="text" inputmode="numeric" maxlength="15" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="nwFmtInput(this);nwCalc();"
                                     onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                     onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
@@ -102,7 +102,7 @@
                             <div>
                                 <label class="epf-label" data-i18n="lbl.nw.nps">NPS Balance (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
-                                <input id="nw-nps" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                <input id="nw-nps" type="text" inputmode="numeric" maxlength="15" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="nwFmtInput(this);nwCalc();"
                                     onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                     onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
@@ -112,7 +112,7 @@
                             <div>
                                 <label class="epf-label">Debt MF / Bonds (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
-                                <input id="nw-debt-mf" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                <input id="nw-debt-mf" type="text" inputmode="numeric" maxlength="15" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="nwFmtInput(this);nwCalc();"
                                     onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                     onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
@@ -127,7 +127,7 @@
                             <div>
                                 <label class="epf-label">Primary Home (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
-                                <input id="nw-home" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                <input id="nw-home" type="text" inputmode="numeric" maxlength="15" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="nwFmtInput(this);nwCalc();"
                                     onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                     onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
@@ -137,7 +137,7 @@
                             <div>
                                 <label class="epf-label" data-i18n="lbl.nw.property">Other Property (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
-                                <input id="nw-property" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                <input id="nw-property" type="text" inputmode="numeric" maxlength="15" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="nwFmtInput(this);nwCalc();"
                                     onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                     onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
@@ -152,7 +152,7 @@
                             <div>
                                 <label class="epf-label" data-i18n="lbl.nw.gold_phys">Physical Gold (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
-                                <input id="nw-gold-phys" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                <input id="nw-gold-phys" type="text" inputmode="numeric" maxlength="15" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="nwFmtInput(this);nwCalc();"
                                     onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                     onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
@@ -162,7 +162,7 @@
                             <div>
                                 <label class="epf-label">Gold ETF / SGB / MF (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
-                                <input id="nw-gold-paper" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                <input id="nw-gold-paper" type="text" inputmode="numeric" maxlength="15" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="nwFmtInput(this);nwCalc();"
                                     onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                     onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
@@ -172,7 +172,7 @@
                             <div>
                                 <label class="epf-label" data-i18n="lbl.nw.crypto">Cryptocurrency (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
-                                <input id="nw-crypto" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                <input id="nw-crypto" type="text" inputmode="numeric" maxlength="15" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="nwFmtInput(this);nwCalc();"
                                     onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                     onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
@@ -182,7 +182,7 @@
                             <div>
                                 <label class="epf-label">LIC / ULIP Surr. Value (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
-                                <input id="nw-ins-sv" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                <input id="nw-ins-sv" type="text" inputmode="numeric" maxlength="15" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="nwFmtInput(this);nwCalc();"
                                     onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                     onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
@@ -192,7 +192,7 @@
                             <div class="col-span-2">
                                 <label class="epf-label">Vehicles + Other Assets (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
-                                <input id="nw-other-assets" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                <input id="nw-other-assets" type="text" inputmode="numeric" maxlength="15" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="nwFmtInput(this);nwCalc();"
                                     onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                     onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
@@ -211,7 +211,7 @@
                             <div>
                                 <label class="epf-label">Home Loan (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
-                                <input id="nw-liab-home" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                <input id="nw-liab-home" type="text" inputmode="numeric" maxlength="15" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="nwFmtInput(this);nwCalc();"
                                     onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                     onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
@@ -221,7 +221,7 @@
                             <div>
                                 <label class="epf-label" data-i18n="lbl.nw.car_loan">Car Loan (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
-                                <input id="nw-liab-car" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                <input id="nw-liab-car" type="text" inputmode="numeric" maxlength="15" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="nwFmtInput(this);nwCalc();"
                                     onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                     onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
@@ -231,7 +231,7 @@
                             <div>
                                 <label class="epf-label" data-i18n="lbl.nw.pl">Personal Loan (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
-                                <input id="nw-liab-pl" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                <input id="nw-liab-pl" type="text" inputmode="numeric" maxlength="15" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="nwFmtInput(this);nwCalc();"
                                     onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                     onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
@@ -240,7 +240,7 @@
                             <div>
                                 <label class="epf-label" data-i18n="lbl.nw.edu_loan">Education Loan (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
-                                <input id="nw-liab-edu" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                <input id="nw-liab-edu" type="text" inputmode="numeric" maxlength="15" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="nwFmtInput(this);nwCalc();"
                                     onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                     onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
@@ -249,7 +249,7 @@
                             <div>
                                 <label class="epf-label">Credit Card Dues (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
-                                <input id="nw-liab-cc" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                <input id="nw-liab-cc" type="text" inputmode="numeric" maxlength="15" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="nwFmtInput(this);nwCalc();"
                                     onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                     onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
@@ -259,7 +259,7 @@
                             <div>
                                 <label class="epf-label">Business / Other Loans (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
-                                <input id="nw-liab-other" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                <input id="nw-liab-other" type="text" inputmode="numeric" maxlength="15" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="nwFmtInput(this);nwCalc();"
                                     onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                     onblur="if(!this.value||this.value===''){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">

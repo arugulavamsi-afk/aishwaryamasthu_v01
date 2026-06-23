@@ -22,7 +22,7 @@
                         <div class="col-span-2">
                             <label class="epf-label" data-i18n="lbl.ctc.annual">Annual CTC (₹)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
-                            <input id="ctc-annual" type="text" inputmode="numeric" value="12,00,000" class="epf-input pl-7 text-slate-400"
+                            <input id="ctc-annual" type="text" inputmode="numeric" value="12,00,000" maxlength="15" class="epf-input pl-7 text-slate-400"
                                 oninput="ctcFormat(this);ctcAutoFill();ctcCalc();this.classList.remove('text-slate-400');"
                                 onfocus="if(this.value==='12,00,000'){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                 onblur="if(!this.value){this.value='12,00,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
@@ -32,7 +32,7 @@
                         <div>
                             <label class="epf-label" data-i18n="lbl.ctc.basic">Basic Salary (₹/mo)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
-                            <input id="ctc-basic" type="text" inputmode="numeric" value="40,000" class="epf-input pl-7 text-slate-400"
+                            <input id="ctc-basic" type="text" inputmode="numeric" value="40,000" maxlength="15" class="epf-input pl-7 text-slate-400"
                                 oninput="ctcFormat(this);ctcCalc();this.classList.remove('text-slate-400');"
                                 onfocus="if(this.value==='40,000'){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                 onblur="if(!this.value){this.value='40,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
@@ -51,7 +51,7 @@
                         <div>
                             <label class="epf-label" data-i18n="lbl.ctc.hra">HRA (₹/mo)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
-                            <input id="ctc-hra" type="text" inputmode="numeric" value="20,000" class="epf-input pl-7 text-slate-400"
+                            <input id="ctc-hra" type="text" inputmode="numeric" value="20,000" maxlength="15" class="epf-input pl-7 text-slate-400"
                                 oninput="ctcFormat(this);ctcCalc();this.classList.remove('text-slate-400');"
                                 onfocus="if(this.value==='20,000'){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                 onblur="if(!this.value){this.value='20,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
@@ -62,7 +62,7 @@
                         <div id="ctc-rent-wrap">
                             <label class="epf-label" data-i18n="lbl.ctc.rent">Monthly Rent Paid (₹)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
-                            <input id="ctc-rent" type="text" inputmode="numeric" value="15,000" class="epf-input pl-7 text-slate-400"
+                            <input id="ctc-rent" type="text" inputmode="numeric" value="15,000" maxlength="15" class="epf-input pl-7 text-slate-400"
                                 oninput="ctcFormat(this);ctcCalc();this.classList.remove('text-slate-400');"
                                 onfocus="if(this.value==='15,000'){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                 onblur="if(!this.value){this.value='15,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
@@ -82,7 +82,7 @@
                         <div>
                             <label class="epf-label" data-i18n="lbl.ctc.lta">LTA (₹/yr)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
-                            <input id="ctc-lta" type="text" inputmode="numeric" value="20,000" class="epf-input pl-7 text-slate-400"
+                            <input id="ctc-lta" type="text" inputmode="numeric" value="20,000" maxlength="15" class="epf-input pl-7 text-slate-400"
                                 oninput="ctcFormat(this);ctcCalc();this.classList.remove('text-slate-400');"
                                 onfocus="if(this.value==='20,000'){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                 onblur="if(!this.value){this.value='20,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
@@ -93,7 +93,7 @@
                         <div>
                             <label class="epf-label" data-i18n="lbl.ctc.food">Food Coupons (₹/mo)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
-                            <input id="ctc-food" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                            <input id="ctc-food" type="text" inputmode="numeric" value="0" maxlength="15" class="epf-input pl-7 text-slate-400"
                                 oninput="ctcFormat(this);ctcCalc();this.classList.remove('text-slate-400');"
                                 onfocus="if(this.value==='0'){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                 onblur="if(!this.value){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
@@ -104,7 +104,7 @@
                         <div>
                             <label class="epf-label" data-i18n="lbl.ctc.phone">Phone/Internet (₹/mo)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
-                            <input id="ctc-phone" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                            <input id="ctc-phone" type="text" inputmode="numeric" value="0" maxlength="15" class="epf-input pl-7 text-slate-400"
                                 oninput="ctcFormat(this);ctcCalc();this.classList.remove('text-slate-400');"
                                 onfocus="if(this.value==='0'){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                 onblur="if(!this.value){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
@@ -124,7 +124,7 @@
                         <div id="ctc-80c-wrap">
                             <label class="epf-label" data-i18n="lbl.ctc.80c">80C Investments (₹/yr)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
-                            <input id="ctc-80c" type="text" inputmode="numeric" value="1,50,000" class="epf-input pl-7 text-slate-400"
+                            <input id="ctc-80c" type="text" inputmode="numeric" value="1,50,000" maxlength="15" class="epf-input pl-7 text-slate-400"
                                 oninput="ctcFormat(this);ctcCalc();this.classList.remove('text-slate-400');"
                                 onfocus="if(this.value==='1,50,000'){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                 onblur="if(!this.value){this.value='1,50,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">

@@ -23,7 +23,7 @@
                         <div class="grid grid-cols-2 gap-x-3 gap-y-2">
                             <div>
                                 <label class="ssa-label" data-i18n="lbl.ssa.dobyear">Daughter's Birth Year</label>
-                                <input id="ssa-dob-year" type="number" min="2006" max="2026" value="2019" class="ssa-input text-slate-400"
+                                <input id="ssa-dob-year" type="number" min="2016" max="2026" value="2019" class="ssa-input text-slate-400"
                                     oninput="ssaCalc(); this.classList.remove('text-slate-400');"
                                     onfocus="this.classList.remove('text-slate-400');"
                                     onblur="if(!this.value) this.classList.add('text-slate-400');">
@@ -37,7 +37,7 @@
                             <div>
                                 <label class="ssa-label" data-i18n="lbl.ssa.annual">Annual SSA Deposit (₹)</label>
                                 <div class="relative"><span class="ssa-prefix">₹</span>
-                                <input id="ssa-annual" type="text" inputmode="numeric" value="1,50,000" class="ssa-input pl-7 text-slate-400"
+                                <input id="ssa-annual" type="text" inputmode="numeric" value="1,50,000" maxlength="15" class="ssa-input pl-7 text-slate-400"
                                     oninput="ssaFormat(this); ssaCalc();"
                                     onfocus="if(this.value==='1,50,000'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                     onblur="if(this.value===''||this.value==='1,50,000'){this.value='1,50,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
@@ -74,7 +74,7 @@
                             <div>
                                 <label class="ssa-label" data-i18n="lbl.ssa.elss">Monthly ELSS SIP (₹)</label>
                                 <div class="relative"><span class="ssa-prefix">₹</span>
-                                <input id="ssa-elss-sip" type="text" inputmode="numeric" value="5,000" class="ssa-input pl-7 text-slate-400"
+                                <input id="ssa-elss-sip" type="text" inputmode="numeric" value="5,000" maxlength="15" class="ssa-input pl-7 text-slate-400"
                                     oninput="ssaFormat(this); ssaCalc();"
                                     onfocus="if(this.value==='5,000'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                     onblur="if(this.value===''||this.value==='5,000'){this.value='5,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
@@ -98,7 +98,7 @@
                             <div>
                                 <label class="ssa-label" data-i18n="lbl.ssa.edu">Education Goal (₹ today)</label>
                                 <div class="relative"><span class="ssa-prefix">₹</span>
-                                <input id="ssa-goal-edu" type="text" inputmode="numeric" value="25,00,000" class="ssa-input pl-7 text-slate-400"
+                                <input id="ssa-goal-edu" type="text" inputmode="numeric" value="25,00,000" maxlength="15" class="ssa-input pl-7 text-slate-400"
                                     oninput="ssaFormat(this); ssaCalc();"
                                     onfocus="if(this.value==='25,00,000'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                     onblur="if(this.value===''||this.value==='25,00,000'){this.value='25,00,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
@@ -108,7 +108,7 @@
                             <div>
                                 <label class="ssa-label" data-i18n="lbl.ssa.marr">Marriage Goal (₹ today)</label>
                                 <div class="relative"><span class="ssa-prefix">₹</span>
-                                <input id="ssa-goal-marr" type="text" inputmode="numeric" value="30,00,000" class="ssa-input pl-7 text-slate-400"
+                                <input id="ssa-goal-marr" type="text" inputmode="numeric" value="30,00,000" maxlength="15" class="ssa-input pl-7 text-slate-400"
                                     oninput="ssaFormat(this); ssaCalc();"
                                     onfocus="if(this.value==='30,00,000'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                     onblur="if(this.value===''||this.value==='30,00,000'){this.value='30,00,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">

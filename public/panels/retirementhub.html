@@ -31,7 +31,7 @@
                             <div>
                                 <label class="epf-label">Current Age</label>
                                 <input id="rh-age" type="number" min="18" max="59" value="30" class="epf-input text-slate-400"
-                                    oninput="retHubCalc();this.classList.remove('text-slate-400');"
+                                    oninput="retHubCalc();this.classList.remove('text-slate-400');var r=document.getElementById('rh-ret-age');r.min=Math.max(45,+this.value+1);if(+r.value<=+this.value)r.value=+this.value+1;"
                                     onfocus="if(this.value==='30'){this.value='';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');"
                                     onblur="if(!this.value){this.value='30';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');">
                             </div>
@@ -68,7 +68,7 @@
                             <div class="col-span-2">
                                 <label class="epf-label">Monthly General Expenses (₹ today)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
-                                <input id="rh-expenses" type="text" inputmode="numeric" value="60,000" class="epf-input pl-7 text-slate-400"
+                                <input id="rh-expenses" type="text" inputmode="numeric" maxlength="15" value="60,000" class="epf-input pl-7 text-slate-400"
                                     oninput="rhFormatInput(this);retHubCalc();this.classList.remove('text-slate-400');"
                                     onfocus="if(this.value==='60,000'){this.value='';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');"
                                     onblur="if(!this.value){this.value='60,000';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');">
@@ -78,7 +78,7 @@
                             <div>
                                 <label class="epf-label">Monthly Medical (₹ today)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
-                                <input id="rh-medical-expenses" type="text" inputmode="numeric" value="5,000" class="epf-input pl-7 text-slate-400"
+                                <input id="rh-medical-expenses" type="text" inputmode="numeric" maxlength="15" value="5,000" class="epf-input pl-7 text-slate-400"
                                     oninput="rhFormatInput(this);retHubCalc();this.classList.remove('text-slate-400');"
                                     onfocus="if(this.value==='5,000'){this.value='';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');"
                                     onblur="if(!this.value){this.value='5,000';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');">
@@ -103,7 +103,7 @@
                             <div>
                                 <label class="epf-label">Current Balance (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
-                                <input id="rh-epf-balance" type="text" inputmode="numeric" value="2,00,000" class="epf-input pl-7 text-slate-400"
+                                <input id="rh-epf-balance" type="text" inputmode="numeric" maxlength="15" value="2,00,000" class="epf-input pl-7 text-slate-400"
                                     oninput="rhFormatInput(this);retHubCalc();this.classList.remove('text-slate-400');"
                                     onfocus="if(this.value==='2,00,000'){this.value='';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');"
                                     onblur="if(!this.value){this.value='2,00,000';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');">
@@ -112,7 +112,7 @@
                             <div>
                                 <label class="epf-label">Monthly Basic (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
-                                <input id="rh-epf-basic" type="text" inputmode="numeric" value="50,000" class="epf-input pl-7 text-slate-400"
+                                <input id="rh-epf-basic" type="text" inputmode="numeric" maxlength="15" value="50,000" class="epf-input pl-7 text-slate-400"
                                     oninput="rhFormatInput(this);retHubCalc();this.classList.remove('text-slate-400');"
                                     onfocus="if(this.value==='50,000'){this.value='';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');"
                                     onblur="if(!this.value){this.value='50,000';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');">
@@ -129,7 +129,7 @@
                             <div>
                                 <label class="epf-label">Balance (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
-                                <input id="rh-ppf-balance" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                <input id="rh-ppf-balance" type="text" inputmode="numeric" maxlength="15" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="rhFormatInput(this);retHubCalc();this.classList.remove('text-slate-400');"
                                     onfocus="if(this.value==='0'){this.value='';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');"
                                     onblur="if(!this.value){this.value='0';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');">
@@ -138,7 +138,7 @@
                             <div>
                                 <label class="epf-label">Annual (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
-                                <input id="rh-ppf-annual" type="text" inputmode="numeric" value="1,50,000" class="epf-input pl-7 text-slate-400"
+                                <input id="rh-ppf-annual" type="text" inputmode="numeric" maxlength="15" value="1,50,000" class="epf-input pl-7 text-slate-400"
                                     oninput="rhFormatInput(this);retHubCalc();this.classList.remove('text-slate-400');"
                                     onfocus="if(this.value==='1,50,000'){this.value='';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');"
                                     onblur="if(!this.value){this.value='1,50,000';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');">
@@ -161,7 +161,7 @@
                             <div>
                                 <label class="epf-label">Current Balance (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
-                                <input id="rh-nps-balance" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                <input id="rh-nps-balance" type="text" inputmode="numeric" maxlength="15" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="rhFormatInput(this);retHubCalc();this.classList.remove('text-slate-400');"
                                     onfocus="if(this.value==='0'){this.value='';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');"
                                     onblur="if(!this.value){this.value='0';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');">
@@ -170,7 +170,7 @@
                             <div>
                                 <label class="epf-label">Monthly Contribution (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
-                                <input id="rh-nps-monthly" type="text" inputmode="numeric" value="5,000" class="epf-input pl-7 text-slate-400"
+                                <input id="rh-nps-monthly" type="text" inputmode="numeric" maxlength="15" value="5,000" class="epf-input pl-7 text-slate-400"
                                     oninput="rhFormatInput(this);retHubCalc();this.classList.remove('text-slate-400');"
                                     onfocus="if(this.value==='5,000'){this.value='';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');"
                                     onblur="if(!this.value){this.value='5,000';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');">
@@ -209,7 +209,7 @@
                             <div>
                                 <label class="epf-label">Monthly SIP (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
-                                <input id="rh-sip-monthly" type="text" inputmode="numeric" value="10,000" class="epf-input pl-7 text-slate-400"
+                                <input id="rh-sip-monthly" type="text" inputmode="numeric" maxlength="15" value="10,000" class="epf-input pl-7 text-slate-400"
                                     oninput="rhFormatInput(this);retHubCalc();this.classList.remove('text-slate-400');"
                                     onfocus="if(this.value==='10,000'){this.value='';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');"
                                     onblur="if(!this.value){this.value='10,000';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');">
@@ -232,7 +232,7 @@
                             <div>
                                 <label class="epf-label">Current Value (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
-                                <input id="rh-other-corpus" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                                <input id="rh-other-corpus" type="text" inputmode="numeric" maxlength="15" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="rhFormatInput(this);retHubCalc();this.classList.remove('text-slate-400');"
                                     onfocus="if(this.value==='0'){this.value='';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');"
                                     onblur="if(!this.value){this.value='0';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');">
@@ -418,7 +418,7 @@
                         <div class="col-span-2">
                             <label class="epf-label">Retirement Corpus (₹)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
-                            <input id="dd-corpus" type="text" inputmode="numeric" value="1,00,00,000"
+                            <input id="dd-corpus" type="text" inputmode="numeric" maxlength="15" value="1,00,00,000"
                                 class="epf-input pl-7 text-slate-400"
                                 oninput="ddFormat(this);drawdownCalc();this.classList.remove('text-slate-400');"
                                 onfocus="if(this.value==='1,00,00,000'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
@@ -431,7 +431,7 @@
                             <label class="epf-label">Current Age</label>
                             <input id="dd-current-age" type="number" min="20" max="74" value="30"
                                 class="epf-input text-slate-400"
-                                oninput="drawdownCalc();this.classList.remove('text-slate-400');"
+                                oninput="drawdownCalc();this.classList.remove('text-slate-400');var r=document.getElementById('dd-ret-age');r.min=Math.max(40,+this.value+1);if(+r.value<=+this.value)r.value=+this.value+1;"
                                 onfocus="if(this.value==='30'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                 onblur="if(this.value===''||this.value==='30'){this.value='30';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
                             <div class="text-[9px] text-slate-400 mt-0.5">Your age today</div>
@@ -450,7 +450,7 @@
                         <div class="col-span-2">
                             <label class="epf-label">Today's Monthly Expenses (₹)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
-                            <input id="dd-expenses" type="text" inputmode="numeric" value="60,000"
+                            <input id="dd-expenses" type="text" inputmode="numeric" maxlength="15" value="60,000"
                                 class="epf-input pl-7 text-slate-400"
                                 oninput="ddFormat(this);drawdownCalc();this.classList.remove('text-slate-400');"
                                 onfocus="if(this.value==='60,000'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
@@ -482,7 +482,7 @@
                         <div class="col-span-2">
                             <label class="epf-label">Other Monthly Income (₹) <span class="normal-case font-semibold text-slate-400">optional</span></label>
                             <div class="relative"><span class="epf-prefix">₹</span>
-                            <input id="dd-other-income" type="text" inputmode="numeric" value="" placeholder="e.g. pension, rent"
+                            <input id="dd-other-income" type="text" inputmode="numeric" maxlength="15" value="" placeholder="e.g. pension, rent"
                                 class="epf-input pl-7 text-slate-400"
                                 oninput="ddFormat(this);drawdownCalc();if(this.value){this.classList.remove('text-slate-400');}else{this.classList.add('text-slate-400');}"
                                 onfocus="this.classList.remove('text-slate-400');"

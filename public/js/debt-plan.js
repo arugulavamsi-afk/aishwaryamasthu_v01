@@ -106,13 +106,13 @@
                 '<div class="flex items-center gap-1" style="min-width:0;">' +
 
                 // Name — no grey (it's real text); no debtRenderLoans on oninput to avoid focus loss
-                '<input class="debt-loan-input" style="flex:1;min-width:0;" value="' + (l.name||'') + '" placeholder="Loan name" ' +
+                '<input class="debt-loan-input" style="flex:1;min-width:0;" value="' + (l.name||'') + '" placeholder="Loan name" maxlength="100" ' +
                 'oninput="debtUpdateLoan(' + l.id + ',\'name\',this.value);debtCalc();">' +
 
                 // Balance
                 '<div class="relative flex-shrink-0" style="width:90px;">' +
                 '<span style="position:absolute;left:6px;top:50%;transform:translateY(-50%);font-size:10px;color:#94a3b8;font-weight:700;pointer-events:none;z-index:1;">₹</span>' +
-                '<input class="debt-loan-input pl-4 text-slate-400" style="width:100%;" value="' + balFmt + '" placeholder="Balance" inputmode="numeric" ' +
+                '<input class="debt-loan-input pl-4 text-slate-400" style="width:100%;" value="' + balFmt + '" placeholder="Balance" inputmode="numeric" maxlength="15" ' +
                 'onfocus="if(this.classList.contains(\'text-slate-400\')){this.value=\'\';this.classList.remove(\'text-slate-400\');}" ' +
                 'onblur="if(!this.value){this.value=\'' + balFmt + '\';this.classList.add(\'text-slate-400\');}else{this.classList.remove(\'text-slate-400\');}" ' +
                 'oninput="var r=this.value.replace(/[^0-9]/g,\'\');this.value=r?Number(r).toLocaleString(\'en-IN\'):\'\';this.classList.remove(\'text-slate-400\');debtUpdateLoan(' + l.id + ',\'balance\',this.value);">' +
@@ -127,7 +127,7 @@
                 // EMI
                 '<div class="relative flex-shrink-0" style="width:90px;">' +
                 '<span style="position:absolute;left:6px;top:50%;transform:translateY(-50%);font-size:10px;color:#94a3b8;font-weight:700;pointer-events:none;z-index:1;">₹</span>' +
-                '<input class="debt-loan-input pl-4 text-slate-400" style="width:100%;" value="' + emiFmt + '" placeholder="EMI/mo" inputmode="numeric" ' +
+                '<input class="debt-loan-input pl-4 text-slate-400" style="width:100%;" value="' + emiFmt + '" placeholder="EMI/mo" inputmode="numeric" maxlength="15" ' +
                 'onfocus="if(this.classList.contains(\'text-slate-400\')){this.value=\'\';this.classList.remove(\'text-slate-400\');}" ' +
                 'onblur="if(!this.value){this.value=\'' + emiFmt + '\';this.classList.add(\'text-slate-400\');}else{this.classList.remove(\'text-slate-400\');}" ' +
                 'oninput="var r=this.value.replace(/[^0-9]/g,\'\');this.value=r?Number(r).toLocaleString(\'en-IN\'):\'\';this.classList.remove(\'text-slate-400\');debtUpdateLoan(' + l.id + ',\'emi\',this.value);">' +

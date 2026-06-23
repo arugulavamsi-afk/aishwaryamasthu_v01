@@ -40,7 +40,7 @@
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1" data-i18n="lbl.hs.income">Monthly Take-Home Income</label>
                                 <div class="relative">
                                     <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">₹</span>
-                                    <input type="text" id="hs-income" value="0" inputmode="numeric"
+                                    <input type="text" id="hs-income" value="0" inputmode="numeric" maxlength="15"
                                         class="hs-input w-full pl-7 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-base font-bold outline-none focus:ring-2 focus:ring-blue-400 transition-all text-slate-400"
                                         onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}"
                                         onblur="if(this.value===''||this.value==='0'){this.value='0';this.classList.add('text-slate-400');}"
@@ -59,7 +59,7 @@
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1" data-i18n="lbl.hs.emi">Monthly EMIs / Loan Repayments</label>
                                 <div class="relative">
                                     <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">₹</span>
-                                    <input type="text" id="hs-emi" value="0" inputmode="numeric"
+                                    <input type="text" id="hs-emi" value="0" inputmode="numeric" maxlength="15"
                                         class="hs-input w-full pl-7 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-base font-bold outline-none focus:ring-2 focus:ring-red-400 transition-all text-slate-400"
                                         onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}"
                                         onblur="if(this.value===''||this.value==='0'){this.value='0';this.classList.add('text-slate-400');}"
@@ -71,7 +71,7 @@
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1" data-i18n="lbl.hs.exp">Monthly Living Expenses</label>
                                 <div class="relative">
                                     <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">₹</span>
-                                    <input type="text" id="hs-expenses" value="0" inputmode="numeric"
+                                    <input type="text" id="hs-expenses" value="0" inputmode="numeric" maxlength="15"
                                         class="hs-input w-full pl-7 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-base font-bold outline-none focus:ring-2 focus:ring-orange-400 transition-all text-slate-400"
                                         onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}"
                                         onblur="if(this.value===''||this.value==='0'){this.value='0';this.classList.add('text-slate-400');}"
@@ -83,7 +83,7 @@
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1" data-i18n="lbl.hs.sav">Monthly Savings & Investments</label>
                                 <div class="relative">
                                     <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">₹</span>
-                                    <input type="text" id="hs-savings" value="0" inputmode="numeric"
+                                    <input type="text" id="hs-savings" value="0" inputmode="numeric" maxlength="15"
                                         class="hs-input w-full pl-7 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-base font-bold outline-none focus:ring-2 focus:ring-emerald-400 transition-all text-slate-400"
                                         onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}"
                                         onblur="if(this.value===''||this.value==='0'){this.value='0';this.classList.add('text-slate-400');}"
@@ -102,7 +102,7 @@
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1" data-i18n="lbl.hs.health">Health Insurance Coverage (Total)</label>
                                 <div class="relative">
                                     <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">₹</span>
-                                    <input type="text" id="hs-health-ins" value="0" inputmode="numeric"
+                                    <input type="text" id="hs-health-ins" value="0" inputmode="numeric" maxlength="15"
                                         class="hs-input w-full pl-7 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-base font-bold outline-none focus:ring-2 focus:ring-pink-400 transition-all text-slate-400"
                                         onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}"
                                         onblur="if(this.value===''||this.value==='0'){this.value='0';this.classList.add('text-slate-400');}"
@@ -114,7 +114,7 @@
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1" data-i18n="lbl.hs.term">Term Life Insurance Coverage</label>
                                 <div class="relative">
                                     <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">₹</span>
-                                    <input type="text" id="hs-term-ins" value="0" inputmode="numeric"
+                                    <input type="text" id="hs-term-ins" value="0" inputmode="numeric" maxlength="15"
                                         class="hs-input w-full pl-7 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-base font-bold outline-none focus:ring-2 focus:ring-purple-400 transition-all text-slate-400"
                                         onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}"
                                         onblur="if(this.value===''||this.value==='0'){this.value='0';this.classList.add('text-slate-400');}"
@@ -126,7 +126,7 @@
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1" data-i18n="lbl.hs.ef">Emergency Fund Saved (Total)</label>
                                 <div class="relative">
                                     <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">₹</span>
-                                    <input type="text" id="hs-efund" value="0" inputmode="numeric"
+                                    <input type="text" id="hs-efund" value="0" inputmode="numeric" maxlength="15"
                                         class="hs-input w-full pl-7 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-base font-bold outline-none focus:ring-2 focus:ring-amber-400 transition-all text-slate-400"
                                         onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}"
                                         onblur="if(this.value===''||this.value==='0'){this.value='0';this.classList.add('text-slate-400');}"
@@ -147,7 +147,7 @@
                             <div>
                                 <label class="block text-[10px] font-bold text-slate-500 mb-1">📈 Equity MF / Stocks</label>
                                 <div class="relative"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">₹</span>
-                                <input type="text" id="hs-pf-equity" value="0" inputmode="numeric"
+                                <input type="text" id="hs-pf-equity" value="0" inputmode="numeric" maxlength="15"
                                     class="hs-input w-full pl-7 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold outline-none focus:ring-2 focus:ring-emerald-400 transition-all text-slate-400"
                                     onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}"
                                     onblur="if(this.value===''||this.value==='0'){this.value='0';this.classList.add('text-slate-400');}"
@@ -159,7 +159,7 @@
                             <div>
                                 <label class="block text-[10px] font-bold text-slate-500 mb-1">🏦 Debt MF / FD / Bonds</label>
                                 <div class="relative"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">₹</span>
-                                <input type="text" id="hs-pf-debt" value="0" inputmode="numeric"
+                                <input type="text" id="hs-pf-debt" value="0" inputmode="numeric" maxlength="15"
                                     class="hs-input w-full pl-7 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold outline-none focus:ring-2 focus:ring-blue-400 transition-all text-slate-400"
                                     onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}"
                                     onblur="if(this.value===''||this.value==='0'){this.value='0';this.classList.add('text-slate-400');}"
@@ -171,7 +171,7 @@
                             <div>
                                 <label class="block text-[10px] font-bold text-slate-500 mb-1">🏠 Real Estate</label>
                                 <div class="relative"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">₹</span>
-                                <input type="text" id="hs-pf-realty" value="0" inputmode="numeric"
+                                <input type="text" id="hs-pf-realty" value="0" inputmode="numeric" maxlength="15"
                                     class="hs-input w-full pl-7 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold outline-none focus:ring-2 focus:ring-orange-400 transition-all text-slate-400"
                                     onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}"
                                     onblur="if(this.value===''||this.value==='0'){this.value='0';this.classList.add('text-slate-400');}"
@@ -183,7 +183,7 @@
                             <div>
                                 <label class="block text-[10px] font-bold text-slate-500 mb-1">🥇 Gold (All Forms)</label>
                                 <div class="relative"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">₹</span>
-                                <input type="text" id="hs-pf-gold" value="0" inputmode="numeric"
+                                <input type="text" id="hs-pf-gold" value="0" inputmode="numeric" maxlength="15"
                                     class="hs-input w-full pl-7 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold outline-none focus:ring-2 focus:ring-amber-400 transition-all text-slate-400"
                                     onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}"
                                     onblur="if(this.value===''||this.value==='0'){this.value='0';this.classList.add('text-slate-400');}"
@@ -195,7 +195,7 @@
                             <div>
                                 <label class="block text-[10px] font-bold text-slate-500 mb-1">🏛️ EPF / PPF / NPS</label>
                                 <div class="relative"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">₹</span>
-                                <input type="text" id="hs-pf-retiral" value="0" inputmode="numeric"
+                                <input type="text" id="hs-pf-retiral" value="0" inputmode="numeric" maxlength="15"
                                     class="hs-input w-full pl-7 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold outline-none focus:ring-2 focus:ring-violet-400 transition-all text-slate-400"
                                     onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}"
                                     onblur="if(this.value===''||this.value==='0'){this.value='0';this.classList.add('text-slate-400');}"
@@ -207,7 +207,7 @@
                             <div>
                                 <label class="block text-[10px] font-bold text-slate-500 mb-1">💼 Other (Crypto / ULIP)</label>
                                 <div class="relative"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">₹</span>
-                                <input type="text" id="hs-pf-other" value="0" inputmode="numeric"
+                                <input type="text" id="hs-pf-other" value="0" inputmode="numeric" maxlength="15"
                                     class="hs-input w-full pl-7 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold outline-none focus:ring-2 focus:ring-pink-400 transition-all text-slate-400"
                                     onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}"
                                     onblur="if(this.value===''||this.value==='0'){this.value='0';this.classList.add('text-slate-400');}"

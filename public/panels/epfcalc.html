@@ -26,7 +26,7 @@
                         <div>
                             <label class="epf-label" data-i18n="lbl.epf.basic">Basic + DA Salary (₹/mo)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
-                            <input id="epf-basic" type="text" inputmode="numeric" value="50,000" class="epf-input pl-7 text-slate-400"
+                            <input id="epf-basic" type="text" inputmode="numeric" value="50,000" maxlength="15" class="epf-input pl-7 text-slate-400"
                                 oninput="epfFormat(this); epfCalc();"
                                 onfocus="if(this.value==='50,000'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                 onblur="if(this.value===''||this.value==='50,000'){this.value='50,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
@@ -37,7 +37,7 @@
                         <div>
                             <label class="epf-label" data-i18n="lbl.epf.balance">Current EPF Balance (₹)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
-                            <input id="epf-balance" type="text" inputmode="numeric" value="2,00,000" class="epf-input pl-7 text-slate-400"
+                            <input id="epf-balance" type="text" inputmode="numeric" value="2,00,000" maxlength="15" class="epf-input pl-7 text-slate-400"
                                 oninput="epfFormat(this); epfCalc();"
                                 onfocus="if(this.value==='2,00,000'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                 onblur="if(this.value===''||this.value==='2,00,000'){this.value='2,00,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
@@ -48,7 +48,7 @@
                         <div>
                             <label class="epf-label" data-i18n="lbl.epf.age">Current Age (yrs)</label>
                             <input id="epf-age" type="number" min="18" max="58" value="30" class="epf-input text-slate-400"
-                                oninput="epfCalc(); this.classList.remove('text-slate-400');"
+                                oninput="epfCalc(); this.classList.remove('text-slate-400');var r=document.getElementById('epf-retire');var m=Math.max(50,+this.value+1);r.min=m;if(+r.value<m)r.value=m;"
                                 onfocus="if(this.value==='30'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                 onblur="if(this.value===''||this.value==='30'){this.value='30';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
                         </div>

@@ -23,7 +23,7 @@
                     <div class="space-y-2">
                         <div>
                             <label class="epf-label" data-i18n="lbl.joint.name">Name</label>
-                            <input id="jp-p1-name" type="text" placeholder="e.g. Arjun"
+                            <input id="jp-p1-name" type="text" placeholder="e.g. Arjun" maxlength="100"
                                 class="epf-input text-slate-400"
                                 onfocus="if(this.placeholder&&this.value===''||this.classList.contains('text-slate-400')){this.value='';this.classList.remove('text-slate-400');}"
                                 onblur="if(!this.value.trim()){this.classList.add('text-slate-400');}"
@@ -32,7 +32,7 @@
                         <div>
                             <label class="epf-label" data-i18n="lbl.joint.income">Monthly Gross Income (₹)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
-                            <input id="jp-p1-income" type="text" inputmode="numeric" placeholder="1,20,000"
+                            <input id="jp-p1-income" type="text" inputmode="numeric" placeholder="1,20,000" maxlength="15"
                                 class="epf-input pl-7 text-slate-400"
                                 onfocus="if(this.value==='1,20,000'||this.classList.contains('text-slate-400')){this.value='';this.classList.remove('text-slate-400');}"
                                 onblur="if(!this.value){this.value='1,20,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
@@ -42,7 +42,7 @@
                         <div>
                             <label class="epf-label" data-i18n="lbl.joint.invest_cap">Monthly Investment Capacity (₹)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
-                            <input id="jp-p1-invest" type="text" inputmode="numeric" placeholder="25,000"
+                            <input id="jp-p1-invest" type="text" inputmode="numeric" placeholder="25,000" maxlength="15"
                                 class="epf-input pl-7 text-slate-400"
                                 onfocus="if(this.value==='25,000'||this.classList.contains('text-slate-400')){this.value='';this.classList.remove('text-slate-400');}"
                                 onblur="if(!this.value){this.value='25,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
@@ -52,7 +52,7 @@
                         <div>
                             <label class="epf-label" data-i18n="lbl.joint.portfolio">Equity MF Portfolio Value (₹)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
-                            <input id="jp-p1-portfolio" type="text" inputmode="numeric" placeholder="5,00,000"
+                            <input id="jp-p1-portfolio" type="text" inputmode="numeric" placeholder="5,00,000" maxlength="15"
                                 class="epf-input pl-7 text-slate-400"
                                 onfocus="if(this.value==='5,00,000'||this.classList.contains('text-slate-400')){this.value='';this.classList.remove('text-slate-400');}"
                                 onblur="if(!this.value){this.value='5,00,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
@@ -79,7 +79,7 @@
                         <div>
                             <label class="epf-label" data-i18n="lbl.joint.80c">80C Already Used (₹/yr)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
-                            <input id="jp-p1-80c" type="text" inputmode="numeric" placeholder="1,50,000"
+                            <input id="jp-p1-80c" type="text" inputmode="numeric" placeholder="1,50,000" maxlength="15"
                                 class="epf-input pl-7 text-slate-400"
                                 onfocus="if(this.value==='1,50,000'||this.classList.contains('text-slate-400')){this.value='';this.classList.remove('text-slate-400');}"
                                 onblur="if(!this.value){this.value='1,50,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
@@ -98,7 +98,7 @@
                     <div class="space-y-2">
                         <div>
                             <label class="epf-label" data-i18n="lbl.joint.name">Name</label>
-                            <input id="jp-p2-name" type="text" placeholder="e.g. Priya"
+                            <input id="jp-p2-name" type="text" placeholder="e.g. Priya" maxlength="100"
                                 class="epf-input text-slate-400"
                                 onfocus="if(this.placeholder&&this.value===''||this.classList.contains('text-slate-400')){this.value='';this.classList.remove('text-slate-400');}"
                                 onblur="if(!this.value.trim()){this.classList.add('text-slate-400');}"
@@ -107,7 +107,7 @@
                         <div>
                             <label class="epf-label" data-i18n="lbl.joint.income">Monthly Gross Income (₹)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
-                            <input id="jp-p2-income" type="text" inputmode="numeric" placeholder="90,000"
+                            <input id="jp-p2-income" type="text" inputmode="numeric" placeholder="90,000" maxlength="15"
                                 class="epf-input pl-7 text-slate-400"
                                 onfocus="if(this.value==='90,000'||this.classList.contains('text-slate-400')){this.value='';this.classList.remove('text-slate-400');}"
                                 onblur="if(!this.value){this.value='90,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
@@ -117,7 +117,7 @@
                         <div>
                             <label class="epf-label" data-i18n="lbl.joint.invest_cap">Monthly Investment Capacity (₹)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
-                            <input id="jp-p2-invest" type="text" inputmode="numeric" placeholder="18,000"
+                            <input id="jp-p2-invest" type="text" inputmode="numeric" placeholder="18,000" maxlength="15"
                                 class="epf-input pl-7 text-slate-400"
                                 onfocus="if(this.value==='18,000'||this.classList.contains('text-slate-400')){this.value='';this.classList.remove('text-slate-400');}"
                                 onblur="if(!this.value){this.value='18,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
@@ -127,7 +127,7 @@
                         <div>
                             <label class="epf-label" data-i18n="lbl.joint.portfolio">Equity MF Portfolio Value (₹)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
-                            <input id="jp-p2-portfolio" type="text" inputmode="numeric" placeholder="2,50,000"
+                            <input id="jp-p2-portfolio" type="text" inputmode="numeric" placeholder="2,50,000" maxlength="15"
                                 class="epf-input pl-7 text-slate-400"
                                 onfocus="if(this.value==='2,50,000'||this.classList.contains('text-slate-400')){this.value='';this.classList.remove('text-slate-400');}"
                                 onblur="if(!this.value){this.value='2,50,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
@@ -154,7 +154,7 @@
                         <div>
                             <label class="epf-label" data-i18n="lbl.joint.80c">80C Already Used (₹/yr)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
-                            <input id="jp-p2-80c" type="text" inputmode="numeric" placeholder="1,50,000"
+                            <input id="jp-p2-80c" type="text" inputmode="numeric" placeholder="1,50,000" maxlength="15"
                                 class="epf-input pl-7 text-slate-400"
                                 onfocus="if(this.value==='1,50,000'||this.classList.contains('text-slate-400')){this.value='';this.classList.remove('text-slate-400');}"
                                 onblur="if(!this.value){this.value='1,50,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
@@ -186,7 +186,7 @@
                                 <div>
                                     <label class="epf-label" data-i18n="lbl.joint.today_cost">Today's Cost (₹)</label>
                                     <div class="relative"><span class="epf-prefix">₹</span>
-                                    <input id="jp-edu-cost" type="text" inputmode="numeric" placeholder="20,00,000"
+                                    <input id="jp-edu-cost" type="text" inputmode="numeric" placeholder="20,00,000" maxlength="15"
                                         class="epf-input pl-7 text-slate-400"
                                         onfocus="if(this.classList.contains('text-slate-400')){this.value='';this.classList.remove('text-slate-400');}"
                                         onblur="if(!this.value){this.value='20,00,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
@@ -220,7 +220,7 @@
                                 <div>
                                     <label class="epf-label" data-i18n="lbl.joint.target_amt">Target Amount (₹)</label>
                                     <div class="relative"><span class="epf-prefix">₹</span>
-                                    <input id="jp-home-cost" type="text" inputmode="numeric" placeholder="60,00,000"
+                                    <input id="jp-home-cost" type="text" inputmode="numeric" placeholder="60,00,000" maxlength="15"
                                         class="epf-input pl-7 text-slate-400"
                                         onfocus="if(this.classList.contains('text-slate-400')){this.value='';this.classList.remove('text-slate-400');}"
                                         onblur="if(!this.value){this.value='60,00,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
@@ -262,7 +262,7 @@
                                 <div>
                                     <label class="epf-label" data-i18n="lbl.joint.monthly_need">Monthly Need (₹)</label>
                                     <div class="relative"><span class="epf-prefix">₹</span>
-                                    <input id="jp-retire-monthly" type="text" inputmode="numeric" placeholder="1,00,000"
+                                    <input id="jp-retire-monthly" type="text" inputmode="numeric" placeholder="1,00,000" maxlength="15"
                                         class="epf-input pl-7 text-slate-400"
                                         onfocus="if(this.classList.contains('text-slate-400')){this.value='';this.classList.remove('text-slate-400');}"
                                         onblur="if(!this.value){this.value='1,00,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"

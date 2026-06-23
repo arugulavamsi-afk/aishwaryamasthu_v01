@@ -43,7 +43,7 @@
                         </select>
                     </div>
                     <div class="col-span-3">
-                        <input id="nt-bank-nominee" type="text" class="epf-input text-[10px] py-1.5" placeholder="Nominee name" oninput="nomRender()">
+                        <input id="nt-bank-nominee" type="text" class="epf-input text-[10px] py-1.5" placeholder="Nominee name" maxlength="100" oninput="nomRender()">
                     </div>
                     <div class="col-span-2">
                         <input id="nt-bank-date" type="date" class="epf-input text-[9px] py-1.5" style="padding-left:4px;" onchange="nomRender()">
@@ -64,7 +64,7 @@
                         </select>
                     </div>
                     <div class="col-span-3">
-                        <input id="nt-mf-nominee" type="text" class="epf-input text-[10px] py-1.5" placeholder="Nominee name" oninput="nomRender()">
+                        <input id="nt-mf-nominee" type="text" class="epf-input text-[10px] py-1.5" placeholder="Nominee name" maxlength="100" oninput="nomRender()">
                     </div>
                     <div class="col-span-2">
                         <input id="nt-mf-date" type="date" class="epf-input text-[9px] py-1.5" style="padding-left:4px;" onchange="nomRender()">
@@ -85,7 +85,7 @@
                         </select>
                     </div>
                     <div class="col-span-3">
-                        <input id="nt-life-nominee" type="text" class="epf-input text-[10px] py-1.5" placeholder="Nominee name" oninput="nomRender()">
+                        <input id="nt-life-nominee" type="text" class="epf-input text-[10px] py-1.5" placeholder="Nominee name" maxlength="100" oninput="nomRender()">
                     </div>
                     <div class="col-span-2">
                         <input id="nt-life-date" type="date" class="epf-input text-[9px] py-1.5" style="padding-left:4px;" onchange="nomRender()">
@@ -106,7 +106,7 @@
                         </select>
                     </div>
                     <div class="col-span-3">
-                        <input id="nt-epf-nominee" type="text" class="epf-input text-[10px] py-1.5" placeholder="Nominee name" oninput="nomRender()">
+                        <input id="nt-epf-nominee" type="text" class="epf-input text-[10px] py-1.5" placeholder="Nominee name" maxlength="100" oninput="nomRender()">
                     </div>
                     <div class="col-span-2">
                         <input id="nt-epf-date" type="date" class="epf-input text-[9px] py-1.5" style="padding-left:4px;" onchange="nomRender()">
@@ -127,7 +127,7 @@
                         </select>
                     </div>
                     <div class="col-span-3">
-                        <input id="nt-ppf-nominee" type="text" class="epf-input text-[10px] py-1.5" placeholder="Nominee name" oninput="nomRender()">
+                        <input id="nt-ppf-nominee" type="text" class="epf-input text-[10px] py-1.5" placeholder="Nominee name" maxlength="100" oninput="nomRender()">
                     </div>
                     <div class="col-span-2">
                         <input id="nt-ppf-date" type="date" class="epf-input text-[9px] py-1.5" style="padding-left:4px;" onchange="nomRender()">
@@ -148,7 +148,7 @@
                         </select>
                     </div>
                     <div class="col-span-3">
-                        <input id="nt-nps-nominee" type="text" class="epf-input text-[10px] py-1.5" placeholder="Nominee name" oninput="nomRender()">
+                        <input id="nt-nps-nominee" type="text" class="epf-input text-[10px] py-1.5" placeholder="Nominee name" maxlength="100" oninput="nomRender()">
                     </div>
                     <div class="col-span-2">
                         <input id="nt-nps-date" type="date" class="epf-input text-[9px] py-1.5" style="padding-left:4px;" onchange="nomRender()">
@@ -169,7 +169,7 @@
                         </select>
                     </div>
                     <div class="col-span-3">
-                        <input id="nt-demat-nominee" type="text" class="epf-input text-[10px] py-1.5" placeholder="Nominee name" oninput="nomRender()">
+                        <input id="nt-demat-nominee" type="text" class="epf-input text-[10px] py-1.5" placeholder="Nominee name" maxlength="100" oninput="nomRender()">
                     </div>
                     <div class="col-span-2">
                         <input id="nt-demat-date" type="date" class="epf-input text-[9px] py-1.5" style="padding-left:4px;" onchange="nomRender()">
@@ -190,7 +190,7 @@
                         </select>
                     </div>
                     <div class="col-span-3">
-                        <input id="nt-health-nominee" type="text" class="epf-input text-[10px] py-1.5" placeholder="Nominee name" oninput="nomRender()">
+                        <input id="nt-health-nominee" type="text" class="epf-input text-[10px] py-1.5" placeholder="Nominee name" maxlength="100" oninput="nomRender()">
                     </div>
                     <div class="col-span-2">
                         <input id="nt-health-date" type="date" class="epf-input text-[9px] py-1.5" style="padding-left:4px;" onchange="nomRender()">
@@ -246,7 +246,7 @@
                 <!-- Notes -->
                 <div class="mt-2">
                     <label class="epf-label">Notes — Lawyer contact, Will location, locker number, etc.</label>
-                    <textarea id="nt-notes" rows="2" class="epf-input resize-none text-[11px]" style="padding-top:6px;" placeholder="e.g. Will registered at SRO Banjara Hills, Hyderabad · Lawyer: Adv. Ramesh 98490-XXXXX · Safe locker: SBI Main Branch" oninput="nomRender()"></textarea>
+                    <textarea id="nt-notes" rows="2" maxlength="500" class="epf-input resize-none text-[11px]" style="padding-top:6px;" placeholder="e.g. Will registered at SRO Banjara Hills, Hyderabad · Lawyer: Adv. Ramesh 98490-XXXXX · Safe locker: SBI Main Branch" oninput="nomRender()"></textarea>
                 </div>
             </div>
 
@@ -352,7 +352,7 @@
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
                     <div>
                         <label class="epf-label">Full Legal Name <span class="text-red-500">*</span></label>
-                        <input id="wg-name" type="text" class="epf-input" placeholder="As per PAN / Aadhaar">
+                        <input id="wg-name" type="text" class="epf-input" placeholder="As per PAN / Aadhaar" maxlength="100">
                     </div>
                     <div>
                         <label class="epf-label">Age</label>
@@ -360,7 +360,7 @@
                     </div>
                     <div>
                         <label class="epf-label">Son/Daughter/Spouse of</label>
-                        <input id="wg-parent" type="text" class="epf-input" placeholder="Father's / spouse's name">
+                        <input id="wg-parent" type="text" class="epf-input" placeholder="Father's / spouse's name" maxlength="100">
                     </div>
                     <div>
                         <label class="epf-label">Religion</label>
@@ -378,7 +378,7 @@
                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
                     <div class="sm:col-span-2">
                         <label class="epf-label">Residential Address <span class="text-red-500">*</span></label>
-                        <textarea id="wg-address" rows="2" class="epf-input resize-none text-[11px]" style="padding-top:6px;" placeholder="Door No., Street, City, State, PIN"></textarea>
+                        <textarea id="wg-address" rows="2" maxlength="300" class="epf-input resize-none text-[11px]" style="padding-top:6px;" placeholder="Door No., Street, City, State, PIN"></textarea>
                     </div>
                     <div>
                         <label class="epf-label">Date of This Will</label>
@@ -403,28 +403,28 @@
                 <!-- 4 beneficiary rows -->
                 <div id="wg-bene-rows" class="flex flex-col gap-1">
                     <div class="grid grid-cols-12 gap-1 items-center">
-                        <div class="col-span-3"><input type="text" class="wg-bene-name epf-input text-[10px] py-1.5" placeholder="Beneficiary name"></div>
-                        <div class="col-span-2"><input type="text" class="wg-bene-rel epf-input text-[10px] py-1.5" placeholder="e.g. Wife"></div>
-                        <div class="col-span-5"><input type="text" class="wg-bene-share epf-input text-[10px] py-1.5" placeholder="e.g. 50% of all financial assets"></div>
-                        <div class="col-span-2"><input type="text" class="wg-bene-cont epf-input text-[10px] py-1.5" placeholder="If predeceases me…"></div>
+                        <div class="col-span-3"><input type="text" class="wg-bene-name epf-input text-[10px] py-1.5" placeholder="Beneficiary name" maxlength="100"></div>
+                        <div class="col-span-2"><input type="text" class="wg-bene-rel epf-input text-[10px] py-1.5" placeholder="e.g. Wife" maxlength="50"></div>
+                        <div class="col-span-5"><input type="text" class="wg-bene-share epf-input text-[10px] py-1.5" placeholder="e.g. 50% of all financial assets" maxlength="100"></div>
+                        <div class="col-span-2"><input type="text" class="wg-bene-cont epf-input text-[10px] py-1.5" placeholder="If predeceases me…" maxlength="100"></div>
                     </div>
                     <div class="grid grid-cols-12 gap-1 items-center">
-                        <div class="col-span-3"><input type="text" class="wg-bene-name epf-input text-[10px] py-1.5" placeholder="Beneficiary name"></div>
-                        <div class="col-span-2"><input type="text" class="wg-bene-rel epf-input text-[10px] py-1.5" placeholder="e.g. Son"></div>
-                        <div class="col-span-5"><input type="text" class="wg-bene-share epf-input text-[10px] py-1.5" placeholder="e.g. 25% + Flat at ABC Colony"></div>
-                        <div class="col-span-2"><input type="text" class="wg-bene-cont epf-input text-[10px] py-1.5" placeholder="If predeceases me…"></div>
+                        <div class="col-span-3"><input type="text" class="wg-bene-name epf-input text-[10px] py-1.5" placeholder="Beneficiary name" maxlength="100"></div>
+                        <div class="col-span-2"><input type="text" class="wg-bene-rel epf-input text-[10px] py-1.5" placeholder="e.g. Son" maxlength="50"></div>
+                        <div class="col-span-5"><input type="text" class="wg-bene-share epf-input text-[10px] py-1.5" placeholder="e.g. 25% + Flat at ABC Colony" maxlength="100"></div>
+                        <div class="col-span-2"><input type="text" class="wg-bene-cont epf-input text-[10px] py-1.5" placeholder="If predeceases me…" maxlength="100"></div>
                     </div>
                     <div class="grid grid-cols-12 gap-1 items-center">
-                        <div class="col-span-3"><input type="text" class="wg-bene-name epf-input text-[10px] py-1.5" placeholder="Beneficiary name"></div>
-                        <div class="col-span-2"><input type="text" class="wg-bene-rel epf-input text-[10px] py-1.5" placeholder="e.g. Daughter"></div>
-                        <div class="col-span-5"><input type="text" class="wg-bene-share epf-input text-[10px] py-1.5" placeholder="e.g. 25% of all financial assets"></div>
-                        <div class="col-span-2"><input type="text" class="wg-bene-cont epf-input text-[10px] py-1.5" placeholder="If predeceases me…"></div>
+                        <div class="col-span-3"><input type="text" class="wg-bene-name epf-input text-[10px] py-1.5" placeholder="Beneficiary name" maxlength="100"></div>
+                        <div class="col-span-2"><input type="text" class="wg-bene-rel epf-input text-[10px] py-1.5" placeholder="e.g. Daughter" maxlength="50"></div>
+                        <div class="col-span-5"><input type="text" class="wg-bene-share epf-input text-[10px] py-1.5" placeholder="e.g. 25% of all financial assets" maxlength="100"></div>
+                        <div class="col-span-2"><input type="text" class="wg-bene-cont epf-input text-[10px] py-1.5" placeholder="If predeceases me…" maxlength="100"></div>
                     </div>
                     <div class="grid grid-cols-12 gap-1 items-center">
-                        <div class="col-span-3"><input type="text" class="wg-bene-name epf-input text-[10px] py-1.5" placeholder="Beneficiary name"></div>
-                        <div class="col-span-2"><input type="text" class="wg-bene-rel epf-input text-[10px] py-1.5" placeholder="e.g. Charity"></div>
-                        <div class="col-span-5"><input type="text" class="wg-bene-share epf-input text-[10px] py-1.5" placeholder="e.g. Gold jewellery"></div>
-                        <div class="col-span-2"><input type="text" class="wg-bene-cont epf-input text-[10px] py-1.5" placeholder="If predeceases me…"></div>
+                        <div class="col-span-3"><input type="text" class="wg-bene-name epf-input text-[10px] py-1.5" placeholder="Beneficiary name" maxlength="100"></div>
+                        <div class="col-span-2"><input type="text" class="wg-bene-rel epf-input text-[10px] py-1.5" placeholder="e.g. Charity" maxlength="50"></div>
+                        <div class="col-span-5"><input type="text" class="wg-bene-share epf-input text-[10px] py-1.5" placeholder="e.g. Gold jewellery" maxlength="100"></div>
+                        <div class="col-span-2"><input type="text" class="wg-bene-cont epf-input text-[10px] py-1.5" placeholder="If predeceases me…" maxlength="100"></div>
                     </div>
                 </div>
                 <div class="text-[8.5px] text-slate-400 mt-1">* Contingency: what happens to that share if the beneficiary passes away before you (e.g. "passes to their children equally")</div>
@@ -439,15 +439,15 @@
                     <div class="flex flex-col gap-2">
                         <div>
                             <label class="epf-label">Executor's Full Name <span class="text-red-500">*</span></label>
-                            <input id="wg-exec-name" type="text" class="epf-input" placeholder="Name of executor">
+                            <input id="wg-exec-name" type="text" class="epf-input" placeholder="Name of executor" maxlength="100">
                         </div>
                         <div>
                             <label class="epf-label">Relationship</label>
-                            <input id="wg-exec-rel" type="text" class="epf-input" placeholder="e.g. Elder son, Friend">
+                            <input id="wg-exec-rel" type="text" class="epf-input" placeholder="e.g. Elder son, Friend" maxlength="100">
                         </div>
                         <div>
                             <label class="epf-label">Address</label>
-                            <textarea id="wg-exec-addr" rows="2" class="epf-input resize-none text-[11px]" style="padding-top:6px;" placeholder="Executor's address"></textarea>
+                            <textarea id="wg-exec-addr" rows="2" maxlength="300" class="epf-input resize-none text-[11px]" style="padding-top:6px;" placeholder="Executor's address"></textarea>
                         </div>
                     </div>
                 </div>
@@ -458,15 +458,15 @@
                     <div class="flex flex-col gap-2">
                         <div>
                             <label class="epf-label">Full Name <span class="text-red-500">*</span></label>
-                            <input id="wg-w1-name" type="text" class="epf-input" placeholder="Must not be a beneficiary">
+                            <input id="wg-w1-name" type="text" class="epf-input" placeholder="Must not be a beneficiary" maxlength="100">
                         </div>
                         <div>
                             <label class="epf-label">Occupation</label>
-                            <input id="wg-w1-occ" type="text" class="epf-input" placeholder="e.g. Software Engineer">
+                            <input id="wg-w1-occ" type="text" class="epf-input" placeholder="e.g. Software Engineer" maxlength="100">
                         </div>
                         <div>
                             <label class="epf-label">Address</label>
-                            <textarea id="wg-w1-addr" rows="2" class="epf-input resize-none text-[11px]" style="padding-top:6px;" placeholder="Witness 1 address"></textarea>
+                            <textarea id="wg-w1-addr" rows="2" maxlength="300" class="epf-input resize-none text-[11px]" style="padding-top:6px;" placeholder="Witness 1 address"></textarea>
                         </div>
                     </div>
                 </div>
@@ -477,15 +477,15 @@
                     <div class="flex flex-col gap-2">
                         <div>
                             <label class="epf-label">Full Name <span class="text-red-500">*</span></label>
-                            <input id="wg-w2-name" type="text" class="epf-input" placeholder="Must not be a beneficiary">
+                            <input id="wg-w2-name" type="text" class="epf-input" placeholder="Must not be a beneficiary" maxlength="100">
                         </div>
                         <div>
                             <label class="epf-label">Occupation</label>
-                            <input id="wg-w2-occ" type="text" class="epf-input" placeholder="e.g. Teacher">
+                            <input id="wg-w2-occ" type="text" class="epf-input" placeholder="e.g. Teacher" maxlength="100">
                         </div>
                         <div>
                             <label class="epf-label">Address</label>
-                            <textarea id="wg-w2-addr" rows="2" class="epf-input resize-none text-[11px]" style="padding-top:6px;" placeholder="Witness 2 address"></textarea>
+                            <textarea id="wg-w2-addr" rows="2" maxlength="300" class="epf-input resize-none text-[11px]" style="padding-top:6px;" placeholder="Witness 2 address"></textarea>
                         </div>
                     </div>
                 </div>
@@ -495,7 +495,7 @@
             <!-- Special instructions -->
             <div>
                 <label class="epf-label">Special Instructions / Specific Bequests (optional)</label>
-                <textarea id="wg-special" rows="2" class="epf-input resize-none text-[11px]" style="padding-top:6px;" placeholder="e.g. My wife shall have the right to reside in the family home for her lifetime. Gold ornaments to be divided equally between daughters. My library to son Arjun."></textarea>
+                <textarea id="wg-special" rows="2" maxlength="500" class="epf-input resize-none text-[11px]" style="padding-top:6px;" placeholder="e.g. My wife shall have the right to reside in the family home for her lifetime. Gold ornaments to be divided equally between daughters. My library to son Arjun."></textarea>
             </div>
 
             <!-- Generate button -->

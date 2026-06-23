@@ -77,7 +77,7 @@
                             </div>
                             <div>
                                 <label class="fp-label" data-i18n="fp.lbl.name">Your Name</label>
-                                <input type="text" id="fp-name" placeholder="e.g. Arjun" class="fp-input" oninput="fpLiveUpdate()">
+                                <input type="text" id="fp-name" placeholder="e.g. Arjun" maxlength="100" class="fp-input" oninput="fpLiveUpdate()">
                             </div>
                             <div class="grid grid-cols-2 gap-3">
                                 <div>
@@ -99,7 +99,7 @@
                                 <label class="fp-label" data-i18n="fp.lbl.income">Monthly Take-Home Income</label>
                                 <div class="relative">
                                     <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm" style="pointer-events:none;">₹</span>
-                                    <input type="text" id="fp-income" inputmode="numeric" placeholder="e.g. 1,00,000" class="fp-input" style="padding-left:2rem;" oninput="fpFormatMoney(this,'fp-income-words'); fpLiveUpdate()">
+                                    <input type="text" id="fp-income" inputmode="numeric" placeholder="e.g. 1,00,000" maxlength="15" class="fp-input" style="padding-left:2rem;" oninput="fpFormatMoney(this,'fp-income-words'); fpLiveUpdate()">
                                 </div>
                                 <div class="flex items-center justify-between mt-1">
                                 <div id="fp-income-words" class="num-word">-</div>
@@ -110,7 +110,7 @@
                                 <label class="fp-label" data-i18n="fp.lbl.invest">Monthly Amount You Can Invest</label>
                                 <div class="relative">
                                     <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm" style="pointer-events:none;">₹</span>
-                                    <input type="text" id="fp-invest-amt" inputmode="numeric" placeholder="e.g. 25,000" class="fp-input" style="padding-left:2rem;" oninput="fpFormatMoney(this,'fp-invest-words'); fpLiveUpdate()">
+                                    <input type="text" id="fp-invest-amt" inputmode="numeric" placeholder="e.g. 25,000" maxlength="15" class="fp-input" style="padding-left:2rem;" oninput="fpFormatMoney(this,'fp-invest-words'); fpLiveUpdate()">
                                 </div>
                                 <div id="fp-invest-words" class="num-word">-</div>
                             </div>
@@ -204,7 +204,7 @@
                                             <label class="block text-[10px] font-black text-blue-600 uppercase tracking-wider mb-1">Current EPF Balance (₹)</label>
                                             <div class="relative">
                                                 <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold pointer-events-none">₹</span>
-                                                <input type="text" id="fp-epf-balance" inputmode="numeric" placeholder="Check EPFO passbook / UAN portal"
+                                                <input type="text" id="fp-epf-balance" inputmode="numeric" maxlength="15" placeholder="Check EPFO passbook / UAN portal"
                                                     class="fp-mini-input pl-6 w-full text-left" style="padding:8px 10px 8px 22px;"
                                                     oninput="fpFormatEpfInput(this); fpEpfSync()">
                                             </div>
@@ -214,7 +214,7 @@
                                             <label class="block text-[10px] font-black text-blue-600 uppercase tracking-wider mb-1">Monthly Basic Salary (₹) <span class="font-normal normal-case">(optional)</span></label>
                                             <div class="relative">
                                                 <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold pointer-events-none">₹</span>
-                                                <input type="text" id="fp-epf-basic" inputmode="numeric" placeholder="e.g. 40,000"
+                                                <input type="text" id="fp-epf-basic" inputmode="numeric" maxlength="15" placeholder="e.g. 40,000"
                                                     class="fp-mini-input pl-6 w-full text-left" style="padding:8px 10px 8px 22px;"
                                                     oninput="fpFormatEpfInput(this); fpEpfSync()">
                                             </div>

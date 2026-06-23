@@ -48,7 +48,7 @@
                 <div>
                     <label class="epf-label">Purchase Cost (₹)</label>
                     <div class="relative"><span class="epf-prefix">₹</span>
-                    <input id="cg-cost" type="text" inputmode="numeric" value="1,00,000" class="epf-input pl-7 text-slate-400"
+                    <input id="cg-cost" type="text" inputmode="numeric" value="1,00,000" maxlength="15" class="epf-input pl-7 text-slate-400"
                         oninput="cgFmt(this);cgCalc();this.classList.remove('text-slate-400');"
                         onfocus="if(this.value==='1,00,000'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                         onblur="if(!this.value){this.value='1,00,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
@@ -57,7 +57,7 @@
                 <div>
                     <label class="epf-label">Sale Price (₹)</label>
                     <div class="relative"><span class="epf-prefix">₹</span>
-                    <input id="cg-sale" type="text" inputmode="numeric" value="1,50,000" class="epf-input pl-7 text-slate-400"
+                    <input id="cg-sale" type="text" inputmode="numeric" value="1,50,000" maxlength="15" class="epf-input pl-7 text-slate-400"
                         oninput="cgFmt(this);cgCalc();this.classList.remove('text-slate-400');"
                         onfocus="if(this.value==='1,50,000'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                         onblur="if(!this.value){this.value='1,50,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
@@ -79,7 +79,7 @@
             <div>
                 <label class="epf-label">Annual Taxable Income <span class="text-slate-300 font-normal">excl. capital gains</span></label>
                 <div class="relative"><span class="epf-prefix">₹</span>
-                <input id="cg-income" type="text" inputmode="numeric" value="12,00,000" class="epf-input pl-7 text-slate-400"
+                <input id="cg-income" type="text" inputmode="numeric" value="12,00,000" maxlength="15" class="epf-input pl-7 text-slate-400"
                     oninput="cgFmt(this);cgCalc();this.classList.remove('text-slate-400');"
                     onfocus="if(this.value==='12,00,000'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                     onblur="if(!this.value){this.value='12,00,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
@@ -99,7 +99,7 @@
             <div>
                 <label class="epf-label">LTCG Exemption Already Used This Year (₹) <span class="text-slate-300 font-normal">— Equity / SGB</span></label>
                 <div class="relative"><span class="epf-prefix">₹</span>
-                <input id="cg-ltcg-used" type="text" inputmode="numeric" value="0" class="epf-input pl-7 text-slate-400"
+                <input id="cg-ltcg-used" type="text" inputmode="numeric" value="0" maxlength="15" class="epf-input pl-7 text-slate-400"
                     oninput="cgFmt(this);cgCalc();this.classList.remove('text-slate-400');"
                     onfocus="if(this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                     onblur="if(!this.value){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">

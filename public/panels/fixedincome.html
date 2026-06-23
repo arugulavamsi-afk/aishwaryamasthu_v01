@@ -29,7 +29,7 @@
                         <div>
                             <label class="epf-label" data-i18n="lbl.fi.principal">Principal (₹)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
-                            <input id="fi-fd-principal" type="text" inputmode="numeric" value="1,00,000" class="epf-input pl-7 text-slate-400"
+                            <input id="fi-fd-principal" type="text" inputmode="numeric" value="1,00,000" maxlength="15" class="epf-input pl-7 text-slate-400"
                                 oninput="fiFormat(this);fiCalcFD();this.classList.remove('text-slate-400');"
                                 onfocus="if(this.value==='1,00,000'){this.value='';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');"
                                 onblur="if(!this.value){this.value='1,00,000';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');">
@@ -37,14 +37,14 @@
                         </div>
                         <div>
                             <label class="epf-label" data-i18n="lbl.fi.rate">Rate (% p.a.)</label>
-                            <input id="fi-fd-rate" type="text" inputmode="decimal" value="7.0" class="epf-input text-slate-400"
+                            <input id="fi-fd-rate" type="text" inputmode="decimal" value="7.0" maxlength="5" class="epf-input text-slate-400"
                                 oninput="fiCalcFD();this.classList.remove('text-slate-400');"
                                 onfocus="if(this.value==='7.0'){this.value='';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');"
                                 onblur="if(!this.value){this.value='7.0';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');">
                         </div>
                         <div>
                             <label class="epf-label" data-i18n="lbl.fi.tenure">Tenure (months)</label>
-                            <input id="fi-fd-tenure" type="text" inputmode="numeric" value="12" class="epf-input text-slate-400"
+                            <input id="fi-fd-tenure" type="text" inputmode="numeric" value="12" maxlength="3" class="epf-input text-slate-400"
                                 oninput="fiCalcFD();this.classList.remove('text-slate-400');"
                                 onfocus="if(this.value==='12'){this.value='';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');"
                                 onblur="if(!this.value){this.value='12';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');">
@@ -138,7 +138,7 @@
                         <div>
                             <label class="epf-label">Investment (₹)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
-                            <input id="fi-scss-principal" type="text" inputmode="numeric" value="10,00,000" class="epf-input pl-7 text-slate-400"
+                            <input id="fi-scss-principal" type="text" inputmode="numeric" value="10,00,000" maxlength="15" class="epf-input pl-7 text-slate-400"
                                 oninput="fiFormat(this);fiCalcSCSS();this.classList.remove('text-slate-400');"
                                 onfocus="if(this.value==='10,00,000'){this.value='';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');"
                                 onblur="if(!this.value){this.value='10,00,000';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');">
@@ -198,7 +198,7 @@
                         <div>
                             <label class="epf-label">Investment (₹)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
-                            <input id="fi-pomis-principal" type="text" inputmode="numeric" value="5,00,000" class="epf-input pl-7 text-slate-400"
+                            <input id="fi-pomis-principal" type="text" inputmode="numeric" value="5,00,000" maxlength="15" class="epf-input pl-7 text-slate-400"
                                 oninput="fiFormat(this);fiCalcPOMIS();this.classList.remove('text-slate-400');"
                                 onfocus="if(this.value==='5,00,000'){this.value='';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');"
                                 onblur="if(!this.value){this.value='5,00,000';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');">
@@ -257,7 +257,7 @@
                         <div>
                             <label class="epf-label">Investment (₹)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
-                            <input id="fi-nsc-principal" type="text" inputmode="numeric" value="1,00,000" class="epf-input pl-7 text-slate-400"
+                            <input id="fi-nsc-principal" type="text" inputmode="numeric" value="1,00,000" maxlength="15" class="epf-input pl-7 text-slate-400"
                                 oninput="fiFormat(this);fiCalcNSC();this.classList.remove('text-slate-400');"
                                 onfocus="if(this.value==='1,00,000'){this.value='';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');"
                                 onblur="if(!this.value){this.value='1,00,000';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');">
@@ -312,7 +312,7 @@
                         <div class="col-span-2">
                             <label class="epf-label">Investment (₹)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
-                            <input id="fi-kvp-principal" type="text" inputmode="numeric" value="1,00,000" class="epf-input pl-7 text-slate-400"
+                            <input id="fi-kvp-principal" type="text" inputmode="numeric" value="1,00,000" maxlength="15" class="epf-input pl-7 text-slate-400"
                                 oninput="fiFormat(this);fiCalcKVP();this.classList.remove('text-slate-400');"
                                 onfocus="if(this.value==='1,00,000'){this.value='';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');"
                                 onblur="if(!this.value){this.value='1,00,000';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');">
@@ -351,7 +351,7 @@
                         <div class="col-span-2">
                             <label class="epf-label">Investment (₹) — max 80C ₹1.5L</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
-                            <input id="fi-cmp-principal" type="text" inputmode="numeric" value="1,50,000" class="epf-input pl-7 text-slate-400"
+                            <input id="fi-cmp-principal" type="text" inputmode="numeric" value="1,50,000" maxlength="15" class="epf-input pl-7 text-slate-400"
                                 oninput="fiFormat(this);fiCalcELSS();this.classList.remove('text-slate-400');"
                                 onfocus="if(this.value==='1,50,000'){this.value='';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');"
                                 onblur="if(!this.value){this.value='1,50,000';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');">
@@ -359,7 +359,7 @@
                         </div>
                         <div>
                             <label class="epf-label">FD Rate (% p.a.)</label>
-                            <input id="fi-cmp-fd-rate" type="text" inputmode="decimal" value="7.0" class="epf-input text-slate-400"
+                            <input id="fi-cmp-fd-rate" type="text" inputmode="decimal" value="7.0" maxlength="5" class="epf-input text-slate-400"
                                 oninput="fiCalcELSS();this.classList.remove('text-slate-400');"
                                 onfocus="if(this.value==='7.0'){this.value='';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');"
                                 onblur="if(!this.value){this.value='7.0';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');">
@@ -367,7 +367,7 @@
                         </div>
                         <div>
                             <label class="epf-label">ELSS Return (% p.a.)</label>
-                            <input id="fi-cmp-elss-return" type="text" inputmode="decimal" value="12.0" class="epf-input text-slate-400"
+                            <input id="fi-cmp-elss-return" type="text" inputmode="decimal" value="12.0" maxlength="5" class="epf-input text-slate-400"
                                 oninput="fiCalcELSS();this.classList.remove('text-slate-400');"
                                 onfocus="if(this.value==='12.0'){this.value='';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');"
                                 onblur="if(!this.value){this.value='12.0';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');">
@@ -443,7 +443,7 @@
                         <div>
                             <label class="epf-label">Monthly Deposit (₹)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
-                            <input id="fi-rd-deposit" type="text" inputmode="numeric" value="5,000" class="epf-input pl-7 text-slate-400"
+                            <input id="fi-rd-deposit" type="text" inputmode="numeric" value="5,000" maxlength="15" class="epf-input pl-7 text-slate-400"
                                 oninput="fiFormat(this);fiCalcRD();this.classList.remove('text-slate-400');"
                                 onfocus="if(this.value==='5,000'){this.value='';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');"
                                 onblur="if(!this.value){this.value='5,000';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');">
@@ -451,14 +451,14 @@
                         </div>
                         <div>
                             <label class="epf-label">Rate (% p.a.)</label>
-                            <input id="fi-rd-rate" type="text" inputmode="decimal" value="6.5" class="epf-input text-slate-400"
+                            <input id="fi-rd-rate" type="text" inputmode="decimal" value="6.5" maxlength="5" class="epf-input text-slate-400"
                                 oninput="fiCalcRD();this.classList.remove('text-slate-400');"
                                 onfocus="if(this.value==='6.5'){this.value='';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');"
                                 onblur="if(!this.value){this.value='6.5';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');">
                         </div>
                         <div>
                             <label class="epf-label">Tenure (months)</label>
-                            <input id="fi-rd-tenure" type="text" inputmode="numeric" value="12" class="epf-input text-slate-400"
+                            <input id="fi-rd-tenure" type="text" inputmode="numeric" value="12" maxlength="3" class="epf-input text-slate-400"
                                 oninput="fiCalcRD();this.classList.remove('text-slate-400');"
                                 onfocus="if(this.value==='12'){this.value='';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');"
                                 onblur="if(!this.value){this.value='12';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');">

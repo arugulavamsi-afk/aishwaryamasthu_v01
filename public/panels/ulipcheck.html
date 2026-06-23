@@ -23,7 +23,7 @@
                             <div>
                                 <label class="epf-label" data-i18n="lbl.ulip.premium">Annual Premium (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
-                                <input id="uc-premium" type="text" inputmode="numeric" value="50,000" class="epf-input pl-7 text-slate-400"
+                                <input id="uc-premium" type="text" inputmode="numeric" value="50,000" maxlength="15" class="epf-input pl-7 text-slate-400"
                                     oninput="ucFmtInput(this);ucCalc();"
                                     onfocus="if(this.value==='50,000'||this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                     onblur="if(!this.value){this.value='50,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
@@ -34,7 +34,7 @@
                             <div>
                                 <label class="epf-label" data-i18n="lbl.ulip.term">Policy Term (years)</label>
                                 <input id="uc-term" type="number" min="5" max="40" value="21" class="epf-input text-slate-400"
-                                    oninput="ucCalc();this.classList.remove('text-slate-400');"
+                                    oninput="ucCalc();this.classList.remove('text-slate-400');var p=document.getElementById('uc-paid');p.max=this.value||40;if(+p.value>+this.value)p.value=this.value;"
                                     onfocus="if(this.value==='21'||this.value===''){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                     onblur="if(!this.value){this.value='21';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
                                 <div class="text-[9px] text-slate-400 mt-0.5">Total duration of policy</div>
@@ -52,7 +52,7 @@
                             <div>
                                 <label class="epf-label" data-i18n="lbl.ulip.maturity">Maturity Value (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
-                                <input id="uc-maturity" type="text" inputmode="numeric" value="15,00,000" class="epf-input pl-7 text-slate-400"
+                                <input id="uc-maturity" type="text" inputmode="numeric" value="15,00,000" maxlength="15" class="epf-input pl-7 text-slate-400"
                                     oninput="ucFmtInput(this);ucCalc();"
                                     onfocus="if(this.value==='15,00,000'||this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                     onblur="if(!this.value){this.value='15,00,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
@@ -63,7 +63,7 @@
                             <div>
                                 <label class="epf-label" data-i18n="lbl.ulip.sv">Surrender Value (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
-                                <input id="uc-sv" type="text" inputmode="numeric" value="1,50,000" class="epf-input pl-7 text-slate-400"
+                                <input id="uc-sv" type="text" inputmode="numeric" value="1,50,000" maxlength="15" class="epf-input pl-7 text-slate-400"
                                     oninput="ucFmtInput(this);ucCalc();"
                                     onfocus="if(this.value==='1,50,000'||this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                     onblur="if(!this.value){this.value='1,50,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
@@ -74,7 +74,7 @@
                             <div>
                                 <label class="epf-label" data-i18n="lbl.ulip.cover">Sum Assured / Cover (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
-                                <input id="uc-cover" type="text" inputmode="numeric" value="10,00,000" class="epf-input pl-7 text-slate-400"
+                                <input id="uc-cover" type="text" inputmode="numeric" value="10,00,000" maxlength="15" class="epf-input pl-7 text-slate-400"
                                     oninput="ucFmtInput(this);ucCalc();"
                                     onfocus="if(this.value==='10,00,000'||this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                     onblur="if(!this.value){this.value='10,00,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
