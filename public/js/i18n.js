@@ -1174,7 +1174,6 @@
         'up.ph.age':            'e.g. 30',
         'up.ph.income':         'e.g. 1,00,000',
         'up.ph.expenses':       'e.g. 50,000',
-      },
 
         /* ── Additional tool labels (auto-added) ── */
         'common.reset':                            'Reset',
@@ -1599,6 +1598,7 @@
         'howto.hracalc.step2': '2. Select city type: Metro (50% of basic) or Non-Metro (40% of basic)',
         'howto.hracalc.step3': '3. See exempt HRA amount and total annual tax saved',
         'howto.hracalc.tip':   'Exemption = lowest of (Actual HRA | Rent − 10% of Basic | 50%/40% of Basic). All three boxes must check out.',
+      },
 
       hi: {
         'tagline':              'बढ़ो और भारत को बढ़ाओ',
