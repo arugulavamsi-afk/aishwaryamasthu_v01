@@ -2,27 +2,27 @@
             <!-- Header -->
             <div class="rounded-2xl px-5 py-4 text-white shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a5276 45%,#0e4d3e 100%);border:2px solid rgba(245,200,66,0.4);box-shadow:0 4px 18px rgba(0,0,0,0.25);">
                 <div>
-                    <h2 class="text-lg font-black flex items-center gap-2">☕ The Coffee Can</h2>
-                    <p class="text-blue-200 text-xs mt-1 max-w-lg">Quality compounders · Buy &amp; hold 10+ years · Based on Saurabh Mukherjea / Marcellus framework</p>
+                    <h2 class="text-lg font-black flex items-center gap-2" data-i18n="coffeecan.title">☕ The Coffee Can</h2>
+                    <p class="text-blue-200 text-xs mt-1 max-w-lg" data-i18n="coffeecan.header.sub">Quality compounders · Buy &amp; hold 10+ years · Based on Saurabh Mukherjea / Marcellus framework</p>
                     <span class="inline-flex items-center gap-1 mt-2 px-2 py-0.5 rounded-full text-[9px] font-bold" style="background:rgba(245,200,66,0.18);color:#f5c842;border:1px solid rgba(245,200,66,0.35);">🗓 Data as of FY 2024–25 · Last updated Mar 2025</span>
                 </div>
             </div>
             <!-- What is Coffee Can investing? -->
             <div class="rounded-2xl px-4 py-3" style="background:rgba(255,253,240,0.95);border:1.5px solid rgba(245,200,66,0.3);">
-                <div class="text-[10px] font-black uppercase tracking-wider mb-1.5" style="color:#7c4a00;">📖 What is Coffee Can Investing?</div>
-                <p class="text-[11px] leading-relaxed text-slate-600">Coined by Robert Kirby (1984) and popularised in India by <strong>Saurabh Mukherjea (Marcellus Investment Managers)</strong> in <em>Coffee Can Investing: The Low Risk Road to Stupendous Wealth</em> (Mukherjea, Ranjan &amp; Uniyal, 2018): lock high-quality businesses in a "coffee can" and forget them for 10 years. The philosophy demands companies with <strong>≥10% revenue CAGR</strong>, <strong>≥15% ROCE</strong> consistently over a decade, negligible debt, positive free cash flow every year, and stable promoter holdings — moat businesses that compound wealth without active management.</p>
+                <div class="text-[10px] font-black uppercase tracking-wider mb-1.5" style="color:#7c4a00;" data-i18n="coffeecan.what">📖 What is Coffee Can Investing?</div>
+                <p class="text-[11px] leading-relaxed text-slate-600" data-i18n-html="coffeecan.what.desc">Coined by Robert Kirby (1984) and popularised in India by <strong>Saurabh Mukherjea (Marcellus Investment Managers)</strong> in <em>Coffee Can Investing: The Low Risk Road to Stupendous Wealth</em> (Mukherjea, Ranjan &amp; Uniyal, 2018): lock high-quality businesses in a "coffee can" and forget them for 10 years. The philosophy demands companies with <strong>≥10% revenue CAGR</strong>, <strong>≥15% ROCE</strong> consistently over a decade, negligible debt, positive free cash flow every year, and stable promoter holdings — moat businesses that compound wealth without active management.</p>
                 <div class="mt-2 grid grid-cols-3 gap-2">
                     <div class="rounded-xl px-2 py-1.5 text-center" style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);">
                         <div class="text-[13px] font-black" style="color:#065f46;">Rev CAGR</div>
-                        <div class="text-[9px] text-slate-400 font-semibold">≥ 10% / 10 yr</div>
+                        <div class="text-[9px] text-slate-400 font-semibold" data-i18n="coffeecan.metric.revcagr.sub">≥ 10% / 10 yr</div>
                     </div>
                     <div class="rounded-xl px-2 py-1.5 text-center" style="background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.2);">
                         <div class="text-[13px] font-black" style="color:#3730a3;">ROCE</div>
-                        <div class="text-[9px] text-slate-400 font-semibold">≥ 15% avg</div>
+                        <div class="text-[9px] text-slate-400 font-semibold" data-i18n="coffeecan.metric.roce.sub">≥ 15% avg</div>
                     </div>
                     <div class="rounded-xl px-2 py-1.5 text-center" style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);">
                         <div class="text-[13px] font-black" style="color:#92400e;">D/E</div>
-                        <div class="text-[9px] text-slate-400 font-semibold">≤ 1× preferred</div>
+                        <div class="text-[9px] text-slate-400 font-semibold" data-i18n="coffeecan.metric.de.sub">≤ 1× preferred</div>
                     </div>
                 </div>
             </div>
@@ -32,33 +32,33 @@
                 <div class="px-4 py-3 flex items-start gap-3 cursor-pointer select-none" onclick="ccToggleBaseRate()" style="background:linear-gradient(90deg,rgba(239,68,68,0.07),rgba(245,158,11,0.05));">
                     <span class="text-lg flex-shrink-0 mt-0.5">⚠️</span>
                     <div class="flex-1">
-                        <div class="text-[11px] font-black uppercase tracking-wider text-red-700">The Failure Rate — Read Before Investing</div>
-                        <p class="text-[11px] text-slate-600 mt-0.5 leading-snug">Passing a quality screen today does <strong>not</strong> guarantee outperformance. Here is what the data actually shows.</p>
+                        <div class="text-[11px] font-black uppercase tracking-wider text-red-700" data-i18n="coffeecan.baserate.title">The Failure Rate — Read Before Investing</div>
+                        <p class="text-[11px] text-slate-600 mt-0.5 leading-snug" data-i18n-html="coffeecan.baserate.sub">Passing a quality screen today does <strong>not</strong> guarantee outperformance. Here is what the data actually shows.</p>
                     </div>
-                    <span id="cc-br-arrow" class="text-slate-400 font-bold text-xs flex-shrink-0 mt-1">▼ Show</span>
+                    <span id="cc-br-arrow" class="text-slate-400 font-bold text-xs flex-shrink-0 mt-1" data-i18n="coffeecan.baserate.show">▼ Show</span>
                 </div>
 
                 <!-- Stats row — always visible -->
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-0 border-t border-red-100">
                     <div class="px-4 py-3 text-center border-r border-red-100">
                         <div class="text-2xl font-black text-red-500">~30%</div>
-                        <div class="text-[9px] font-black text-red-400 uppercase tracking-wide mt-0.5">Underperform Index</div>
-                        <div class="text-[9px] text-slate-400 mt-1 leading-snug">of stocks passing quality screens still trailed Nifty 500 over the next 10 yrs</div>
+                        <div class="text-[9px] font-black text-red-400 uppercase tracking-wide mt-0.5" data-i18n="coffeecan.stat1.label">Underperform Index</div>
+                        <div class="text-[9px] text-slate-400 mt-1 leading-snug" data-i18n="coffeecan.stat1.desc">of stocks passing quality screens still trailed Nifty 500 over the next 10 yrs</div>
                     </div>
                     <div class="px-4 py-3 text-center border-r border-red-100">
                         <div class="text-2xl font-black text-amber-500">~18%</div>
-                        <div class="text-[9px] font-black text-amber-500 uppercase tracking-wide mt-0.5">Permanent Loss Risk</div>
-                        <div class="text-[9px] text-slate-400 mt-1 leading-snug">saw &gt;40% peak-to-trough drawdown with no full recovery within 10 yrs</div>
+                        <div class="text-[9px] font-black text-amber-500 uppercase tracking-wide mt-0.5" data-i18n="coffeecan.stat2.label">Permanent Loss Risk</div>
+                        <div class="text-[9px] text-slate-400 mt-1 leading-snug" data-i18n="coffeecan.stat2.desc">saw &gt;40% peak-to-trough drawdown with no full recovery within 10 yrs</div>
                     </div>
                     <div class="px-4 py-3 text-center border-r border-red-100">
                         <div class="text-2xl font-black text-indigo-500">6+</div>
-                        <div class="text-[9px] font-black text-indigo-500 uppercase tracking-wide mt-0.5">Dropped by Marcellus</div>
-                        <div class="text-[9px] text-slate-400 mt-1 leading-snug">stocks removed from the original Coffee Can list after passing the initial screen</div>
+                        <div class="text-[9px] font-black text-indigo-500 uppercase tracking-wide mt-0.5" data-i18n="coffeecan.stat3.label">Dropped by Marcellus</div>
+                        <div class="text-[9px] text-slate-400 mt-1 leading-snug" data-i18n="coffeecan.stat3.desc">stocks removed from the original Coffee Can list after passing the initial screen</div>
                     </div>
                     <div class="px-4 py-3 text-center">
                         <div class="text-2xl font-black text-slate-600">4%</div>
-                        <div class="text-[9px] font-black text-slate-500 uppercase tracking-wide mt-0.5">Wealth Creators</div>
-                        <div class="text-[9px] text-slate-400 mt-1 leading-snug">Bessembinder (2023): just 4% of stocks create all long-run stock market wealth globally</div>
+                        <div class="text-[9px] font-black text-slate-500 uppercase tracking-wide mt-0.5" data-i18n="coffeecan.stat4.label">Wealth Creators</div>
+                        <div class="text-[9px] text-slate-400 mt-1 leading-snug" data-i18n="coffeecan.stat4.desc">Bessembinder (2023): just 4% of stocks create all long-run stock market wealth globally</div>
                     </div>
                 </div>
 
@@ -67,7 +67,7 @@
                     <div class="px-4 py-4 grid sm:grid-cols-2 gap-4">
 
                         <div>
-                            <div class="text-[10px] font-black uppercase tracking-wide text-red-600 mb-2">📉 Why Quality Stocks Still Fail</div>
+                            <div class="text-[10px] font-black uppercase tracking-wide text-red-600 mb-2" data-i18n="coffeecan.fail.title">📉 Why Quality Stocks Still Fail</div>
                             <ul class="space-y-2">
                                 <li class="flex gap-2 text-[11px] text-slate-600 leading-snug"><span class="flex-shrink-0 font-black text-red-400">1.</span><span><strong>Moat erosion:</strong> A ROCE of 40% today attracts competition. Entrants chip away pricing power — often invisibly until margin compression hits reported numbers 3–5 years later.</span></li>
                                 <li class="flex gap-2 text-[11px] text-slate-600 leading-snug"><span class="flex-shrink-0 font-black text-red-400">2.</span><span><strong>Valuation entry price:</strong> Buying at 70–80× earnings means even flawless execution for 10 years may still deliver 8–10% CAGR — worse than a Nifty index fund bought at reasonable valuations.</span></li>
@@ -78,7 +78,7 @@
                         </div>
 
                         <div>
-                            <div class="text-[10px] font-black uppercase tracking-wide text-emerald-600 mb-2">✅ Why the Strategy Still Makes Sense</div>
+                            <div class="text-[10px] font-black uppercase tracking-wide text-emerald-600 mb-2" data-i18n="coffeecan.succeed.title">✅ Why the Strategy Still Makes Sense</div>
                             <ul class="space-y-2">
                                 <li class="flex gap-2 text-[11px] text-slate-600 leading-snug"><span class="flex-shrink-0 font-black text-emerald-500">→</span><span>The <strong>70% that succeed</strong> compound so powerfully (20–35% CAGR over a decade) that they more than offset the 30% that disappoint — but only if you hold a basket, not a single name.</span></li>
                                 <li class="flex gap-2 text-[11px] text-slate-600 leading-snug"><span class="flex-shrink-0 font-black text-emerald-500">→</span><span><strong>Portfolio rule:</strong> Saurabh Mukherjea recommends 10–15 stocks minimum. Concentrating in 2–3 names from this list collapses the statistical advantage entirely.</span></li>
@@ -96,7 +96,7 @@
                     <div class="px-4 pb-4">
                         <div class="rounded-xl px-4 py-2.5 flex gap-2.5 items-start" style="background:rgba(245,200,66,0.12);border:1px solid rgba(245,200,66,0.35);">
                             <span class="text-base flex-shrink-0">💡</span>
-                            <p class="text-[11px] text-amber-900 leading-relaxed m-0"><strong>The honest verdict:</strong> Coffee Can investing works at the portfolio level, not the individual stock level. Use this screener to build a diversified basket of 10–15 names, re-screen annually, and accept that roughly 3 in 10 picks will disappoint. The strategy's edge is the <em>remaining 7</em> compounding undisturbed — not stock-picking perfection.</p>
+                            <p class="text-[11px] text-amber-900 leading-relaxed m-0" data-i18n-html="coffeecan.verdict"><strong>The honest verdict:</strong> Coffee Can investing works at the portfolio level, not the individual stock level. Use this screener to build a diversified basket of 10–15 names, re-screen annually, and accept that roughly 3 in 10 picks will disappoint. The strategy's edge is the <em>remaining 7</em> compounding undisturbed — not stock-picking perfection.</p>
                         </div>
                     </div>
                 </div>
@@ -107,7 +107,7 @@
             <!-- Company list -->
             <div id="cc-list" class="flex flex-col gap-0"></div>
             <!-- Disclaimer -->
-            <div class="rounded-2xl px-4 py-3 text-[10px] leading-relaxed text-slate-400" style="background:rgba(248,250,252,0.8);border:1px solid #e2e8f0;">
+            <div class="rounded-2xl px-4 py-3 text-[10px] leading-relaxed text-slate-400" style="background:rgba(248,250,252,0.8);border:1px solid #e2e8f0;" data-i18n-html="coffeecan.disclaimer.full">
                 ⚠ <strong>Disclaimer:</strong> This screener is for educational purposes only. All data is manually curated from publicly available annual reports and is approximate. This is not SEBI-registered investment advice. Past performance of companies does not guarantee future returns. Please consult a registered financial advisor before investing.
             </div>
         </div>

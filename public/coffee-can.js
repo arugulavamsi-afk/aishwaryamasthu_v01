@@ -518,7 +518,7 @@
         if (!body) return;
         var open = body.style.display !== 'none';
         body.style.display = open ? 'none' : 'block';
-        if (btn) btn.textContent = open ? '▼ Details' : '▲ Close';
+        if (btn) btn.textContent = open ? (typeof _t === 'function' ? _t('coffeecan.card.details') : '▼ Details') : (typeof _t === 'function' ? _t('coffeecan.card.close') : '▲ Close');
     }
 
     /* ─── RENDER LIST ──────────────────────────────────────────────── */
@@ -527,7 +527,7 @@
         if (!wrap) return;
         var data = _ccGetData();
         if (data.length === 0) {
-            wrap.innerHTML = '<div class="text-center py-8 text-slate-400 text-sm">No companies match the selected sector filter.</div>';
+            wrap.innerHTML = '<div class="text-center py-8 text-slate-400 text-sm">' + (typeof _t === 'function' ? _t('coffeecan.empty') : 'No companies match the selected sector filter.') + '</div>';
             return;
         }
 
@@ -542,9 +542,10 @@
             var whyHtml = c.why.map(function(w){
                 return '<li class="text-[11px] leading-snug" style="color:#1e293b;">' + w + '</li>';
             }).join('');
+            var _norisks = typeof _t === 'function' ? _t('coffeecan.card.norisks') : 'No major red flags identified.';
             var riskHtml = c.risks.length
                 ? c.risks.map(function(r){ return '<li class="text-[11px] leading-snug text-amber-700">⚠ ' + r + '</li>'; }).join('')
-                : '<li class="text-[11px] text-slate-400">No major red flags identified.</li>';
+                : '<li class="text-[11px] text-slate-400">' + _norisks + '</li>';
 
             return '<div class="rounded-2xl overflow-hidden mb-3" style="border:1.5px solid rgba(245,200,66,0.22);background:#fffef8;">' +
                 /* Card header */
@@ -558,13 +559,13 @@
                         '<div class="flex items-center gap-1.5 mt-0.5 flex-wrap">' +
                             '<span class="text-[9px] font-bold px-2 py-0.5 rounded-full" style="background:rgba(99,102,241,0.1);color:#4f46e5;">' + c.sector + '</span>' +
                             '<span class="text-[9px] text-slate-400">' + mcStr + '</span>' +
-                            (c.isFinancial ? '<span class="text-[9px] font-bold px-1.5 py-0.5 rounded-full" style="background:rgba(245,158,11,0.12);color:#b45309;">Financial Co.</span>' : '') +
+                            (c.isFinancial ? '<span class="text-[9px] font-bold px-1.5 py-0.5 rounded-full" style="background:rgba(245,158,11,0.12);color:#b45309;">' + (typeof _t === 'function' ? _t('coffeecan.financial') : 'Financial Co.') + '</span>' : '') +
                         '</div>' +
                     '</div>' +
                     /* Score badge */
                     '<div class="flex-shrink-0 text-center">' +
                         '<div class="text-lg font-black leading-none" style="color:' + scCol + ';">' + sc + '</div>' +
-                        '<div class="text-[8px] font-bold uppercase tracking-wide" style="color:' + scCol + ';">Score</div>' +
+                        '<div class="text-[8px] font-bold uppercase tracking-wide" style="color:' + scCol + ';">' + (typeof _t === 'function' ? _t('coffeecan.card.score') : 'Score') + '</div>' +
                     '</div>' +
                 '</div>' +
                 /* Score bar */
@@ -573,25 +574,25 @@
                 '</div>' +
                 /* Metrics row */
                 '<div class="grid grid-cols-4 gap-0 px-4 pb-3">' +
-                    _ccMetric('Rev CAGR', c.revCagr + '%', c.revCagr >= 12 ? '#10b981' : '#f59e0b') +
+                    _ccMetric(typeof _t === 'function' ? _t('coffeecan.sort.revcagr') : 'Rev CAGR', c.revCagr + '%', c.revCagr >= 12 ? '#10b981' : '#f59e0b') +
                     _ccMetric('Avg ROCE', c.avgRoce + '%', c.avgRoce >= 20 ? '#10b981' : '#f59e0b') +
-                    _ccMetric('Profit', c.profitYrs + '/10', c.profitYrs >= 9 ? '#10b981' : '#f59e0b') +
+                    _ccMetric(typeof _t === 'function' ? _t('coffeecan.card.profit') : 'Profit', c.profitYrs + '/10', c.profitYrs >= 9 ? '#10b981' : '#f59e0b') +
                     _ccMetric('D/E', deStr, (c.de === 'N/A' || c.de === null || c.de <= 0.5) ? '#10b981' : '#f59e0b') +
                 '</div>' +
                 /* Moat tag + expand button */
                 '<div class="flex items-center gap-2 px-4 pb-3">' +
                     '<span class="text-[9px] font-semibold flex-1 truncate" style="color:#7c5c0a;">🛡 ' + c.moat + '</span>' +
-                    '<button id="cc-expand-' + i + '" onclick="ccToggleDetail(' + i + ')" class="text-[9px] font-bold px-2.5 py-1 rounded-lg flex-shrink-0 transition-all" style="background:rgba(245,200,66,0.18);border:1px solid rgba(245,200,66,0.35);color:#92400e;">▼ Details</button>' +
+                    '<button id="cc-expand-' + i + '" onclick="ccToggleDetail(' + i + ')" class="text-[9px] font-bold px-2.5 py-1 rounded-lg flex-shrink-0 transition-all" style="background:rgba(245,200,66,0.18);border:1px solid rgba(245,200,66,0.35);color:#92400e;">' + (typeof _t === 'function' ? _t('coffeecan.card.details') : '▼ Details') + '</button>' +
                 '</div>' +
                 /* Expandable detail */
                 '<div id="cc-detail-' + i + '" style="display:none;border-top:1px solid rgba(245,200,66,0.2);">' +
                     '<div class="px-4 py-3 grid sm:grid-cols-2 gap-4">' +
                         '<div>' +
-                            '<div class="text-[10px] font-black uppercase tracking-wide mb-1.5" style="color:#065f46;">✅ Why it qualifies</div>' +
+                            '<div class="text-[10px] font-black uppercase tracking-wide mb-1.5" style="color:#065f46;">' + (typeof _t === 'function' ? _t('coffeecan.card.why') : '✅ Why it qualifies') + '</div>' +
                             '<ul class="space-y-1.5 list-none">' + whyHtml + '</ul>' +
                         '</div>' +
                         '<div>' +
-                            '<div class="text-[10px] font-black uppercase tracking-wide mb-1.5" style="color:#92400e;">⚠ Risk flags</div>' +
+                            '<div class="text-[10px] font-black uppercase tracking-wide mb-1.5" style="color:#92400e;">' + (typeof _t === 'function' ? _t('coffeecan.card.risks') : '⚠ Risk flags') + '</div>' +
                             '<ul class="space-y-1.5 list-none">' + riskHtml + '</ul>' +
                             (c.note ? '<div class="mt-2 text-[9px] italic text-slate-400">' + c.note + '</div>' : '') +
                         '</div>' +
@@ -617,14 +618,15 @@
             return '<option value="' + s + '"' + (s === _ccSectorFilter ? ' selected' : '') + '>' + s + '</option>';
         }).join('');
 
+        var _t2 = typeof _t === 'function' ? _t : function(k){ return k; };
         ctrl.innerHTML =
             '<div class="flex flex-wrap items-center gap-2">' +
                 '<select onchange="ccFilterSector(this.value)" class="text-[11px] font-semibold px-3 py-1.5 rounded-xl border" style="background:#fffef5;border-color:rgba(245,200,66,0.4);color:#5c3d00;">' + sectorOpts + '</select>' +
-                '<span class="text-[10px] text-slate-400">Sort by:</span>' +
-                _ccSortBtn('Score', 'score') +
-                _ccSortBtn('Rev CAGR', 'revCagr') +
-                _ccSortBtn('ROCE', 'avgRoce') +
-                _ccSortBtn('MCap', 'mcap') +
+                '<span class="text-[10px] text-slate-400">' + _t2('coffeecan.sortby') + '</span>' +
+                _ccSortBtn(_t2('coffeecan.sort.score'), 'score') +
+                _ccSortBtn(_t2('coffeecan.sort.revcagr'), 'revCagr') +
+                _ccSortBtn(_t2('coffeecan.sort.roce'), 'avgRoce') +
+                _ccSortBtn(_t2('coffeecan.sort.mcap'), 'mcap') +
             '</div>';
     }
 
@@ -642,7 +644,9 @@
         if (!detail) return;
         var open = detail.style.display !== 'none';
         detail.style.display = open ? 'none' : 'block';
-        if (arrow) arrow.textContent = open ? '▼ Show' : '▲ Hide';
+        var showTxt = typeof _t === 'function' ? _t('coffeecan.baserate.show') : '▼ Show';
+        var hideTxt = typeof _t === 'function' ? _t('coffeecan.baserate.hide') : '▲ Hide';
+        if (arrow) arrow.textContent = open ? showTxt : hideTxt;
     }
 
     /* ─── MAIN INIT ─────────────────────────────────────────────────── */
@@ -651,4 +655,12 @@
         _ccReady = true;
         ccRenderControls();
         ccRenderList();
+        if (typeof injectHowToUse === 'function') injectHowToUse('coffeecan');
     }
+
+    /* ─── LANGUAGE CHANGE HOOK ───────────────────────────────────────── */
+    window.coffeeCanRender = function() {
+        ccRenderControls();
+        ccRenderList();
+        if (typeof injectHowToUse === 'function') injectHowToUse('coffeecan');
+    };
