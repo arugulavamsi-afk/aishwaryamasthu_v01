@@ -43,14 +43,14 @@
                                 '<div class="text-[10px] font-black text-emerald-800 uppercase tracking-wide">Direct Plan</div>' +
                                 '<div class="text-xs font-black text-emerald-700 mt-1">₹1.37 Cr</div>' +
                                 '<div class="text-[9px] text-emerald-600 font-medium">₹10K SIP × 20 yrs</div>' +
-                                '<div class="mt-1.5 text-[9px] font-bold text-emerald-700 bg-emerald-100 rounded-lg px-1.5 py-0.5">You keep 100%</div>' +
+                                '<div class="mt-1.5 text-[9px] font-bold text-emerald-700 bg-emerald-100 rounded-lg px-1.5 py-0.5">' + _t('picker.direct.keep100') + '</div>' +
                             '</div>' +
                             '<div class="rounded-xl p-3 border-2 border-rose-200 bg-rose-50 text-center">' +
                                 '<div class="text-lg mb-1">💸</div>' +
                                 '<div class="text-[10px] font-black text-rose-800 uppercase tracking-wide">Regular Plan</div>' +
                                 '<div class="text-xs font-black text-rose-700 mt-1">₹1.09 Cr</div>' +
                                 '<div class="text-[9px] text-rose-600 font-medium">Same SIP × 20 yrs</div>' +
-                                '<div class="mt-1.5 text-[9px] font-bold text-rose-700 bg-rose-100 rounded-lg px-1.5 py-0.5">₹28L lost to fees</div>' +
+                                '<div class="mt-1.5 text-[9px] font-bold text-rose-700 bg-rose-100 rounded-lg px-1.5 py-0.5">' + _t('picker.regular.lostfees') + '</div>' +
                             '</div>' +
                         '</div>' +
                         '<div class="bg-blue-50 border border-blue-100 rounded-lg px-2.5 py-1.5">' +
@@ -64,9 +64,9 @@
                         '<p class="text-[11px] text-slate-600 leading-relaxed">' + _mMetricDesc(m.id, m.description) + '</p>' +
                         '<div class="rounded-xl overflow-hidden border border-[#f5c842]/30">' +
                             '<div class="grid grid-cols-3 bg-slate-100 text-[8px] font-black text-slate-500 uppercase tracking-wide">' +
-                                '<div class="px-2 py-1.5">Fund Type</div>' +
-                                '<div class="px-2 py-1.5 text-center">Holding</div>' +
-                                '<div class="px-2 py-1.5 text-right">Tax Rate</div>' +
+                                '<div class="px-2 py-1.5">' + _t('picker.exitload.fundtype') + '</div>' +
+                                '<div class="px-2 py-1.5 text-center">' + _t('picker.exitload.holding') + '</div>' +
+                                '<div class="px-2 py-1.5 text-right">' + _t('picker.exitload.taxrate') + '</div>' +
                             '</div>' +
                             '<div class="divide-y divide-slate-100 text-[10px]">' +
                                 '<div class="grid grid-cols-3 px-2 py-1.5 bg-white"><span class="font-bold text-slate-700">Equity MF</span><span class="text-center text-slate-500">&gt;1 yr</span><span class="text-right font-black text-emerald-700">12.5% LTCG</span></div>' +
@@ -135,7 +135,7 @@
                                 '<div class="flex-1 bg-slate-100 rounded-full h-1.5 overflow-hidden">' +
                                     '<div class="h-full rounded-full transition-all duration-1000" style="width:' + m.meter + '%; background:' + m.meterColor + ';"></div>' +
                                 '</div>' +
-                                '<span class="text-[9px] font-bold text-slate-400 uppercase tracking-wide">importance</span>' +
+                                '<span class="text-[9px] font-bold text-slate-400 uppercase tracking-wide">' + _t('picker.importance') + '</span>' +
                             '</div>' +
                         '</div>' +
                         bodyContent +
@@ -147,21 +147,24 @@
             var checklist = document.getElementById('picker-checklist');
             if (checklist) {
                 checklist.innerHTML = '';
-                MF_CHECKLIST.forEach(function(item) {
+                MF_CHECKLIST.forEach(function(item, idx) {
+                    var q    = _t('picker.chk.' + idx + '.q')    || item.question;
+                    var pass = _t('picker.chk.' + idx + '.pass') || item.pass;
+                    var fail = _t('picker.chk.' + idx + '.fail') || item.fail;
                     checklist.insertAdjacentHTML('beforeend',
                         '<div class="flex flex-col gap-1.5 bg-slate-50 border border-[#f5c842]/30 rounded-xl p-3 h-full">' +
                             '<div class="flex items-start gap-2">' +
                                 '<span class="text-base flex-shrink-0 mt-0.5">' + item.icon + '</span>' +
-                                '<span class="text-xs font-black text-slate-800 leading-snug">' + item.question + '</span>' +
+                                '<span class="text-xs font-black text-slate-800 leading-snug">' + q + '</span>' +
                             '</div>' +
                             '<div class="flex flex-col gap-1 pl-1 flex-1 justify-end">' +
                                 '<div class="flex items-start gap-1.5">' +
                                     '<span class="text-[10px] font-black text-green-600 flex-shrink-0">✓ YES:</span>' +
-                                    '<span class="text-[10px] text-green-700 leading-snug">' + item.pass + '</span>' +
+                                    '<span class="text-[10px] text-green-700 leading-snug">' + pass + '</span>' +
                                 '</div>' +
                                 '<div class="flex items-start gap-1.5">' +
                                     '<span class="text-[10px] font-black text-red-500 flex-shrink-0">✗ NO:</span>' +
-                                    '<span class="text-[10px] text-red-700 leading-snug">' + item.fail + '</span>' +
+                                    '<span class="text-[10px] text-red-700 leading-snug">' + fail + '</span>' +
                                 '</div>' +
                             '</div>' +
                         '</div>'

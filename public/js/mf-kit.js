@@ -636,12 +636,12 @@
             }).join('');
             return `
             <div class="px-4 py-3 flex flex-col gap-3">
-                <p class="text-[11px] text-slate-500 leading-relaxed">Each bar shows the <span class="font-bold text-emerald-700">green zone</span> (ideal AUM range). Anything to the right of the green zone = too large; fund behaviour changes.</p>
+                <p class="text-[11px] text-slate-500 leading-relaxed">${_t('picker.aum.desc')}</p>
                 <div class="flex flex-col gap-3">${rows}</div>
                 <div class="flex items-center gap-3 mt-1 flex-wrap">
-                    <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span><span class="text-[9px] text-slate-500 font-bold">Sweet spot</span></div>
-                    <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-slate-200 inline-block"></span><span class="text-[9px] text-slate-500 font-bold">Caution zone</span></div>
-                    <div class="flex items-center gap-1.5"><span class="text-rose-500 text-[9px] font-black">⚠️</span><span class="text-[9px] text-slate-500 font-bold">Too large — changes mandate</span></div>
+                    <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span><span class="text-[9px] text-slate-500 font-bold">${_t('picker.aum.sweet')}</span></div>
+                    <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-slate-200 inline-block"></span><span class="text-[9px] text-slate-500 font-bold">${_t('picker.aum.caution')}</span></div>
+                    <div class="flex items-center gap-1.5"><span class="text-rose-500 text-[9px] font-black">⚠️</span><span class="text-[9px] text-slate-500 font-bold">${_t('picker.aum.toolarge')}</span></div>
                 </div>
             </div>`;
         }
