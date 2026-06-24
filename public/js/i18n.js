@@ -7472,7 +7472,7 @@
     function _mfWhat(id, fallback)     { var d=(_MF_BODY[_lang]||{})[id]; return d?d.what:fallback; }
     function _mfScenarios(id, fallback){ var d=(_MF_BODY[_lang]||{})[id]; return d?d.scenarios:fallback; }
     function _mfAvoid(id, fallback)    { var d=(_MF_BODY[_lang]||{})[id]; return d?d.avoid:fallback; }
-    function _mfExampleModal(id, fb)   { return fb; } /* keep examples in EN — fund names/numbers */
+    function _mfExampleModal(id, fb)   { var d=(_MF_BODY[_lang]||{})[id]; return d?d.example:fb; }
 
     function _mMetricName(id, fallback)     { var d=(_MM_NAMES[_lang]||_MM_NAMES.en); return d[id]||fallback; }
     function _mMetricTagline(id, fallback)  { var d=(_MM_TAGS[_lang]||_MM_TAGS.en);   return d[id]||fallback; }
