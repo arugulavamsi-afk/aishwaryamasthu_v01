@@ -459,7 +459,7 @@
         _mfeBusy = true;
         _mfeShow('mfe-loading'); _mfeHide('mfe-error');
         _mfeHide('mfe-table-wrap'); _mfeHide('mfe-phase-bar');
-        _mfeMsg('Loading fund data…', 'Pre-scored data · loads instantly · updated nightly');
+        _mfeMsg(_t('mfe.load.precomp'), _t('mfe.load.precomp.sub'));
         mfeLoadPrecomputed();
     }
 
@@ -479,8 +479,8 @@
             if (ts) {
                 const d = generated.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
                 ts.textContent = _mfeNavStale
-                    ? 'Metrics: ' + d + ' · NAV: refreshing live…'
-                    : 'Metrics & NAV: ' + d + ' (today)';
+                    ? _t('mfe.ts.stale').replace('{d}', d)
+                    : _t('mfe.ts.fresh').replace('{d}', d);
             }
 
             const MFE_PRECOMP_EXCLUDE = /\bseries\s+(?:[ivxlcdm]+|\d+)\b/i;
@@ -530,7 +530,7 @@
         } catch (err) {
             console.warn('[MFExplorer] Pre-computed load failed, falling back:', err.message);
             _mfeBusy = false;
-            _mfeMsg('Fetching all funds from AMFI…', 'Live mode · one-time per session');
+            _mfeMsg(_t('mfe.load.live'), _t('mfe.load.live.sub'));
             mfeStep1();
         }
     }
@@ -751,8 +751,8 @@
             }));
             done += batch.length;
             _mfeProgress(
-                `Loading NAV... ${done}/${total}`,
-                `Fetching live prices for ${cat} funds`,
+                _t('mfe.load.nav') + ' ' + done + '/' + total,
+                _t('mfe.load.cat').replace('{cat}', cat),
                 Math.round(done / total * 100)
             );
             if (_mfeCur === cat) mfeRender();
@@ -797,7 +797,7 @@
             }));
             done += batch.length;
             const pct = Math.round(done/total*100);
-            _mfeProgress(`Scoring funds… ${done}/${total}`, 'Scores fill in progressively — best funds rise to top 🏆', pct);
+            _mfeProgress(_t('mfe.load.scoring') + ' ' + done + '/' + total, _t('mfe.step3.sub'), pct);
             const scoredCount = _mfeList.filter(f => f.cat===cat && _mfeMetCache[(cat==='Sectoral')?f.code+':'+_mfeSubSect:f.code]).length; const _ssEl = document.getElementById('mfe-stat-scored'); if(_ssEl) _ssEl.textContent = scoredCount.toLocaleString();
             // Normalise + re-render after each batch
             mfeNorm(cat);
@@ -829,7 +829,7 @@
             bLabel = MFE_CAT_BENCH_LABEL[cat] || 'Nifty 50';
         }
         const bEl = document.getElementById('mfe-bench-label');
-        if (bEl) bEl.textContent = 'Benchmark: ' + bLabel;
+        if (bEl) bEl.textContent = _t('mfe.bench.prefix') + bLabel;
 
         const _catDoneKey = (cat === 'Sectoral' && _mfeSubSect) ? 'Sectoral:' + _mfeSubSect : cat;
         if (_mfeCatDone[_catDoneKey]) {
@@ -1318,7 +1318,7 @@
         const hdrIcon  = document.getElementById('mfe-cat-header-icon');
         const hdrPage  = document.getElementById('mfe-cat-header-page');
         if (hdrName)  hdrName.textContent  = catName;
-        if (hdrCount) hdrCount.textContent = total.toLocaleString() + ' funds';
+        if (hdrCount) hdrCount.textContent = total.toLocaleString() + ' ' + _t('mfe.lbl.funds');
         if (hdrBench) hdrBench.textContent = benchText;
         if (hdrIcon)  hdrIcon.textContent  = catIconMap[_mfeCur] || '📊';
         if (hdrPage && totalPg > 1) hdrPage.textContent = `Showing ${start+1}–${Math.min(start+MFE_PAGE,total)} of ${total}`;
@@ -1408,7 +1408,7 @@
         }
         bridge.classList.remove('hidden');
         var lbl = document.getElementById('mfe-cmp-bridge-label');
-        if (lbl) lbl.textContent = _mfcFunds.length + ' fund' + (_mfcFunds.length !== 1 ? 's' : '') + ' queued for comparison';
+        if (lbl) lbl.textContent = _t('mfe.cmp.queued').replace('{n}', _mfcFunds.length);
         var chips = document.getElementById('mfe-cmp-bridge-chips');
         if (chips) {
             chips.innerHTML = _mfcFunds.map(function(f) {
