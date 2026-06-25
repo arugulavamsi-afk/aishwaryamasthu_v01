@@ -2,6 +2,11 @@
        ULIP / ENDOWMENT POLICY ANALYZER
     ══════════════════════════════════════════════════════════ */
 
+    function _uc(key, fallback) {
+        if (typeof _t === 'function') { var v = _t(key); if (v && v !== key) return v; }
+        return fallback;
+    }
+
     var _ucDefaults = {
         'uc-premium':'50,000','uc-term':'21','uc-paid':'5',
         'uc-maturity':'15,00,000','uc-sv':'1,50,000',
@@ -178,12 +183,12 @@
 
         var gradeEl = document.getElementById('uc-irr-grade');
         if (gradeEl) {
-            if (totalIRR < 0.03)       gradeEl.textContent = '🔴 Terrible — below savings account rate';
-            else if (totalIRR < 0.05)  gradeEl.textContent = '🔴 Very Poor — FD gives more than this';
-            else if (totalIRR < 0.06)  gradeEl.textContent = '🟡 Poor — barely at FD rate';
-            else if (totalIRR < 0.07)  gradeEl.textContent = '🟡 Below Average — inflation erodes it';
-            else if (totalIRR < 0.08)  gradeEl.textContent = '🟡 Mediocre — marginally above FD';
-            else                        gradeEl.textContent = '🟢 Decent — but verify with BTID below';
+            if (totalIRR < 0.03)       gradeEl.textContent = _uc('ulip.grade.terrible',  '🔴 Terrible — below savings account rate');
+            else if (totalIRR < 0.05)  gradeEl.textContent = _uc('ulip.grade.verypoor',  '🔴 Very Poor — FD gives more than this');
+            else if (totalIRR < 0.06)  gradeEl.textContent = _uc('ulip.grade.poor',      '🟡 Poor — barely at FD rate');
+            else if (totalIRR < 0.07)  gradeEl.textContent = _uc('ulip.grade.below_avg', '🟡 Below Average — inflation erodes it');
+            else if (totalIRR < 0.08)  gradeEl.textContent = _uc('ulip.grade.mediocre',  '🟡 Mediocre — marginally above FD');
+            else                        gradeEl.textContent = _uc('ulip.grade.decent',    '🟢 Decent — but verify with BTID below');
         }
 
         var effIrrEl = document.getElementById('uc-eff-irr');
@@ -204,21 +209,21 @@
         // ── DOM: summary numbers ──────────────────────────────────
         ucSet('uc-total-paid',      ucFmt(totalPaid));
         ucSet('uc-total-remain',    ucFmt(totalRemain));
-        ucSet('uc-remaining-years', remaining + ' yrs left');
-        ucSet('uc-term-cost',       ucFmt(termCost) + '/yr');
-        ucSet('uc-free-invest',     freeInvest > 0 ? ucFmt(freeInvest) + '/yr' : 'Term > Premium');
+        ucSet('uc-remaining-years', remaining + _uc('ulip.unit.yrs_left', ' yrs left'));
+        ucSet('uc-term-cost',       ucFmt(termCost) + _uc('ulip.unit.per_yr', '/yr'));
+        ucSet('uc-free-invest',     freeInvest > 0 ? ucFmt(freeInvest) + _uc('ulip.unit.per_yr', '/yr') : _uc('ulip.unit.term_gt', 'Term > Premium'));
         ucSet('uc-btid-corpus',     ucFmt(Math.round(btidCorpus)));
         ucSet('uc-policy-maturity', ucFmt(maturity));
-        ucSet('uc-tax-benefit',     ucFmt(annualTaxBenefit) + '/yr · ' + ucFmt(totalTaxBenefit) + ' total');
+        ucSet('uc-tax-benefit',     ucFmt(annualTaxBenefit) + _uc('ulip.unit.per_yr', '/yr') + ' · ' + ucFmt(totalTaxBenefit) + ' total');
         ucSet('uc-sv-display',      ucFmt(sv));
 
         var advEl = document.getElementById('uc-advantage');
         if (advEl) {
             if (advantage >= 0) {
-                advEl.textContent = '+' + ucFmt(Math.round(advantage)) + ' more via BTID';
+                advEl.textContent = '+' + ucFmt(Math.round(advantage)) + _uc('ulip.unit.more_btid', ' more via BTID');
                 advEl.style.color = '#10b981';
             } else {
-                advEl.textContent = ucFmt(Math.round(-advantage)) + ' more from policy';
+                advEl.textContent = ucFmt(Math.round(-advantage)) + _uc('ulip.unit.more_policy', ' more from policy');
                 advEl.style.color = '#f59e0b';
             }
         }
@@ -228,19 +233,38 @@
         if (recEl) {
             var rec, bg, bdr, clr;
             if (totalIRR < 0.04) {
-                rec = '🚨 <strong>STRONGLY RECOMMEND SURRENDERING.</strong> This policy earns less than a savings account (' + irrPct + '% IRR). Even a simple FD at 7% would be better. The BTID strategy projects <strong>' + ucFmt(Math.round(btidCorpus)) + '</strong> vs policy maturity of <strong>' + ucFmt(maturity) + '</strong>. <em>First buy a pure term plan to replace the cover, then surrender.</em>';
+                rec = _uc('ulip.rec.strong_surrender',
+                    '🚨 <strong>STRONGLY RECOMMEND SURRENDERING.</strong> This policy earns less than a savings account (%1 IRR). Even a simple FD at 7% would be better. The BTID strategy projects <strong>%2</strong> vs policy maturity of <strong>%3</strong>. <em>First buy a pure term plan to replace the cover, then surrender.</em>')
+                    .replace('%1', irrPct + '%')
+                    .replace('%2', ucFmt(Math.round(btidCorpus)))
+                    .replace('%3', ucFmt(maturity));
                 bg='#fef2f2'; bdr='#ef4444'; clr='#7f1d1d';
             } else if (totalIRR < 0.06 && advantage > 0) {
-                rec = '⚠️ <strong>LIKELY WORTH SURRENDERING.</strong> Policy IRR ' + irrPct + '% is at or below FD rate. BTID projects <strong>' + ucFmt(Math.round(btidCorpus)) + '</strong> vs <strong>' + ucFmt(maturity) + '</strong> — a surplus of <strong>' + ucFmt(Math.round(advantage)) + '</strong>. Note: continuing gives 80C tax benefit of ~' + ucFmt(totalTaxBenefit) + ' total — factor this in. <em>Buy term insurance first before surrendering.</em>';
+                rec = _uc('ulip.rec.likely_surrender',
+                    '⚠️ <strong>LIKELY WORTH SURRENDERING.</strong> Policy IRR %1 is at or below FD rate. BTID projects <strong>%2</strong> vs <strong>%3</strong> — a surplus of <strong>%4</strong>. Note: continuing gives 80C tax benefit of ~%5 total — factor this in. <em>Buy term insurance first before surrendering.</em>')
+                    .replace('%1', irrPct + '%')
+                    .replace('%2', ucFmt(Math.round(btidCorpus)))
+                    .replace('%3', ucFmt(maturity))
+                    .replace('%4', ucFmt(Math.round(advantage)))
+                    .replace('%5', ucFmt(totalTaxBenefit));
                 bg='#fff7ed'; bdr='#f97316'; clr='#7c2d12';
             } else if (totalIRR < 0.08 && advantage > 0) {
-                rec = '💡 <strong>CONSIDER SURRENDERING.</strong> BTID projects more wealth. However, policy IRR of ' + irrPct + '% is above FD rate. Key question: is this cover (' + ucFmt(cover) + ') your <em>only</em> life insurance? If yes, buy a term plan first. Also consider: 80C benefit of ~' + ucFmt(totalTaxBenefit) + ' reduces your effective cost if you stay.';
+                rec = _uc('ulip.rec.consider_surrender',
+                    '💡 <strong>CONSIDER SURRENDERING.</strong> BTID projects more wealth. However, policy IRR of %1 is above FD rate. Key question: is this cover (%2) your <em>only</em> life insurance? If yes, buy a term plan first. Also consider: 80C benefit of ~%3 reduces your effective cost if you stay.')
+                    .replace('%1', irrPct + '%')
+                    .replace('%2', ucFmt(cover))
+                    .replace('%3', ucFmt(totalTaxBenefit));
                 bg='#fffbeb'; bdr='#fde68a'; clr='#78350f';
             } else if (advantage <= 0) {
-                rec = '✅ <strong>CONTINUE THE POLICY</strong> in this scenario. The policy maturity (' + ucFmt(maturity) + ') exceeds the BTID projection. However: <strong>never rely on an endowment policy as your primary life cover</strong> — buy a separate term plan. Also verify the maturity projection in your policy bond is realistic.';
+                rec = _uc('ulip.rec.continue',
+                    '✅ <strong>CONTINUE THE POLICY</strong> in this scenario. The policy maturity (%1) exceeds the BTID projection. However: <strong>never rely on an endowment policy as your primary life cover</strong> — buy a separate term plan. Also verify the maturity projection in your policy bond is realistic.')
+                    .replace('%1', ucFmt(maturity));
                 bg='#f0fdf4'; bdr='#86efac'; clr='#14532d';
             } else {
-                rec = '💡 <strong>MARGINAL CASE.</strong> IRR of ' + irrPct + '% and BTID advantage of ' + ucFmt(Math.round(advantage)) + '. Decision depends on your other 80C investments, risk appetite, and whether this is your only life cover. Consult a SEBI-registered fee-only advisor before deciding.';
+                rec = _uc('ulip.rec.marginal',
+                    '💡 <strong>MARGINAL CASE.</strong> IRR of %1 and BTID advantage of %2. Decision depends on your other 80C investments, risk appetite, and whether this is your only life cover. Consult a SEBI-registered fee-only advisor before deciding.')
+                    .replace('%1', irrPct + '%')
+                    .replace('%2', ucFmt(Math.round(advantage)));
                 bg='#eff6ff'; bdr='#93c5fd'; clr='#1e3a5f';
             }
             recEl.innerHTML = '<div class="text-[11px] leading-relaxed">' + rec + '</div>';

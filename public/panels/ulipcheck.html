@@ -4,7 +4,7 @@
             <div class="rounded-2xl px-4 py-3 text-white flex items-center justify-between gap-3 flex-wrap shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:2px solid rgba(245,200,66,0.4);box-shadow:0 4px 18px rgba(0,0,0,0.25);">
                 <div>
                     <h2 class="text-base font-black flex items-center gap-2" data-i18n="page.ulip.h">🔍 ULIP / Endowment Policy Analyzer</h2>
-                    <p class="text-blue-200 text-[11px] mt-0.5">Should you surrender your LIC / ULIP? True policy IRR vs Buy Term + Invest the Difference (BTID). Educational calculator — not investment advice. Consult a SEBI-RIA before acting.</p>
+                    <p class="text-blue-200 text-[11px] mt-0.5" data-i18n="ulip.header.sub">Should you surrender your LIC / ULIP? True policy IRR vs Buy Term + Invest the Difference (BTID). Educational calculator — not investment advice. Consult a SEBI-RIA before acting.</p>
                 </div>
                 <button onclick="resetUlipCheck()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">
                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h5M20 20v-5h-5M4 9a9 9 0 0115-3M20 15a9 9 0 01-15 3"/></svg><span data-i18n="common.reset">Reset</span>
@@ -28,7 +28,7 @@
                                     onfocus="if(this.value==='50,000'||this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                     onblur="if(!this.value){this.value='50,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
                                 </div>
-                                <div class="text-[9px] text-slate-400 mt-0.5">Total annual premium incl. GST</div>
+                                <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="ulip.hint.premium">Total annual premium incl. GST</div>
                             </div>
 
                             <div>
@@ -37,7 +37,7 @@
                                     oninput="ucCalc();this.classList.remove('text-slate-400');var p=document.getElementById('uc-paid');p.max=this.value||40;if(+p.value>+this.value)p.value=this.value;"
                                     onfocus="if(this.value==='21'||this.value===''){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                     onblur="if(!this.value){this.value='21';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
-                                <div class="text-[9px] text-slate-400 mt-0.5">Total duration of policy</div>
+                                <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="ulip.hint.term">Total duration of policy</div>
                             </div>
 
                             <div>
@@ -46,7 +46,7 @@
                                     oninput="ucCalc();this.classList.remove('text-slate-400');"
                                     onfocus="if(this.value==='5'||this.value===''){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                     onblur="if(!this.value){this.value='5';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
-                                <div class="text-[9px] text-slate-400 mt-0.5">Premiums paid till date</div>
+                                <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="ulip.hint.paid">Premiums paid till date</div>
                             </div>
 
                             <div>
@@ -57,7 +57,7 @@
                                     onfocus="if(this.value==='15,00,000'||this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                     onblur="if(!this.value){this.value='15,00,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
                                 </div>
-                                <div class="text-[9px] text-slate-400 mt-0.5">From policy bond / illustration</div>
+                                <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="ulip.hint.maturity">From policy bond / illustration</div>
                             </div>
 
                             <div>
@@ -68,7 +68,7 @@
                                     onfocus="if(this.value==='1,50,000'||this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                     onblur="if(!this.value){this.value='1,50,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
                                 </div>
-                                <div class="text-[9px] text-slate-400 mt-0.5">Current surrender value (call LIC)</div>
+                                <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="ulip.hint.sv">Current surrender value (call LIC)</div>
                             </div>
 
                             <div>
@@ -79,7 +79,7 @@
                                     onfocus="if(this.value==='10,00,000'||this.value==='0'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                     onblur="if(!this.value){this.value='10,00,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
                                 </div>
-                                <div class="text-[9px] text-slate-400 mt-0.5">Death benefit on policy</div>
+                                <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="ulip.hint.cover">Death benefit on policy</div>
                             </div>
 
                             <div>
@@ -91,30 +91,30 @@
                             </div>
 
                             <div>
-                                <label class="epf-label">Expected Inv. Return (%)</label>
+                                <label class="epf-label" data-i18n="lbl.ulip.inv_return">Expected Inv. Return (%)</label>
                                 <input id="uc-inv-return" type="number" min="5" max="20" step="0.5" value="12" class="epf-input text-slate-400"
                                     oninput="ucCalc();this.classList.remove('text-slate-400');"
                                     onfocus="if(this.value==='12'||this.value===''){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                     onblur="if(!this.value){this.value='12';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
-                                <div class="text-[9px] text-slate-400 mt-0.5">If you invest in equity MF</div>
+                                <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="ulip.hint.inv_return">If you invest in equity MF</div>
                             </div>
 
                             <div class="col-span-2">
-                                <label class="epf-label">Your Tax Slab</label>
+                                <label class="epf-label" data-i18n="lbl.ulip.slab">Your Tax Slab</label>
                                 <select id="uc-slab" class="epf-input" style="color:#1e293b;" onchange="ucCalc();">
-                                    <option value="0">0% — No tax</option>
-                                    <option value="5">5% slab</option>
-                                    <option value="20" selected>20% slab</option>
-                                    <option value="30">30% slab (highest)</option>
+                                    <option value="0" data-i18n="ulip.slab.0">0% — No tax</option>
+                                    <option value="5" data-i18n="ulip.slab.5">5% slab</option>
+                                    <option value="20" selected data-i18n="ulip.slab.20">20% slab</option>
+                                    <option value="30" data-i18n="ulip.slab.30">30% slab (highest)</option>
                                 </select>
-                                <div class="text-[9px] text-slate-400 mt-0.5">Used to calculate 80C tax benefit of staying</div>
+                                <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="ulip.hint.slab">Used to calculate 80C tax benefit of staying</div>
                             </div>
 
                         </div>
 
                         <!-- Quick Presets -->
                         <div class="mt-3">
-                            <div class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1.5">Quick Presets — Common LIC Policies</div>
+                            <div class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1.5" data-i18n="ulip.presets.title">Quick Presets — Common LIC Policies</div>
                             <div class="flex flex-wrap gap-1">
                                 <button onclick="ucPreset('jeevan_anand')" class="epf-preset">Jeevan Anand</button>
                                 <button onclick="ucPreset('endowment')"    class="epf-preset">New Endowment</button>
@@ -126,12 +126,12 @@
 
                     <!-- How to find values -->
                     <div class="rounded-2xl px-3 py-2.5" style="background:rgba(14,165,233,0.07);border:1px solid rgba(14,165,233,0.2);">
-                        <div class="text-[9px] font-black text-sky-700 uppercase tracking-wider mb-1">📋 How to Find Your Values</div>
+                        <div class="text-[9px] font-black text-sky-700 uppercase tracking-wider mb-1" data-i18n="ulip.howto.title">📋 How to Find Your Values</div>
                         <div class="text-[9px] text-sky-800 leading-relaxed space-y-0.5">
-                            <div>• <strong>Maturity Value:</strong> Check your policy bond / benefit illustration (ask LIC branch)</div>
-                            <div>• <strong>Surrender Value:</strong> Call LIC helpline 022-68276827 or visit branch with policy no.</div>
-                            <div>• <strong>ULIP NAV:</strong> Log in to insurer portal — check current fund value</div>
-                            <div>• <strong>Money Back:</strong> Add up all remaining money-back instalments + final maturity as total "Maturity Value"</div>
+                            <div data-i18n-html="ulip.howto.1">• <strong>Maturity Value:</strong> Check your policy bond / benefit illustration (ask LIC branch)</div>
+                            <div data-i18n-html="ulip.howto.2">• <strong>Surrender Value:</strong> Call LIC helpline 022-68276827 or visit branch with policy no.</div>
+                            <div data-i18n-html="ulip.howto.3">• <strong>ULIP NAV:</strong> Log in to insurer portal — check current fund value</div>
+                            <div data-i18n-html="ulip.howto.4">• <strong>Money Back:</strong> Add up all remaining money-back instalments + final maturity as total "Maturity Value"</div>
                         </div>
                     </div>
                 </div>
@@ -148,28 +148,28 @@
                             <div id="uc-irr-grade" class="text-[9px] text-red-200 mt-0.5 leading-tight">Enter details above</div>
                         </div>
                         <div class="rounded-2xl p-3 text-center shine-header" style="background:linear-gradient(135deg,#1e1b4b,#3730a3);border:2px solid #818cf8;">
-                            <div class="text-[9px] font-black text-indigo-200 uppercase tracking-wider">Tax-Adj. IRR</div>
+                            <div class="text-[9px] font-black text-indigo-200 uppercase tracking-wider" data-i18n="res.ulip.eff_irr">Tax-Adj. IRR</div>
                             <div id="uc-eff-irr" class="text-2xl font-black text-white mt-0.5">—</div>
-                            <div class="text-[9px] text-indigo-200 mt-0.5">After 80C benefit</div>
+                            <div class="text-[9px] text-indigo-200 mt-0.5" data-i18n="ulip.lbl.after80c">After 80C benefit</div>
                         </div>
                         <div class="rounded-2xl p-3 text-center shine-header" style="background:linear-gradient(135deg,#0c2340,#1a4a7a);border:2px solid #60a5fa;">
-                            <div class="text-[9px] font-black text-blue-200 uppercase tracking-wider">Forward IRR</div>
+                            <div class="text-[9px] font-black text-blue-200 uppercase tracking-wider" data-i18n="res.ulip.fwd_irr">Forward IRR</div>
                             <div id="uc-fwd-irr" class="text-2xl font-black text-white mt-0.5">—</div>
-                            <div class="text-[9px] text-blue-200 mt-0.5">Return if you stay</div>
+                            <div class="text-[9px] text-blue-200 mt-0.5" data-i18n="ulip.lbl.if_stay">Return if you stay</div>
                         </div>
                     </div>
 
                     <!-- BTID comparison row -->
                     <div class="grid grid-cols-2 gap-2">
                         <div class="rounded-2xl p-3 text-center shine-header" style="background:linear-gradient(135deg,#14532d,#166534);border:2px solid #22c55e;">
-                            <div class="text-[9px] font-black text-emerald-200 uppercase tracking-wider">BTID Corpus</div>
+                            <div class="text-[9px] font-black text-emerald-200 uppercase tracking-wider" data-i18n="res.ulip.btid_corpus">BTID Corpus</div>
                             <div id="uc-btid-corpus" class="text-xl font-black text-white mt-0.5">—</div>
-                            <div class="text-[9px] text-emerald-200 mt-0.5">If you surrender + invest</div>
+                            <div class="text-[9px] text-emerald-200 mt-0.5" data-i18n="ulip.lbl.if_surrender">If you surrender + invest</div>
                         </div>
                         <div class="rounded-2xl p-3 text-center shine-header" style="background:linear-gradient(135deg,#292524,#44403c);border:2px solid #a8a29e;">
-                            <div class="text-[9px] font-black text-stone-200 uppercase tracking-wider">Policy Maturity</div>
+                            <div class="text-[9px] font-black text-stone-200 uppercase tracking-wider" data-i18n="res.ulip.policy_mat">Policy Maturity</div>
                             <div id="uc-policy-maturity" class="text-xl font-black text-white mt-0.5">—</div>
-                            <div class="text-[9px] text-stone-300 mt-0.5">If you stay till end</div>
+                            <div class="text-[9px] text-stone-300 mt-0.5" data-i18n="ulip.lbl.till_end">If you stay till end</div>
                         </div>
                     </div>
 
@@ -180,7 +180,7 @@
                             <div id="uc-advantage" class="text-lg font-black" style="color:#10b981;">—</div>
                         </div>
                         <div class="text-right">
-                            <div class="text-[9px] text-emerald-600">Surrender value today</div>
+                            <div class="text-[9px] text-emerald-600" data-i18n="ulip.lbl.sv_today">Surrender value today</div>
                             <div id="uc-sv-display" class="text-sm font-black text-emerald-700">—</div>
                         </div>
                     </div>
@@ -189,43 +189,43 @@
                     <div><button onclick="waShare('ulipcheck')" class="wa-share-btn shine-btn"><svg viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5 flex-shrink-0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.557 4.133 1.535 5.876L.057 23.43a.75.75 0 00.918.924l5.688-1.493A11.946 11.946 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.907 0-3.7-.512-5.241-1.403l-.375-.22-3.877 1.018 1.01-3.769-.234-.389A9.953 9.953 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>Share on WhatsApp</button></div>
 
                     <!-- Recommendation box -->
-                    <div id="uc-recommendation" class="rounded-2xl px-4 py-3 text-[11px] leading-relaxed" style="background:#fef9c3;border:1.5px solid #fde68a;color:#78350f;">
+                    <div id="uc-recommendation" class="rounded-2xl px-4 py-3 text-[11px] leading-relaxed" style="background:#fef9c3;border:1.5px solid #fde68a;color:#78350f;" data-i18n="ulip.rec.default">
                         Enter your policy details above to get a personalised recommendation.
                     </div>
 
                     <!-- Key Stats Grid -->
                     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
-                        <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">Policy Breakdown</div>
+                        <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2" data-i18n="ulip.sec.breakdown">Policy Breakdown</div>
                         <div class="grid grid-cols-2 gap-2">
                             <div class="rounded-xl p-2" style="background:#f8fafc;border:1px solid #e2e8f0;">
-                                <div class="text-[9px] text-slate-500 font-semibold">Premium paid till date</div>
+                                <div class="text-[9px] text-slate-500 font-semibold" data-i18n="ulip.stat.paid">Premium paid till date</div>
                                 <div id="uc-total-paid" class="text-sm font-black text-slate-700">—</div>
                             </div>
                             <div class="rounded-xl p-2" style="background:#f8fafc;border:1px solid #e2e8f0;">
-                                <div class="text-[9px] text-slate-500 font-semibold">Remaining premium total</div>
+                                <div class="text-[9px] text-slate-500 font-semibold" data-i18n="ulip.stat.remain">Remaining premium total</div>
                                 <div id="uc-total-remain" class="text-sm font-black text-slate-700">—</div>
                             </div>
                             <div class="rounded-xl p-2" style="background:#fef2f2;border:1px solid #fecaca;">
-                                <div class="text-[9px] text-red-600 font-semibold">Term insurance cost (est.)</div>
+                                <div class="text-[9px] text-red-600 font-semibold" data-i18n="ulip.stat.term_cost">Term insurance cost (est.)</div>
                                 <div id="uc-term-cost" class="text-sm font-black text-red-700">—</div>
                             </div>
                             <div class="rounded-xl p-2" style="background:#f0fdf4;border:1px solid #bbf7d0;">
-                                <div class="text-[9px] text-emerald-600 font-semibold">Free to invest (per yr)</div>
+                                <div class="text-[9px] text-emerald-600 font-semibold" data-i18n="ulip.stat.free_inv">Free to invest (per yr)</div>
                                 <div id="uc-free-invest" class="text-sm font-black text-emerald-700">—</div>
                             </div>
                             <div class="rounded-xl p-2" style="background:#eff6ff;border:1px solid #bfdbfe;">
-                                <div class="text-[9px] text-blue-600 font-semibold">80C tax benefit/yr + total</div>
+                                <div class="text-[9px] text-blue-600 font-semibold" data-i18n="ulip.stat.tax80c">80C tax benefit/yr + total</div>
                                 <div id="uc-tax-benefit" class="text-sm font-black text-blue-700">—</div>
                             </div>
                             <div class="rounded-xl p-2" style="background:#fefce8;border:1px solid #fde68a;">
-                                <div class="text-[9px] text-amber-600 font-semibold">Time remaining</div>
+                                <div class="text-[9px] text-amber-600 font-semibold" data-i18n="ulip.stat.time_left">Time remaining</div>
                                 <div id="uc-remaining-years" class="text-sm font-black text-amber-700">—</div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Caveats -->
-                    <div class="rounded-2xl px-3 py-2.5 text-[9px] leading-relaxed" style="background:rgba(245,200,66,0.07);border:1px solid rgba(245,200,66,0.25);color:#78350f;">
+                    <div class="rounded-2xl px-3 py-2.5 text-[9px] leading-relaxed" style="background:rgba(245,200,66,0.07);border:1px solid rgba(245,200,66,0.25);color:#78350f;" data-i18n-html="ulip.caveats.text">
                         <strong>⚠️ Important Caveats:</strong> (1) <strong>Never surrender without buying term insurance first</strong> — replace your life cover immediately. (2) ULIP surrender charges apply in years 1–5; check your policy document. (3) Maturity value for Money Back should be the total of all remaining payouts. (4) 80C benefit assumes you have no other 80C investments utilising the ₹1.5L limit. (5) This is a calculator, not financial advice — consult a SEBI-registered fee-only financial advisor (RIA) for a personalised recommendation.
                     </div>
 
