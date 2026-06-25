@@ -427,7 +427,7 @@
             (slab > 0 ? '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>' + _fi('fi.w.tax.at','Tax @') + ' ' + (slab * 100).toFixed(0) + '%</span><span class="font-bold text-red-600">−' + fiFmt(taxAmt) + '</span></div>' : '') +
             '<div class="flex justify-between py-1 font-black text-blue-700"><span>' + _fi('fi.w.net.mat','Net maturity') + '</span><span>' + fiFmt(netMat) + '</span></div>' +
             '<div class="flex justify-between py-0.5"><span class="text-[9px] text-slate-400">' + _fi('fi.w.yield','Post-tax yield') + '</span><span class="font-bold text-emerald-600">' + effYield.toFixed(2) + '% p.a.</span></div>' +
-            '<div class="text-[9px] text-slate-400 mt-1">Quarterly compounding (as per Indian bank RD standard)</div>';
+            '<div class="text-[9px] text-slate-400 mt-1">' + _fi('fi.rd.qtr.note','Quarterly compounding (as per Indian bank RD standard)') + '</div>';
 
         if (typeof saveUserData === 'function') saveUserData();
     }
