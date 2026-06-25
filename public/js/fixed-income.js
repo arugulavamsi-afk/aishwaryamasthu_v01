@@ -290,7 +290,7 @@
         $s('fi-nsc-yr5-tax',   fiFmt(taxDue));
         $s('fi-nsc-80c',       fiFmt(taxSaving80C));
         $s('fi-nsc-yield',     effYield.toFixed(2) + '%');
-        $s('fi-nsc-note',      '80C deduction on investment + reinvested interest (years 1–4). Only year-5 interest taxable.');
+        $s('fi-nsc-note',      _fi('fi.nsc.note','80C deduction on investment + reinvested interest (years 1–4). Only year-5 interest taxable.'));
         if (typeof saveUserData === 'function') saveUserData();
     }
 
@@ -311,7 +311,7 @@
         $s('fi-kvp-months',    months + ' months (' + yrs.toFixed(1) + ' yrs)');
         $s('fi-kvp-int',       fiFmt(totalInt));
         $s('fi-kvp-yield',     effYield.toFixed(2) + '% CAGR');
-        $s('fi-kvp-note',      '⚠ No 80C benefit. Interest taxable at maturity as per your slab. Premature closure allowed after 2.5 yrs with penalty.');
+        $s('fi-kvp-note',      _fi('fi.kvp.note','⚠ No 80C benefit. Interest taxable at maturity as per your slab. Premature closure allowed after 2.5 yrs with penalty.'));
         if (typeof saveUserData === 'function') saveUserData();
     }
 
