@@ -2,20 +2,24 @@
        FIXED INCOME TOOLS
     ══════════════════════════════════════════════════════════ */
 
+    function _fi(key, fallback) {
+        if (typeof _t === 'function') { var v = _t(key); if (v && v !== key) return v; }
+        return fallback;
+    }
     var _fiNewSlabs = [
-        ['0',  '0% — ≤₹4L (nil) / 87A rebate ≤₹12L'],
-        ['5',  '5% — ₹4L–₹8L'],
-        ['10', '10% — ₹8L–₹12L'],
-        ['15', '15% — ₹12L–₹16L'],
-        ['20', '20% — ₹16L–₹20L'],
-        ['25', '25% — ₹20L–₹24L'],
-        ['30', '30% — Above ₹24L']
+        ['0',  function(){ return _fi('fi.slab.new.0',  '0% — ≤₹4L (nil) / 87A rebate ≤₹12L'); }],
+        ['5',  function(){ return _fi('fi.slab.new.5',  '5% — ₹4L–₹8L'); }],
+        ['10', function(){ return _fi('fi.slab.new.10', '10% — ₹8L–₹12L'); }],
+        ['15', function(){ return _fi('fi.slab.new.15', '15% — ₹12L–₹16L'); }],
+        ['20', function(){ return _fi('fi.slab.new.20', '20% — ₹16L–₹20L'); }],
+        ['25', function(){ return _fi('fi.slab.new.25', '25% — ₹20L–₹24L'); }],
+        ['30', function(){ return _fi('fi.slab.new.30', '30% — Above ₹24L'); }]
     ];
     var _fiOldSlabs = [
-        ['0',  '0% — ≤₹2.5L (nil slab)'],
-        ['5',  '5% — ₹2.5L–₹5L'],
-        ['20', '20% — ₹5L–₹10L'],
-        ['30', '30% — Above ₹10L']
+        ['0',  function(){ return _fi('fi.slab.old.0',  '0% — ≤₹2.5L (nil slab)'); }],
+        ['5',  function(){ return _fi('fi.slab.old.5',  '5% — ₹2.5L–₹5L'); }],
+        ['20', function(){ return _fi('fi.slab.old.20', '20% — ₹5L–₹10L'); }],
+        ['30', function(){ return _fi('fi.slab.old.30', '30% — Above ₹10L'); }]
     ];
 
     function fiSetSlabOptions(slabId, regime) {
@@ -24,7 +28,8 @@
         var prev = el.value;
         var opts = regime === 'old' ? _fiOldSlabs : _fiNewSlabs;
         el.innerHTML = opts.map(function(o) {
-            return '<option value="' + o[0] + '">' + o[1] + '</option>';
+            var lbl = typeof o[1] === 'function' ? o[1]() : o[1];
+            return '<option value="' + o[0] + '">' + lbl + '</option>';
         }).join('');
         el.value = opts.some(function(o) { return o[0] === prev; }) ? prev : '30';
         el.classList.remove('text-slate-400'); // selects are never greyed
@@ -181,7 +186,7 @@
         }
 
         var annInt  = grossInt / (yrs || 1);
-        var tdsNote = annInt > 40000 ? '⚠ TDS @ 10% applies (annual interest > ₹40K). Submit Form 15G/H if total income < taxable limit.' : '✅ No TDS (annual interest ≤ ₹40K). For senior citizens threshold is ₹50K.';
+        var tdsNote = annInt > 40000 ? _fi('fi.tds.yes','⚠ TDS @ 10% applies (annual interest > ₹40K). Submit Form 15G/H if total income < taxable limit.') : _fi('fi.tds.no','✅ No TDS (annual interest ≤ ₹40K). For senior citizens threshold is ₹50K.');
 
         function $s(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; }
         $s('fi-fd-gross-mat',  fiFmt(grossMat));
@@ -202,12 +207,12 @@
 
         var tw = document.getElementById('fi-fd-workings');
         if (tw) tw.innerHTML =
-            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>Principal</span><span class="font-bold">' + fiFmt(P) + '</span></div>' +
-            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>Rate · Tenure</span><span class="font-bold">' + rate + '% · ' + mo + ' mo</span></div>' +
-            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>Gross interest</span><span class="font-bold">' + fiFmt(grossInt) + '</span></div>' +
-            (slab > 0 ? '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>Tax @ ' + (slab*100).toFixed(0) + '%</span><span class="font-bold text-red-600">−' + fiFmt(taxAmt) + '</span></div>' : '') +
-            '<div class="flex justify-between py-1 font-black text-blue-700"><span>Net maturity</span><span>' + fiFmt(netMat) + '</span></div>' +
-            '<div class="flex justify-between py-0.5"><span class="text-[9px] text-slate-400">Post-tax yield</span><span class="font-bold text-emerald-600">' + effYield.toFixed(2) + '% p.a.</span></div>';
+            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>' + _fi('fi.w.principal','Principal') + '</span><span class="font-bold">' + fiFmt(P) + '</span></div>' +
+            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>' + _fi('fi.w.rate.tenure','Rate · Tenure') + '</span><span class="font-bold">' + rate + '% · ' + mo + ' mo</span></div>' +
+            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>' + _fi('fi.w.gross.int','Gross interest') + '</span><span class="font-bold">' + fiFmt(grossInt) + '</span></div>' +
+            (slab > 0 ? '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>' + _fi('fi.w.tax.at','Tax @') + ' ' + (slab*100).toFixed(0) + '%</span><span class="font-bold text-red-600">−' + fiFmt(taxAmt) + '</span></div>' : '') +
+            '<div class="flex justify-between py-1 font-black text-blue-700"><span>' + _fi('fi.w.net.mat','Net maturity') + '</span><span>' + fiFmt(netMat) + '</span></div>' +
+            '<div class="flex justify-between py-0.5"><span class="text-[9px] text-slate-400">' + _fi('fi.w.yield','Post-tax yield') + '</span><span class="font-bold text-emerald-600">' + effYield.toFixed(2) + '% p.a.</span></div>';
 
         if (typeof saveUserData === 'function') saveUserData();
     }
@@ -398,8 +403,8 @@
 
         var annInt   = grossInt / (yrs || 1);
         var tdsNote  = annInt > 40000
-            ? '⚠ TDS @ 10% applies (annual interest > ₹40K). Submit Form 15G/H if total income < taxable limit.'
-            : '✅ No TDS (annual interest ≤ ₹40K). For senior citizens threshold is ₹50K.';
+            ? _fi('fi.tds.yes','⚠ TDS @ 10% applies (annual interest > ₹40K). Submit Form 15G/H if total income < taxable limit.')
+            : _fi('fi.tds.no','✅ No TDS (annual interest ≤ ₹40K). For senior citizens threshold is ₹50K.');
 
         function $s(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; }
         $s('fi-rd-gross-mat',  fiFmt(grossMat));
@@ -414,13 +419,13 @@
 
         var tw = document.getElementById('fi-rd-workings');
         if (tw) tw.innerHTML =
-            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>Monthly deposit</span><span class="font-bold">' + fiFmt(R) + '</span></div>' +
-            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>Rate · Tenure</span><span class="font-bold">' + rate + '% · ' + N + ' mo</span></div>' +
-            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>Total deposited</span><span class="font-bold">' + fiFmt(totalDep) + '</span></div>' +
-            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>Gross interest</span><span class="font-bold">' + fiFmt(grossInt) + '</span></div>' +
-            (slab > 0 ? '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>Tax @ ' + (slab * 100).toFixed(0) + '%</span><span class="font-bold text-red-600">−' + fiFmt(taxAmt) + '</span></div>' : '') +
-            '<div class="flex justify-between py-1 font-black text-blue-700"><span>Net maturity</span><span>' + fiFmt(netMat) + '</span></div>' +
-            '<div class="flex justify-between py-0.5"><span class="text-[9px] text-slate-400">Post-tax yield</span><span class="font-bold text-emerald-600">' + effYield.toFixed(2) + '% p.a.</span></div>' +
+            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>' + _fi('lbl.fi.rd.deposit','Monthly deposit') + '</span><span class="font-bold">' + fiFmt(R) + '</span></div>' +
+            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>' + _fi('fi.w.rate.tenure','Rate · Tenure') + '</span><span class="font-bold">' + rate + '% · ' + N + ' mo</span></div>' +
+            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>' + _fi('res.fi.rd.dep','Total deposited') + '</span><span class="font-bold">' + fiFmt(totalDep) + '</span></div>' +
+            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>' + _fi('fi.w.gross.int','Gross interest') + '</span><span class="font-bold">' + fiFmt(grossInt) + '</span></div>' +
+            (slab > 0 ? '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>' + _fi('fi.w.tax.at','Tax @') + ' ' + (slab * 100).toFixed(0) + '%</span><span class="font-bold text-red-600">−' + fiFmt(taxAmt) + '</span></div>' : '') +
+            '<div class="flex justify-between py-1 font-black text-blue-700"><span>' + _fi('fi.w.net.mat','Net maturity') + '</span><span>' + fiFmt(netMat) + '</span></div>' +
+            '<div class="flex justify-between py-0.5"><span class="text-[9px] text-slate-400">' + _fi('fi.w.yield','Post-tax yield') + '</span><span class="font-bold text-emerald-600">' + effYield.toFixed(2) + '% p.a.</span></div>' +
             '<div class="text-[9px] text-slate-400 mt-1">Quarterly compounding (as per Indian bank RD standard)</div>';
 
         if (typeof saveUserData === 'function') saveUserData();

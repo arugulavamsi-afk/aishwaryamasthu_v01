@@ -4,7 +4,7 @@
             <div class="rounded-2xl px-4 py-3 text-white flex items-center justify-between gap-3 flex-wrap shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:2px solid rgba(245,200,66,0.4);box-shadow:0 4px 18px rgba(0,0,0,0.25);">
                 <div>
                     <h2 class="text-base font-black flex items-center gap-2" data-i18n="page.fi.h">🏦 Fixed Income Tools</h2>
-                    <p class="text-blue-200 text-[11px] mt-0.5">FD (tax-adjusted) · SCSS 8.2% · POMIS 7.4% · NSC 7.7% · KVP · Tax FD vs ELSS · Built for every Indian investor — not just 30-yr-old SIP investors. <span class="text-yellow-300 font-semibold">Rates as of Q1 FY26.</span></p>
+                    <p class="text-blue-200 text-[11px] mt-0.5" data-i18n-html="fi.sub">FD (tax-adjusted) · SCSS 8.2% · POMIS 7.4% · NSC 7.7% · KVP · Tax FD vs ELSS · Built for every Indian investor — not just 30-yr-old SIP investors. <span class="text-yellow-300 font-semibold">Rates as of Q1 FY26.</span></p>
                 </div>
                 <button onclick="resetFixedIncome()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">
                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h5M20 20v-5h-5M4 9a9 9 0 0115-3M20 15a9 9 0 01-15 3"/></svg><span data-i18n="common.reset">Reset</span>
@@ -53,23 +53,23 @@
                         <div>
                             <label class="epf-label" data-i18n="lbl.fi.type">Type</label>
                             <select id="fi-fd-type" class="epf-input" onchange="fiCalcFD();this.classList.remove('text-slate-400');">
-                                <option value="cumulative">Cumulative</option>
-                                <option value="quarterly">Quarterly Payout</option>
-                                <option value="monthly">Monthly Payout</option>
+                                <option value="cumulative" data-i18n="fi.fd.type.cum">Cumulative</option>
+                                <option value="quarterly" data-i18n="fi.fd.type.qtr">Quarterly Payout</option>
+                                <option value="monthly" data-i18n="fi.fd.type.mth">Monthly Payout</option>
                             </select>
                         </div>
                         <div>
                             <label class="epf-label" data-i18n="lbl.fi.regime">Tax Regime</label>
                             <select id="fi-fd-regime" class="epf-input" onchange="fiUpdateSlabs('fd');this.classList.remove('text-slate-400');">
-                                <option value="new">New Regime (Budget 2025)</option>
-                                <option value="old">Old Regime</option>
+                                <option value="new" data-i18n="fi.regime.new">New Regime (Budget 2025)</option>
+                                <option value="old" data-i18n="fi.regime.old">Old Regime</option>
                             </select>
                         </div>
                         <div>
                             <label class="epf-label" data-i18n="lbl.fi.slab">Your Tax Slab</label>
                             <select id="fi-fd-slab" class="epf-input" onchange="fiCalcFD();this.classList.remove('text-slate-400');">
                             </select>
-                            <div class="text-[9px] text-slate-400 mt-0.5">FD interest taxable at marginal slab rate</div>
+                            <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="fi.slab.note.fd">FD interest taxable at marginal slab rate</div>
                         </div>
                     </div>
                     <!-- Quick presets -->
@@ -148,8 +148,8 @@
                         <div>
                             <label class="epf-label" data-i18n="lbl.fi.regime">Tax Regime</label>
                             <select id="fi-scss-regime" class="epf-input" onchange="fiUpdateSlabs('scss');this.classList.remove('text-slate-400');">
-                                <option value="new">New (Budget 2025)</option>
-                                <option value="old">Old Regime</option>
+                                <option value="new" data-i18n="fi.regime.new">New (Budget 2025)</option>
+                                <option value="old" data-i18n="fi.regime.old">Old Regime</option>
                             </select>
                         </div>
                         <div class="col-span-2">
@@ -208,8 +208,8 @@
                         <div>
                             <label class="epf-label" data-i18n="lbl.fi.regime">Tax Regime</label>
                             <select id="fi-pomis-regime" class="epf-input" onchange="fiUpdateSlabs('pomis');this.classList.remove('text-slate-400');">
-                                <option value="new">New (Budget 2025)</option>
-                                <option value="old">Old Regime</option>
+                                <option value="new" data-i18n="fi.regime.new">New (Budget 2025)</option>
+                                <option value="old" data-i18n="fi.regime.old">Old Regime</option>
                             </select>
                         </div>
                         <div class="col-span-2">
@@ -266,8 +266,8 @@
                         <div>
                             <label class="epf-label" data-i18n="lbl.fi.regime">Tax Regime</label>
                             <select id="fi-nsc-regime" class="epf-input" onchange="fiUpdateSlabs('nsc');this.classList.remove('text-slate-400');">
-                                <option value="new">New (Budget 2025)</option>
-                                <option value="old">Old Regime</option>
+                                <option value="new" data-i18n="fi.regime.new">New (Budget 2025)</option>
+                                <option value="old" data-i18n="fi.regime.old">Old Regime</option>
                             </select>
                         </div>
                         <div class="col-span-2">
@@ -376,8 +376,8 @@
                         <div>
                             <label class="epf-label" data-i18n="lbl.fi.regime">Tax Regime</label>
                             <select id="fi-cmp-regime" class="epf-input" onchange="fiUpdateSlabs('elss');this.classList.remove('text-slate-400');">
-                                <option value="new">New (Budget 2025)</option>
-                                <option value="old">Old Regime</option>
+                                <option value="new" data-i18n="fi.regime.new">New (Budget 2025)</option>
+                                <option value="old" data-i18n="fi.regime.old">Old Regime</option>
                             </select>
                         </div>
                         <div>
@@ -467,15 +467,15 @@
                         <div>
                             <label class="epf-label" data-i18n="lbl.fi.regime">Tax Regime</label>
                             <select id="fi-rd-regime" class="epf-input" onchange="fiUpdateSlabs('rd');this.classList.remove('text-slate-400');">
-                                <option value="new">New Regime (Budget 2025)</option>
-                                <option value="old">Old Regime</option>
+                                <option value="new" data-i18n="fi.regime.new">New Regime (Budget 2025)</option>
+                                <option value="old" data-i18n="fi.regime.old">Old Regime</option>
                             </select>
                         </div>
                         <div class="col-span-2">
                             <label class="epf-label" data-i18n="lbl.fi.slab">Your Tax Slab</label>
                             <select id="fi-rd-slab" class="epf-input" onchange="fiCalcRD();this.classList.remove('text-slate-400');">
                             </select>
-                            <div class="text-[9px] text-slate-400 mt-0.5">RD interest taxable at marginal slab rate each year</div>
+                            <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="fi.slab.note.rd">RD interest taxable at marginal slab rate each year</div>
                         </div>
                     </div>
                     <!-- Quick presets -->
@@ -530,31 +530,31 @@
 
             <!-- KEY RATES INFO BOX -->
             <div class="rounded-2xl p-3" style="background:#f8fafc;border:1px solid #e2e8f0;">
-                <div class="text-[9px] font-black text-slate-500 uppercase tracking-wider mb-2">📌 Current Post Office / Govt. Scheme Rates (Q1 FY 2025-26)</div>
+                <div class="text-[9px] font-black text-slate-500 uppercase tracking-wider mb-2" data-i18n="fi.rates.heading">📌 Current Post Office / Govt. Scheme Rates (Q1 FY 2025-26)</div>
                 <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 text-[10px]">
                     <div class="rounded-xl p-2" style="background:#eff6ff;border:1px solid #93c5fd;">
-                        <div class="font-black text-blue-800 mb-0.5">🏦 SCSS</div>
-                        <div class="text-blue-700">8.2% p.a. · Quarterly · 80C · 5 yr · Max ₹30L · Senior (60+) or VRS (55+)</div>
+                        <div class="font-black text-blue-800 mb-0.5" data-i18n="fi.rates.scss.t">🏦 SCSS</div>
+                        <div class="text-blue-700" data-i18n="fi.rates.scss.d">8.2% p.a. · Quarterly · 80C · 5 yr · Max ₹30L · Senior (60+) or VRS (55+)</div>
                     </div>
                     <div class="rounded-xl p-2" style="background:#f0fdfa;border:1px solid #5eead4;">
-                        <div class="font-black text-teal-800 mb-0.5">📮 POMIS</div>
-                        <div class="text-teal-700">7.4% p.a. · Monthly · No 80C · 5 yr · ₹9L single / ₹15L joint · Capital safe</div>
+                        <div class="font-black text-teal-800 mb-0.5" data-i18n="fi.rates.pomis.t">📮 POMIS</div>
+                        <div class="text-teal-700" data-i18n="fi.rates.pomis.d">7.4% p.a. · Monthly · No 80C · 5 yr · ₹9L single / ₹15L joint · Capital safe</div>
                     </div>
                     <div class="rounded-xl p-2" style="background:#f0fdf4;border:1px solid #86efac;">
-                        <div class="font-black text-emerald-800 mb-0.5">📜 NSC</div>
-                        <div class="text-emerald-700">7.7% p.a. · 5-yr · 80C on investment + reinvested interest · Compounded annually</div>
+                        <div class="font-black text-emerald-800 mb-0.5" data-i18n="fi.rates.nsc.t">📜 NSC</div>
+                        <div class="text-emerald-700" data-i18n="fi.rates.nsc.d">7.7% p.a. · 5-yr · 80C on investment + reinvested interest · Compounded annually</div>
                     </div>
                     <div class="rounded-xl p-2" style="background:#fff7ed;border:1px solid #fdba74;">
-                        <div class="font-black text-orange-800 mb-0.5">🌱 KVP</div>
-                        <div class="text-orange-700">7.5% p.a. · Doubles in 115 mo · No 80C · Taxable at maturity · Open to all</div>
+                        <div class="font-black text-orange-800 mb-0.5" data-i18n="fi.rates.kvp.t">🌱 KVP</div>
+                        <div class="text-orange-700" data-i18n="fi.rates.kvp.d">7.5% p.a. · Doubles in 115 mo · No 80C · Taxable at maturity · Open to all</div>
                     </div>
                     <div class="rounded-xl p-2" style="background:#fdf4ff;border:1px solid #e9d5ff;">
-                        <div class="font-black text-purple-800 mb-0.5">🏛️ RBI Bond</div>
-                        <div class="text-purple-700">8.05% (floating) · Semi-annual · 7-yr lock-in · No TDS · NSC + 0.35% spread</div>
+                        <div class="font-black text-purple-800 mb-0.5" data-i18n="fi.rates.rbi.t">🏛️ RBI Bond</div>
+                        <div class="text-purple-700" data-i18n="fi.rates.rbi.d">8.05% (floating) · Semi-annual · 7-yr lock-in · No TDS · NSC + 0.35% spread</div>
                     </div>
                     <div class="rounded-xl p-2" style="background:#fef9c3;border:1px solid #fde047;">
-                        <div class="font-black text-yellow-800 mb-0.5">💡 FD Tips</div>
-                        <div class="text-yellow-700">Split across banks (₹5L DICGC limit) · Small finance banks give 8.5%+ · FD interest taxable every year</div>
+                        <div class="font-black text-yellow-800 mb-0.5" data-i18n="fi.rates.tips.t">💡 FD Tips</div>
+                        <div class="text-yellow-700" data-i18n="fi.rates.tips.d">Split across banks (₹5L DICGC limit) · Small finance banks give 8.5%+ · FD interest taxable every year</div>
                     </div>
                 </div>
             </div>
