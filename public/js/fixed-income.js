@@ -363,9 +363,10 @@
             '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>Tax on interest (@ ' + (slab*100).toFixed(0) + '% slab)</span><span class="font-bold text-red-600">−' + fiFmt(fdTax5) + '</span></div>' +
             '<div class="flex justify-between py-1 font-black text-blue-700"><span>FD post-tax maturity</span><span>' + fiFmt(fdMat5) + '</span></div>' +
             '<div class="text-[9px] font-black text-emerald-700 mt-2 mb-1">📈 ELSS (5 yr hold)</div>' +
+            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>Investment Amount (5-yr hold)</span><span class="font-bold">' + fiFmt(P) + '</span></div>' +
             '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>Expected CAGR</span><span class="font-bold">' + (elssRate*100).toFixed(1) + '%</span></div>' +
             '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>Gross maturity</span><span class="font-bold">' + fiFmt(elssMat5) + '</span></div>' +
-            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>LTCG tax (10% above ₹1L)</span><span class="font-bold text-red-600">−' + (ltcgTax > 0 ? fiFmt(ltcgTax) : '0') + '</span></div>' +
+            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>LTCG tax (10% above ₹1L)</span><span class="font-bold text-red-600">' + (ltcgTax > 0 ? '−' + fiFmt(ltcgTax) : 'Nil (gains ≤ ₹1L)') + '</span></div>' +
             '<div class="flex justify-between py-1 font-black text-emerald-700"><span>ELSS post-tax maturity</span><span>' + fiFmt(elssNet5) + '</span></div>';
 
         if (typeof saveUserData === 'function') saveUserData();
