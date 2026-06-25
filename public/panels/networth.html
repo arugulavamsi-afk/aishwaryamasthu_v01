@@ -4,10 +4,10 @@
             <div class="rounded-2xl px-4 py-3 text-white flex items-center justify-between gap-3 flex-wrap shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:2px solid rgba(245,200,66,0.4);box-shadow:0 4px 18px rgba(0,0,0,0.25);">
                 <div>
                     <h2 class="text-base font-black flex items-center gap-2" data-i18n="page.nw.h">⚖️ Net Worth Tracker</h2>
-                    <p class="text-blue-200 text-[11px] mt-0.5">Your complete financial snapshot — Assets vs Liabilities = Net Worth. A financial plan without a balance sheet is astrology, not planning.</p>
+                    <p class="text-blue-200 text-[11px] mt-0.5" data-i18n="page.nw.sub">Your complete financial snapshot — Assets vs Liabilities = Net Worth. A financial plan without a balance sheet is astrology, not planning.</p>
                 </div>
                 <div class="flex items-center gap-2 flex-wrap">
-                    <button onclick="switchMode('myprofile')" class="flex items-center gap-1 px-3 py-1.5 rounded-xl text-[11px] font-bold" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">← My Profile</button>
+                    <button onclick="switchMode('myprofile')" class="flex items-center gap-1 px-3 py-1.5 rounded-xl text-[11px] font-bold" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);" data-i18n="btn.myprofile">← My Profile</button>
                     <button onclick="resetNetWorth()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">
                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h5M20 20v-5h-5M4 9a9 9 0 0115-3M20 15a9 9 0 01-15 3"/></svg><span data-i18n="common.reset">Reset</span>
                     </button>
@@ -77,7 +77,7 @@
                         </div>
 
                         <!-- Retirement & Debt -->
-                        <div class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1">🔒 Retirement & Fixed Income</div>
+                        <div class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1" data-i18n="nw.sec.retirement">🔒 Retirement & Fixed Income</div>
                         <div class="grid grid-cols-2 gap-x-3 gap-y-2 mb-2">
                             <div>
                                 <label class="epf-label" data-i18n="lbl.nw.epf">EPF Balance (₹)</label>
@@ -110,7 +110,7 @@
                                 <div class="text-[9px] text-slate-400 mt-0.5">Tier I + Tier II combined</div>
                             </div>
                             <div>
-                                <label class="epf-label">Debt MF / Bonds (₹)</label>
+                                <label class="epf-label" data-i18n="lbl.nw.debt_mf">Debt MF / Bonds (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
                                 <input id="nw-debt-mf" type="text" inputmode="numeric" maxlength="15" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="nwFmtInput(this);nwCalc();"
@@ -125,7 +125,7 @@
                         <div class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1" data-i18n="nw.sec.realestate">🏠 Real Estate</div>
                         <div class="grid grid-cols-2 gap-x-3 gap-y-2 mb-2">
                             <div>
-                                <label class="epf-label">Primary Home (₹)</label>
+                                <label class="epf-label" data-i18n="lbl.nw.home">Primary Home (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
                                 <input id="nw-home" type="text" inputmode="numeric" maxlength="15" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="nwFmtInput(this);nwCalc();"
@@ -147,7 +147,7 @@
                         </div>
 
                         <!-- Gold & Other -->
-                        <div class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1">🥇 Gold & Other</div>
+                        <div class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1" data-i18n="nw.sec.gold">🥇 Gold & Other</div>
                         <div class="grid grid-cols-2 gap-x-3 gap-y-2">
                             <div>
                                 <label class="epf-label" data-i18n="lbl.nw.gold_phys">Physical Gold (₹)</label>
@@ -160,7 +160,7 @@
                                 <div class="text-[9px] text-slate-400 mt-0.5">Jewellery + coins at market price</div>
                             </div>
                             <div>
-                                <label class="epf-label">Gold ETF / SGB / MF (₹)</label>
+                                <label class="epf-label" data-i18n="lbl.nw.gold_paper">Gold ETF / SGB / MF (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
                                 <input id="nw-gold-paper" type="text" inputmode="numeric" maxlength="15" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="nwFmtInput(this);nwCalc();"
@@ -180,7 +180,7 @@
                                 <div class="text-[9px] text-slate-400 mt-0.5">30% flat tax on gains in India</div>
                             </div>
                             <div>
-                                <label class="epf-label">LIC / ULIP Surr. Value (₹)</label>
+                                <label class="epf-label" data-i18n="lbl.nw.ulip_sv">LIC / ULIP Surr. Value (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
                                 <input id="nw-ins-sv" type="text" inputmode="numeric" maxlength="15" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="nwFmtInput(this);nwCalc();"
@@ -190,7 +190,7 @@
                                 <div class="text-[9px] text-slate-400 mt-0.5">Check policy bond / app</div>
                             </div>
                             <div class="col-span-2">
-                                <label class="epf-label">Vehicles + Other Assets (₹)</label>
+                                <label class="epf-label" data-i18n="lbl.nw.vehicles">Vehicles + Other Assets (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
                                 <input id="nw-other-assets" type="text" inputmode="numeric" maxlength="15" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="nwFmtInput(this);nwCalc();"
@@ -209,7 +209,7 @@
                         </div>
                         <div class="grid grid-cols-2 gap-x-3 gap-y-2">
                             <div>
-                                <label class="epf-label">Home Loan (₹)</label>
+                                <label class="epf-label" data-i18n="lbl.nw.home_loan">Home Loan (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
                                 <input id="nw-liab-home" type="text" inputmode="numeric" maxlength="15" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="nwFmtInput(this);nwCalc();"
@@ -247,7 +247,7 @@
                                 </div>
                             </div>
                             <div>
-                                <label class="epf-label">Credit Card Dues (₹)</label>
+                                <label class="epf-label" data-i18n="lbl.nw.cc">Credit Card Dues (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
                                 <input id="nw-liab-cc" type="text" inputmode="numeric" maxlength="15" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="nwFmtInput(this);nwCalc();"
@@ -257,7 +257,7 @@
                                 <div class="text-[9px] text-red-400 mt-0.5 font-semibold">36% APR — pay first!</div>
                             </div>
                             <div>
-                                <label class="epf-label">Business / Other Loans (₹)</label>
+                                <label class="epf-label" data-i18n="lbl.nw.other_loans">Business / Other Loans (₹)</label>
                                 <div class="relative"><span class="epf-prefix">₹</span>
                                 <input id="nw-liab-other" type="text" inputmode="numeric" maxlength="15" value="0" class="epf-input pl-7 text-slate-400"
                                     oninput="nwFmtInput(this);nwCalc();"
@@ -275,22 +275,22 @@
 
                     <!-- Net Worth Hero Card -->
                     <div class="rounded-2xl p-4 text-center shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:2px solid rgba(245,200,66,0.4);">
-                        <div class="text-[10px] font-black text-blue-200 uppercase tracking-wider mb-1">Your Net Worth</div>
+                        <div class="text-[10px] font-black text-blue-200 uppercase tracking-wider mb-1" data-i18n="res.nw.networth">Your Net Worth</div>
                         <div id="nw-net-worth" class="text-4xl font-black" style="color:#10b981;">₹0</div>
-                        <div class="text-[10px] text-blue-300 mt-1">Total Assets − Total Liabilities</div>
+                        <div class="text-[10px] text-blue-300 mt-1" data-i18n="nw.hero.formula">Total Assets − Total Liabilities</div>
                     </div>
 
                     <!-- Assets & Liabilities Cards -->
                     <div class="grid grid-cols-2 gap-2">
                         <div class="rounded-2xl p-3 text-center shine-header" style="background:linear-gradient(135deg,#14532d,#166534);border:2px solid #22c55e;">
-                            <div class="text-[9px] font-black text-emerald-200 uppercase tracking-wider">Total Assets</div>
+                            <div class="text-[9px] font-black text-emerald-200 uppercase tracking-wider" data-i18n="res.nw.total_assets">Total Assets</div>
                             <div id="nw-total-assets" class="text-xl font-black text-white mt-0.5">₹0</div>
-                            <div class="text-[9px] text-emerald-300 mt-0.5">What you own</div>
+                            <div class="text-[9px] text-emerald-300 mt-0.5" data-i18n="nw.hero.own">What you own</div>
                         </div>
                         <div class="rounded-2xl p-3 text-center shine-header" style="background:linear-gradient(135deg,#450a0a,#7f1d1d);border:2px solid #ef4444;">
-                            <div class="text-[9px] font-black text-red-200 uppercase tracking-wider">Total Liabilities</div>
+                            <div class="text-[9px] font-black text-red-200 uppercase tracking-wider" data-i18n="res.nw.total_liab">Total Liabilities</div>
                             <div id="nw-total-liab" class="text-xl font-black text-white mt-0.5">₹0</div>
-                            <div class="text-[9px] text-red-300 mt-0.5">What you owe</div>
+                            <div class="text-[9px] text-red-300 mt-0.5" data-i18n="nw.hero.owe">What you owe</div>
                         </div>
                     </div>
 
@@ -299,7 +299,7 @@
 
                     <!-- Key Ratios -->
                     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
-                        <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">Key Financial Ratios</div>
+                        <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2" data-i18n="nw.sec.ratios">Key Financial Ratios</div>
                         <div class="grid grid-cols-3 gap-2">
                             <div class="rounded-xl p-2 text-center" style="background:#f0fdf4;border:1px solid #bbf7d0;">
                                 <div class="text-[9px] font-black text-emerald-700 uppercase">Debt / Asset</div>
@@ -326,7 +326,7 @@
 
                     <!-- Asset Allocation Chart -->
                     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
-                        <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">Asset Allocation</div>
+                        <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2" data-i18n="nw.sec.allocation">Asset Allocation</div>
                         <div style="height:180px;position:relative;">
                             <canvas id="nw-chart-canvas"></canvas>
                         </div>
@@ -334,7 +334,7 @@
 
                     <!-- Breakdown -->
                     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
-                        <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">Asset Breakdown</div>
+                        <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2" data-i18n="nw.sec.breakdown">Asset Breakdown</div>
                         <div id="nw-breakdown">
                             <div class="text-[10px] text-slate-400 text-center py-4">Enter your assets above to see breakdown</div>
                         </div>
@@ -351,8 +351,8 @@
             <!-- NET WORTH HISTORY -->
             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
                 <div class="flex items-center justify-between mb-1">
-                    <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider">📈 Net Worth History</div>
-                    <div class="text-[9px] text-slate-400">Snapshots saved automatically · up to 3 years</div>
+                    <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider" data-i18n="nw.hist.title">📈 Net Worth History</div>
+                    <div class="text-[9px] text-slate-400" data-i18n="nw.hist.sub">Snapshots saved automatically · up to 3 years</div>
                 </div>
                 <div id="nw-trend-section">
                     <div class="flex flex-col items-center justify-center py-8 gap-2">

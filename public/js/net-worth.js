@@ -2,6 +2,11 @@
        NET WORTH TRACKER
     ══════════════════════════════════════════════════════════ */
 
+    function _nw(key, fallback) {
+        if (typeof _t === 'function') { var v = _t(key); if (v && v !== key) return v; }
+        return fallback;
+    }
+
     var _nwChart      = null;
     var _nwTrendChart = null;
     var _nwHistory    = []; // [{m:'YYYY-MM', nw:N, a:N, l:N}, ...]
@@ -157,11 +162,11 @@
         var bkEl = document.getElementById('nw-breakdown');
         if (bkEl && totalAssets > 0) {
             var rows = [
-                { label: '💵 Liquid (Cash + FD)',          val: catLiquid,    color: '#0ea5e9' },
-                { label: '📈 Equity (Stocks + MF)',         val: catEquity,    color: '#10b981' },
-                { label: '🔒 Retirement (EPF+PPF+NPS+Debt)',val: catRetire,    color: '#8b5cf6' },
-                { label: '🏠 Real Estate',                  val: catRealty,    color: '#f59e0b' },
-                { label: '🥇 Gold, Crypto & Other',         val: catGoldOther, color: '#b45309' }
+                { label: _nw('nw.bk.liquid',  '💵 Liquid (Cash + FD)'),           val: catLiquid,    color: '#0ea5e9' },
+                { label: _nw('nw.bk.equity',  '📈 Equity (Stocks + MF)'),          val: catEquity,    color: '#10b981' },
+                { label: _nw('nw.bk.retire',  '🔒 Retirement (EPF+PPF+NPS+Debt)'), val: catRetire,    color: '#8b5cf6' },
+                { label: _nw('nw.bk.realty',  '🏠 Real Estate'),                   val: catRealty,    color: '#f59e0b' },
+                { label: _nw('nw.bk.gold',    '🥇 Gold, Crypto & Other'),           val: catGoldOther, color: '#b45309' }
             ];
             bkEl.innerHTML = rows.filter(function(r){ return r.val > 0; }).map(function(r) {
                 var pct = (r.val / totalAssets * 100).toFixed(1);
@@ -173,7 +178,7 @@
                     '</div>';
             }).join('');
         } else if (bkEl) {
-            bkEl.innerHTML = '<div class="text-[10px] text-slate-400 text-center py-4">Enter your assets above to see breakdown</div>';
+            bkEl.innerHTML = '<div class="text-[10px] text-slate-400 text-center py-4">' + _nw('nw.bk.empty', 'Enter your assets above to see breakdown') + '</div>';
         }
 
         // Monthly history snapshot + trend chart
@@ -261,8 +266,8 @@
             section.innerHTML =
                 '<div class="flex flex-col items-center justify-center py-8 gap-2">' +
                 '<div class="text-3xl">📆</div>' +
-                '<div class="text-xs font-semibold text-slate-500">No history yet</div>' +
-                '<div class="text-[10px] text-slate-400 text-center max-w-xs leading-relaxed">Enter your assets and liabilities above — your net worth will be recorded here automatically each month.</div>' +
+                '<div class="text-xs font-semibold text-slate-500">' + _nw('nw.hist.none.title', 'No history yet') + '</div>' +
+                '<div class="text-[10px] text-slate-400 text-center max-w-xs leading-relaxed">' + _nw('nw.hist.none.sub', 'Enter your assets and liabilities above — your net worth will be recorded here automatically each month.') + '</div>' +
                 '</div>';
             return;
         }
@@ -288,7 +293,7 @@
         var momHtml = momChange !== null
             ? '<span class="text-[10px] font-black px-2 py-0.5 rounded-full" style="background:' + momColor + '18;color:' + momColor + ';">' +
               momArrow + ' ' + nwFmt(Math.abs(momChange)) + ' vs ' + fmtLong(prevEntry.m) + '</span>'
-            : '<span class="text-[10px] text-slate-400 italic">First month recorded — check back next month for trend</span>';
+            : '<span class="text-[10px] text-slate-400 italic">' + _nw('nw.hist.first', 'First month recorded — check back next month for trend') + '</span>';
 
         var tableRows = hist.slice().reverse().map(function(h, i, arr) {
             var prevH  = arr[i + 1];
@@ -317,7 +322,7 @@
                     '<div class="mt-1">' + momHtml + '</div>' +
                 '</div>' +
                 '<div class="text-[9px] text-slate-400 text-right leading-relaxed">' +
-                    hist.length + ' month' + (hist.length !== 1 ? 's' : '') + ' tracked<br>auto-updated on every save' +
+                    hist.length + ' ' + _nw('nw.hist.tracked', 'months tracked') + '<br>' + _nw('nw.hist.auto', 'auto-updated on every save') +
                 '</div>' +
             '</div>' +
             // Chart (only if 2+ data points)
@@ -328,11 +333,11 @@
             '<div class="overflow-x-auto rounded-xl border border-slate-100">' +
                 '<table class="w-full">' +
                     '<thead><tr style="background:#f8fafc;">' +
-                        '<th class="py-1.5 px-3 text-[9px] font-black text-slate-400 uppercase tracking-wider text-left">Month</th>' +
-                        '<th class="py-1.5 px-3 text-[9px] font-black text-slate-400 uppercase tracking-wider text-right">Assets</th>' +
-                        '<th class="py-1.5 px-3 text-[9px] font-black text-slate-400 uppercase tracking-wider text-right">Liabilities</th>' +
-                        '<th class="py-1.5 px-3 text-[9px] font-black text-slate-400 uppercase tracking-wider text-right">Net Worth</th>' +
-                        '<th class="py-1.5 px-3 text-[9px] font-black text-slate-400 uppercase tracking-wider text-right">MoM Change</th>' +
+                        '<th class="py-1.5 px-3 text-[9px] font-black text-slate-400 uppercase tracking-wider text-left">'  + _nw('nw.hist.th.month',  'Month')       + '</th>' +
+                        '<th class="py-1.5 px-3 text-[9px] font-black text-slate-400 uppercase tracking-wider text-right">' + _nw('nw.hist.th.assets', 'Assets')      + '</th>' +
+                        '<th class="py-1.5 px-3 text-[9px] font-black text-slate-400 uppercase tracking-wider text-right">' + _nw('nw.hist.th.liab',   'Liabilities') + '</th>' +
+                        '<th class="py-1.5 px-3 text-[9px] font-black text-slate-400 uppercase tracking-wider text-right">' + _nw('nw.hist.th.nw',     'Net Worth')   + '</th>' +
+                        '<th class="py-1.5 px-3 text-[9px] font-black text-slate-400 uppercase tracking-wider text-right">' + _nw('nw.hist.th.mom',    'MoM Change')  + '</th>' +
                     '</tr></thead>' +
                     '<tbody>' + tableRows + '</tbody>' +
                 '</table>' +
