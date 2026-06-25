@@ -350,29 +350,30 @@
         $s('fi-cmp-fd-yield',  fdYield.toFixed(2) + '%');
         $s('fi-cmp-elss-yield',elssYield.toFixed(2) + '%');
         $s('fi-cmp-fd-tax',    fiFmt(fdTax5));
-        $s('fi-cmp-elss-tax',  ltcgTax > 0 ? fiFmt(ltcgTax) : 'Nil (gains ≤ ₹1L)');
+        $s('fi-cmp-elss-tax',  ltcgTax > 0 ? fiFmt(ltcgTax) : _fi('fi.elss.ltcg.nil','Nil (gains ≤ ₹1L)'));
         $s('fi-cmp-80c',       fiFmt(taxSaving));
         $s('fi-cmp-diff',      fiFmt(diff));
 
         var wEl = document.getElementById('fi-cmp-winner');
         if (wEl) {
-            wEl.textContent = winner + ' wins by ' + fiFmt(diff) + ' over 5 years';
+            var tmpl = winner === 'ELSS' ? _fi('fi.elss.winner.elss','ELSS wins by %s over 5 years') : _fi('fi.elss.winner.fd','Tax FD wins by %s over 5 years');
+            wEl.textContent = tmpl.replace('%s', fiFmt(diff));
             wEl.style.color = winnerColor;
         }
 
         var cw = document.getElementById('fi-cmp-workings');
         if (cw) cw.innerHTML =
-            '<div class="text-[9px] font-black text-blue-700 mb-1">📊 Tax-Saving FD (5 yrs)</div>' +
-            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>Investment</span><span class="font-bold">' + fiFmt(P) + '</span></div>' +
-            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>FD rate (gross)</span><span class="font-bold">' + (fdRate*100).toFixed(1) + '% → post-tax ' + (fdPostRate*100).toFixed(2) + '%</span></div>' +
-            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>Tax on interest (@ ' + (slab*100).toFixed(0) + '% slab)</span><span class="font-bold text-red-600">−' + fiFmt(fdTax5) + '</span></div>' +
-            '<div class="flex justify-between py-1 font-black text-blue-700"><span>FD post-tax maturity</span><span>' + fiFmt(fdMat5) + '</span></div>' +
-            '<div class="text-[9px] font-black text-emerald-700 mt-2 mb-1">📈 ELSS (5 yr hold)</div>' +
-            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>Investment Amount (5-yr hold)</span><span class="font-bold">' + fiFmt(P) + '</span></div>' +
-            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>Expected CAGR</span><span class="font-bold">' + (elssRate*100).toFixed(1) + '%</span></div>' +
-            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>Gross maturity</span><span class="font-bold">' + fiFmt(elssMat5) + '</span></div>' +
-            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>LTCG tax (10% above ₹1L)</span><span class="font-bold text-red-600">' + (ltcgTax > 0 ? '−' + fiFmt(ltcgTax) : 'Nil (gains ≤ ₹1L)') + '</span></div>' +
-            '<div class="flex justify-between py-1 font-black text-emerald-700"><span>ELSS post-tax maturity</span><span>' + fiFmt(elssNet5) + '</span></div>';
+            '<div class="text-[9px] font-black text-blue-700 mb-1">' + _fi('fi.elss.fd.heading','📊 Tax-Saving FD (5 yrs)') + '</div>' +
+            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>' + _fi('fi.w.principal','Investment') + '</span><span class="font-bold">' + fiFmt(P) + '</span></div>' +
+            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>' + _fi('fi.elss.fd.rate','FD rate (gross)') + '</span><span class="font-bold">' + (fdRate*100).toFixed(1) + '% ' + _fi('fi.elss.posttax','→ post-tax') + ' ' + (fdPostRate*100).toFixed(2) + '%</span></div>' +
+            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>' + _fi('fi.elss.fd.tax','Tax on interest') + ' (@ ' + (slab*100).toFixed(0) + '% slab)</span><span class="font-bold text-red-600">−' + fiFmt(fdTax5) + '</span></div>' +
+            '<div class="flex justify-between py-1 font-black text-blue-700"><span>' + _fi('fi.elss.fd.mat','FD post-tax maturity') + '</span><span>' + fiFmt(fdMat5) + '</span></div>' +
+            '<div class="text-[9px] font-black text-emerald-700 mt-2 mb-1">' + _fi('fi.elss.elss.heading','📈 ELSS (5 yr hold)') + '</div>' +
+            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>' + _fi('fi.elss.elss.inv','Investment Amount (5-yr hold)') + '</span><span class="font-bold">' + fiFmt(P) + '</span></div>' +
+            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>' + _fi('fi.elss.elss.cagr','Expected CAGR') + '</span><span class="font-bold">' + (elssRate*100).toFixed(1) + '%</span></div>' +
+            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>' + _fi('fi.elss.gross.mat','Gross maturity') + '</span><span class="font-bold">' + fiFmt(elssMat5) + '</span></div>' +
+            '<div class="flex justify-between py-0.5 border-b border-slate-100"><span>' + _fi('fi.elss.ltcg','LTCG tax (10% above ₹1L)') + '</span><span class="font-bold text-red-600">' + (ltcgTax > 0 ? '−' + fiFmt(ltcgTax) : _fi('fi.elss.ltcg.nil','Nil (gains ≤ ₹1L)')) + '</span></div>' +
+            '<div class="flex justify-between py-1 font-black text-emerald-700"><span>' + _fi('fi.elss.elss.mat','ELSS post-tax maturity') + '</span><span>' + fiFmt(elssNet5) + '</span></div>';
 
         if (typeof saveUserData === 'function') saveUserData();
     }
