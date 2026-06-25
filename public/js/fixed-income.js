@@ -231,7 +231,7 @@
         var quarterly = annual / 4;
         var postTaxQ = quarterly * (1 - slab);
         var postTaxA = annual * (1 - slab);
-        var tdsSCSS  = annual > 50000 ? '⚠ TDS applicable (annual > ₹50K). Submit 15H to avoid.' : '✅ No TDS';
+        var tdsSCSS  = annual > 50000 ? _fi('fi.scss.tds.yes','⚠ TDS applicable (annual > ₹50K). Submit 15H to avoid.') : _fi('fi.scss.tds.no','✅ No TDS');
         var taxSaving80C = Math.min(P, 150000) * slab;
 
         function $s(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; }
@@ -263,7 +263,7 @@
         $s('fi-pomis-post-tax-m', fiFmt(postTaxM));
         $s('fi-pomis-annual',    fiFmt(annual));
         $s('fi-pomis-post-tax-a', fiFmt(postTaxA));
-        $s('fi-pomis-note',      capNote || '✅ Within ₹9L single account limit. Capital returned at maturity (5 yrs).');
+        $s('fi-pomis-note',      capNote || _fi('fi.pomis.ok','✅ Within ₹9L single account limit. Capital returned at maturity (5 yrs).'));
         if (typeof saveUserData === 'function') saveUserData();
     }
 
