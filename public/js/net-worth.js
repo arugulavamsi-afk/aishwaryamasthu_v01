@@ -143,15 +143,15 @@
                 insEl.classList.add('hidden');
             } else {
                 insEl.classList.remove('hidden');
-                if (dtar > 50) insights.push('⚠️ Debt-to-asset ratio is <strong>' + dtar.toFixed(0) + '%</strong> — above 50% is a financial risk. Prioritise paying down high-interest loans first.');
-                else if (dtar > 30) insights.push('🟡 Debt-to-asset ratio is <strong>' + dtar.toFixed(0) + '%</strong>. Aim to get this below 30% for financial resilience.');
-                else if (dtar > 0) insights.push('✅ Debt-to-asset ratio is a healthy <strong>' + dtar.toFixed(0) + '%</strong>. Keep liabilities under 30% of assets.');
-                if (liqPct < 5) insights.push('⚠️ Liquid assets are only <strong>' + liqPct.toFixed(0) + '%</strong> of total. Keep at least 3–6 months of expenses in liquid form.');
-                if (invPct < 20 && totalAssets > 0) insights.push('💡 Only <strong>' + invPct.toFixed(0) + '%</strong> is in wealth-creating investments. Try to grow equity + retirement assets to at least 40% over time.');
-                if (catGoldOther > 0 && crypto > catGoldOther * 0.5) insights.push('⚠️ Crypto is >50% of your "gold & other" assets. High volatility — keep crypto under 5% of total net worth.');
-                if (insSv > 0) insights.push('💡 Your LIC/ULIP surrender value is ₹' + nwFmt(insSv) + '. Consider: if the IRR is below 6%, term insurance + MF investment is likely superior. Use the "ULIP Analyzer" for a full comparison.');
-                if (insights.length === 0) insights.push('✅ Your financial snapshot looks balanced. Update this quarterly to track your net worth journey!');
-                insEl.innerHTML = '<strong>💡 Snapshot Insights:</strong><ul class="mt-1 space-y-1">' + insights.map(function(i){ return '<li class="leading-relaxed">' + i + '</li>'; }).join('') + '</ul>';
+                if (dtar > 50) insights.push(_nw('nw.insight.dtar.high', '⚠️ Debt-to-asset ratio is <strong>{pct}</strong> — above 50% is a financial risk. Prioritise paying down high-interest loans first.').replace('{pct}', dtar.toFixed(0) + '%'));
+                else if (dtar > 30) insights.push(_nw('nw.insight.dtar.mid', '🟡 Debt-to-asset ratio is <strong>{pct}</strong>. Aim to get this below 30% for financial resilience.').replace('{pct}', dtar.toFixed(0) + '%'));
+                else if (dtar > 0) insights.push(_nw('nw.insight.dtar.ok', '✅ Debt-to-asset ratio is a healthy <strong>{pct}</strong>. Keep liabilities under 30% of assets.').replace('{pct}', dtar.toFixed(0) + '%'));
+                if (liqPct < 5) insights.push(_nw('nw.insight.liq.low', '⚠️ Liquid assets are only <strong>{pct}</strong> of total. Keep at least 3–6 months of expenses in liquid form.').replace('{pct}', liqPct.toFixed(0) + '%'));
+                if (invPct < 20 && totalAssets > 0) insights.push(_nw('nw.insight.inv.low', '💡 Only <strong>{pct}</strong> is in wealth-creating investments. Try to grow equity + retirement assets to at least 40% over time.').replace('{pct}', invPct.toFixed(0) + '%'));
+                if (catGoldOther > 0 && crypto > catGoldOther * 0.5) insights.push(_nw('nw.insight.crypto', '⚠️ Crypto is >50% of your "gold & other" assets. High volatility — keep crypto under 5% of total net worth.'));
+                if (insSv > 0) insights.push(_nw('nw.insight.ulip', '💡 Your LIC/ULIP surrender value is {val}. Consider: if the IRR is below 6%, term insurance + MF investment is likely superior. Use the "ULIP Analyzer" for a full comparison.').replace('{val}', nwFmt(insSv)));
+                if (insights.length === 0) insights.push(_nw('nw.insight.ok', '✅ Your financial snapshot looks balanced. Update this quarterly to track your net worth journey!'));
+                insEl.innerHTML = '<strong>' + _nw('nw.insight.title', '💡 Snapshot Insights:') + '</strong><ul class="mt-1 space-y-1">' + insights.map(function(i){ return '<li class="leading-relaxed">' + i + '</li>'; }).join('') + '</ul>';
             }
         }
 
