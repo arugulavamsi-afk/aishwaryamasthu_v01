@@ -12,7 +12,7 @@
                         <div class="flex items-center gap-2 bg-white/10 rounded-xl px-4 py-2">
                             <span class="text-3xl font-black" id="hs-score-badge">--</span>
                             <div>
-                                <div class="text-[10px] font-bold text-blue-200 uppercase tracking-wider">Your Score</div>
+                                <div class="text-[10px] font-bold text-blue-200 uppercase tracking-wider" data-i18n="hs.your.score">Your Score</div>
                                 <div class="text-xs font-bold text-white" id="hs-grade-badge">Not scored yet</div>
                             </div>
                         </div>
@@ -34,7 +34,7 @@
 
                     <!-- Income & Expenses Card -->
                     <div class="bg-white rounded-2xl shadow-sm border border-[#f5c842]/30 p-5">
-                        <h3 class="text-sm font-black text-slate-700 mb-4 flex items-center gap-2">💰 Income & Cash Flow</h3>
+                        <h3 class="text-sm font-black text-slate-700 mb-4 flex items-center gap-2" data-i18n="hs.sec.income">💰 Income & Cash Flow</h3>
                         <div class="space-y-3">
                             <div>
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1" data-i18n="lbl.hs.income">Monthly Take-Home Income</label>
@@ -46,14 +46,14 @@
                                         onblur="if(this.value===''||this.value==='0'){this.value='0';this.classList.add('text-slate-400');}"
                                         oninput="hsFormatInput(this); calcHealthScore();">
                                 </div>
-                                <div class="text-[10px] text-slate-400 mt-1 font-medium">After tax, all sources combined</div>
+                                <div class="text-[10px] text-slate-400 mt-1 font-medium" data-i18n="hs.hint.income">After tax, all sources combined</div>
                             </div>
                             <div>
-                                <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Your Age <span class="text-indigo-400 font-bold">🎂</span></label>
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1"><span data-i18n="hs.lbl.age">Your Age</span> <span class="text-indigo-400 font-bold">🎂</span></label>
                                 <input type="number" id="hs-age" min="18" max="80" placeholder="e.g. 32"
                                     class="hs-input w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-base font-bold outline-none focus:ring-2 focus:ring-indigo-400 transition-all text-slate-700"
                                     oninput="calcHealthScore();">
-                                <div class="text-[10px] text-slate-400 mt-1 font-medium">Used to benchmark age-appropriate savings readiness (18–80)</div>
+                                <div class="text-[10px] text-slate-400 mt-1 font-medium" data-i18n="hs.hint.age">Used to benchmark age-appropriate savings readiness (18–80)</div>
                             </div>
                             <div>
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1" data-i18n="lbl.hs.emi">Monthly EMIs / Loan Repayments</label>
@@ -65,7 +65,7 @@
                                         onblur="if(this.value===''||this.value==='0'){this.value='0';this.classList.add('text-slate-400');}"
                                         oninput="hsFormatInput(this); calcHealthScore();">
                                 </div>
-                                <div class="text-[10px] text-slate-400 mt-1 font-medium">Home loan + car loan + personal loan + BNPL, etc.</div>
+                                <div class="text-[10px] text-slate-400 mt-1 font-medium" data-i18n="hs.hint.emi">Home loan + car loan + personal loan + BNPL, etc.</div>
                             </div>
                             <div>
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1" data-i18n="lbl.hs.exp">Monthly Living Expenses</label>
@@ -77,7 +77,7 @@
                                         onblur="if(this.value===''||this.value==='0'){this.value='0';this.classList.add('text-slate-400');}"
                                         oninput="hsFormatInput(this); calcHealthScore();">
                                 </div>
-                                <div class="text-[10px] text-slate-400 mt-1 font-medium">Rent + groceries + utilities + lifestyle (excluding EMIs)</div>
+                                <div class="text-[10px] text-slate-400 mt-1 font-medium" data-i18n="hs.hint.exp">Rent + groceries + utilities + lifestyle (excluding EMIs)</div>
                             </div>
                             <div>
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1" data-i18n="lbl.hs.sav">Monthly Savings & Investments</label>
@@ -89,14 +89,14 @@
                                         onblur="if(this.value===''||this.value==='0'){this.value='0';this.classList.add('text-slate-400');}"
                                         oninput="hsFormatInput(this); calcHealthScore();">
                                 </div>
-                                <div class="text-[10px] text-slate-400 mt-1 font-medium">SIP + PF + PPF + FD + stocks + anything you put away</div>
+                                <div class="text-[10px] text-slate-400 mt-1 font-medium" data-i18n="hs.hint.sav">SIP + PF + PPF + FD + stocks + anything you put away</div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Protection Card -->
                     <div class="bg-white rounded-2xl shadow-sm border border-[#f5c842]/30 p-5">
-                        <h3 class="text-sm font-black text-slate-700 mb-4 flex items-center gap-2">🛡️ Protection & Reserves</h3>
+                        <h3 class="text-sm font-black text-slate-700 mb-4 flex items-center gap-2" data-i18n="hs.sec.protection">🛡️ Protection & Reserves</h3>
                         <div class="space-y-3">
                             <div>
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1" data-i18n="lbl.hs.health">Health Insurance Coverage (Total)</label>
@@ -108,7 +108,7 @@
                                         onblur="if(this.value===''||this.value==='0'){this.value='0';this.classList.add('text-slate-400');}"
                                         oninput="hsFormatInput(this); calcHealthScore();">
                                 </div>
-                                <div class="text-[10px] text-slate-400 mt-1 font-medium">Sum insured across all health policies (floater/individual)</div>
+                                <div class="text-[10px] text-slate-400 mt-1 font-medium" data-i18n="hs.hint.health">Sum insured across all health policies (floater/individual)</div>
                             </div>
                             <div>
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1" data-i18n="lbl.hs.term">Term Life Insurance Coverage</label>
@@ -120,7 +120,7 @@
                                         onblur="if(this.value===''||this.value==='0'){this.value='0';this.classList.add('text-slate-400');}"
                                         oninput="hsFormatInput(this); calcHealthScore();">
                                 </div>
-                                <div class="text-[10px] text-slate-400 mt-1 font-medium">Sum assured of term plan. Enter 0 if none.</div>
+                                <div class="text-[10px] text-slate-400 mt-1 font-medium" data-i18n="hs.hint.term">Sum assured of term plan. Enter 0 if none.</div>
                             </div>
                             <div>
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1" data-i18n="lbl.hs.ef">Emergency Fund Saved (Total)</label>
@@ -132,7 +132,7 @@
                                         onblur="if(this.value===''||this.value==='0'){this.value='0';this.classList.add('text-slate-400');}"
                                         oninput="hsFormatInput(this); calcHealthScore();">
                                 </div>
-                                <div class="text-[10px] text-slate-400 mt-1 font-medium">Liquid cash in savings/liquid MF reserved for emergencies</div>
+                                <div class="text-[10px] text-slate-400 mt-1 font-medium" data-i18n="hs.hint.ef">Liquid cash in savings/liquid MF reserved for emergencies</div>
                             </div>
                         </div>
                     </div>
@@ -140,12 +140,12 @@
                     <!-- Reset All Button -->
                     <!-- Wealth Portfolio Card -->
                     <div class="bg-white rounded-2xl shadow-sm border border-[#f5c842]/30 p-5">
-                        <h3 class="text-sm font-black text-slate-700 mb-1 flex items-center gap-2">📊 Existing Wealth Portfolio</h3>
-                        <p class="text-[10px] text-slate-400 mb-3 font-medium">Enter current value of all savings & investments — we'll analyse diversification and net worth readiness.</p>
+                        <h3 class="text-sm font-black text-slate-700 mb-1 flex items-center gap-2" data-i18n="hs.sec.portfolio">📊 Existing Wealth Portfolio</h3>
+                        <p class="text-[10px] text-slate-400 mb-3 font-medium" data-i18n="hs.sec.portfolio.sub">Enter current value of all savings & investments — we'll analyse diversification and net worth readiness.</p>
                         <div class="grid grid-cols-2 gap-x-3 gap-y-2.5">
 
                             <div>
-                                <label class="block text-[10px] font-bold text-slate-500 mb-1">📈 Equity MF / Stocks</label>
+                                <label class="block text-[10px] font-bold text-slate-500 mb-1" data-i18n="hs.pf.equity.lbl">📈 Equity MF / Stocks</label>
                                 <div class="relative"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">₹</span>
                                 <input type="text" id="hs-pf-equity" value="0" inputmode="numeric" maxlength="15"
                                     class="hs-input w-full pl-7 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold outline-none focus:ring-2 focus:ring-emerald-400 transition-all text-slate-400"
@@ -153,11 +153,11 @@
                                     onblur="if(this.value===''||this.value==='0'){this.value='0';this.classList.add('text-slate-400');}"
                                     oninput="hsFormatInput(this);calcHealthScore();">
                                 </div>
-                                <div class="text-[9px] text-slate-400 mt-0.5">MF + direct stocks + ELSS</div>
+                                <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="hs.pf.equity.hint">MF + direct stocks + ELSS</div>
                             </div>
 
                             <div>
-                                <label class="block text-[10px] font-bold text-slate-500 mb-1">🏦 Debt MF / FD / Bonds</label>
+                                <label class="block text-[10px] font-bold text-slate-500 mb-1" data-i18n="hs.pf.debt.lbl">🏦 Debt MF / FD / Bonds</label>
                                 <div class="relative"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">₹</span>
                                 <input type="text" id="hs-pf-debt" value="0" inputmode="numeric" maxlength="15"
                                     class="hs-input w-full pl-7 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold outline-none focus:ring-2 focus:ring-blue-400 transition-all text-slate-400"
@@ -165,11 +165,11 @@
                                     onblur="if(this.value===''||this.value==='0'){this.value='0';this.classList.add('text-slate-400');}"
                                     oninput="hsFormatInput(this);calcHealthScore();">
                                 </div>
-                                <div class="text-[9px] text-slate-400 mt-0.5">FD + debt MF + bonds + NSC</div>
+                                <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="hs.pf.debt.hint">FD + debt MF + bonds + NSC</div>
                             </div>
 
                             <div>
-                                <label class="block text-[10px] font-bold text-slate-500 mb-1">🏠 Real Estate</label>
+                                <label class="block text-[10px] font-bold text-slate-500 mb-1" data-i18n="hs.pf.realty.lbl">🏠 Real Estate</label>
                                 <div class="relative"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">₹</span>
                                 <input type="text" id="hs-pf-realty" value="0" inputmode="numeric" maxlength="15"
                                     class="hs-input w-full pl-7 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold outline-none focus:ring-2 focus:ring-orange-400 transition-all text-slate-400"
@@ -177,11 +177,11 @@
                                     onblur="if(this.value===''||this.value==='0'){this.value='0';this.classList.add('text-slate-400');}"
                                     oninput="hsFormatInput(this);calcHealthScore();">
                                 </div>
-                                <div class="text-[9px] text-slate-400 mt-0.5">Market value, excl. primary home</div>
+                                <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="hs.pf.realty.hint">Market value, excl. primary home</div>
                             </div>
 
                             <div>
-                                <label class="block text-[10px] font-bold text-slate-500 mb-1">🥇 Gold (All Forms)</label>
+                                <label class="block text-[10px] font-bold text-slate-500 mb-1" data-i18n="hs.pf.gold.lbl">🥇 Gold (All Forms)</label>
                                 <div class="relative"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">₹</span>
                                 <input type="text" id="hs-pf-gold" value="0" inputmode="numeric" maxlength="15"
                                     class="hs-input w-full pl-7 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold outline-none focus:ring-2 focus:ring-amber-400 transition-all text-slate-400"
@@ -189,11 +189,11 @@
                                     onblur="if(this.value===''||this.value==='0'){this.value='0';this.classList.add('text-slate-400');}"
                                     oninput="hsFormatInput(this);calcHealthScore();">
                                 </div>
-                                <div class="text-[9px] text-slate-400 mt-0.5">Physical + ETF + SGB + Gold MF</div>
+                                <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="hs.pf.gold.hint">Physical + ETF + SGB + Gold MF</div>
                             </div>
 
                             <div>
-                                <label class="block text-[10px] font-bold text-slate-500 mb-1">🏛️ EPF / PPF / NPS</label>
+                                <label class="block text-[10px] font-bold text-slate-500 mb-1" data-i18n="hs.pf.retiral.lbl">🏛️ EPF / PPF / NPS</label>
                                 <div class="relative"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">₹</span>
                                 <input type="text" id="hs-pf-retiral" value="0" inputmode="numeric" maxlength="15"
                                     class="hs-input w-full pl-7 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold outline-none focus:ring-2 focus:ring-violet-400 transition-all text-slate-400"
@@ -201,11 +201,11 @@
                                     onblur="if(this.value===''||this.value==='0'){this.value='0';this.classList.add('text-slate-400');}"
                                     oninput="hsFormatInput(this);calcHealthScore();">
                                 </div>
-                                <div class="text-[9px] text-slate-400 mt-0.5">PF balance + PPF + NPS corpus</div>
+                                <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="hs.pf.retiral.hint">PF balance + PPF + NPS corpus</div>
                             </div>
 
                             <div>
-                                <label class="block text-[10px] font-bold text-slate-500 mb-1">💼 Other (Crypto / ULIP)</label>
+                                <label class="block text-[10px] font-bold text-slate-500 mb-1" data-i18n="hs.pf.other.lbl">💼 Other (Crypto / ULIP)</label>
                                 <div class="relative"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">₹</span>
                                 <input type="text" id="hs-pf-other" value="0" inputmode="numeric" maxlength="15"
                                     class="hs-input w-full pl-7 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold outline-none focus:ring-2 focus:ring-pink-400 transition-all text-slate-400"
@@ -213,22 +213,22 @@
                                     onblur="if(this.value===''||this.value==='0'){this.value='0';this.classList.add('text-slate-400');}"
                                     oninput="hsFormatInput(this);calcHealthScore();">
                                 </div>
-                                <div class="text-[9px] text-slate-400 mt-0.5">Crypto + ULIP + chit fund + other</div>
+                                <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="hs.pf.other.hint">Crypto + ULIP + chit fund + other</div>
                             </div>
 
                         </div>
                         <!-- Portfolio totals mini-strip -->
                         <div id="hs-pf-strip" class="hidden mt-3 pt-2.5 border-t border-slate-100 grid grid-cols-3 gap-2">
                             <div class="text-center">
-                                <div class="text-[9px] font-bold text-slate-400 uppercase tracking-wide">Net Worth</div>
+                                <div class="text-[9px] font-bold text-slate-400 uppercase tracking-wide" data-i18n="hs.strip.networth">Net Worth</div>
                                 <div id="hs-pf-total" class="text-sm font-black text-slate-800">—</div>
                             </div>
                             <div class="text-center">
-                                <div class="text-[9px] font-bold text-slate-400 uppercase tracking-wide">vs Annual Income</div>
+                                <div class="text-[9px] font-bold text-slate-400 uppercase tracking-wide" data-i18n="hs.strip.vsincome">vs Annual Income</div>
                                 <div id="hs-pf-income-mult" class="text-sm font-black text-indigo-600">—</div>
                             </div>
                             <div class="text-center">
-                                <div class="text-[9px] font-bold text-slate-400 uppercase tracking-wide">Equity Allocation</div>
+                                <div class="text-[9px] font-bold text-slate-400 uppercase tracking-wide" data-i18n="hs.strip.equity">Equity Allocation</div>
                                 <div id="hs-pf-equity-pct" class="text-sm font-black text-emerald-600">—</div>
                             </div>
                         </div>
@@ -236,7 +236,7 @@
 
                     <button onclick="resetHealthScore()" class="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-slate-200 text-slate-500 hover:border-rose-300 hover:text-rose-500 hover:bg-rose-50 font-semibold text-sm transition-all">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                        Reset All
+                        <span data-i18n="hs.btn.reset">Reset All</span>
                     </button>
 
                 </div>
@@ -280,16 +280,16 @@
                                 <div class="flex-1 min-w-0">
                                     <div class="text-sm font-black text-slate-800 leading-snug" id="hs-percentile-headline">Better than — of Indians aged —</div>
                                     <div class="text-[10px] text-slate-500 mt-1 leading-snug" id="hs-percentile-context"></div>
-                                    <div class="text-[9px] text-slate-400 mt-0.5 font-medium">Estimated · based on RBI &amp; SEBI household finance surveys</div>
+                                    <div class="text-[9px] text-slate-400 mt-0.5 font-medium" data-i18n="hs.pct.estimated">Estimated · based on RBI &amp; SEBI household finance surveys</div>
                                 </div>
                                 <div class="flex-shrink-0 text-right">
                                     <div class="text-2xl font-black" id="hs-percentile-number" style="color:#10b981;">—</div>
-                                    <div class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Percentile</div>
+                                    <div class="text-[9px] font-bold text-slate-400 uppercase tracking-wider" data-i18n="hs.pct.label">Percentile</div>
                                 </div>
                             </div>
 
                             <!-- Category Breakdown Bars -->
-                            <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">Score Breakdown</h4>
+                            <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-3" data-i18n="hs.sec.breakdown">Score Breakdown</h4>
                             <div class="space-y-2.5" id="hs-breakdown-bars"></div>
                         </div>
                     </div>
@@ -299,11 +299,11 @@
 
                         <!-- Pie Chart: Cash Flow -->
                         <div class="flex-1 bg-white rounded-2xl shadow-sm border border-[#f5c842]/30 p-5">
-                            <h3 class="text-sm font-black text-slate-700 mb-1">💸 Where Your Money Goes</h3>
-                            <p class="text-[10px] text-slate-400 mb-3 font-medium">Monthly income allocation breakdown</p>
+                            <h3 class="text-sm font-black text-slate-700 mb-1" data-i18n="hs.sec.cashflow">💸 Where Your Money Goes</h3>
+                            <p class="text-[10px] text-slate-400 mb-3 font-medium" data-i18n="hs.sec.cashflow.sub">Monthly income allocation breakdown</p>
                             <div id="hs-pie-empty" class="flex flex-col items-center justify-center py-8 text-slate-300">
                                 <div class="text-3xl mb-1">🥧</div>
-                                <p class="text-xs font-medium">Fill in income to see the chart</p>
+                                <p class="text-xs font-medium" data-i18n="hs.sec.cashflow.empty">Fill in income to see the chart</p>
                             </div>
                             <div id="hs-pie-container" class="hidden">
                                 <div class="relative mx-auto" style="width:200px;height:200px;">
@@ -315,11 +315,11 @@
 
                         <!-- Pie Chart: Wealth Portfolio -->
                         <div class="flex-1 bg-white rounded-2xl shadow-sm border border-[#f5c842]/30 p-5">
-                            <h3 class="text-sm font-black text-slate-700 mb-1">📊 Wealth Portfolio Mix</h3>
-                            <p class="text-[10px] text-slate-400 mb-3 font-medium">Asset allocation across your savings</p>
+                            <h3 class="text-sm font-black text-slate-700 mb-1" data-i18n="hs.sec.wpmix">📊 Wealth Portfolio Mix</h3>
+                            <p class="text-[10px] text-slate-400 mb-3 font-medium" data-i18n="hs.sec.wpmix.sub">Asset allocation across your savings</p>
                             <div id="hs-pf-pie-empty" class="flex flex-col items-center justify-center py-8 text-slate-300">
                                 <div class="text-3xl mb-1">🪙</div>
-                                <p class="text-xs font-medium">Enter savings above to see portfolio mix</p>
+                                <p class="text-xs font-medium" data-i18n="hs.sec.wpmix.empty">Enter savings above to see portfolio mix</p>
                             </div>
                             <div id="hs-pf-pie-container" class="hidden">
                                 <div class="relative mx-auto" style="width:200px;height:200px;">
@@ -333,11 +333,11 @@
 
                     <!-- Action Plan: full width below the pies -->
                     <div class="bg-white rounded-2xl shadow-sm border border-[#f5c842]/30 p-5">
-                        <h3 class="text-sm font-black text-slate-700 mb-1">🎯 Action Plan</h3>
-                        <p class="text-[10px] text-slate-400 mb-3 font-medium">Top things to fix right now</p>
+                        <h3 class="text-sm font-black text-slate-700 mb-1" data-i18n="hs.sec.action">🎯 Action Plan</h3>
+                        <p class="text-[10px] text-slate-400 mb-3 font-medium" data-i18n="hs.sec.action.sub">Top things to fix right now</p>
                         <div id="hs-actions-empty" class="flex flex-col items-center justify-center py-6 text-slate-300">
                             <div class="text-3xl mb-1">🗂️</div>
-                            <p class="text-xs font-medium">Your action plan will appear here</p>
+                            <p class="text-xs font-medium" data-i18n="hs.sec.action.empty">Your action plan will appear here</p>
                         </div>
                         <div id="hs-actions-list" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
                     </div>

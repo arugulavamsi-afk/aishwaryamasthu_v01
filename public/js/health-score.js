@@ -134,7 +134,7 @@
             else if (savingsRate >= 5)  savingsPts = 6;
             else                        savingsPts = Math.max(0, Math.round(savingsRate * 1.2));
             categories.push({ name: 'Savings Rate', pts: savingsPts, max: 20, icon: '💰',
-                color: '#10b981', desc: `${savingsRate.toFixed(1)}% of income saved` });
+                color: '#10b981', desc: _t('hs.cat.desc.savings').replace('{pct}', savingsRate.toFixed(1)) });
 
             // 2. EMI Burden (20 pts)
             const emiPct = income > 0 ? (emi / income) * 100 : 0;
@@ -146,7 +146,7 @@
             else if (emiPct < 50)     emiPts = 4;
             else                      emiPts = 0;
             categories.push({ name: 'Debt Burden', pts: emiPts, max: 20, icon: '🏦',
-                color: '#ef4444', desc: `EMIs are ${emiPct.toFixed(1)}% of income` });
+                color: '#ef4444', desc: _t('hs.cat.desc.emi').replace('{pct}', emiPct.toFixed(1)) });
 
             // 3. Health Insurance (15 pts)
             let healthPts = 0;
@@ -158,7 +158,7 @@
             else if (hiLakh >= 1)  healthPts = 2;
             else                   healthPts = 0;
             categories.push({ name: 'Health Insurance', pts: healthPts, max: 15, icon: '🏥',
-                color: '#ec4899', desc: hiLakh > 0 ? `₹${hiLakh.toFixed(1)}L sum insured` : 'No coverage!' });
+                color: '#ec4899', desc: hiLakh > 0 ? _t('hs.cat.desc.health').replace('{lakh}', hiLakh.toFixed(1)) : _t('hs.cat.desc.healthno') });
 
             // 4. Term Insurance (15 pts)  — compare to annual income multiple
             let termPts = 0;
@@ -170,7 +170,7 @@
             else if (termMult >= 2)  termPts = 2;
             else                     termPts = 0;
             categories.push({ name: 'Term Insurance', pts: termPts, max: 15, icon: '🛡️',
-                color: '#8b5cf6', desc: termMult > 0 ? `${termMult.toFixed(1)}× annual income` : 'No term plan!' });
+                color: '#8b5cf6', desc: termMult > 0 ? _t('hs.cat.desc.term').replace('{mult}', termMult.toFixed(1)) : _t('hs.cat.desc.termno') });
 
             // 5. Emergency Fund (15 pts)
             const efMonths = monthlyExpenses > 0 ? efund / monthlyExpenses : 0;
@@ -183,7 +183,7 @@
             else if (efMonths >= 1)  efPts = 2;   // Minimal buffer
             else                     efPts = 0;   // No emergency fund
             categories.push({ name: 'Emergency Fund', pts: efPts, max: 15, icon: '🚨',
-                color: '#f59e0b', desc: `${efMonths.toFixed(1)} months of expenses covered` });
+                color: '#f59e0b', desc: _t('hs.cat.desc.ef').replace('{months}', efMonths.toFixed(1)) });
 
             // 6. Expense Management (15 pts)
             const spendPct = income > 0 ? ((expenses + emi) / income) * 100 : 100;
@@ -195,7 +195,7 @@
             else if (spendPct <= 90) spendPts = 1;
             else                     spendPts = 0;
             categories.push({ name: 'Spending Control', pts: spendPts, max: 15, icon: '🛒',
-                color: '#f97316', desc: `${spendPct.toFixed(1)}% of income spent` });
+                color: '#f97316', desc: _t('hs.cat.desc.spend').replace('{pct}', spendPct.toFixed(1)) });
 
             // 7. Age Readiness (10 pts) — only scored if age is entered
             if (age >= 18 && age <= 80) {
@@ -206,34 +206,34 @@
                     else if (savingsRate >= 5)  agePts = 8;
                     else if (savingsRate > 0)   agePts = 5;
                     else                        agePts = 2;
-                    ageDesc = `Great head start at ${age}! Time is your biggest asset — keep it going.`;
+                    ageDesc = _t('hs.age.young').replace('{age}', age);
                 } else if (age <= 35) {
                     if      (savingsRate >= 20) agePts = 10;
                     else if (savingsRate >= 15) agePts = 8;
                     else if (savingsRate >= 10) agePts = 5;
                     else if (savingsRate >= 5)  agePts = 2;
                     else                        agePts = 0;
-                    ageDesc = `At ${age}, target 20%+ savings rate to retire by 60 with a solid corpus.`;
+                    ageDesc = _t('hs.age.thirties').replace('{age}', age);
                 } else if (age <= 45) {
                     if      (savingsRate >= 25) agePts = 10;
                     else if (savingsRate >= 20) agePts = 7;
                     else if (savingsRate >= 15) agePts = 4;
                     else if (savingsRate >= 10) agePts = 1;
                     else                        agePts = 0;
-                    ageDesc = `At ${age}, 25%+ savings is the benchmark — retirement is ~20 years away.`;
+                    ageDesc = _t('hs.age.forties').replace('{age}', age);
                 } else if (age <= 55) {
                     if      (savingsRate >= 30) agePts = 10;
                     else if (savingsRate >= 25) agePts = 6;
                     else if (savingsRate >= 20) agePts = 3;
                     else if (savingsRate >= 15) agePts = 1;
                     else                        agePts = 0;
-                    ageDesc = `At ${age}, target 30%+ savings — retirement is within 10 years.`;
+                    ageDesc = _t('hs.age.fifties').replace('{age}', age);
                 } else {
                     if      (savingsRate >= 35) agePts = 10;
                     else if (savingsRate >= 30) agePts = 5;
                     else if (savingsRate >= 25) agePts = 2;
                     else                        agePts = 0;
-                    ageDesc = `At ${age}, maximize every rupee — prioritize NPS, PPF, and debt reduction.`;
+                    ageDesc = _t('hs.age.senior').replace('{age}', age);
                 }
                 categories.push({ name: 'Age Readiness', pts: agePts, max: 10, icon: '🎂',
                     color: '#6366f1', desc: ageDesc });
@@ -271,7 +271,11 @@
                 else if (equityGap <= 30) nwPts += 2;
                 else                      nwPts += 0;
 
-                var nwDesc = pfMult.toFixed(1) + '× annual income · ' + assetClassCount + ' asset classes · ' + equityPct.toFixed(0) + '% equity (ideal ' + idealEquityPct + '%)';
+                var nwDesc = _t('hs.cat.desc.nw')
+                    .replace('{mult}', pfMult.toFixed(1))
+                    .replace('{classes}', assetClassCount)
+                    .replace('{equity}', equityPct.toFixed(0))
+                    .replace('{ideal}', idealEquityPct);
                 categories.push({ name: 'Net Worth Readiness', pts: nwPts, max: 15, icon: '📊',
                     color: '#0ea5e9', desc: nwDesc });
 
@@ -291,12 +295,12 @@
                 const pfPieData   = [];
                 const pfPieLabels = [];
                 const pfPieColors = [];
-                if (pfEquity  > 0) { pfPieData.push(pfEquity);  pfPieLabels.push('Equity MF/Stocks'); pfPieColors.push('#10b981'); }
-                if (pfDebt    > 0) { pfPieData.push(pfDebt);    pfPieLabels.push('Debt MF/FD');       pfPieColors.push('#3b82f6'); }
-                if (pfRetiral > 0) { pfPieData.push(pfRetiral); pfPieLabels.push('EPF/PPF/NPS');      pfPieColors.push('#8b5cf6'); }
-                if (pfRealty  > 0) { pfPieData.push(pfRealty);  pfPieLabels.push('Real Estate');      pfPieColors.push('#f97316'); }
-                if (pfGold    > 0) { pfPieData.push(pfGold);    pfPieLabels.push('Gold');             pfPieColors.push('#f59e0b'); }
-                if (pfOther   > 0) { pfPieData.push(pfOther);   pfPieLabels.push('Other');            pfPieColors.push('#94a3b8'); }
+                if (pfEquity  > 0) { pfPieData.push(pfEquity);  pfPieLabels.push(_t('hs.pf.pie.equity'));  pfPieColors.push('#10b981'); }
+                if (pfDebt    > 0) { pfPieData.push(pfDebt);    pfPieLabels.push(_t('hs.pf.pie.debt'));    pfPieColors.push('#3b82f6'); }
+                if (pfRetiral > 0) { pfPieData.push(pfRetiral); pfPieLabels.push(_t('hs.pf.pie.retiral')); pfPieColors.push('#8b5cf6'); }
+                if (pfRealty  > 0) { pfPieData.push(pfRealty);  pfPieLabels.push(_t('hs.pf.pie.realty'));  pfPieColors.push('#f97316'); }
+                if (pfGold    > 0) { pfPieData.push(pfGold);    pfPieLabels.push(_t('hs.pf.pie.gold'));    pfPieColors.push('#f59e0b'); }
+                if (pfOther   > 0) { pfPieData.push(pfOther);   pfPieLabels.push(_t('hs.pf.pie.other'));   pfPieColors.push('#94a3b8'); }
 
                 const pfPieEmpty = document.getElementById('hs-pf-pie-empty');
                 const pfPieCont  = document.getElementById('hs-pf-pie-container');
@@ -360,20 +364,20 @@
                 if (age >= 18 && age <= 80) {
                     var pgData   = hsGetPercentile(totalScore, age);
                     var pctColor = totalScore >= 70 ? '#10b981' : totalScore >= 50 ? '#f59e0b' : '#ef4444';
-                    if (pctHeadline) pctHeadline.textContent = 'Better than ' + pgData.percentile + '% of Indians aged ' + pgData.bracket;
+                    if (pctHeadline) pctHeadline.textContent = _t('hs.pct.headline').replace('{pct}', pgData.percentile).replace('{bracket}', pgData.bracket);
                     if (pctNumber)  { pctNumber.textContent = hsOrdinal(pgData.percentile); pctNumber.style.color = pctColor; }
                     if (pctContext) {
-                        var pctCtxText = pgData.percentile >= 80 ? 'You\'re among the most financially prepared Indians in your age group.'
-                                       : pgData.percentile >= 60 ? 'Above average — most Indians your age are not this prepared.'
-                                       : pgData.percentile >= 40 ? 'Around the median — plenty of room to pull ahead.'
-                                       : 'Most Indians your age face similar challenges. The fix starts here.';
+                        var pctCtxText = pgData.percentile >= 80 ? _t('hs.pct.top')
+                                       : pgData.percentile >= 60 ? _t('hs.pct.above')
+                                       : pgData.percentile >= 40 ? _t('hs.pct.median')
+                                       : _t('hs.pct.below');
                         pctContext.textContent = pctCtxText;
                     }
                 } else {
                     // Age not entered — show the banner as a prompt
-                    if (pctHeadline) pctHeadline.textContent = 'How do you compare to Indians your age?';
+                    if (pctHeadline) pctHeadline.textContent = _t('hs.pct.prompt');
                     if (pctNumber)  { pctNumber.textContent = '?'; pctNumber.style.color = '#94a3b8'; }
-                    if (pctContext)  pctContext.textContent  = 'Enter your age in the form on the left to see your peer percentile.';
+                    if (pctContext)  pctContext.textContent  = _t('hs.pct.enter.age');
                 }
             }
 
@@ -430,10 +434,12 @@
             barsContainer.innerHTML = '';
             categories.forEach(cat => {
                 const pct = (cat.pts / cat.max) * 100;
+                var _ck = _HS_CAT_KEYS[cat.name] || '';
+                var _cn = _ck ? _t('hs.cat.' + _ck) : cat.name;
                 barsContainer.innerHTML += `
                     <div>
                         <div class="flex items-center justify-between mb-1">
-                            <span class="text-xs font-bold text-slate-600 flex items-center gap-1.5">${cat.icon} ${cat.name}</span>
+                            <span class="text-xs font-bold text-slate-600 flex items-center gap-1.5">${cat.icon} ${_cn}</span>
                             <span class="text-xs font-black" style="color:${cat.color}">${cat.pts}/${cat.max}</span>
                         </div>
                         <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
@@ -510,14 +516,14 @@
             const actions = [];
             const worstCats = [...categories].sort((a,b) => (a.pts/a.max) - (b.pts/b.max));
             const actionMap = {
-                'Savings Rate':      { tip: `Bump your SIP by just ₹${Math.round(income * 0.05 / 100) * 100}/month. Even 5% more = big difference in 10 years.`, color:'#10b981', icon:'💰' },
-                'Debt Burden':       { tip: `EMIs above 30% are choking your wealth growth. Target prepaying the highest-interest loan first.`, color:'#ef4444', icon:'🏦' },
-                'Health Insurance':  { tip: `Aim for at least ₹10L floater for a family. At ₹${Math.round(income*0.002/100)*100}/month, a super top-up makes it affordable.`, color:'#ec4899', icon:'🏥' },
-                'Term Insurance':    { tip: `You need 10–15× your annual income in term cover. A ₹1Cr plan costs just ~₹500–800/month at your age.`, color:'#8b5cf6', icon:'🛡️' },
-                'Emergency Fund':    { tip: `Build towards 6 months of expenses (₹${(monthlyExpenses*6).toLocaleString('en-IN')}). Park in a liquid MF or sweep FD.`, color:'#f59e0b', icon:'🚨' },
-                'Spending Control':  { tip: `More than 70% of income is going to spend+EMI. Track expenses with apps like Walnut or Money Manager.`, color:'#f97316', icon:'🛒' },
-                'Age Readiness':     { tip: age <= 35 ? `You're in the wealth-building window — increase SIP aggressively. Every 1% more now = massive corpus at 60.` : age <= 50 ? `Boost savings to 25–30% now. Consider NPS for the extra 80CCD(1B) deduction on top of 80C.` : `Prioritize debt freedom + NPS + PPF. Shift equity SIPs to a more balanced fund as you near retirement.`, color:'#6366f1', icon:'🎂' },
-                'Net Worth Readiness': { tip: pfTotal === 0 ? `You haven't entered your savings yet! Add your MF, EPF, FD, gold and real estate values above to see your net worth health score.` : pfTotal > 0 && (pfEquity / pfTotal) < 0.2 ? `Your portfolio is too conservative — equity under 20%. Consider moving some FD/debt money to index funds for long-term inflation-beating growth.` : pfTotal > 0 && (pfEquity / pfTotal) > 0.8 ? `Over 80% in equity is high risk. Add some debt MF or PPF to balance volatility, especially if you're near a financial goal.` : `Diversify further. Aim for at least 3–4 asset classes: equity MF, debt MF/FD, gold (5–10%), and retiral corpus (EPF/PPF/NPS).`, color:'#0ea5e9', icon:'📊' },
+                'Savings Rate':      { tip: _t('hs.action.savings').replace('{amt}', Math.round(income * 0.05 / 100) * 100), color:'#10b981', icon:'💰' },
+                'Debt Burden':       { tip: _t('hs.action.debt'), color:'#ef4444', icon:'🏦' },
+                'Health Insurance':  { tip: _t('hs.action.health').replace('{amt}', Math.round(income*0.002/100)*100), color:'#ec4899', icon:'🏥' },
+                'Term Insurance':    { tip: _t('hs.action.term'), color:'#8b5cf6', icon:'🛡️' },
+                'Emergency Fund':    { tip: _t('hs.action.ef').replace('{amt}', (monthlyExpenses*6).toLocaleString('en-IN')), color:'#f59e0b', icon:'🚨' },
+                'Spending Control':  { tip: _t('hs.action.spend'), color:'#f97316', icon:'🛒' },
+                'Age Readiness':     { tip: age <= 35 ? _t('hs.action.age.young') : age <= 50 ? _t('hs.action.age.mid') : _t('hs.action.age.old'), color:'#6366f1', icon:'🎂' },
+                'Net Worth Readiness': { tip: pfTotal === 0 ? _t('hs.action.nw.none') : (pfEquity / pfTotal) < 0.2 ? _t('hs.action.nw.low') : (pfEquity / pfTotal) > 0.8 ? _t('hs.action.nw.high') : _t('hs.action.nw.div'), color:'#0ea5e9', icon:'📊' },
             };
 
             document.getElementById('hs-actions-empty').classList.add('hidden');
