@@ -4784,8 +4784,7 @@
                                 '</div>' : '') +
                             '</div>' +
                             '<div class="px-4 py-2 text-[10px] text-emerald-700 font-semibold leading-relaxed border-t border-emerald-100">' +
-                                '✅ Your existing investments are projected to contribute <strong>₹' + fmt(existingFutureVal) + '</strong> toward your goals. ' +
-                                'The SIP amounts below are your <em>additional</em> investment needed on top of this.' +
+                                _t('fp.result.existing.contrib').replace('{v}', '₹' + fmt(existingFutureVal)) +
                             '</div>' +
                         '</div>';
                 } else {
@@ -4811,9 +4810,9 @@
                 }).join('');
                 sipDiv.innerHTML =
                     '<div class="rounded-xl border border-blue-100 p-3 mb-3" style="background:#eff6ff;">' +
-                        '<div class="text-[10px] font-black text-blue-600 uppercase tracking-wider mb-1.5">💡 Why this split?</div>' +
+                        '<div class="text-[10px] font-black text-blue-600 uppercase tracking-wider mb-1.5">' + _t('fp.result.sip.why') + '</div>' +
                         '<div class="space-y-1">' + reasonLines + '</div>' +
-                        '<div class="text-[10px] text-blue-400 mt-2 pt-2 border-t border-blue-100">Each goal receives the SIP amount it actually needs to hit its target. Goals without a target get an equal share. Short-term goals use conservative rates; long-term goals use your full portfolio return.</div>' +
+                        '<div class="text-[10px] text-blue-400 mt-2 pt-2 border-t border-blue-100">' + _t('fp.result.sip.why.note') + '</div>' +
                     '</div>' +
                     '<div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">' + _t('fp.result.sip.bygoal') + '</div>' +
                     goalSIPs.map(function(g) {
