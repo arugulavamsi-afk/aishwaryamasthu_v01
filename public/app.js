@@ -1195,7 +1195,7 @@
             banner.innerHTML =
                 '<div class="flex items-center gap-1.5 mb-2">' +
                     '<span class="text-sm leading-none">📌</span>' +
-                    '<span class="text-[10px] font-black text-amber-700 uppercase tracking-wider">Saved from Goal Planner</span>' +
+                    '<span class="text-[10px] font-black text-amber-700 uppercase tracking-wider">' + _t('fp.goals.from.planner') + '</span>' +
                     '<span class="ml-auto text-[9px] font-semibold text-amber-500">' + goals.length + ' goal' + (goals.length !== 1 ? 's' : '') + '</span>' +
                 '</div>' +
                 rows;
@@ -3681,11 +3681,13 @@
             fpQuestions.forEach(function(q, qi) {
                 var div = document.createElement('div');
                 div.className = 'space-y-2';
-                div.innerHTML = '<p class="text-sm font-bold text-slate-700 flex items-start gap-2"><span>' + q.icon + '</span><span>Q' + (qi+1) + '. ' + q.text + '</span></p>' +
+                var qText = _t('fp.q' + (qi+1) + '.text') || q.text;
+                div.innerHTML = '<p class="text-sm font-bold text-slate-700 flex items-start gap-2"><span>' + q.icon + '</span><span>Q' + (qi+1) + '. ' + qText + '</span></p>' +
                     '<div class="space-y-1" style="gap:6px;display:flex;flex-direction:column;">' +
                     q.options.map(function(opt, oi) {
                         var sel = fpState.answers[q.id] === oi ? 'fp-q-selected' : '';
-                        return '<div class="fp-q-option ' + sel + '" onclick="fpSelectAnswer(\'' + q.id + '\',' + oi + ',' + opt.pts + ',this)"><div class="fp-q-radio"></div><span class="text-xs font-semibold text-slate-600 leading-relaxed">' + opt.label + '</span></div>';
+                        var optLabel = _t('fp.q' + (qi+1) + '.opt' + (oi+1)) || opt.label;
+                        return '<div class="fp-q-option ' + sel + '" onclick="fpSelectAnswer(\'' + q.id + '\',' + oi + ',' + opt.pts + ',this)"><div class="fp-q-radio"></div><span class="text-xs font-semibold text-slate-600 leading-relaxed">' + optLabel + '</span></div>';
                     }).join('') + '</div>';
                 qContainer.appendChild(div);
             });
@@ -3731,11 +3733,11 @@
             if (!container) return;
             if (fpState.existing.length === 0) {
                 container.classList.add('hidden');
-                container.innerHTML = '<p class="text-[10px] text-slate-400 font-semibold uppercase tracking-wide">Current value of each investment ↓</p>';
+                container.innerHTML = '<p class="text-[10px] text-slate-400 font-semibold uppercase tracking-wide">' + _t('fp.existing.label') + '</p>';
                 return;
             }
             container.classList.remove('hidden');
-            var rows = '<p class="text-[10px] text-slate-400 font-semibold uppercase tracking-wide">Current value of each investment ↓</p>';
+            var rows = '<p class="text-[10px] text-slate-400 font-semibold uppercase tracking-wide">' + _t('fp.existing.label') + '</p>';
             fpState.existing.forEach(function(key) {
                 var meta = FP_EXISTING_META[key] || { icon:'💼', label: key };
                 var val = fpState.existingAmounts[key] || 0;
@@ -4071,7 +4073,7 @@
                 savedView.classList.remove('hidden');
                 questView.classList.add('hidden');
                 if (editBtn) editBtn.classList.remove('hidden');
-                if (headerSub) headerSub.textContent = 'Your risk profile is saved — generate or edit';
+                if (headerSub) headerSub.textContent = _t('fp.risk.saved.gen');
 
                 // Populate saved card UI
                 var profileKey = fpGetRiskProfile(saved.score, parseInt(document.getElementById('fp-age').value) || 30);
@@ -4761,24 +4763,24 @@
                     var coveragePct     = totalGoalCorpus > 0 ? Math.round((existingFutureVal / totalGoalCorpus) * 100) : 0;
 
                     existingSection.innerHTML =
-                        '<h3 class="text-xs font-black text-slate-400 uppercase tracking-wider mb-2">🏦 Your Existing Wealth</h3>' +
+                        '<h3 class="text-xs font-black text-slate-400 uppercase tracking-wider mb-2">' + _t('fp.result.existing.title') + '</h3>' +
                         '<div class="rounded-2xl border border-emerald-100 overflow-hidden" style="background:#f0fdf4;">' +
                             '<div class="px-4 pt-3 pb-2">' + existingRows + '</div>' +
                             '<div class="px-4 pb-3 pt-1 flex flex-wrap gap-3 border-t border-emerald-100 mt-1">' +
                                 '<div>' +
-                                    '<div class="text-[9px] font-black text-emerald-700 uppercase tracking-wider">Current Total</div>' +
+                                    '<div class="text-[9px] font-black text-emerald-700 uppercase tracking-wider">' + _t('fp.result.existing.total') + '</div>' +
                                     '<div class="text-sm font-black text-slate-800">₹' + fmt(existingCorpus) + '</div>' +
                                 '</div>' +
                                 '<div>' +
-                                    '<div class="text-[9px] font-black text-emerald-700 uppercase tracking-wider">Projected Value</div>' +
+                                    '<div class="text-[9px] font-black text-emerald-700 uppercase tracking-wider">' + _t('fp.result.existing.proj') + '</div>' +
                                     '<div class="text-sm font-black text-slate-800">₹' + fmt(existingFutureVal) + '</div>' +
                                     '<div class="text-[10px] text-slate-400">in ' + yearsToRetire + ' yrs @ ~' + (existingReturn > 0 ? existingReturn.toFixed(1) : '—') + '% blended</div>' +
                                 '</div>' +
                                 (coveragePct > 0 ?
                                 '<div>' +
-                                    '<div class="text-[9px] font-black text-emerald-700 uppercase tracking-wider">Goal Coverage</div>' +
+                                    '<div class="text-[9px] font-black text-emerald-700 uppercase tracking-wider">' + _t('fp.result.existing.coverage') + '</div>' +
                                     '<div class="text-sm font-black" style="color:#10b981">' + coveragePct + '%</div>' +
-                                    '<div class="text-[10px] text-slate-400">of new SIP corpus offset</div>' +
+                                    '<div class="text-[10px] text-slate-400">' + _t('fp.result.existing.note') + '</div>' +
                                 '</div>' : '') +
                             '</div>' +
                             '<div class="px-4 py-2 text-[10px] text-emerald-700 font-semibold leading-relaxed border-t border-emerald-100">' +
@@ -4813,14 +4815,14 @@
                         '<div class="space-y-1">' + reasonLines + '</div>' +
                         '<div class="text-[10px] text-blue-400 mt-2 pt-2 border-t border-blue-100">Each goal receives the SIP amount it actually needs to hit its target. Goals without a target get an equal share. Short-term goals use conservative rates; long-term goals use your full portfolio return.</div>' +
                     '</div>' +
-                    '<div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">SIP split by goal</div>' +
+                    '<div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">' + _t('fp.result.sip.bygoal') + '</div>' +
                     goalSIPs.map(function(g) {
                         return '<div class="fp-sip-row" style="border-left:3px solid ' + g.color + ';padding-left:10px;">' +
                             '<div class="flex items-center gap-2"><span class="text-sm">' + g.label + '</span><span class="text-[10px] text-slate-400">' + g.years + 'yr horizon</span></div>' +
                             '<span class="text-xs font-black text-slate-800">₹' + fmt(g.amt) + '/mo</span>' +
                         '</div>';
                     }).join('') +
-                    '<div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-3 mb-1.5">Asset-wise SIP split</div>' +
+                    '<div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-3 mb-1.5">' + _t('fp.result.sip.byasset') + '</div>' +
                     allocs.map(function(a) {
                         var amt = Math.round((a.pct/100) * monthlyInvest / 100) * 100;
                         return '<div class="fp-sip-row"><div class="flex items-center gap-2"><span>' + a.icon + '</span><span class="text-xs font-semibold text-slate-600">' + a.name + '</span></div><span class="text-xs font-black text-slate-800">₹' + fmt(amt) + '/mo</span></div>';
