@@ -3453,10 +3453,10 @@
                     { name:'Liquid Fund',             pct:10, color:'#64748b', icon:'💧', tip:'Park your emergency buffer here',             rate:6.5, liquid:'instant', when:'Emergency / near-term needs' }
                 ],
                 roadmap: [
-                    { icon:'🔒', title:'Start PPF immediately',      desc:'Open a PPF account and invest Rs.1,500/month minimum. Tax-free at maturity + 80C benefit.',      color:'#10b981' },
-                    { icon:'📊', title:'SIP in 1–2 Large Cap Funds', desc:'Start with a Nifty 100 index fund or HDFC Top 100. Keep it simple, consistent, long-term.',      color:'#3b82f6' },
-                    { icon:'🏦', title:'Ladder your FDs',            desc:'Instead of one large FD, create 3–6 month staggered FDs for better liquidity.',                  color:'#8b5cf6' },
-                    { icon:'🥇', title:'SIP into Gold ETF monthly',  desc:'Buy Nippon India Gold ETF FoF or Mirae Asset Gold Fund. No storage risk, no making charges.',   color:'#f59e0b' }
+                    { icon:'🔒', key:'fp.road.con.r1', color:'#10b981' },
+                    { icon:'📊', key:'fp.road.con.r2', color:'#3b82f6' },
+                    { icon:'🏦', key:'fp.road.con.r3', color:'#8b5cf6' },
+                    { icon:'🥇', key:'fp.road.con.r4', color:'#f59e0b' }
                 ]
             },
             moderate: {
@@ -3473,10 +3473,10 @@
                     { name:'Liquid Fund',             pct: 7, color:'#64748b', icon:'💧', tip:'Minimum 3–6 months of expenses',              rate:6.5, liquid:'instant', when:'Emergency / near-term needs' }
                 ],
                 roadmap: [
-                    { icon:'🎯', title:'Max out 80C with ELSS',         desc:'Invest Rs.1.5L/year in ELSS — save up to Rs.46,800 in taxes while building equity.',         color:'#8b5cf6' },
-                    { icon:'📈', title:'Add Mid Cap SIP after 6 months', desc:'Once large cap SIP is stable, add mid cap exposure. Stay for 7+ years.',                     color:'#6366f1' },
-                    { icon:'🛡️', title:'Open NPS for extra tax benefit', desc:'NPS gives Rs.50,000 extra deduction under 80CCD(1B) beyond the 80C limit.',                 color:'#10b981' },
-                    { icon:'🥇', title:'SIP into Gold ETF each month',   desc:'Nippon India or Mirae Asset Gold ETF FoF. Treat as portfolio insurance, not speculation.',   color:'#f59e0b' }
+                    { icon:'🎯', key:'fp.road.mod.r1', color:'#8b5cf6' },
+                    { icon:'📈', key:'fp.road.mod.r2', color:'#6366f1' },
+                    { icon:'🛡️', key:'fp.road.mod.r3', color:'#10b981' },
+                    { icon:'🥇', key:'fp.road.mod.r4', color:'#f59e0b' }
                 ]
             },
             moderateAggressive: {
@@ -3494,10 +3494,10 @@
                     { name:'Liquid Fund',               pct: 5, color:'#64748b', icon:'💧', tip:'Minimum 3 months emergency corpus',       rate:6.5, liquid:'instant', when:'Emergency / near-term needs' }
                 ],
                 roadmap: [
-                    { icon:'🚀', title:'Build a Core-Satellite SIP portfolio', desc:'Core: 50% in large cap. Satellite: 30% mid + 20% small cap. Rebalance yearly.', color:'#6366f1' },
-                    { icon:'🛡️', title:'Max NPS for dual tax benefits',        desc:'Invest Rs.2L/year in NPS — get 80C + extra 80CCD(1B) deductions simultaneously.', color:'#10b981' },
-                    { icon:'📊', title:'Use index funds for large cap',         desc:'Nifty 50 index funds beat 80% of active large cap funds at a fraction of the cost.', color:'#3b82f6' },
-                    { icon:'⚖️', title:'Annual rebalancing is key',            desc:'Once a year, bring your portfolio back to target allocation. Sell high, buy low.', color:'#ea580c' }
+                    { icon:'🚀', key:'fp.road.moda.r1', color:'#6366f1' },
+                    { icon:'🛡️', key:'fp.road.moda.r2', color:'#10b981' },
+                    { icon:'📊', key:'fp.road.moda.r3', color:'#3b82f6' },
+                    { icon:'⚖️', key:'fp.road.moda.r4', color:'#ea580c' }
                 ]
             },
             aggressive: {
@@ -3515,10 +3515,10 @@
                     { name:'Liquid Fund',                  pct: 3, color:'#64748b', icon:'💧', tip:'Keep bare minimum liquid for safety',       rate:6.5, liquid:'instant', when:'Emergency / near-term needs' }
                 ],
                 roadmap: [
-                    { icon:'🎯', title:'Pick direct stocks with conviction',   desc:'Limit direct stock picks to 8–12 companies you understand deeply. Max 15% of portfolio.', color:'#ec4899' },
-                    { icon:'🌐', title:'Add international exposure',           desc:'Invest in Nasdaq or S&P 500 index fund through Motilal Oswal or Mirae for global diversification.', color:'#8b5cf6' },
-                    { icon:'⚡', title:'Deploy capital during corrections',    desc:'Keep a 10% cash war chest ready to deploy aggressively in market downturns.', color:'#a855f7' },
-                    { icon:'📚', title:'Track and learn continuously',         desc:'Read annual reports, study businesses. The more you know, the better your returns.', color:'#6366f1' }
+                    { icon:'🎯', key:'fp.road.agg.r1', color:'#ec4899' },
+                    { icon:'🌐', key:'fp.road.agg.r2', color:'#8b5cf6' },
+                    { icon:'⚡', key:'fp.road.agg.r3', color:'#a855f7' },
+                    { icon:'📚', key:'fp.road.agg.r4', color:'#6366f1' }
                 ]
             }
         };
@@ -4349,42 +4349,42 @@
         // Goal + horizon-aware redemption instruction per asset
         function fpRedeemDesc(assetName, goalYears, goalType) {
             if (/Liquid/i.test(assetName))
-                return 'Redeem first — same/next business day. Always the primary emergency layer.';
+                return _t('fp.redeem.desc.liquid');
             if (/FD|RD/i.test(assetName))
                 return goalYears <= 3
-                    ? 'Redeem after liquid fund. Premature-break penalty is small; use when needed.'
-                    : 'Plan exit 4–6 weeks before goal to avoid premature-break penalty.';
+                    ? _t('fp.redeem.desc.fd.short')
+                    : _t('fp.redeem.desc.fd.long');
             if (/Short.{0,10}Debt|Ultra.{0,10}Short/i.test(assetName))
-                return 'Redeem 7–10 business days before goal. Low exit cost and quick settlement.';
+                return _t('fp.redeem.desc.shortdebt');
             if (/Debt|Hybrid/i.test(assetName))
                 return goalYears <= 5
-                    ? 'Redeem 2–4 weeks before goal. Check exit load (usually 0–1%).'
-                    : 'Begin a Systematic Transfer Plan (STP) to a liquid fund 6–9 months before goal.';
+                    ? _t('fp.redeem.desc.debt.short')
+                    : _t('fp.redeem.desc.debt.long');
             if (/Gold/i.test(assetName))
-                return 'Redeem after debt/liquid layers are used. Sell during market hours at live NAV.';
+                return _t('fp.redeem.desc.gold');
             if (/Large.*Cap|Index/i.test(assetName))
                 return goalYears <= 7
-                    ? 'Start STP to debt funds 2 years before goal. Never redeem equity in one shot.'
-                    : 'Begin systematic transfer to debt 3 years before goal to lock in gains gradually.';
+                    ? _t('fp.redeem.desc.lc.short')
+                    : _t('fp.redeem.desc.lc.long');
             if (/Direct.*Stock|Sectoral/i.test(assetName))
-                return 'Plan exit in tranches over 3–6 months before goal. Start early to avoid forced selling.';
+                return _t('fp.redeem.desc.stocks');
             if (/Flexi.*Cap|Multi.*Cap/i.test(assetName))
-                return 'Start STP to debt 3 years before goal. Flexi/multi-cap can be volatile at exit.';
+                return _t('fp.redeem.desc.flexicap');
             if (/Mid.*Cap/i.test(assetName))
-                return 'Begin moving to large cap/debt 3–4 years before goal. Higher volatility at exit.';
+                return _t('fp.redeem.desc.midcap');
             if (/Small.*Cap/i.test(assetName))
-                return 'Start switching to safer assets 4–5 years before goal. Liquidity can be thin in downturns.';
+                return _t('fp.redeem.desc.smallcap');
             if (/ELSS/i.test(assetName))
-                return 'Each SIP instalment has its own 3-year lock-in date. Redeem instalment-by-instalment after unlock.';
+                return _t('fp.redeem.desc.elss');
             if (/NPS/i.test(assetName))
                 return goalType === 'retirement'
-                    ? 'Accessible at age 60: 60% as tax-free lump sum; 40% must purchase an annuity.'
-                    : 'Partial withdrawal only for specific reasons. Plan other assets for this goal first.';
+                    ? _t('fp.redeem.desc.nps.ret')
+                    : _t('fp.redeem.desc.nps.oth');
             if (/PPF|Sukanya/i.test(assetName))
                 return (goalType === 'retirement' || goalType === 'education')
-                    ? 'Matures in 15 years; extendable in 5-yr blocks. Partial withdrawal allowed from year 7.'
-                    : 'PPF has a 15-year lock-in. Ensure your goal date aligns with the maturity window.';
-            return 'Verify exit load, STCG/LTCG tax, and settlement timeline before redeeming.';
+                    ? _t('fp.redeem.desc.ppf.long')
+                    : _t('fp.redeem.desc.ppf.short');
+            return _t('fp.redeem.desc.default');
         }
 
         // Build per-goal redemption plan using enriched goalSIPs data
@@ -4440,10 +4440,10 @@
                                 : yrs <= 10 ? yrs - 3
                                 :             yrs - 4;
                     deRiskNote = startIn === 0
-                        ? 'Goal is within 2 years — start moving equity to debt/liquid now.'
-                        : 'Start STP from equity → debt/liquid in ~' + startIn + ' year' +
-                          (startIn !== 1 ? 's' : '') + ' (' + (yrs - startIn) + ' year' +
-                          (yrs - startIn !== 1 ? 's' : '') + ' before goal). Shift gradually to reduce timing risk.';
+                        ? _t('fp.redeem.derisk.now')
+                        : _t('fp.redeem.derisk.plan')
+                            .replace('{y}', startIn)
+                            .replace('{b}', yrs - startIn);
                 }
 
                 return {
@@ -4466,15 +4466,15 @@
         function fpBuildGoalRoadmap(goals, baseRoadmap) {
             var extras = [];
             var goalRoadmapMap = {
-                home:      { icon:'🏠', title:'Set up a Home Down Payment SIP',       desc:'Allocate a separate SIP for your home down payment in a low-risk debt fund. Keep it accessible.',        color:'#3b82f6' },
-                education: { icon:'🎓', title:'Open a Sukanya Samriddhi / Child Fund', desc:'For a child\'s education corpus, Sukanya Samriddhi (girls) or a dedicated ELSS gives tax-free growth.',  color:'#8b5cf6' },
-                marriage:  { icon:'💍', title:'Marriage Goal — Use Hybrid Funds',      desc:'For a 3–7 year marriage goal, balanced/hybrid funds reduce risk while keeping returns above inflation.',  color:'#ec4899' },
-                emergency: { icon:'🛡️', title:'Emergency Fund First — Always',        desc:'Before any SIP, build 6 months of expenses in a liquid fund or sweep-in FD. This is non-negotiable.',   color:'#f59e0b' },
-                business:  { icon:'🚀', title:'Business Fund in Flexi-Cap SIPs',       desc:'A 5–7 year SIP in flexi-cap funds can compound your business seed capital significantly.',               color:'#ef4444' },
-                travel:    { icon:'✈️', title:'Travel Fund via Recurring Deposits',    desc:'Short-term goal? Use RDs or short-duration debt funds. Avoid equity for goals under 3 years.',           color:'#0ea5e9' },
-                retirement: { icon:'🏖️', title:'NPS is your Retirement Superweapon',  desc:'NPS offers the lowest-cost pension solution. Max out Tier-I equity allocation for the long run.',       color:'#6366f1' },
-                wealth:    { icon:'💰', title:'SIP Step-up Strategy',                  desc:'Increase your SIP by 10% every year. A Rs.10,000 SIP growing at 10% p.a. step-up becomes 4× in 15 years.',color:'#10b981' },
-                custom:    { icon:'✏️', title:'Map this goal to a dedicated fund',     desc:'Open a separate SIP for this goal so you can track progress independently and avoid mixing funds.',      color:'#64748b' }
+                home:      { icon:'🏠', title:_t('fp.road.home.title'),       desc:_t('fp.road.home.desc'),       color:'#3b82f6' },
+                education: { icon:'🎓', title:_t('fp.road.education.title'),  desc:_t('fp.road.education.desc'),  color:'#8b5cf6' },
+                marriage:  { icon:'💍', title:_t('fp.road.marriage.title'),   desc:_t('fp.road.marriage.desc'),   color:'#ec4899' },
+                emergency: { icon:'🛡️', title:_t('fp.road.emergency.title'), desc:_t('fp.road.emergency.desc'),  color:'#f59e0b' },
+                business:  { icon:'🚀', title:_t('fp.road.business.title'),   desc:_t('fp.road.business.desc'),   color:'#ef4444' },
+                travel:    { icon:'✈️', title:_t('fp.road.travel.title'),     desc:_t('fp.road.travel.desc'),     color:'#0ea5e9' },
+                retirement:{ icon:'🏖️', title:_t('fp.road.retirement.title'),desc:_t('fp.road.retirement.desc'), color:'#6366f1' },
+                wealth:    { icon:'💰', title:_t('fp.road.wealth.title'),     desc:_t('fp.road.wealth.desc'),     color:'#10b981' },
+                custom:    { icon:'✏️', title:_t('fp.road.custom.title'),     desc:_t('fp.road.custom.desc'),     color:'#64748b' }
             };
             goals.forEach(function(g) {
                 if (goalRoadmapMap[g.type]) extras.push(goalRoadmapMap[g.type]);
@@ -4932,7 +4932,7 @@
             var redeemCards   = document.getElementById('fp-redemption-cards');
             if (redeemPlan.length > 0) {
                 redeemSection.style.display = '';
-                var liqLabel = { instant:'🟢 Same day', high:'🟡 1–3 days', medium:'🟠 3–7 days', low:'🔴 Lock-in' };
+                var liqLabel = { instant: _t('fp.redeem.liq.instant'), high: _t('fp.redeem.liq.high'), medium: _t('fp.redeem.liq.medium'), low: _t('fp.redeem.liq.low') };
                 redeemCards.innerHTML = redeemPlan.map(function(g) {
                     var hTag  = g.years <= 3 ? 'Short-term'  : g.years <= 7 ? 'Medium-term' : 'Long-term';
                     var hClr  = g.years <= 3 ? '#ef4444'     : g.years <= 7 ? '#f59e0b'     : '#10b981';
@@ -4956,7 +4956,7 @@
 
                     var deRiskBanner = g.deRiskNote
                         ? '<div class="mx-4 mt-3 mb-1 px-3 py-2 rounded-xl text-[10px] leading-relaxed font-semibold text-blue-700 border border-blue-100" style="background:#eff6ff;">'
-                            + '📅 <strong>De-risk plan:</strong> ' + g.deRiskNote
+                            + '📅 ' + g.deRiskNote
                           + '</div>'
                         : '';
 
@@ -4977,7 +4977,7 @@
 
                     var lockedWarn = g.hasLocked
                         ? '<div class="mx-4 mt-1 mb-3 px-3 py-2 rounded-xl text-[10px] font-semibold text-amber-600 border border-amber-100" style="background:#fffbeb;">'
-                            + '⚠️ One or more assets have lock-in periods. Check exact maturity/unlock dates and start exit planning 6–12 months early.'
+                            + _t('fp.redeem.lockin.warn')
                           + '</div>'
                         : '';
 
@@ -5005,7 +5005,9 @@
 
             // ---- Roadmap ----
             document.getElementById('fp-roadmap').innerHTML = roadmap.map(function(r) {
-                return '<div class="fp-road-item" style="background:' + r.color + '0f;border-color:' + r.color + '30;"><span class="text-lg flex-shrink-0">' + r.icon + '</span><div><div class="text-xs font-black uppercase tracking-wide mb-0.5" style="color:' + r.color + '">' + r.title + '</div><div class="text-xs text-slate-600 leading-relaxed">' + r.desc + '</div></div></div>';
+                var rTitle = r.key ? (_t(r.key + '.title') || r.title) : r.title;
+                var rDesc  = r.key ? (_t(r.key + '.desc')  || r.desc)  : r.desc;
+                return '<div class="fp-road-item" style="background:' + r.color + '0f;border-color:' + r.color + '30;"><span class="text-lg flex-shrink-0">' + r.icon + '</span><div><div class="text-xs font-black uppercase tracking-wide mb-0.5" style="color:' + r.color + '">' + rTitle + '</div><div class="text-xs text-slate-600 leading-relaxed">' + rDesc + '</div></div></div>';
             }).join('');
 
             // Save plan snapshot for Excel export
