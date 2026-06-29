@@ -182,10 +182,10 @@
         if (tbarEl) {
             if (curAge > 10) {
                 tbarEl.style.background = '#fff7ed'; tbarEl.style.borderColor = '#fed7aa'; tbarEl.style.color = '#92400e';
-                tbarEl.innerHTML = '⚠️ SSA can only be opened for daughters aged 0–10. Your daughter is currently ' + curAge + '. Showing ELSS-only projection.';
+                tbarEl.innerHTML = '⚠️ ' + _t('ssa.tl.ineligible') + ' ' + curAge + '. ' + _t('ssa.tl.elssonly');
             } else {
                 tbarEl.style.background = '#fdf2f8'; tbarEl.style.borderColor = '#fbcfe8'; tbarEl.style.color = '#9d174d';
-                tbarEl.innerHTML = '👧 Age <strong>' + curAge + '</strong> · <strong>' + depositYears + ' deposit years</strong> · Matures in <strong>' + yearsToMaturity + ' yrs</strong> · Inflation applied: <strong>' + (inflation*100).toFixed(1) + '%/yr</strong>';
+                tbarEl.innerHTML = '👧 Age <strong>' + curAge + '</strong> · <strong>' + depositYears + ' ' + _t('ssa.tl.deposityrs') + '</strong> · ' + _t('ssa.tl.matures') + ' <strong>' + yearsToMaturity + ' ' + _t('ssa.tl.yrs') + '</strong> · ' + _t('ssa.tl.inflation') + ' <strong>' + (inflation*100).toFixed(1) + _t('ssa.tl.pctyear') + '</strong>';
             }
         }
 
@@ -196,9 +196,9 @@
 
         // ── Inflation-adjusted goal panel ─────────────────────────────
         document.getElementById('ssa-edu-inflated').textContent  = ssaFmt(goalEduFuture);
-        document.getElementById('ssa-edu-todaycost').textContent = 'today: ' + ssaFmt(goalEduToday);
+        document.getElementById('ssa-edu-todaycost').textContent = _t('res.ssa.today') + ' ' + ssaFmt(goalEduToday);
         document.getElementById('ssa-marr-inflated').textContent  = ssaFmt(goalMarrFuture);
-        document.getElementById('ssa-marr-todaycost').textContent = 'today: ' + ssaFmt(goalMarrToday);
+        document.getElementById('ssa-marr-todaycost').textContent = _t('res.ssa.today') + ' ' + ssaFmt(goalMarrToday);
 
         // ── Stats ─────────────────────────────────────────────────────
         document.getElementById('ssa-invested').textContent   = ssaFmt(ssaInvested);
@@ -217,8 +217,8 @@
             if (note) {
                 var shortfall = goalFuture - corpus;
                 note.textContent = shortfall > 0
-                    ? '⚠ Shortfall ₹' + ssaFmt(shortfall).replace('₹','') + ' — need ~' + ssaFmt(Math.ceil(shortfall / Math.max(yrsAway * 12, 1))) + '/mo extra ELSS'
-                    : '✅ Goal covered! Surplus: ' + ssaFmt(-shortfall);
+                    ? _t('ssa.sf.prefix') + ' ' + ssaFmt(shortfall) + ' ' + _t('ssa.sf.extra') + ssaFmt(Math.ceil(shortfall / Math.max(yrsAway * 12, 1))) + _t('ssa.sf.mo')
+                    : _t('ssa.sf.surplus') + ' ' + ssaFmt(-shortfall);
                 note.style.color = shortfall > 0 ? '#dc2626' : '#059669';
             }
         }
@@ -229,10 +229,12 @@
         var ins = document.getElementById('ssa-insight');
         ins.classList.remove('hidden');
         ins.innerHTML =
-            '<strong>💡 Inflation Reality:</strong> Your education goal of ' + ssaFmt(goalEduToday) + ' today will cost <strong>' + ssaFmt(goalEduFuture) + '</strong> in ' + yrsToEduActual + ' yrs at ' + (inflation*100).toFixed(0) + '% inflation. ' +
-            'Marriage goal of ' + ssaFmt(goalMarrToday) + ' becomes <strong>' + ssaFmt(goalMarrFuture) + '</strong>. ' +
-            'Your SSA gives <strong>' + ssaFmt(ssaInterestTotal) + ' tax-free</strong> guaranteed return. Combined corpus: <strong>' + ssaFmt(totalCorpus) + '</strong>. ' +
-            '80C deduction saves ~' + ssaFmt(tax80C) + ' in taxes.';
+            '<strong>' + _t('ssa.ins.prefix') + '</strong> ' +
+            _t('ssa.ins.edu.pre') + ' ' + ssaFmt(goalEduToday) + ' ' + _t('ssa.ins.edu.will') + ' <strong>' + ssaFmt(goalEduFuture) + '</strong> ' +
+            (_t('ssa.ins.edu.in') ? _t('ssa.ins.edu.in') + ' ' : '') + yrsToEduActual + ' ' + _t('ssa.ins.edu.at') + ' ' + (inflation*100).toFixed(0) + _t('ssa.ins.edu.inf') + ' ' +
+            _t('ssa.ins.marr.pre') + ' ' + ssaFmt(goalMarrToday) + ' ' + _t('ssa.ins.marr.bec') + ' <strong>' + ssaFmt(goalMarrFuture) + '</strong>. ' +
+            _t('ssa.ins.ssa.pre') + ' <strong>' + ssaFmt(ssaInterestTotal) + '</strong> ' + _t('ssa.ins.ssa.suf') + ' <strong>' + ssaFmt(totalCorpus) + '</strong>. ' +
+            _t('ssa.ins.80c.pre') + ssaFmt(tax80C) + ' ' + _t('ssa.ins.80c.suf');
 
         // ── Table ─────────────────────────────────────────────────────
         var rows = '';
@@ -274,9 +276,9 @@
 
         if (_ssaView === 'both') {
             datasets = [
-                { label: 'SSA Balance',    data: yearData.map(function(d){return d.ssaBalance;}),  borderColor:'#ec4899', backgroundColor:'rgba(236,72,153,0.10)', fill:true,  tension:0.35, borderWidth:2.5, pointRadius:0, pointHoverRadius:5 },
-                { label: 'ELSS Corpus',    data: yearData.map(function(d){return d.elssCorpus;}),  borderColor:'#3b82f6', backgroundColor:'rgba(59,130,246,0.08)', fill:true,  tension:0.35, borderWidth:2,   pointRadius:0, pointHoverRadius:5 },
-                { label: 'Combined Total', data: yearData.map(function(d){return d.combined;}),    borderColor:'#22c55e', backgroundColor:'rgba(34,197,94,0.06)',  fill:false, tension:0.35, borderWidth:2,   pointRadius:0, pointHoverRadius:5, borderDash:[5,3] }
+                { label: _t('ssa.ds.ssabal'),    data: yearData.map(function(d){return d.ssaBalance;}),  borderColor:'#ec4899', backgroundColor:'rgba(236,72,153,0.10)', fill:true,  tension:0.35, borderWidth:2.5, pointRadius:0, pointHoverRadius:5 },
+                { label: _t('ssa.ds.elsscorp'),  data: yearData.map(function(d){return d.elssCorpus;}),  borderColor:'#3b82f6', backgroundColor:'rgba(59,130,246,0.08)', fill:true,  tension:0.35, borderWidth:2,   pointRadius:0, pointHoverRadius:5 },
+                { label: _t('ssa.ds.combined'),  data: yearData.map(function(d){return d.combined;}),    borderColor:'#22c55e', backgroundColor:'rgba(34,197,94,0.06)',  fill:false, tension:0.35, borderWidth:2,   pointRadius:0, pointHoverRadius:5, borderDash:[5,3] }
             ];
         } else if (_ssaView === 'ssa') {
             var cumDep = [], cumInt = [];
@@ -286,15 +288,15 @@
                 cumDep.push(cd); cumInt.push(ci);
             });
             datasets = [
-                { label: 'SSA Balance',           data: yearData.map(function(d){return d.ssaBalance;}), borderColor:'#ec4899', backgroundColor:'rgba(236,72,153,0.10)', fill:true, tension:0.35, borderWidth:2.5, pointRadius:0, pointHoverRadius:5 },
-                { label: 'Cum. Deposits (cost)',  data: cumDep, borderColor:'#94a3b8', backgroundColor:'rgba(148,163,184,0.08)', fill:true, tension:0.35, borderWidth:1.5, pointRadius:0, pointHoverRadius:4, borderDash:[4,3] },
-                { label: 'Cum. Interest (free!)', data: cumInt, borderColor:'#22c55e', backgroundColor:'rgba(34,197,94,0.08)', fill:true, tension:0.35, borderWidth:1.5, pointRadius:0, pointHoverRadius:4 }
+                { label: _t('ssa.ds.ssabal'),   data: yearData.map(function(d){return d.ssaBalance;}), borderColor:'#ec4899', backgroundColor:'rgba(236,72,153,0.10)', fill:true, tension:0.35, borderWidth:2.5, pointRadius:0, pointHoverRadius:5 },
+                { label: _t('ssa.ds.cumdep'),   data: cumDep, borderColor:'#94a3b8', backgroundColor:'rgba(148,163,184,0.08)', fill:true, tension:0.35, borderWidth:1.5, pointRadius:0, pointHoverRadius:4, borderDash:[4,3] },
+                { label: _t('ssa.ds.cumint'),   data: cumInt, borderColor:'#22c55e', backgroundColor:'rgba(34,197,94,0.08)', fill:true, tension:0.35, borderWidth:1.5, pointRadius:0, pointHoverRadius:4 }
             ];
         } else {
             chartType = 'bar';
             datasets = [
-                { label: 'SSA Annual Deposit', data: yearData.map(function(d){return d.deposit;}),     backgroundColor:'rgba(236,72,153,0.75)', borderRadius:4 },
-                { label: 'SSA Interest',        data: yearData.map(function(d){return d.ssaInterest;}), backgroundColor:'rgba(34,197,94,0.75)',  borderRadius:4 }
+                { label: _t('ssa.ds.annualdep'), data: yearData.map(function(d){return d.deposit;}),     backgroundColor:'rgba(236,72,153,0.75)', borderRadius:4 },
+                { label: _t('ssa.ds.ssaint'),    data: yearData.map(function(d){return d.ssaInterest;}), backgroundColor:'rgba(34,197,94,0.75)',  borderRadius:4 }
             ];
         }
 
@@ -319,7 +321,7 @@
                             title: function(items) {
                                 var idx = items[0].dataIndex;
                                 var d   = _ssaYearData[idx];
-                                return items[0].label + (d && d.age === 21 ? ' 🎉 Maturity' : d && d.age === 18 ? ' 🎓 College' : '');
+                                return items[0].label + (d && d.age === 21 ? ' ' + _t('ssa.chart.maturity') : d && d.age === 18 ? ' ' + _t('ssa.chart.college') : '');
                             },
                             label: function(ctx) {
                                 return ' ' + ctx.dataset.label + ': ' + INR(ctx.raw);
@@ -328,7 +330,7 @@
                                 var idx = items[0].dataIndex;
                                 var d   = _ssaYearData[idx];
                                 if (!d) return [];
-                                return ['', ' Combined: ' + INR(d.combined)];
+                                return ['', ' ' + _t('ssa.chart.combined.lbl') + ' ' + INR(d.combined)];
                             }
                         }
                     }
