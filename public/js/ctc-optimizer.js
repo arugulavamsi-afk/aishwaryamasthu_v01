@@ -125,10 +125,10 @@
             if (el) el.classList.toggle('hidden', _isNew);
         });
         var _hints = {
-            'ctc-hra-hint':   _isNew ? 'Part of CTC — fully taxable in New Regime (no HRA exemption)' : '50% basic (metro), 40% (others)',
-            'ctc-lta-hint':   _isNew ? 'Part of CTC — fully taxable in New Regime (no LTA exemption)' : 'Leave Travel Allowance/yr — exempt with travel proof',
-            'ctc-food-hint':  _isNew ? 'Part of CTC — fully taxable in New Regime' : 'Tax-free up to ₹2,200/mo (Old Regime)',
-            'ctc-phone-hint': _isNew ? 'Part of CTC — fully taxable in New Regime' : 'Exempt with actual bills (Old Regime)'
+            'ctc-hra-hint':   _isNew ? _t('ctc.hint.hra.new') : _t('ctc.hint.hra.old'),
+            'ctc-lta-hint':   _isNew ? _t('ctc.hint.lta.new') : _t('ctc.hint.lta.old'),
+            'ctc-food-hint':  _isNew ? _t('ctc.hint.food.new') : _t('ctc.hint.food.old'),
+            'ctc-phone-hint': _isNew ? _t('ctc.hint.phone.new') : _t('ctc.hint.phone.old')
         };
         Object.entries(_hints).forEach(function([id, text]) {
             var el = document.getElementById(id); if (el) el.textContent = text;
@@ -195,11 +195,11 @@
 
         // ── DOM updates ───────────────────────────────────────────
         document.getElementById('ctc-current-takehome').textContent  = ctcFmt(takeHome) + '/mo';
-        document.getElementById('ctc-current-annual').textContent    = 'Annual: ' + ctcFmt(takeHome * 12);
+        document.getElementById('ctc-current-annual').textContent    = _t('ctc.annual.prefix') + ' ' + ctcFmt(takeHome * 12);
         document.getElementById('ctc-optimized-takehome').textContent = ctcFmt(takeHomeOpt) + '/mo';
         document.getElementById('ctc-savings-banner').textContent    = monthlySaved > 0
-            ? '▲ ₹' + Math.round(monthlySaved).toLocaleString('en-IN') + '/mo more — restructure now!'
-            : 'Already well-optimized ✅';
+            ? _t('ctc.optimized.more').replace('{n}', Math.round(monthlySaved).toLocaleString('en-IN'))
+            : _t('ctc.optimized.already');
         document.getElementById('ctc-tax-current').textContent       = ctcFmt(taxCurrent) + '/yr';
         document.getElementById('ctc-tax-optimized').textContent     = ctcFmt(taxOpt) + '/yr';
         document.getElementById('ctc-eff-rate').textContent          = effRate.toFixed(1) + '%';
@@ -208,29 +208,26 @@
         // ── Breakup table ─────────────────────────────────────────
         var isNew = regime === 'new';
         var rows = [
-            {name:'Basic Salary',           mo: basicMo,            taxable:true},
-            {name:'HRA',                    mo: hraMo,              taxable:isNew,
-             note: isNew ? 'Fully taxable in New Regime — no HRA exemption available'
-                         : 'Exempt: '+ctcFmt(Math.round(hraExempt/12))+'/mo (least of: actual HRA, rent−10% basic, 50/40% basic)'},
-            {name:'Special Allowance',      mo: specialMo,          taxable:true},
-            {name:'LTA',                    mo: Math.round(ltaAnnual/12), taxable:isNew,
-             note: isNew ? 'Fully taxable in New Regime — LTA exemption not available'
-                         : 'Exempt with travel proof — claim once per 2-yr block'},
-            {name:'Food Coupons',           mo: foodMo,             taxable:isNew,
-             note: isNew ? 'Fully taxable in New Regime — meal perquisite exemption not available'
-                         : 'Tax-free up to ₹2,200/mo'},
-            {name:'Phone/Internet',         mo: phoneMo,            taxable:isNew,
-             note: isNew ? 'Fully taxable in New Regime — reimbursement exemption not available'
-                         : 'Exempt with actual bills'},
+            {name:_t('ctc.row.basic'),          mo: basicMo,            taxable:true},
+            {name:_t('ctc.row.hra'),            mo: hraMo,              taxable:isNew,
+             note: isNew ? _t('ctc.note.hra.new')
+                         : _t('ctc.note.hra.old').replace('{amount}', ctcFmt(Math.round(hraExempt/12)))},
+            {name:_t('ctc.row.special'),        mo: specialMo,          taxable:true},
+            {name:_t('ctc.row.lta'),            mo: Math.round(ltaAnnual/12), taxable:isNew,
+             note: isNew ? _t('ctc.note.lta.new') : _t('ctc.note.lta.old')},
+            {name:_t('ctc.row.food'),           mo: foodMo,             taxable:isNew,
+             note: isNew ? _t('ctc.note.food.new') : _t('ctc.note.food.old')},
+            {name:_t('ctc.row.phone'),          mo: phoneMo,            taxable:isNew,
+             note: isNew ? _t('ctc.note.phone.new') : _t('ctc.note.phone.old')},
             {sep:true},
-            {name:'Gross Monthly Pay',      mo: Math.round(grossAnnual/12), taxable:true,  bold:true},
+            {name:_t('ctc.row.gross'),          mo: Math.round(grossAnnual/12), taxable:true,  bold:true},
             {sep:true},
-            {name:'Employee EPF (12%)',     mo: -emplEpfMo,         taxable:false, note:'Deducted, qualifies for 80C'},
-            {name:'Employer NPS 80CCD(2)',  mo: empNpsMo > 0 ? 0 : 0, taxable:false, note: empNpsMo > 0 ? ctcFmt(empNpsMo)+'/mo — tax-free u/s 80CCD(2)' : 'Not active — ask HR to add!'},
-            {name:'Income Tax (TDS)',       mo: -tdsPerMo,          taxable:false, note: regime === 'new' ? 'New Regime' : 'Old Regime'},
-            {name:'Professional Tax',       mo: -200,               taxable:false, note:'~₹200/mo'},
+            {name:_t('ctc.row.epf'),            mo: -emplEpfMo,         taxable:false, note:_t('ctc.note.epf')},
+            {name:_t('ctc.row.empnps'),         mo: empNpsMo > 0 ? 0 : 0, taxable:false, note: empNpsMo > 0 ? _t('ctc.note.nps.active').replace('{amount}', ctcFmt(empNpsMo)) : _t('ctc.note.nps.inactive')},
+            {name:_t('ctc.row.tds'),            mo: -tdsPerMo,          taxable:false, note: regime === 'new' ? _t('ctc.note.regime.new') : _t('ctc.note.regime.old')},
+            {name:_t('ctc.row.proftax'),        mo: -200,               taxable:false, note:'~₹200/mo'},
             {sep:true},
-            {name:'NET TAKE-HOME',          mo: takeHome,           taxable:false, bold:true, green:true}
+            {name:_t('ctc.row.takehome'),       mo: takeHome,           taxable:false, bold:true, green:true}
         ];
         var tbody = '';
         rows.forEach(function(r, i) {
@@ -242,7 +239,7 @@
                 '<td class="px-2 py-1 text-slate-700">' + r.name + (r.note ? '<div class="text-[8px] text-slate-400 font-normal leading-tight mt-0.5">' + r.note + '</div>' : '') + '</td>' +
                 '<td class="px-2 py-1 text-right" style="' + moS + '">' + (r.mo ? ctcFmt(Math.abs(r.mo)) + (r.mo < 0 ? ' ↓' : '') : '—') + '</td>' +
                 '<td class="px-2 py-1 text-right text-slate-400">' + (r.mo ? ctcFmt(Math.abs(r.mo * 12)) : '—') + '</td>' +
-                '<td class="px-2 py-1 text-right">' + (r.bold || r.sep ? '' : (r.taxable ? '<span class="ctc-breakup-row-tax">Taxable</span>' : '<span class="ctc-breakup-row-exempt">Exempt</span>')) + '</td>' +
+                '<td class="px-2 py-1 text-right">' + (r.bold || r.sep ? '' : (r.taxable ? '<span class="ctc-breakup-row-tax">'+_t('ctc.row.taxable')+'</span>' : '<span class="ctc-breakup-row-exempt">'+_t('ctc.row.exempt')+'</span>')) + '</td>' +
             '</tr>';
         });
         document.getElementById('ctc-breakup-body').innerHTML = tbody;
@@ -257,46 +254,44 @@
         var cards = [];
 
         // Employer NPS 80CCD(2) — valid in BOTH regimes
-        if (empNpsPct < 0.10) cards.push({icon:'🏛️', title:'Employer NPS 80CCD(2)',
+        if (empNpsPct < 0.10) cards.push({icon:'🏛️', title:_t('ctc.card.nps.title'),
             saving: Math.round(basicAnnual * (0.10 - empNpsPct) * marginalRate * 1.04 / 12),
-            desc: 'Ask HR to contribute ' + Math.round((0.10-empNpsPct)*100) + '% of basic (' + ctcFmt(Math.round(basicAnnual*(0.10-empNpsPct)/12)) + '/mo) to NPS u/s 80CCD(2). The only salary restructuring that saves tax in BOTH regimes.',
+            desc: _t('ctc.card.nps.desc').replace('{pct}', Math.round((0.10-empNpsPct)*100)).replace('{amount}', ctcFmt(Math.round(basicAnnual*(0.10-empNpsPct)/12))),
             bg:'#eff6ff', bdr:'#93c5fd', clr:'#1e3a5f'});
 
         if (regime === 'old') {
             // Old Regime-only optimizations
-            if (foodMo < 2200) cards.push({icon:'🍱', title:'Food Coupons / Meal Vouchers',
+            if (foodMo < 2200) cards.push({icon:'🍱', title:_t('ctc.card.food.title'),
                 saving: Math.round((2200 - foodMo) * marginalRate * 1.04),
-                desc: 'Add ₹' + (2200-foodMo).toLocaleString('en-IN') + '/mo more in food coupons (max ₹2,200/mo tax-free as meal perquisite). Simple HR form — zero cost to employer.',
+                desc: _t('ctc.card.food.desc').replace('{amount}', (2200-foodMo).toLocaleString('en-IN')),
                 bg:'#f0fdf4', bdr:'#86efac', clr:'#14532d'});
-            if (phoneMo < 1200) cards.push({icon:'📱', title:'Phone / Internet Reimbursement',
+            if (phoneMo < 1200) cards.push({icon:'📱', title:_t('ctc.card.phone.title'),
                 saving: Math.round((1200 - phoneMo) * marginalRate * 1.04),
-                desc: 'Add ₹' + (1200-phoneMo).toLocaleString('en-IN') + '/mo phone/internet allowance. Fully exempt with actual bills — submit monthly receipts to HR.',
+                desc: _t('ctc.card.phone.desc').replace('{amount}', (1200-phoneMo).toLocaleString('en-IN')),
                 bg:'#fdf4ff', bdr:'#e9d5ff', clr:'#581c87'});
-            if (hraMo > 0 && rentMo < basicMo * 0.1 + 1) cards.push({icon:'🏠', title:'Increase Rent to Maximize HRA',
+            if (hraMo > 0 && rentMo < basicMo * 0.1 + 1) cards.push({icon:'🏠', title:_t('ctc.card.hra.title'),
                 saving: Math.round(basicMo * 0.1 * marginalRate * 1.04),
-                desc: 'Rent below 10% of basic — HRA exemption = rent minus 10% of basic (currently ₹0). Consider paying ₹' + Math.round(basicMo*0.12).toLocaleString('en-IN') + '/mo to parents with receipt.',
+                desc: _t('ctc.card.hra.desc').replace('{amount}', Math.round(basicMo*0.12).toLocaleString('en-IN')),
                 bg:'#fff7ed', bdr:'#fed7aa', clr:'#7c2d12'});
-            if (ltaAnnual > 0) cards.push({icon:'✈️', title:'Claim LTA Every 2 Years',
+            if (ltaAnnual > 0) cards.push({icon:'✈️', title:_t('ctc.card.lta.title'),
                 saving: Math.round(ltaAnnual * marginalRate * 1.04 / 24),
-                desc: 'LTA of ₹' + ltaAnnual.toLocaleString('en-IN') + '/yr is tax-free. Claim once per 2-year block with domestic rail/air tickets. Don\'t leave this on the table.',
+                desc: _t('ctc.card.lta.desc').replace('{amount}', ltaAnnual.toLocaleString('en-IN')),
                 bg:'#f0f9ff', bdr:'#bae6fd', clr:'#0c4a6e'});
-            if (invest80c < 150000) cards.push({icon:'💼', title:'Max 80C — ₹1.5L',
+            if (invest80c < 150000) cards.push({icon:'💼', title:_t('ctc.card.80c.title'),
                 saving: Math.round((150000-invest80c)*marginalRate*1.04/12),
-                desc: '₹' + (150000-invest80c).toLocaleString('en-IN') + ' headroom left in 80C. Use ELSS SIP, PPF, NSC, or NPS. Saves ₹' + Math.round((150000-invest80c)*marginalRate*1.04).toLocaleString('en-IN') + '/yr.',
+                desc: _t('ctc.card.80c.desc').replace('{headroom}', (150000-invest80c).toLocaleString('en-IN')).replace('{saves}', Math.round((150000-invest80c)*marginalRate*1.04).toLocaleString('en-IN')),
                 bg:'#fef9c3', bdr:'#fde047', clr:'#713f12'});
         } else {
             // New Regime: no allowance exemptions — inform the user clearly
-            cards.push({icon:'ℹ️', title:'New Regime — No Allowance Exemptions',
+            cards.push({icon:'ℹ️', title:_t('ctc.card.newregime.title'),
                 saving: 0,
-                desc: 'HRA, LTA, food coupons, phone, and 80C deductions are NOT available in the New Regime. The only levers are: (1) Employer NPS 80CCD(2) — deductible in both regimes, and (2) switching to Old Regime if deductions exceed ~₹3.75L.',
+                desc: _t('ctc.card.newregime.desc'),
                 bg:'#fef9c3', bdr:'#fde047', clr:'#713f12'});
         }
 
         if (cards.length === 0 || (cards.length === 1 && cards[0].icon === 'ℹ️' && empNpsPct >= 0.10)) {
-            cards = [{icon:'✅', title:'Fully Optimized!', saving:0,
-                desc: regime === 'new'
-                    ? 'Employer NPS is maxed and New Regime has no further allowance exemptions. Consider whether Old Regime saves more if you have large deductions.'
-                    : 'Your salary structure is already maximally tax-efficient. Review again if CTC or deductions change.',
+            cards = [{icon:'✅', title:_t('ctc.card.optimized.title'), saving:0,
+                desc: regime === 'new' ? _t('ctc.card.optimized.new') : _t('ctc.card.optimized.old'),
                 bg:'#f0fdf4', bdr:'#86efac', clr:'#14532d'}];
         }
 
@@ -315,16 +310,16 @@
         var diff = Math.abs(thOld - thNew);
         var regDiv = document.getElementById('ctc-regime-compare');
         if (regDiv) regDiv.innerHTML = [
-            {label:'Old Regime', tax:taxOldR, th:thOld, key:'old'},
-            {label:'New Regime (Default)', tax:taxNewR, th:thNew, key:'new'}
+            {label:_t('ctc.reg.old'), tax:taxOldR, th:thOld, key:'old'},
+            {label:_t('ctc.reg.new'), tax:taxNewR, th:thNew, key:'new'}
         ].map(function(r) {
             var best = r.key === bestRegime;
             return '<div class="rounded-xl p-3" style="background:'+(best?'#f0fdf4':'#f8fafc')+';border:2px solid '+(best?'#22c55e':'#e2e8f0')+';">' +
-                '<div class="text-[10px] font-black '+(best?'text-emerald-800':'text-slate-600')+' uppercase mb-1">' + r.label + (best?' ✅ Better for you':'') + '</div>' +
+                '<div class="text-[10px] font-black '+(best?'text-emerald-800':'text-slate-600')+' uppercase mb-1">' + r.label + (best?' '+_t('ctc.reg.better'):'') + '</div>' +
                 '<div class="text-xl font-black '+(best?'text-emerald-700':'text-slate-600')+'">' + ctcFmt(r.th) + '/mo take-home</div>' +
-                '<div class="text-[9px] text-slate-500 mt-0.5">Annual tax: ' + ctcFmt(r.tax) + ' · ' +
-                (r.key==='old'?'80C + HRA + LTA deductions · Standard ₹50K deduct':'No deductions · Standard ₹75K deduct · Simpler ITR') + '</div>' +
-                (best && diff > 0 ? '<div class="text-[9px] font-black text-emerald-700 mt-0.5">Saves ₹' + diff.toLocaleString('en-IN') + '/yr vs other regime</div>' : '') +
+                '<div class="text-[9px] text-slate-500 mt-0.5">' + _t('res.ctc.annual_tax') + ': ' + ctcFmt(r.tax) + ' · ' +
+                (r.key==='old'?_t('ctc.reg.old.sub'):_t('ctc.reg.new.sub')) + '</div>' +
+                (best && diff > 0 ? '<div class="text-[9px] font-black text-emerald-700 mt-0.5">'+_t('ctc.reg.saves').replace('{amount}', diff.toLocaleString('en-IN'))+'</div>' : '') +
                 '</div>';
         }).join('');
 
@@ -335,18 +330,17 @@
             var optDesc = '';
             if (monthlySaved > 0) {
                 optDesc = regime === 'new'
-                    ? 'By maximizing employer NPS 80CCD(2) to 10% of basic, take-home rises to <strong>' + ctcFmt(takeHomeOpt) + '/mo</strong> — <strong>₹' + Math.round(monthlySaved).toLocaleString('en-IN') + '/mo more</strong> without any CTC change.'
-                    : 'By optimizing food coupons, employer NPS, phone allowance, and fully claiming LTA, take-home rises to <strong>' + ctcFmt(takeHomeOpt) + '/mo</strong> — <strong>₹' + Math.round(monthlySaved).toLocaleString('en-IN') + '/mo more</strong> (₹' + Math.round(monthlySaved*12).toLocaleString('en-IN') + '/yr) without any CTC change.';
+                    ? _t('ctc.ins.nps.opt').replace('{opt}', '<strong>'+ctcFmt(takeHomeOpt)+'</strong>').replace('{saved}', '<strong>₹'+Math.round(monthlySaved).toLocaleString('en-IN')+'</strong>')
+                    : _t('ctc.ins.old.opt').replace('{opt}', '<strong>'+ctcFmt(takeHomeOpt)+'</strong>').replace('{saved}', '<strong>₹'+Math.round(monthlySaved).toLocaleString('en-IN')+'</strong>').replace('{savedyr}', Math.round(monthlySaved*12).toLocaleString('en-IN'));
             } else {
-                optDesc = regime === 'new'
-                    ? 'New Regime has no salary restructuring levers beyond employer NPS. Your structure is optimized for this regime.'
-                    : 'Your salary structure is already optimally configured.';
+                optDesc = regime === 'new' ? _t('ctc.ins.new.noopt') : _t('ctc.ins.old.noopt');
             }
-            ins.innerHTML = '<strong>💡 Take-home Insight:</strong> On CTC of <strong>' + ctcFmt(annualCTC) + '</strong>, you receive <strong>' + ctcFmt(takeHome) + '/mo</strong> (' + (takeHome*12/annualCTC*100).toFixed(0) + '% of CTC). ' +
-                optDesc +
-                ' Effective tax rate: <strong>' + effRate.toFixed(1) + '%</strong>. ' +
-                (bestRegime !== regime ? '⚠ <strong>' + (bestRegime==='old'?'Old':'New') + ' Regime saves ₹' + diff.toLocaleString('en-IN') + '/yr more</strong> for your income — consider switching.' : '') +
-                '<div style="margin-top:8px;padding-top:8px;border-top:1px solid #bae6fd;font-size:9px;color:#0c4a6e;">⚠️ <strong>These are illustrative suggestions only.</strong> Eligibility depends on your employer\'s HR policy and CTC structure. Not all components can be restructured at every company. <strong>Verify with your HR department and/or a qualified CA before requesting any changes.</strong></div>';
+            ins.innerHTML = '<strong>'+_t('ctc.ins.prefix')+'</strong> ' +
+                _t('ctc.ins.ctc').replace('{ctc}', '<strong>'+ctcFmt(annualCTC)+'</strong>').replace('{takehome}', '<strong>'+ctcFmt(takeHome)+'</strong>').replace('{pct}', (takeHome*12/annualCTC*100).toFixed(0)) + ' ' +
+                optDesc + ' ' +
+                _t('ctc.ins.effrate').replace('{rate}', '<strong>'+effRate.toFixed(1)+'</strong>') + ' ' +
+                (bestRegime !== regime ? '⚠ <strong>' + _t('ctc.ins.switch').replace('{regime}', bestRegime==='old'?_t('ctc.ins.old'):_t('ctc.ins.new')).replace('{diff}', diff.toLocaleString('en-IN')) + '</strong>' : '') +
+                '<div style="margin-top:8px;padding-top:8px;border-top:1px solid #bae6fd;font-size:9px;color:#0c4a6e;">' + _t('ctc.disclaimer') + '</div>';
         }
 
         if (typeof saveUserData === 'function') saveUserData();
