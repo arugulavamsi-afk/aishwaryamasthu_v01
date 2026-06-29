@@ -94,7 +94,8 @@
         document.getElementById('grat-taxfree').textContent       = gratFmt(taxFreeAmt);
         document.getElementById('grat-net').textContent           = gratFmt(netGratuity);
         document.getElementById('grat-service-counted').textContent = serviceCounted + ' yrs';
-        document.getElementById('grat-tax').textContent           = taxOnExcess > 0 ? gratFmt(taxOnExcess) : '₹0 (fully exempt)';
+        var _gt = function(k) { var v = typeof _t === 'function' ? _t(k) : null; return v && v !== k ? v : null; };
+        document.getElementById('grat-tax').textContent           = taxOnExcess > 0 ? gratFmt(taxOnExcess) : (_gt('gratuity.work.exempt') || '₹0 (fully exempt)');
         document.getElementById('grat-per-year').textContent      = gratFmt(perYear);
         document.getElementById('grat-pct').textContent           = pctOfAnnual.toFixed(1) + '%';
 
@@ -102,16 +103,18 @@
         var w = document.getElementById('grat-workings');
         if (w) {
             var rows = [
-                ['Last Basic + DA salary', gratFmt(basic) + '/mo'],
-                ['Years of service entered', years + ' yrs ' + (months > 0 ? months + ' mo' : '')],
-                ['Partial year rule (>6 mo → +1)', months > 6 ? months + ' months > 6 → count as ' + serviceCounted + ' yrs' : months + ' months ≤ 6 → no rounding'],
-                ['Service counted for gratuity', serviceCounted + ' years'],
-                ['Formula', formula + ' × ₹' + Number(basic).toLocaleString('en-IN') + ' × ' + serviceCounted],
-                ['Gross gratuity', gratFmt(grossGratuity)],
-                ['Tax-free limit u/s 10(10)', gratFmt(taxFreeLimit)],
-                ['Taxable amount', taxableAmt > 0 ? gratFmt(taxableAmt) : 'Nil (within ₹25L limit)'],
-                ['Income tax @ ' + (slabPct * 100).toFixed(0) + '%', taxOnExcess > 0 ? '−' + gratFmt(taxOnExcess) : '₹0'],
-                ['Net gratuity in hand', gratFmt(netGratuity)]
+                [_gt('gratuity.work.basic') || 'Last Basic + DA salary', gratFmt(basic) + '/mo'],
+                [_gt('gratuity.work.entered') || 'Years of service entered', years + ' yrs ' + (months > 0 ? months + ' mo' : '')],
+                [_gt('gratuity.work.partial') || 'Partial year rule (>6 mo → +1)', months > 6
+                    ? (_gt('gratuity.work.rounded_up') || '{m} months > 6 → count as {n} yrs').replace('{m}', months).replace('{n}', serviceCounted)
+                    : (_gt('gratuity.work.no_rounding') || '{m} months ≤ 6 → no rounding').replace('{m}', months)],
+                [_gt('gratuity.work.counted') || 'Service counted for gratuity', serviceCounted + ' years'],
+                [_gt('gratuity.work.formula') || 'Formula', formula + ' × ₹' + Number(basic).toLocaleString('en-IN') + ' × ' + serviceCounted],
+                [_gt('gratuity.work.gross') || 'Gross gratuity', gratFmt(grossGratuity)],
+                [_gt('gratuity.work.taxfree_limit') || 'Tax-free limit u/s 10(10)', gratFmt(taxFreeLimit)],
+                [_gt('gratuity.work.taxable') || 'Taxable amount', taxableAmt > 0 ? gratFmt(taxableAmt) : (_gt('gratuity.work.nil') || 'Nil (within ₹25L limit)')],
+                [(_gt('gratuity.work.incometax') || 'Income tax @ {pct}%').replace('{pct}', (slabPct * 100).toFixed(0)), taxOnExcess > 0 ? '−' + gratFmt(taxOnExcess) : '₹0'],
+                [_gt('gratuity.work.net') || 'Net gratuity in hand', gratFmt(netGratuity)]
             ];
             w.innerHTML = rows.map(function(r, i) {
                 var isFinal = i === rows.length - 1;
@@ -129,18 +132,18 @@
             ins.classList.remove('hidden');
             var tips = [];
             if (serviceCounted < 5) {
-                tips.push('⚠ You need <strong>at least 5 years</strong> of continuous service to be eligible for gratuity under the Payment of Gratuity Act. Currently you have ' + serviceCounted + ' year(s).');
+                tips.push((_gt('gratuity.ins.under5') || '⚠ You need <strong>at least 5 years</strong> of continuous service to be eligible for gratuity under the Payment of Gratuity Act. Currently you have {n} year(s).').replace('{n}', serviceCounted));
             } else {
-                tips.push('After <strong>' + serviceCounted + ' years</strong> of service, your gross gratuity is <strong>' + gratFmt(grossGratuity) + '</strong>.');
-                if (months > 6) tips.push('Your ' + months + ' extra months round up to a full year, adding <strong>' + gratFmt(perYear) + '</strong> to your payout.');
+                tips.push((_gt('gratuity.ins.after') || 'After <strong>{n} years</strong> of service, your gross gratuity is <strong>{amt}</strong>.').replace('{n}', serviceCounted).replace('{amt}', gratFmt(grossGratuity)));
+                if (months > 6) tips.push((_gt('gratuity.ins.round') || 'Your {m} extra months round up to a full year, adding <strong>{amt}</strong> to your payout.').replace('{m}', months).replace('{amt}', gratFmt(perYear)));
                 if (grossGratuity >= taxFreeLimit) {
-                    tips.push('Your gratuity exceeds the ₹25L tax-free limit — <strong>' + gratFmt(taxableAmt) + '</strong> is taxable at ' + (slabPct*100).toFixed(0) + '% slab. Consider whether you can stagger the payout across financial years.');
+                    tips.push((_gt('gratuity.ins.taxable') || 'Your gratuity exceeds the ₹25L tax-free limit — <strong>{amt}</strong> is taxable at {pct}% slab. Consider whether you can stagger the payout across financial years.').replace('{amt}', gratFmt(taxableAmt)).replace('{pct}', (slabPct*100).toFixed(0)));
                 } else {
-                    tips.push('Your entire gratuity is <strong>fully tax-free</strong> under Sec 10(10) — no TDS, no income tax.');
+                    tips.push(_gt('gratuity.ins.taxfree') || 'Your entire gratuity is <strong>fully tax-free</strong> under Sec 10(10) — no TDS, no income tax.');
                 }
-                tips.push('Employer must pay within 30 days of resignation. If delayed, they owe 10% p.a. simple interest.');
+                tips.push(_gt('gratuity.ins.pay30') || 'Employer must pay within 30 days of resignation. If delayed, they owe 10% p.a. simple interest.');
             }
-            ins.innerHTML = '<strong>💡 Gratuity Summary:</strong> ' + tips.join(' ');
+            ins.innerHTML = '<strong>' + (_gt('gratuity.ins.summary') || '💡 Gratuity Summary:') + '</strong> ' + tips.join(' ');
         }
 
         if (typeof saveUserData === 'function') saveUserData();
