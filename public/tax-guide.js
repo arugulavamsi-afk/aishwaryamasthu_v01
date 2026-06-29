@@ -380,9 +380,9 @@
                 '</div>' +
                 (empEpf > 0
                     ? '<div class="rounded-lg px-3 py-2 mb-2 text-[10px]" style="background:#eff6ff;border:1px solid #bfdbfe;">' +
-                        '<div class="flex justify-between mb-0.5"><span class="text-blue-600">Cash-in-hand</span><span class="font-bold text-blue-800">' + fmt(mthActual) + '</span></div>' +
-                        '<div class="flex justify-between mb-0.5"><span class="text-blue-600">Monthly Expenses</span><span class="font-bold text-blue-800">- ' + fmt(expenses) + '</span></div>' +
-                        '<div class="flex justify-between pt-1 border-t border-blue-100"><span class="font-black text-blue-700">Free surplus</span><span class="font-black text-blue-700">' + fmt(Math.max(0, surplus)) + '</span></div>' +
+                        '<div class="flex justify-between mb-0.5"><span class="text-blue-600">' + _t('tg.sur.cashinhand') + '</span><span class="font-bold text-blue-800">' + fmt(mthActual) + '</span></div>' +
+                        '<div class="flex justify-between mb-0.5"><span class="text-blue-600">' + _t('tg.sur.expenses') + '</span><span class="font-bold text-blue-800">- ' + fmt(expenses) + '</span></div>' +
+                        '<div class="flex justify-between pt-1 border-t border-blue-100"><span class="font-black text-blue-700">' + _t('tg.sur.free') + '</span><span class="font-black text-blue-700">' + fmt(Math.max(0, surplus)) + '</span></div>' +
                         '<div class="text-[9px] text-blue-400 mt-1">' + _t('tg.epf.corpus1') + ' ' + fmt(empEpf * 2) + '/mo ' + _t('tg.epf.corpus2') + ' (' + _t('tg.epf.corpus3') + ', ' + _t('tg.epf.each') + ' ' + fmt(empEpf) + ')</div>' +
                       '</div>'
                     : '') +
@@ -408,37 +408,37 @@
             var c80Gap = 150000 - c80;
 
             if (winner === 'new') {
-                tgActs.push({ icon:'✅', color:'#059669', title:'Stay on New Regime',
-                    tip:'You save ' + fmt(winAmt) + '/yr vs Old Regime. No need to lock money in 80C instruments — invest freely in index funds, liquid MFs, and gold without 3–15 year lock-ins.' });
-                tgActs.push({ icon:'🔓', color:'#6366f1', title:'Skip 80C lock-ins',
-                    tip:'New Regime gives no 80C benefit. Don\'t buy ELSS/NSC just for tax — put that capital into open-ended index funds. Same growth potential, full liquidity.' });
+                tgActs.push({ icon:'✅', color:'#059669', title:_t('tg.act.new.title'),
+                    tip:_t('tg.act.new.tipsave') + ' ' + fmt(winAmt) + _t('tg.act.new.tipsuffix') });
+                tgActs.push({ icon:'🔓', color:'#6366f1', title:_t('tg.act.skip80c.title'),
+                    tip:_t('tg.act.skip80c.tip') });
             } else if (winner === 'old') {
                 if (c80Gap > 5000) {
-                    tgActs.push({ icon:'💼', color:'#7c3aed', title:'80C Gap: ' + fmt(c80Gap) + ' unused',
-                        tip:'Top up 80C with ELSS (equity returns + shortest 3yr lock-in), PPF (safe, fully tax-free maturity), or voluntary EPF. Every ₹1 invested here saves ₹0.20–₹0.30 in tax.' });
+                    tgActs.push({ icon:'💼', color:'#7c3aed', title:'80C Gap: ' + fmt(c80Gap) + ' ' + _t('tg.act.80cgap.suffix'),
+                        tip:_t('tg.act.80cgap.tip') });
                 }
                 if (c80d < 25000) {
-                    tgActs.push({ icon:'🏥', color:'#ec4899', title:'80D: Add or increase health insurance',
-                        tip:'You\'ve claimed only ' + fmt(c80d) + ' under 80D (limit: ₹25K for self+family, ₹50K if parents are senior citizens). A family floater for ₹10L cover costs ₹8–15K/yr — saves tax AND protects against hospitalisation bills.' });
+                    tgActs.push({ icon:'🏥', color:'#ec4899', title:_t('tg.act.80d.title'),
+                        tip:_t('tg.act.80d.prefix') + ' ' + fmt(c80d) + ' ' + _t('tg.act.80d.suffix') });
                 }
                 if (nps === 0 && gross >= 500000) {
-                    tgActs.push({ icon:'🎯', color:'#0891b2', title:'80CCD(1B): Extra ₹50K deduction via NPS',
-                        tip:'NPS gives ₹50,000 extra deduction above the ₹1.5L 80C cap. At 30% slab that\'s ₹15,600 saved per year. ₹6,000/month in NPS Tier I also builds a retirement corpus.' });
+                    tgActs.push({ icon:'🎯', color:'#0891b2', title:_t('tg.act.nps.title'),
+                        tip:_t('tg.act.nps.tip') });
                 }
                 if (homeloan === 0) {
-                    tgActs.push({ icon:'🏠', color:'#3b82f6', title:'Section 24(b): Home loan interest deduction',
-                        tip:'If you have a home loan, interest up to ₹2L/year is deductible under Old Regime (Sec 24b). At 30% slab that\'s ₹60K/year saved. Enter your annual interest amount in the deductions above.' });
+                    tgActs.push({ icon:'🏠', color:'#3b82f6', title:_t('tg.act.hl.title'),
+                        tip:_t('tg.act.hl.tip') });
                 }
             }
 
             var surp = window._tgSurplus;
             if (surp && surp >= 2000) {
                 var where = surp >= 20000
-                    ? '60% in Nifty 50 index fund SIP + 20% PPF/NPS + 10% liquid MF (emergency fund buffer) + 10% gold ETF'
+                    ? _t('tg.act.invest.where1')
                     : surp >= 8000
-                    ? 'Start a SIP in a Nifty 50 index fund + keep 3 months of expenses in a liquid MF'
-                    : 'Start a ' + fmt(Math.ceil(surp * 0.5 / 500) * 500) + '/month SIP in an index fund — even small amounts compound significantly over 10+ years';
-                tgActs.push({ icon:'📈', color:'#10b981', title:'Invest your ' + fmt(surp) + '/month surplus',
+                    ? _t('tg.act.invest.where2')
+                    : _t('tg.act.invest.where3p') + ' ' + fmt(Math.ceil(surp * 0.5 / 500) * 500) + _t('tg.act.invest.where3s');
+                tgActs.push({ icon:'📈', color:'#10b981', title:'Invest your ' + fmt(surp) + _t('tg.act.invest.suffix'),
                     tip: where });
             }
 
@@ -446,7 +446,7 @@
                 tgActEl.classList.add('hidden');
             } else {
                 tgActEl.classList.remove('hidden');
-                tgActEl.innerHTML = '<div class="text-[10px] font-black text-slate-500 uppercase tracking-wider mb-2">⚡ Your Tax Action Plan</div>' +
+                tgActEl.innerHTML = '<div class="text-[10px] font-black text-slate-500 uppercase tracking-wider mb-2">' + _t('tg.act.heading') + '</div>' +
                     tgActs.slice(0, 4).map(function(a) {
                         return '<div class="flex items-start gap-2.5 p-3 rounded-xl border mb-2" style="background:' + a.color + '12;border-color:' + a.color + '30;">' +
                             '<span class="text-base flex-shrink-0 mt-0.5">' + a.icon + '</span>' +
@@ -469,9 +469,9 @@
 
         // header row
         var h = '<div class="grid grid-cols-3 text-[9.5px] font-black px-3 py-2 rounded-t-xl" style="background:#f8fafc;border:1px solid #e2e8f0;border-bottom:none;">' +
-            '<span class="text-slate-500 uppercase tracking-wider">Metric</span>' +
-            '<span class="text-right" style="color:' + OC + ';">Old Regime' + (oldW ? ' &#127942;' : '') + '</span>' +
-            '<span class="text-right" style="color:' + NC + ';">New Regime' + (newW ? ' &#127942;' : '') + '</span>' +
+            '<span class="text-slate-500 uppercase tracking-wider">' + _t('tg.tbl.metric') + '</span>' +
+            '<span class="text-right" style="color:' + OC + ';">' + _t('tg.tbl.oldregime') + (oldW ? ' &#127942;' : '') + '</span>' +
+            '<span class="text-right" style="color:' + NC + ';">' + _t('tg.tbl.newregime') + (newW ? ' &#127942;' : '') + '</span>' +
             '</div>';
 
         var mkRow = function(label, oldVal, newVal, bold, sep, highlight) {
