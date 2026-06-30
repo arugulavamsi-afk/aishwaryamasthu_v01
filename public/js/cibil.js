@@ -270,95 +270,96 @@
         // ── TAX EVENTS ──────────────────────────────────────────────────
         // Advance Tax (only if income > 10L or business income)
         if (income > 500000) {
-            addEv([fy,5,15],  '🟡 Advance Tax — 1st Instalment (15%)',
-                'Pay 15% of estimated annual tax. Miss this → 1% interest/month under Sec 234C.',
-                'tax','💸','1% interest/month on shortfall (Sec 234C)');
-            addEv([fy,8,15],  '🟠 Advance Tax — 2nd Instalment (45%)',
-                'Cumulative 45% of estimated tax due. Common cause of surprise penalties in December.',
-                'tax','💸','1% interest/month on shortfall');
-            addEv([fy,11,15], '🔴 Advance Tax — 3rd Instalment (75%)',
-                'Cumulative 75% of estimated tax due. Most salaried people forget this one.',
-                'tax','💸','1% interest/month on shortfall');
-            addEv([fy+1,2,15],'🔴 Advance Tax — 4th Instalment (100%)',
-                'Final 100% advance tax due. After this any shortfall attracts Sec 234B interest.',
-                'tax','💸','1% interest/month under Sec 234B');
+            addEv([fy,5,15],  _t('fincal.ev.adv1.title'),
+                _t('fincal.ev.adv1.desc'),
+                'tax','💸',_t('fincal.ev.adv1.pen'));
+            addEv([fy,8,15],  _t('fincal.ev.adv2.title'),
+                _t('fincal.ev.adv2.desc'),
+                'tax','💸',_t('fincal.ev.adv2.pen'));
+            addEv([fy,11,15], _t('fincal.ev.adv3.title'),
+                _t('fincal.ev.adv3.desc'),
+                'tax','💸',_t('fincal.ev.adv3.pen'));
+            addEv([fy+1,2,15],_t('fincal.ev.adv4.title'),
+                _t('fincal.ev.adv4.desc'),
+                'tax','💸',_t('fincal.ev.adv4.pen'));
         }
 
         // ITR Deadlines
-        addEv([fy+1,6,31], '📋 ITR Filing Deadline — Salaried (Jul 31)',
-            'File your income tax return for FY' + fy + '-' + (fy-1999) + '. Late filing fee: ₹1,000–₹5,000 + 1% interest/month. Losses cannot be carried forward if filed late.',
-            'tax','📋','₹5,000 late fee + 1% interest/month (Sec 234A)');
-        addEv([fy+1,9,31], '📋 ITR Deadline — Tax Audit & Business Cases (Oct 31)',
-            'Due date for companies, firms, and individuals whose accounts must be audited under Sec 44AB (business turnover >₹1Cr / professional receipts >₹50L). Salaried individuals\' deadline is July 31 — this does NOT extend that.',
-            'tax','📋','₹5,000 late fee + 1% interest/month (Sec 234A)');
-        addEv([fy+1,11,31],'🔴 Final Belated / Revised Return — Dec 31',
-            'Absolute last date to file a belated return (Sec 139(4)) or revised return (Sec 139(5)) for FY' + fy + '-' + (fy-1999) + ' — applies to ALL taxpayers including salaried. After Dec 31 you permanently lose the ability to file for this FY.',
-            'tax','🚨','Permanently cannot file — all refunds forfeited');
+        var fyLabel = 'FY' + fy + '-' + (fy-1999);
+        addEv([fy+1,6,31], _t('fincal.ev.itr1.title'),
+            _t('fincal.ev.itr1.desc').replace('%FY%', fyLabel),
+            'tax','📋',_t('fincal.ev.itr1.pen'));
+        addEv([fy+1,9,31], _t('fincal.ev.itr2.title'),
+            _t('fincal.ev.itr2.desc'),
+            'tax','📋',_t('fincal.ev.itr2.pen'));
+        addEv([fy+1,11,31],_t('fincal.ev.itr3.title'),
+            _t('fincal.ev.itr3.desc').replace('%FY%', fyLabel),
+            'tax','🚨',_t('fincal.ev.itr3.pen'));
 
         // Form 16 receipt
-        addEv([fy+1,5,15], '📄 Form 16 Due from Employer',
-            'Your employer must issue Form 16 by June 15. If you haven\'t received it, follow up immediately — you need it to file ITR accurately.',
+        addEv([fy+1,5,15], _t('fincal.ev.form16.title'),
+            _t('fincal.ev.form16.desc'),
             'tax','📄','');
 
         // TDS refund check
-        addEv([fy+1,7,15], '💰 Check TDS Refund Status',
-            'If excess TDS was deducted, track your refund status on incometax.gov.in. Most refunds arrive within 4–6 weeks of ITR processing.',
+        addEv([fy+1,7,15], _t('fincal.ev.tds.title'),
+            _t('fincal.ev.tds.desc'),
             'tax','💰','');
 
         // ── INVESTMENT EVENTS ────────────────────────────────────────────
         if (hasPPF) {
             // PPF: deposit before 5th of each month for interest. Special: April 5
-            addEv([fy,3,4],   '🏛️ PPF April 5 Deadline',
-                'Deposit before April 5 to earn interest on the FULL amount for April. Depositing on Apr 6 means you lose one month of 7.1% interest on up to ₹1.5L.',
-                'invest','🏛️','Lose 1 month interest on ₹1.5L = ~₹888');
-            addEv([fy,2,31],  '🏛️ PPF Annual Maximum — March 31',
-                'Invest up to ₹1.5L in PPF before March 31 to claim 80C deduction and maximise EEE tax-free corpus.',
-                'invest','🏛️','Miss 80C deduction: ₹4,500–₹45,000 tax lost (5%–30% slab)');
+            addEv([fy,3,4],   _t('fincal.ev.ppfapr.title'),
+                _t('fincal.ev.ppfapr.desc'),
+                'invest','🏛️',_t('fincal.ev.ppfapr.pen'));
+            addEv([fy,2,31],  _t('fincal.ev.ppfmar.title'),
+                _t('fincal.ev.ppfmar.desc'),
+                'invest','🏛️',_t('fincal.ev.ppfmar.pen'));
             // Monthly PPF reminder (5th of each month)
             for (var m = 0; m < 12; m++) {
                 var evDate = new Date(fy, m + 3, 4);
                 if (evDate >= fyStart && evDate <= new Date(fyEnd.getFullYear(), fyEnd.getMonth() + 3, 0)) {
                     if (m === 0) continue; // Already added April 5 above
                     addEv([evDate.getFullYear(), evDate.getMonth(), 4],
-                        '🏛️ PPF Monthly Contribution (before 5th)',
-                        'Deposit this month\'s PPF contribution before the 5th to earn interest for this month.',
+                        _t('fincal.ev.ppfmon.title'),
+                        _t('fincal.ev.ppfmon.desc'),
                         'invest','🏛️','');
                 }
             }
         }
 
         if (hasELSS && regime === 'old') {
-            addEv([fy+1,0,15], '📈 ELSS — Invest by January 15',
-                'Invest in ELSS before Jan 15 to avoid the March server crash. Units allotted in Jan count for this FY\'s 80C. Don\'t wait till March — mutual fund sites crash.',
-                'invest','📈','Miss 80C: ₹4,500–₹45,000 tax lost');
-            addEv([fy+1,1,28], '📈 ELSS — Final Warning (Feb 28)',
-                'ELSS investments made in March often fail due to server overload. This is your last safe date to invest for this FY\'s 80C.',
-                'invest','📈','Server failure risk → units not allotted in time');
-            addEv([fy+1,2,28], '⚠️ ELSS Last Date — March 28 (risky)',
-                'Technically March 31 is the deadline but MF servers crash. Only invest today if absolutely necessary. 3-year lock-in from allotment date.',
-                'invest','⚠️','Units may not be allotted before Mar 31 due to server overload');
+            addEv([fy+1,0,15], _t('fincal.ev.elss1.title'),
+                _t('fincal.ev.elss1.desc'),
+                'invest','📈',_t('fincal.ev.elss1.pen'));
+            addEv([fy+1,1,28], _t('fincal.ev.elss2.title'),
+                _t('fincal.ev.elss2.desc'),
+                'invest','📈',_t('fincal.ev.elss2.pen'));
+            addEv([fy+1,2,28], _t('fincal.ev.elss3.title'),
+                _t('fincal.ev.elss3.desc'),
+                'invest','⚠️',_t('fincal.ev.elss3.pen'));
         }
 
         if (hasSGB) {
             // SGB windows typically open 4–6 times/year. Use approximate typical dates.
-            addEv([fy,4,22],  '🥇 SGB Window — Check RBI Notification',
-                'Sovereign Gold Bond subscription windows open periodically. Check RBI website for exact dates. SGB earns 2.5% p.a. interest + gold price appreciation. No making charges.',
-                'invest','🥇','Miss window → wait 2–3 months for next');
-            addEv([fy,7,19],  '🥇 SGB Window — Check RBI Notification',
-                'Check RBI notification for Sovereign Gold Bond subscription. Lock in gold price today. 8-year tenure, premature exit after 5 years.',
+            addEv([fy,4,22],  _t('fincal.ev.sgb.title'),
+                _t('fincal.ev.sgb.desc1'),
+                'invest','🥇',_t('fincal.ev.sgb.pen'));
+            addEv([fy,7,19],  _t('fincal.ev.sgb.title'),
+                _t('fincal.ev.sgb.desc2'),
                 'invest','🥇','');
-            addEv([fy,10,18], '🥇 SGB Window — Check RBI Notification',
-                'SGB series typically available in Q3. Issue price set by RBI based on average gold price. ₹50/gram discount on digital payments.',
+            addEv([fy,10,18], _t('fincal.ev.sgb.title'),
+                _t('fincal.ev.sgb.desc3'),
                 'invest','🥇','');
-            addEv([fy+1,1,16],'🥇 SGB Window — Check RBI Notification',
-                'Q4 SGB series. Final opportunity this financial year. Check rbi.org.in for exact subscription dates.',
+            addEv([fy+1,1,16],_t('fincal.ev.sgb.title'),
+                _t('fincal.ev.sgb.desc4'),
                 'invest','🥇','');
         }
 
         // NPS — March 31 (always relevant for salaried)
-        addEv([fy+1,2,31], '🏛️ NPS — 80CCD(1B) Contribution by March 31',
-            'Additional ₹50,000 NPS deduction under 80CCD(1B) over and above 80C limit. Under old regime this saves ₹5,000–₹15,000 in tax.',
-            'invest','🏛️', regime === 'old' ? '₹5,000–₹15,000 tax saving forfeited' : 'Check if applicable under your regime');
+        addEv([fy+1,2,31], _t('fincal.ev.nps.title'),
+            _t('fincal.ev.nps.desc'),
+            'invest','🏛️', regime === 'old' ? _t('fincal.ev.nps.pen.old') : _t('fincal.ev.nps.pen.new'));
 
         // ── CREDIT CARD EVENTS ──────────────────────────────────────────
         // Add monthly for next 3 months — let JS handle month overflow naturally
@@ -366,46 +367,46 @@
             var stmtDate = new Date(today.getFullYear(), today.getMonth() + cm, ccDay);
             var dueDate  = new Date(today.getFullYear(), today.getMonth() + cm, ccDay + 20);
             addEv([stmtDate.getFullYear(), stmtDate.getMonth(), stmtDate.getDate()],
-                '💳 Credit Card Statement Generated',
-                'Your statement is generated today. Log in and check for any fraudulent charges or billing errors. Dispute window: 30 days.',
+                _t('fincal.ev.cc.stmt.title'),
+                _t('fincal.ev.cc.stmt.desc'),
                 'credit','💳','');
             addEv([dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate()],
-                '🔴 Credit Card Payment Due',
-                'Pay the FULL statement amount to avoid 36–42% p.a. interest. Even paying ₹1 short triggers interest on the entire balance. Set auto-pay today.',
-                'credit','🔴','36–42% p.a. interest on entire balance if not paid in full');
+                _t('fincal.ev.cc.due.title'),
+                _t('fincal.ev.cc.due.desc'),
+                'credit','🔴',_t('fincal.ev.cc.due.pen'));
         }
 
         // ── EPF EVENTS ──────────────────────────────────────────────────
         if (hasEPF) {
-            addEv([fy,3,30],  '🏢 EPF — Update Nomination (April 30)',
-                'Update/verify your EPF e-Nomination at epfindia.gov.in. Without active nomination, your family cannot claim EPF corpus easily.',
-                'epf','🏢','Family faces 6–12 months of paperwork without nomination');
-            addEv([fy,5,30],  '🏢 Check EPF Passbook — Annual Statement',
-                'Download your EPF passbook from epfindia.gov.in. Verify employer contributions, interest credited, and any discrepancies. Raises must be reported within 2 years.',
-                'epf','🏢','Undetected errors go unresolved after 2 years');
-            addEv([fy,11,31], '🏢 EPF Interest Credited — Dec 31',
-                'EPF interest (currently 8.25% p.a.) is credited by December 31 for the previous financial year. Check your passbook to confirm.',
+            addEv([fy,3,30],  _t('fincal.ev.epfnom.title'),
+                _t('fincal.ev.epfnom.desc'),
+                'epf','🏢',_t('fincal.ev.epfnom.pen'));
+            addEv([fy,5,30],  _t('fincal.ev.epfpb.title'),
+                _t('fincal.ev.epfpb.desc'),
+                'epf','🏢',_t('fincal.ev.epfpb.pen'));
+            addEv([fy,11,31], _t('fincal.ev.epfint.title'),
+                _t('fincal.ev.epfint.desc'),
                 'epf','🏢','');
-            addEv([fy+1,2,31],'🏢 EPF VPF — Last Date for FY Contribution',
-                'Voluntary Provident Fund contributions above 12% are tax-deductible under 80C. Increase VPF via your employer before March 31.',
+            addEv([fy+1,2,31],_t('fincal.ev.epfvpf.title'),
+                _t('fincal.ev.epfvpf.desc'),
                 'epf','🏢','');
         }
 
         // ── GENERAL COMPLIANCE ───────────────────────────────────────────
-        addEv([fy+1,2,31], '📋 80C Investments — Final Date (March 31)',
-            'Last date for all 80C investments (PPF, ELSS, LIC premium, NSC, tuition fees, home loan principal). Maximum deduction ₹1.5L under old regime.',
-            'tax','📋', regime === 'old' ? 'Miss: ₹4,500–₹45,000 tax lost' : 'Not applicable under new regime');
-        addEv([fy,8,30],   '📑 HRA Claim — Collect Rent Receipts',
-            'If you claim HRA, collect rent receipts from your landlord for Apr–Sep. Keep rent agreement handy. Landlord PAN required if rent > ₹1L/year.',
+        addEv([fy+1,2,31], _t('fincal.ev.80c.title'),
+            _t('fincal.ev.80c.desc'),
+            'tax','📋', regime === 'old' ? _t('fincal.ev.80c.pen.old') : _t('fincal.ev.80c.pen.new'));
+        addEv([fy,8,30],   _t('fincal.ev.hra1.title'),
+            _t('fincal.ev.hra1.desc'),
             'tax','📑','');
-        addEv([fy,11,31],  '📑 HRA Claim — Collect Rent Receipts (Oct–Mar)',
-            'Collect rent receipts for Oct–Mar. Submit to employer before February to ensure TDS is adjusted.',
+        addEv([fy,11,31],  _t('fincal.ev.hra2.title'),
+            _t('fincal.ev.hra2.desc'),
             'tax','📑','');
-        addEv([fy+1,0,31], '📊 Investment Declarations to Employer (Jan 31)',
-            'Submit final investment proof to your employer for TDS calculation. Include all 80C investments, HRA proofs, home loan certificate.',
-            'tax','📊','Excess TDS deducted if not submitted; claim refund in ITR');
-        addEv([fy,8,15],   '🔒 Free Annual Credit Report Check',
-            'Check your free CIBIL report at cibil.com (1 free per year per bureau). Also check Experian, Equifax. Errors corrected = instant score boost.',
+        addEv([fy+1,0,31], _t('fincal.ev.invdecl.title'),
+            _t('fincal.ev.invdecl.desc'),
+            'tax','📊',_t('fincal.ev.invdecl.pen'));
+        addEv([fy,8,15],   _t('fincal.ev.crrep.title'),
+            _t('fincal.ev.crrep.desc'),
             'credit','🔒','');
 
         // Sort by date
