@@ -242,20 +242,19 @@
 
         // Priority list
         var colors = ['#dc2626','#ea580c','#d97706','#16a34a','#0891b2','#7c3aed','#db2777'];
-        var icons  = { 'avalanche': '🔥 Pay off first (highest rate)', 'snowball': '❄️ Pay off first (smallest balance)' };
         var pLabel = document.getElementById('debt-priority-label');
-        if (pLabel) pLabel.textContent = _debtMethod === 'avalanche' ? '🎯 Avalanche Order (Highest Rate First)' : '🎯 Snowball Order (Smallest Balance First)';
+        if (pLabel) pLabel.textContent = _debtMethod === 'avalanche' ? _t('debt.priority.avalanche') : _t('debt.priority.snowball');
 
         var list = document.getElementById('debt-priority-list');
         if (list) {
             list.innerHTML = sorted.map(function(l, i) {
                 var color = colors[i % colors.length];
-                var badge = i === 0 ? ' 🎯 Attack Now' : i === 1 ? ' ⏭ Next' : '';
+                var badge = i === 0 ? _t('debt.badge.attack') : i === 1 ? _t('debt.badge.next') : '';
                 return '<div class="flex items-center gap-2 rounded-lg px-2.5 py-2" style="background:#f8fafc;border:1px solid #e2e8f0;">' +
                     '<div class="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black text-white flex-shrink-0" style="background:' + color + ';">' + (i+1) + '</div>' +
                     '<div class="flex-1 min-w-0">' +
                     '<div class="text-[10px] font-black text-slate-700">' + l.name + badge + '</div>' +
-                    '<div class="text-[9px] text-slate-400">' + debtFmt(l.balance) + ' @ ' + l.rate + '% · EMI ' + debtFmt(l.emi) + '/mo</div>' +
+                    '<div class="text-[9px] text-slate-400">' + debtFmt(l.balance) + ' @ ' + l.rate + '% · EMI ' + debtFmt(l.emi) + _t('debt.emi_mo') + '</div>' +
                     '</div>' +
                     '<div class="text-[10px] font-black flex-shrink-0" style="color:' + color + ';">' + l.rate.toFixed(1) + '%</div>' +
                     '</div>';
@@ -268,12 +267,16 @@
             ins.classList.remove('hidden');
             var topLoan = sorted[0];
             var monthsSaved = withoutExtra.months - withExtra.months;
-            ins.innerHTML = '<strong>💡 Strategy:</strong> ' +
-                (_debtMethod === 'avalanche'
-                    ? 'Attack <strong>' + topLoan.name + '</strong> (' + topLoan.rate + '%) first — it costs you the most in interest.'
-                    : 'Clear <strong>' + topLoan.name + '</strong> (' + debtFmt(topLoan.balance) + ') first — quick win builds momentum.') +
-                ' With ₹' + Number(extraMonthly).toLocaleString('en-IN') + '/mo extra, you save <strong>' + debtFmt(interestSaved) + ' in interest</strong>' +
-                (monthsSaved > 0 ? ' and become debt-free <strong>' + (monthsSaved >= 12 ? Math.floor(monthsSaved/12) + ' yr ' + (monthsSaved%12) + ' mo' : monthsSaved + ' months') + ' sooner</strong>.' : '.');
+            var insAction = _debtMethod === 'avalanche'
+                ? _t('debt.insight.avalanche').replace('{name}', topLoan.name).replace('{rate}', topLoan.rate)
+                : _t('debt.insight.snowball').replace('{name}', topLoan.name).replace('{bal}', debtFmt(topLoan.balance));
+            var insExtra = _t('debt.insight.extra')
+                .replace('{extra}', Number(extraMonthly).toLocaleString('en-IN'))
+                .replace('{saved}', debtFmt(interestSaved));
+            var insSooner = monthsSaved > 0
+                ? _t('debt.insight.sooner').replace('{time}', monthsSaved >= 12 ? Math.floor(monthsSaved/12) + ' yr ' + (monthsSaved%12) + ' mo' : monthsSaved + ' months')
+                : '.';
+            ins.innerHTML = '<strong>' + _t('debt.insight.prefix') + '</strong> ' + insAction + insExtra + insSooner;
         }
 
         // ── OPPORTUNITY COST: Prepay vs Invest in Equity ───────────────────
@@ -285,26 +288,26 @@
             var maxRate    = Math.max.apply(null, loans.map(function(l) { return l.rate; }));
             var prepayWins = maxRate >= 12;
             var vColor     = prepayWins ? '#166534' : '#92400e';
-            var verdict    = prepayWins
-                ? 'Prepay first. Your highest loan (' + maxRate.toFixed(1) + '% p.a.) costs more than equity\'s post-tax return (~9–10% after LTCG & fees). Prepaying is a guaranteed, risk-free saving.'
-                : 'Consider splitting — but read the caveats below before deciding. Your highest rate (' + maxRate.toFixed(1) + '%) looks below equity\'s ~12% gross, but post-tax equity returns are realistically 9–10%. If this is a <strong>home loan</strong>, the ₹2L interest deduction (old regime) may reduce its effective rate further — making prepayment even less urgent. Consult your CA.';
+            var verdictKey = prepayWins ? 'debt.opp.verdict.prepay' : 'debt.opp.verdict.invest';
+            var verdict    = _t(verdictKey).replace('{rate}', maxRate.toFixed(1));
+            var oppTitle   = _t('debt.opp.title').replace('{extra}', Number(extraMonthly).toLocaleString('en-IN'));
             oppCard.classList.remove('hidden');
             oppCard.innerHTML =
-                '<div class="text-[10px] font-black uppercase tracking-wider mb-2" style="color:#57534e;">⚖️ Prepay vs Invest — What does ₹' + Number(extraMonthly).toLocaleString('en-IN') + '/mo extra do?</div>' +
+                '<div class="text-[10px] font-black uppercase tracking-wider mb-2" style="color:#57534e;">' + oppTitle + '</div>' +
                 '<div class="grid grid-cols-2 gap-2 mb-2">' +
                     '<div class="rounded-lg p-2 text-center" style="background:#fef2f2;border:1px solid #fca5a5;">' +
-                        '<div class="text-[9px] font-bold text-red-600">Interest Saved (Prepay)</div>' +
+                        '<div class="text-[9px] font-bold text-red-600">' + _t('debt.opp.prepay.title') + '</div>' +
                         '<div class="text-sm font-black text-red-700">' + debtFmt(interestSaved) + '</div>' +
-                        '<div class="text-[9px] text-red-400">Guaranteed · Tax-free saving</div>' +
+                        '<div class="text-[9px] text-red-400">' + _t('debt.opp.prepay.sub') + '</div>' +
                     '</div>' +
                     '<div class="rounded-lg p-2 text-center" style="background:#f0fdf4;border:1px solid #86efac;">' +
-                        '<div class="text-[9px] font-bold text-emerald-600">Equity Corpus (Invest instead)</div>' +
+                        '<div class="text-[9px] font-bold text-emerald-600">' + _t('debt.opp.invest.title') + '</div>' +
                         '<div class="text-sm font-black text-emerald-700">' + debtFmt(equityFV) + '</div>' +
-                        '<div class="text-[9px] text-emerald-400">At 12% p.a. gross · ~9–10% post-LTCG & fees · Not guaranteed</div>' +
+                        '<div class="text-[9px] text-emerald-400">' + _t('debt.opp.invest.sub') + '</div>' +
                     '</div>' +
                 '</div>' +
                 '<div class="text-[10px] font-semibold leading-snug rounded-lg px-2.5 py-1.5 mb-1.5" style="background:' + vColor + '18;color:' + vColor + ';border:1px solid ' + vColor + '30;">' + verdict + '</div>' +
-                '<div class="text-[9px] leading-relaxed mt-1 rounded-lg px-2.5 py-1.5" style="color:#78716c;background:#fafaf9;border:1px solid #e7e5e4;">⚠️ Equity figure assumes 12% p.a. gross (Nifty 50 historical avg). After 10% LTCG tax on gains above ₹1L and fund expense ratios, realistic post-tax returns are <strong>9–10% p.a.</strong> — narrowing the gap with debt repayment. <strong>Home loan:</strong> interest up to ₹2L/yr is deductible u/s 24(b) under the old tax regime, reducing effective loan cost — e.g., an 8.5% loan becomes ~5.95% for a 30% bracket taxpayer. <strong>Consult your CA before deciding to prepay or invest.</strong></div>';
+                '<div class="text-[9px] leading-relaxed mt-1 rounded-lg px-2.5 py-1.5" style="color:#78716c;background:#fafaf9;border:1px solid #e7e5e4;">' + _t('debt.opp.caveat') + '</div>';
         } else if (oppCard) {
             oppCard.classList.add('hidden');
         }
