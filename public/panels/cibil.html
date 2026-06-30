@@ -4,7 +4,7 @@
             <div class="rounded-2xl px-4 py-3 text-white flex items-center justify-between gap-3 flex-wrap shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:2px solid rgba(245,200,66,0.4);box-shadow:0 4px 18px rgba(0,0,0,0.25);">
                 <div>
                     <h2 class="text-base font-black flex items-center gap-2" data-i18n="page.cibil.h">🏦 CIBIL Score Education &amp; Improvement Tracker</h2>
-                    <p class="text-blue-200 text-[11px] mt-0.5">Score 750+ saves ₹6L+ on a home loan · See exactly how each factor impacts your score · Build a 90-day action plan</p>
+                    <p class="text-blue-200 text-[11px] mt-0.5" data-i18n="cibil.hdr.sub">Score 750+ saves ₹6L+ on a home loan · See exactly how each factor impacts your score · Build a 90-day action plan</p>
                 </div>
                 <button onclick="resetCibil()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">
                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h5M20 20v-5h-5M4 9a9 9 0 0115-3M20 15a9 9 0 01-15 3"/></svg><span data-i18n="common.reset">Reset</span>
@@ -26,7 +26,7 @@
                                 onfocus="if(this.classList.contains('text-slate-400')){this.value='';this.classList.remove('text-slate-400');}"
                                 onblur="if(!this.value){this.value='720';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                 oninput="this.classList.remove('text-slate-400');cibilCalc();">
-                            <div class="text-[9px] text-slate-400 mt-0.5">Check free at CIBIL.com, Paisabazaar, CRIF, Experian or BankBazaar</div>
+                            <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="cibil.hint.check">Check free at CIBIL.com, Paisabazaar, CRIF, Experian or BankBazaar</div>
                         </div>
 
                         <div>
@@ -36,7 +36,7 @@
                                 onfocus="if(this.classList.contains('text-slate-400')){this.value='';this.classList.remove('text-slate-400');}"
                                 onblur="if(!this.value){this.value='35';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                 oninput="this.classList.remove('text-slate-400');cibilCalc();">
-                            <div class="text-[9px] text-slate-400 mt-0.5">Total used ÷ total limit</div>
+                            <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="cibil.hint.util">Total used ÷ total limit</div>
                         </div>
 
                         <div>
@@ -46,7 +46,7 @@
                                 onfocus="if(this.classList.contains('text-slate-400')){this.value='';this.classList.remove('text-slate-400');}"
                                 onblur="if(!this.value){this.value='0';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                 oninput="this.classList.remove('text-slate-400');cibilCalc();">
-                            <div class="text-[9px] text-slate-400 mt-0.5">Even 1 can drop 80–100 pts</div>
+                            <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="cibil.hint.missed">Even 1 can drop 80–100 pts</div>
                         </div>
 
                         <div>
@@ -56,7 +56,7 @@
                                 onfocus="if(this.classList.contains('text-slate-400')){this.value='';this.classList.remove('text-slate-400');}"
                                 onblur="if(!this.value){this.value='4';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                 oninput="this.classList.remove('text-slate-400');cibilCalc();">
-                            <div class="text-[9px] text-slate-400 mt-0.5">Age of oldest account</div>
+                            <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="cibil.hint.age">Age of oldest account</div>
                         </div>
 
                         <div>
@@ -75,7 +75,7 @@
                                 onfocus="if(this.classList.contains('text-slate-400')){this.value='';this.classList.remove('text-slate-400');}"
                                 onblur="if(!this.value){this.value='1';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                 oninput="this.classList.remove('text-slate-400');cibilCalc();">
-                            <div class="text-[9px] text-slate-400 mt-0.5">Each loan/card application</div>
+                            <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="cibil.hint.enq">Each loan/card application</div>
                         </div>
 
                         <div class="col-span-2">
@@ -118,7 +118,7 @@
                     <div class="rounded-2xl px-4 py-3 shine-header" style="background:linear-gradient(135deg,#0c2340,#1a4a7a);border:2px solid rgba(245,200,66,0.35);">
                         <div class="flex items-center justify-between flex-wrap gap-2">
                             <div>
-                                <div class="text-[9px] font-black text-blue-200 uppercase tracking-wider">Your Score</div>
+                                <div class="text-[9px] font-black text-blue-200 uppercase tracking-wider" data-i18n="cibil.lbl.yourscore">Your Score</div>
                                 <div id="cibil-score-display" class="text-4xl font-black text-white mt-0.5">720</div>
                                 <div id="cibil-grade-label" class="text-sm font-black mt-0.5">Good</div>
                             </div>
@@ -131,30 +131,30 @@
                                     <span>300</span><span>550</span><span>700</span><span>750</span><span>900</span>
                                 </div>
                                 <div class="flex justify-between text-[8px] mt-0.5">
-                                    <span style="color:#ef4444;">Poor</span>
-                                    <span style="color:#f59e0b;">Fair</span>
-                                    <span style="color:#eab308;">Good</span>
-                                    <span style="color:#10b981;">Great</span>
-                                    <span style="color:#059669;">Exc.</span>
+                                    <span style="color:#ef4444;" data-i18n="cibil.gauge.poor">Poor</span>
+                                    <span style="color:#f59e0b;" data-i18n="cibil.gauge.fair">Fair</span>
+                                    <span style="color:#eab308;" data-i18n="cibil.gauge.good">Good</span>
+                                    <span style="color:#10b981;" data-i18n="cibil.gauge.great">Great</span>
+                                    <span style="color:#059669;" data-i18n="cibil.gauge.exc">Exc.</span>
                                 </div>
                             </div>
                         </div>
                         <!-- Key metrics row -->
                         <div class="grid grid-cols-3 gap-2 mt-3">
                             <div class="rounded-xl px-2 py-1.5 text-center" style="background:rgba(255,255,255,0.07);">
-                                <div class="text-[8px] text-blue-300 font-bold uppercase">Interest Rate</div>
+                                <div class="text-[8px] text-blue-300 font-bold uppercase" data-i18n="cibil.lbl.intrate">Interest Rate</div>
                                 <div id="cibil-rate-display" class="text-base font-black text-white">—</div>
-                                <div class="text-[8px] text-blue-400">approx. home loan</div>
+                                <div class="text-[8px] text-blue-400" data-i18n="cibil.lbl.intrate.sub">approx. home loan</div>
                             </div>
                             <div class="rounded-xl px-2 py-1.5 text-center" style="background:rgba(255,255,255,0.07);">
-                                <div class="text-[8px] text-blue-300 font-bold uppercase">vs 750+ Rate</div>
+                                <div class="text-[8px] text-blue-300 font-bold uppercase" data-i18n="cibil.lbl.rate750">vs 750+ Rate</div>
                                 <div id="cibil-rate-best" class="text-base font-black text-emerald-300">8.40%</div>
-                                <div class="text-[8px] text-blue-400">best rate possible</div>
+                                <div class="text-[8px] text-blue-400" data-i18n="cibil.lbl.rate750.sub">best rate possible</div>
                             </div>
                             <div class="rounded-xl px-2 py-1.5 text-center" style="background:rgba(255,255,255,0.07);">
-                                <div class="text-[8px] text-blue-300 font-bold uppercase">EMI Savings</div>
+                                <div class="text-[8px] text-blue-300 font-bold uppercase" data-i18n="cibil.lbl.emisave">EMI Savings</div>
                                 <div id="cibil-emi-save" class="text-base font-black text-amber-300">—</div>
-                                <div class="text-[8px] text-blue-400">per month if score ↑</div>
+                                <div class="text-[8px] text-blue-400" data-i18n="cibil.lbl.emisave.sub">per month if score ↑</div>
                             </div>
                         </div>
                     </div>
@@ -165,7 +165,7 @@
                             <div class="text-[9px] font-black text-emerald-200 uppercase tracking-wider" data-i18n="res.cibil.total_saved">Total Interest Saved (Lifetime)</div>
                             <div id="cibil-total-saved" class="text-xl font-black text-white">—</div>
                         </div>
-                        <div class="text-[9px] text-emerald-300 text-right leading-relaxed max-w-[140px]">By improving your score to 750+ before applying for your loan</div>
+                        <div class="text-[9px] text-emerald-300 text-right leading-relaxed max-w-[140px]" data-i18n="cibil.banner.improve">By improving your score to 750+ before applying for your loan</div>
                     </div>
 
                     <!-- Factor breakdown bars -->
@@ -195,43 +195,43 @@
                     <div class="space-y-1.5">
                         <div class="rounded-xl p-2" style="background:#f0fdf4;border:1px solid #86efac;">
                             <div class="flex justify-between items-center mb-0.5">
-                                <span class="text-[10px] font-black text-emerald-800">Payment History</span>
-                                <span class="text-[10px] font-black text-emerald-600">35%</span>
+                                <span class="text-[10px] font-black text-emerald-800" data-i18n="cibil.edu.ph.title">Payment History</span>
+                                <span class="text-[10px] font-black text-emerald-600" data-i18n="cibil.edu.ph.pct">35%</span>
                             </div>
                             <div class="h-1.5 rounded-full bg-emerald-100"><div class="h-full rounded-full bg-emerald-500" style="width:35%;"></div></div>
-                            <div class="text-[9px] text-emerald-700 mt-1">Never miss a due date. Even 1 missed EMI can drop score by 80–100 points and stays on report for 3 years.</div>
+                            <div class="text-[9px] text-emerald-700 mt-1" data-i18n="cibil.edu.ph.desc">Never miss a due date. Even 1 missed EMI can drop score by 80–100 points and stays on report for 3 years.</div>
                         </div>
                         <div class="rounded-xl p-2" style="background:#eff6ff;border:1px solid #93c5fd;">
                             <div class="flex justify-between items-center mb-0.5">
-                                <span class="text-[10px] font-black text-blue-800">Credit Utilisation</span>
-                                <span class="text-[10px] font-black text-blue-600">30%</span>
+                                <span class="text-[10px] font-black text-blue-800" data-i18n="cibil.edu.cu.title">Credit Utilisation</span>
+                                <span class="text-[10px] font-black text-blue-600" data-i18n="cibil.edu.cu.pct">30%</span>
                             </div>
                             <div class="h-1.5 rounded-full bg-blue-100"><div class="h-full rounded-full bg-blue-500" style="width:30%;"></div></div>
-                            <div class="text-[9px] text-blue-700 mt-1">Keep below 30% of total limit. Below 10% is ideal. High utilisation signals financial stress to lenders.</div>
+                            <div class="text-[9px] text-blue-700 mt-1" data-i18n="cibil.edu.cu.desc">Keep below 30% of total limit. Below 10% is ideal. High utilisation signals financial stress to lenders.</div>
                         </div>
                         <div class="rounded-xl p-2" style="background:#fef9c3;border:1px solid #fde047;">
                             <div class="flex justify-between items-center mb-0.5">
-                                <span class="text-[10px] font-black text-yellow-800">Credit Age</span>
-                                <span class="text-[10px] font-black text-yellow-600">15%</span>
+                                <span class="text-[10px] font-black text-yellow-800" data-i18n="cibil.edu.ca.title">Credit Age</span>
+                                <span class="text-[10px] font-black text-yellow-600" data-i18n="cibil.edu.ca.pct">15%</span>
                             </div>
                             <div class="h-1.5 rounded-full bg-yellow-100"><div class="h-full rounded-full bg-yellow-500" style="width:15%;"></div></div>
-                            <div class="text-[9px] text-yellow-700 mt-1">Longer history = better score. Never close your oldest credit card — even if unused, keep it alive.</div>
+                            <div class="text-[9px] text-yellow-700 mt-1" data-i18n="cibil.edu.ca.desc">Longer history = better score. Never close your oldest credit card — even if unused, keep it alive.</div>
                         </div>
                         <div class="rounded-xl p-2" style="background:#fdf4ff;border:1px solid #e9d5ff;">
                             <div class="flex justify-between items-center mb-0.5">
-                                <span class="text-[10px] font-black text-purple-800">Credit Mix</span>
-                                <span class="text-[10px] font-black text-purple-600">10%</span>
+                                <span class="text-[10px] font-black text-purple-800" data-i18n="cibil.edu.cm.title">Credit Mix</span>
+                                <span class="text-[10px] font-black text-purple-600" data-i18n="cibil.edu.cm.pct">10%</span>
                             </div>
                             <div class="h-1.5 rounded-full bg-purple-100"><div class="h-full rounded-full bg-purple-500" style="width:10%;"></div></div>
-                            <div class="text-[9px] text-purple-700 mt-1">Having both secured (home/car loan) and unsecured (credit card) credit improves score.</div>
+                            <div class="text-[9px] text-purple-700 mt-1" data-i18n="cibil.edu.cm.desc">Having both secured (home/car loan) and unsecured (credit card) credit improves score.</div>
                         </div>
                         <div class="rounded-xl p-2" style="background:#fff7ed;border:1px solid #fed7aa;">
                             <div class="flex justify-between items-center mb-0.5">
-                                <span class="text-[10px] font-black text-orange-800">New Enquiries</span>
-                                <span class="text-[10px] font-black text-orange-600">10%</span>
+                                <span class="text-[10px] font-black text-orange-800" data-i18n="cibil.edu.ne.title">New Enquiries</span>
+                                <span class="text-[10px] font-black text-orange-600" data-i18n="cibil.edu.ne.pct">10%</span>
                             </div>
                             <div class="h-1.5 rounded-full bg-orange-100"><div class="h-full rounded-full bg-orange-500" style="width:10%;"></div></div>
-                            <div class="text-[9px] text-orange-700 mt-1">Each loan/card application triggers a hard enquiry. Multiple enquiries in 6 months signal desperation to lenders.</div>
+                            <div class="text-[9px] text-orange-700 mt-1" data-i18n="cibil.edu.ne.desc">Each loan/card application triggers a hard enquiry. Multiple enquiries in 6 months signal desperation to lenders.</div>
                         </div>
                     </div>
                 </div>
@@ -241,11 +241,11 @@
                     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
                         <div class="text-[10px] font-black text-slate-500 uppercase tracking-wider mb-2" data-i18n="cibil.sec.dispute">🛡️ How to Dispute CIBIL Errors</div>
                         <div class="space-y-1.5 text-[10px] text-slate-600 leading-relaxed">
-                            <div class="flex gap-2"><span class="font-black text-slate-700 w-4 flex-shrink-0">1.</span><span>Download your free CIBIL report at <strong>cibil.com</strong> (1 free/year). Also check Experian, CRIF, and Equifax — errors may differ.</span></div>
-                            <div class="flex gap-2"><span class="font-black text-slate-700 w-4 flex-shrink-0">2.</span><span>Look for: wrong personal details, accounts you don't recognise, closed accounts showing as open, incorrect loan amounts, duplicate entries.</span></div>
-                            <div class="flex gap-2"><span class="font-black text-slate-700 w-4 flex-shrink-0">3.</span><span>Raise a dispute at <strong>cibil.com/dispute</strong>. CIBIL must resolve it within 30 days under RBI guidelines.</span></div>
-                            <div class="flex gap-2"><span class="font-black text-slate-700 w-4 flex-shrink-0">4.</span><span>If the lender doesn't respond in 30 days, escalate to RBI's <strong>Integrated Ombudsman</strong> at cms.rbi.org.in — completely free.</span></div>
-                            <div class="flex gap-2"><span class="font-black text-slate-700 w-4 flex-shrink-0">5.</span><span>Errors corrected within 30–45 days; score can jump 20–80 points if a major negative entry is removed.</span></div>
+                            <div class="flex gap-2"><span class="font-black text-slate-700 w-4 flex-shrink-0">1.</span><span data-i18n-html="cibil.dispute.1">Download your free CIBIL report at <strong>cibil.com</strong> (1 free/year). Also check Experian, CRIF, and Equifax — errors may differ.</span></div>
+                            <div class="flex gap-2"><span class="font-black text-slate-700 w-4 flex-shrink-0">2.</span><span data-i18n="cibil.dispute.2">Look for: wrong personal details, accounts you don't recognise, closed accounts showing as open, incorrect loan amounts, duplicate entries.</span></div>
+                            <div class="flex gap-2"><span class="font-black text-slate-700 w-4 flex-shrink-0">3.</span><span data-i18n-html="cibil.dispute.3">Raise a dispute at <strong>cibil.com/dispute</strong>. CIBIL must resolve it within 30 days under RBI guidelines.</span></div>
+                            <div class="flex gap-2"><span class="font-black text-slate-700 w-4 flex-shrink-0">4.</span><span data-i18n-html="cibil.dispute.4">If the lender doesn't respond in 30 days, escalate to RBI's <strong>Integrated Ombudsman</strong> at cms.rbi.org.in — completely free.</span></div>
+                            <div class="flex gap-2"><span class="font-black text-slate-700 w-4 flex-shrink-0">5.</span><span data-i18n="cibil.dispute.5">Errors corrected within 30–45 days; score can jump 20–80 points if a major negative entry is removed.</span></div>
                         </div>
                     </div>
                     <div id="cibil-insight" class="rounded-xl px-3 py-2 text-[10px] leading-relaxed" style="background:#f0f9ff;border:1px solid #bae6fd;color:#0c4a6e;">
@@ -253,7 +253,7 @@
                     </div>
                     <!-- Improvement timeline -->
                     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
-                        <div class="text-[10px] font-black text-slate-500 uppercase tracking-wider mb-2">⏱️ Realistic Score Timeline</div>
+                        <div class="text-[10px] font-black text-slate-500 uppercase tracking-wider mb-2" data-i18n="cibil.sec.timeline">⏱️ Realistic Score Timeline</div>
                         <div class="space-y-1" id="cibil-timeline">
                             <!-- Filled by JS -->
                         </div>
@@ -268,12 +268,12 @@
                     <table class="w-full text-[10px]">
                         <thead>
                             <tr class="text-left">
-                                <th class="pb-1.5 font-black text-slate-500">Score Range</th>
-                                <th class="pb-1.5 font-black text-slate-500">Grade</th>
-                                <th class="pb-1.5 font-black text-slate-500">Approx Rate</th>
-                                <th class="pb-1.5 font-black text-slate-500">Monthly EMI</th>
-                                <th class="pb-1.5 font-black text-slate-500">Total Interest</th>
-                                <th class="pb-1.5 font-black text-slate-500">vs Best</th>
+                                <th class="pb-1.5 font-black text-slate-500" data-i18n="cibil.tbl.range">Score Range</th>
+                                <th class="pb-1.5 font-black text-slate-500" data-i18n="cibil.tbl.grade">Grade</th>
+                                <th class="pb-1.5 font-black text-slate-500" data-i18n="cibil.tbl.rate">Approx Rate</th>
+                                <th class="pb-1.5 font-black text-slate-500" data-i18n="cibil.tbl.emi">Monthly EMI</th>
+                                <th class="pb-1.5 font-black text-slate-500" data-i18n="cibil.tbl.interest">Total Interest</th>
+                                <th class="pb-1.5 font-black text-slate-500" data-i18n="cibil.tbl.vsbest">vs Best</th>
                             </tr>
                         </thead>
                         <tbody id="cibil-table-body">

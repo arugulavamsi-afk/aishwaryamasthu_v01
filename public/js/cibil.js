@@ -52,12 +52,13 @@
     }
 
     function _cibilGrade(score) {
-        if (score >= 800) return { label: 'Excellent 🌟', color: '#059669' };
-        if (score >= 750) return { label: 'Great 😊',     color: '#10b981' };
-        if (score >= 700) return { label: 'Good 🙂',      color: '#eab308' };
-        if (score >= 650) return { label: 'Fair 😐',      color: '#f59e0b' };
-        if (score >= 600) return { label: 'Poor 😟',      color: '#ef4444' };
-        return { label: 'Very Poor 😰', color: '#b91c1c' };
+        var _cg = function(k, fb) { var v = typeof _t === 'function' ? _t(k) : null; return (v && v !== k) ? v : fb; };
+        if (score >= 800) return { label: _cg('cibil.grade.excellent', 'Excellent 🌟'), color: '#059669' };
+        if (score >= 750) return { label: _cg('cibil.grade.great',     'Great 😊'),     color: '#10b981' };
+        if (score >= 700) return { label: _cg('cibil.grade.good',      'Good 🙂'),      color: '#eab308' };
+        if (score >= 650) return { label: _cg('cibil.grade.fair',      'Fair 😐'),      color: '#f59e0b' };
+        if (score >= 600) return { label: _cg('cibil.grade.poor',      'Poor 😟'),      color: '#ef4444' };
+        return { label: _cg('cibil.grade.verypoor', 'Very Poor 😰'), color: '#b91c1c' };
     }
 
     function cibilCalc() {
@@ -102,13 +103,14 @@
         var ageScore   = age >= 7 ? 100 : age >= 5 ? 80 : age >= 3 ? 55 : age >= 1 ? 30 : 10;
         var enqScore   = enq === 0 ? 100 : enq === 1 ? 80 : enq <= 3 ? 55 : enq <= 5 ? 30 : 10;
         var mixScore   = cards >= 1 && cards <= 4 ? 85 : cards === 0 ? 40 : 65;
+        var _ct = function(k, fb) { var v = typeof _t === 'function' ? _t(k) : null; return (v && v !== k) ? v : fb; };
 
         var factors = [
-            { label: 'Payment History (35%)',   pct: payScore,  color: '#10b981', tip: missed > 0 ? 'Missed EMIs are the #1 score killer — set auto-pay immediately.' : 'Perfect — keep it up!' },
-            { label: 'Credit Utilisation (30%)', pct: utilScore, color: '#3b82f6', tip: util > 30 ? 'Reduce to below 30%. Quick fix: request a credit limit increase or pay twice/month.' : util > 10 ? 'Good — aim for below 10% for an extra boost.' : 'Excellent — below 10% is the sweet spot.' },
-            { label: 'Credit Age (15%)',         pct: ageScore,  color: '#eab308', tip: age < 3 ? 'Young history — time heals this. Never close old accounts.' : 'Healthy age — avoid closing old accounts.' },
-            { label: 'New Enquiries (10%)',      pct: enqScore,  color: '#f97316', tip: enq > 3 ? 'Too many applications signal desperation. Pause new applications for 6 months.' : enq <= 1 ? 'Good — space out applications by 6+ months.' : 'Moderate — avoid new applications for 3 months.' },
-            { label: 'Credit Mix (10%)',         pct: mixScore,  color: '#8b5cf6', tip: cards === 0 ? 'No credit card — a secured card or credit-builder loan helps.' : cards > 4 ? 'Too many cards can hurt. Consolidate and close newest ones.' : 'Good mix — maintain responsibly.' },
+            { label: _ct('cibil.factor.ph', 'Payment History (35%)'),    pct: payScore,  color: '#10b981', tip: missed > 0 ? _ct('cibil.tip.ph.miss', 'Missed EMIs are the #1 score killer — set auto-pay immediately.') : _ct('cibil.tip.ph.good', 'Perfect — keep it up!') },
+            { label: _ct('cibil.factor.cu', 'Credit Utilisation (30%)'), pct: utilScore, color: '#3b82f6', tip: util > 30 ? _ct('cibil.tip.cu.high', 'Reduce to below 30%. Quick fix: request a credit limit increase or pay twice/month.') : util > 10 ? _ct('cibil.tip.cu.mid', 'Good — aim for below 10% for an extra boost.') : _ct('cibil.tip.cu.low', 'Excellent — below 10% is the sweet spot.') },
+            { label: _ct('cibil.factor.ca', 'Credit Age (15%)'),         pct: ageScore,  color: '#eab308', tip: age < 3 ? _ct('cibil.tip.ca.young', 'Young history — time heals this. Never close old accounts.') : _ct('cibil.tip.ca.ok', 'Healthy age — avoid closing old accounts.') },
+            { label: _ct('cibil.factor.ne', 'New Enquiries (10%)'),      pct: enqScore,  color: '#f97316', tip: enq > 3 ? _ct('cibil.tip.ne.high', 'Too many applications signal desperation. Pause new applications for 6 months.') : enq <= 1 ? _ct('cibil.tip.ne.good', 'Good — space out applications by 6+ months.') : _ct('cibil.tip.ne.mid', 'Moderate — avoid new applications for 3 months.') },
+            { label: _ct('cibil.factor.cm', 'Credit Mix (10%)'),         pct: mixScore,  color: '#8b5cf6', tip: cards === 0 ? _ct('cibil.tip.cm.nocard', 'No credit card — a secured card or credit-builder loan helps.') : cards > 4 ? _ct('cibil.tip.cm.many', 'Too many cards can hurt. Consolidate and close newest ones.') : _ct('cibil.tip.cm.ok', 'Good mix — maintain responsibly.') },
         ];
 
         var factorsHtml = '';
@@ -128,14 +130,14 @@
 
         // 90-day action plan
         var actions = [];
-        if (missed > 0)   actions.push({ week: 'Week 1', icon: '🔴', text: 'Set auto-pay for ALL EMIs & credit card bills today. One missed payment can cost 80–100 points.', urgent: true,  lag: 'Score impact visible 30–60 days after your next statement is reported to CIBIL. Past missed payments remain on record for 3–5 years regardless.' });
-        if (util > 30)    actions.push({ week: 'Week 1–2', icon: '🔵', text: 'Pay down credit card balance to below 30% of limit. If balance is ₹' + _cibilComma(Math.round(loanAmt * 0.001)) + ', your target is ₹' + _cibilComma(Math.round(loanAmt * 0.0003)) + '.', urgent: util > 60, lag: 'Balance reduction reflects in your score 30–60 days after your card issuer files the next statement with CIBIL.' });
-        if (enq > 3)      actions.push({ week: 'Week 2', icon: '🟠', text: 'Stop all new loan/card applications for at least 6 months. Each hard enquiry drops score by 5–10 points.', urgent: true,  lag: 'Hard enquiries fade gradually — each one loses impact after 12 months and drops off the report after 2 years. No quick fix here.' });
-        if (age < 3)      actions.push({ week: 'Month 1', icon: '🟡', text: 'Never close your oldest credit card — even if unused. Keep it active with 1 small purchase/month.', urgent: false, lag: 'Credit age improves slowly over years. Closing an old card can immediately lower your average age and hurt your score.' });
-        if (cards === 0)  actions.push({ week: 'Month 1', icon: '🟣', text: 'Apply for 1 secured credit card (against FD). Use it for ≤10% of limit and pay in full each month.', urgent: false, lag: 'New account appears on your CIBIL report within 30–60 days. Score benefits from consistent usage build over 6+ months.' });
-        if (util <= 30 && missed === 0 && enq <= 2) actions.push({ week: 'Month 2', icon: '✅', text: 'Request credit limit increase from your card issuer — this reduces utilisation ratio without extra spending.', urgent: false, lag: 'Higher limit reflects in score 30–60 days after the next statement cycle, once the issuer reports to CIBIL.' });
-        actions.push({ week: 'Month 3', icon: '📋', text: 'Pull your free CIBIL report and dispute any errors at cibil.com/dispute. Errors corrected = instant score boost.', urgent: false, lag: 'CIBIL disputes are resolved in 30–45 days. Your score updates after the lender confirms the correction.' });
-        if (score >= 750) actions.push({ week: 'Now', icon: '🎯', text: 'Your score is excellent! Apply for your home loan now to lock the best interest rate (≈' + bestRate.toFixed(2) + '%).', urgent: false, lag: '' });
+        if (missed > 0)   actions.push({ week: _ct('cibil.act.w1.week', 'Week 1'),   icon: '🔴', text: _ct('cibil.act.w1.text', 'Set auto-pay for ALL EMIs & credit card bills today. One missed payment can cost 80–100 points.'), urgent: true,  lag: _ct('cibil.act.w1.lag', 'Score impact visible 30–60 days after your next statement is reported to CIBIL. Past missed payments remain on record for 3–5 years regardless.') });
+        if (util > 30)    actions.push({ week: _ct('cibil.act.w12.week', 'Week 1–2'), icon: '🔵', text: _ct('cibil.act.w12.pre', 'Pay down credit card balance to below 30% of limit. If balance is ₹') + _cibilComma(Math.round(loanAmt * 0.001)) + _ct('cibil.act.w12.mid', ', your target is ₹') + _cibilComma(Math.round(loanAmt * 0.0003)) + _ct('cibil.act.w12.suf', '.'), urgent: util > 60, lag: _ct('cibil.act.w12.lag', 'Balance reduction reflects in your score 30–60 days after your card issuer files the next statement with CIBIL.') });
+        if (enq > 3)      actions.push({ week: _ct('cibil.act.w2.week',  'Week 2'),   icon: '🟠', text: _ct('cibil.act.w2.text', 'Stop all new loan/card applications for at least 6 months. Each hard enquiry drops score by 5–10 points.'), urgent: true,  lag: _ct('cibil.act.w2.lag', 'Hard enquiries fade gradually — each one loses impact after 12 months and drops off the report after 2 years. No quick fix here.') });
+        if (age < 3)      actions.push({ week: _ct('cibil.act.m1a.week', 'Month 1'),  icon: '🟡', text: _ct('cibil.act.m1a.text', 'Never close your oldest credit card — even if unused. Keep it active with 1 small purchase/month.'), urgent: false, lag: _ct('cibil.act.m1a.lag', 'Credit age improves slowly over years. Closing an old card can immediately lower your average age and hurt your score.') });
+        if (cards === 0)  actions.push({ week: _ct('cibil.act.m1b.week', 'Month 1'),  icon: '🟣', text: _ct('cibil.act.m1b.text', 'Apply for 1 secured credit card (against FD). Use it for ≤10% of limit and pay in full each month.'), urgent: false, lag: _ct('cibil.act.m1b.lag', 'New account appears on your CIBIL report within 30–60 days. Score benefits from consistent usage build over 6+ months.') });
+        if (util <= 30 && missed === 0 && enq <= 2) actions.push({ week: _ct('cibil.act.m2.week', 'Month 2'), icon: '✅', text: _ct('cibil.act.m2.text', 'Request credit limit increase from your card issuer — this reduces utilisation ratio without extra spending.'), urgent: false, lag: _ct('cibil.act.m2.lag', 'Higher limit reflects in score 30–60 days after the next statement cycle, once the issuer reports to CIBIL.') });
+        actions.push({ week: _ct('cibil.act.m3.week', 'Month 3'), icon: '📋', text: _ct('cibil.act.m3.text', 'Pull your free CIBIL report and dispute any errors at cibil.com/dispute. Errors corrected = instant score boost.'), urgent: false, lag: _ct('cibil.act.m3.lag', 'CIBIL disputes are resolved in 30–45 days. Your score updates after the lender confirms the correction.') });
+        if (score >= 750) actions.push({ week: _ct('cibil.act.apply.week', 'Now'), icon: '🎯', text: _ct('cibil.act.apply.pre', 'Your score is excellent! Apply for your home loan now to lock the best interest rate (≈') + bestRate.toFixed(2) + _ct('cibil.act.apply.suf', '%).'), urgent: false, lag: '' });
 
         var planHtml = '';
         actions.forEach(function(a) {
@@ -155,12 +157,12 @@
             var projected90  = Math.min(900, score + (util > 30 ? 50 : 20) + (missed === 0 ? 10 : 0));
             var projected180 = Math.min(900, score + (util > 30 ? 70 : 30) + (enq > 2 ? 15 : 5));
             timelineItems = [
-                { period: '30 days',  score: projected30,  action: 'Pay down utilisation + auto-pay setup' },
-                { period: '90 days',  score: projected90,  action: 'Consistent payments + enquiry freeze' },
-                { period: '6 months', score: projected180, action: 'Clean history building + dispute errors' },
+                { period: _ct('cibil.tl.period.30', '30 days'),  score: projected30,  action: _ct('cibil.tl.action.30', 'Pay down utilisation + auto-pay setup') },
+                { period: _ct('cibil.tl.period.90', '90 days'),  score: projected90,  action: _ct('cibil.tl.action.90', 'Consistent payments + enquiry freeze') },
+                { period: _ct('cibil.tl.period.6m', '6 months'), score: projected180, action: _ct('cibil.tl.action.6m', 'Clean history building + dispute errors') },
             ];
         } else {
-            timelineItems = [{ period: 'Now', score: score, action: '🎯 You\'re in the best rate band! Apply for credit now.' }];
+            timelineItems = [{ period: _ct('cibil.act.apply.week', 'Now'), score: score, action: _ct('cibil.tl.action.now', '🎯 You\'re in the best rate band! Apply for credit now.') }];
         }
         var tlHtml = '';
         timelineItems.forEach(function(t) {
@@ -177,14 +179,14 @@
 
         // Score band comparison table
         var bands = [
-            { range: '800–900', grade: 'Excellent', rate: 8.40 },
-            { range: '775–799', grade: 'Excellent', rate: 8.55 },
-            { range: '750–774', grade: 'Great',     rate: 8.70 },
-            { range: '725–749', grade: 'Good',      rate: 9.00 },
-            { range: '700–724', grade: 'Good',      rate: 9.35 },
-            { range: '650–699', grade: 'Fair',      rate: 10.25 },
-            { range: '600–649', grade: 'Poor',      rate: 11.50 },
-            { range: '<600',    grade: 'Very Poor', rate: 12.50 },
+            { range: '800–900', grade: _ct('cibil.tbl.grade.excellent', 'Excellent'), rate: 8.40 },
+            { range: '775–799', grade: _ct('cibil.tbl.grade.excellent', 'Excellent'), rate: 8.55 },
+            { range: '750–774', grade: _ct('cibil.tbl.grade.great',     'Great'),     rate: 8.70 },
+            { range: '725–749', grade: _ct('cibil.tbl.grade.good',      'Good'),      rate: 9.00 },
+            { range: '700–724', grade: _ct('cibil.tbl.grade.good',      'Good'),      rate: 9.35 },
+            { range: '650–699', grade: _ct('cibil.tbl.grade.fair',      'Fair'),      rate: 10.25 },
+            { range: '600–649', grade: _ct('cibil.tbl.grade.poor',      'Poor'),      rate: 11.50 },
+            { range: '<600',    grade: _ct('cibil.tbl.grade.verypoor',  'Very Poor'), rate: 12.50 },
         ];
         var bestBandEMI  = _cibilEMI(loanAmt, 8.40, tenure);
         var bestBandInt  = bestBandEMI * tenure * 12 - loanAmt;
@@ -196,7 +198,7 @@
             var isYours = myRate === b.rate;
             var rowBg   = isYours ? 'background:#fef3c7;' : '';
             tblHtml += '<tr style="' + rowBg + 'border-bottom:1px solid #f1f5f9;">' +
-                '<td class="py-1.5 font-bold ' + (isYours ? 'text-amber-800' : 'text-slate-700') + '">' + b.range + (isYours ? ' ← You' : '') + '</td>' +
+                '<td class="py-1.5 font-bold ' + (isYours ? 'text-amber-800' : 'text-slate-700') + '">' + b.range + (isYours ? ' ' + _ct('cibil.tbl.you', '← You') : '') + '</td>' +
                 '<td class="py-1.5 text-slate-600">' + b.grade + '</td>' +
                 '<td class="py-1.5 font-bold text-slate-800">' + b.rate.toFixed(2) + '%</td>' +
                 '<td class="py-1.5 font-bold text-slate-800">₹' + _cibilComma(Math.round(bEMI)) + '</td>' +
@@ -209,11 +211,11 @@
         // Insight
         var insightEl = document.getElementById('cibil-insight');
         var insightMsg = '';
-        if (score >= 800) insightMsg = '🌟 <strong>Elite status.</strong> You\'ll get the absolute best rates. No lender can turn you down. Apply with confidence — and check for pre-approved offers from your bank.';
-        else if (score >= 750) insightMsg = '😊 <strong>Great score!</strong> You qualify for the best home loan rates (~8.4–8.7%). Even a small improvement toward 800 won\'t change your rate much — focus on maintaining rather than chasing.';
-        else if (score >= 700) insightMsg = '🙂 <strong>Good, but improvable.</strong> At ' + score + ', you\'re paying ~' + myRate + '% vs ' + bestRate + '% possible — that\'s ' + _cibilInr(totalSaved) + ' extra over ' + tenure + ' years. Focus on utilisation and payments for 90 days.';
-        else if (score >= 650) insightMsg = '😐 <strong>Fair — action needed.</strong> Lenders see you as moderate risk. Reducing utilisation below 30% and 6 months of clean payments can lift you 40–60 points. Wait 90 days before applying for a major loan.';
-        else insightMsg = '😟 <strong>Poor — delay major loan applications.</strong> Most banks will reject or charge 11%+ rates. Spend 6–12 months on: zero missed payments, reduce credit card balance, freeze new applications. Your score CAN recover fully.';
+        if (score >= 800) insightMsg = _ct('cibil.insight.elite', '🌟 <strong>Elite status.</strong> You\'ll get the absolute best rates. No lender can turn you down. Apply with confidence — and check for pre-approved offers from your bank.');
+        else if (score >= 750) insightMsg = _ct('cibil.insight.great', '😊 <strong>Great score!</strong> You qualify for the best home loan rates (~8.4–8.7%). Even a small improvement toward 800 won\'t change your rate much — focus on maintaining rather than chasing.');
+        else if (score >= 700) insightMsg = (_ct('cibil.insight.good', '🙂 <strong>Good, but improvable.</strong> At {score}, you\'re paying ~{myRate}% vs {bestRate}% possible — that\'s {totalSaved} extra over {tenure} years. Focus on utilisation and payments for 90 days.')).replace('{score}', score).replace('{myRate}', myRate).replace('{bestRate}', bestRate).replace('{totalSaved}', _cibilInr(totalSaved)).replace('{tenure}', tenure);
+        else if (score >= 650) insightMsg = _ct('cibil.insight.fair', '😐 <strong>Fair — action needed.</strong> Lenders see you as moderate risk. Reducing utilisation below 30% and 6 months of clean payments can lift you 40–60 points. Wait 90 days before applying for a major loan.');
+        else insightMsg = _ct('cibil.insight.poor', '😟 <strong>Poor — delay major loan applications.</strong> Most banks will reject or charge 11%+ rates. Spend 6–12 months on: zero missed payments, reduce credit card balance, freeze new applications. Your score CAN recover fully.');
         insightEl.innerHTML = insightMsg;
         if (typeof saveUserData === 'function') saveUserData();
     }
