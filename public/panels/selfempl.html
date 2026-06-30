@@ -4,7 +4,7 @@
             <div class="rounded-2xl px-4 py-3 text-white flex items-center justify-between gap-3 flex-wrap shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:2px solid rgba(245,200,66,0.4);box-shadow:0 4px 18px rgba(0,0,0,0.25);">
                 <div>
                     <h2 class="text-base font-black flex items-center gap-2" data-i18n="page.selfempl.h">🧾 Self-Employed &amp; Business Owner Planner</h2>
-                    <p class="text-blue-200 text-[11px] mt-0.5">44AD / 44ADA presumptive tax · Business emergency fund · GST cash-flow timing · Quarterly advance tax · Freelancer vs MSME</p>
+                    <p class="text-blue-200 text-[11px] mt-0.5" data-i18n="selfempl.subtitle">44AD / 44ADA presumptive tax · Business emergency fund · GST cash-flow timing · Quarterly advance tax · Freelancer vs MSME</p>
                 </div>
                 <button onclick="resetSelfEmpl()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">
                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h5M20 20v-5h-5M4 9a9 9 0 0115-3M20 15a9 9 0 01-15 3"/></svg><span data-i18n="common.reset">Reset</span>
@@ -30,12 +30,12 @@
                         <div>
                             <label class="epf-label" data-i18n="lbl.selfempl.type">Business Type</label>
                             <select id="se-biz-type" class="epf-input" onchange="seCalcTax();">
-                                <option value="44AD_digital">44AD — Digital payments / Online (6% of turnover)</option>
-                                <option value="44AD_cash">44AD — Cash business (8% of turnover)</option>
-                                <option value="44ADA">44ADA — Professional (Doctor/CA/Lawyer/Architect/50%)</option>
-                                <option value="regular">Regular books (actual profit)</option>
+                                <option value="44AD_digital" data-i18n-opt="selfempl.type.44ad_digital">44AD — Digital payments / Online (6% of turnover)</option>
+                                <option value="44AD_cash" data-i18n-opt="selfempl.type.44ad_cash">44AD — Cash business (8% of turnover)</option>
+                                <option value="44ADA" data-i18n-opt="selfempl.type.44ada">44ADA — Professional (Doctor/CA/Lawyer/Architect/50%)</option>
+                                <option value="regular" data-i18n-opt="selfempl.type.regular">Regular books (actual profit)</option>
                             </select>
-                            <div class="text-[9px] text-slate-400 mt-0.5">44AD: Turnover ≤₹3Cr · 44ADA: Receipts ≤₹75L</div>
+                            <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="selfempl.hint.type">44AD: Turnover ≤₹3Cr · 44ADA: Receipts ≤₹75L</div>
                         </div>
 
                         <div>
@@ -63,8 +63,8 @@
                         <div>
                             <label class="epf-label" data-i18n="lbl.selfempl.regime">Tax Regime</label>
                             <select id="se-tax-regime" class="epf-input" onchange="seCalcTax();">
-                                <option value="new" selected>New Regime (default for business)</option>
-                                <option value="old">Old Regime (80C, HRA, deductions)</option>
+                                <option value="new" selected data-i18n-opt="selfempl.regime.new">New Regime (default for business)</option>
+                                <option value="old" data-i18n-opt="selfempl.regime.old">Old Regime (80C, HRA, deductions)</option>
                             </select>
                         </div>
 
@@ -104,12 +104,12 @@
 
                         <!-- Quick scenarios -->
                         <div class="pt-1 border-t border-slate-100">
-                            <div class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1.5">Quick Scenarios</div>
+                            <div class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1.5" data-i18n="selfempl.qs.title">Quick Scenarios</div>
                             <div class="flex flex-wrap gap-1">
-                                <button onclick="sePreset('freelancer')" class="grat-preset">💻 Freelancer</button>
-                                <button onclick="sePreset('doctor')"     class="grat-preset">🩺 Doctor</button>
-                                <button onclick="sePreset('trader')"     class="grat-preset">🏪 Trader</button>
-                                <button onclick="sePreset('msme')"       class="grat-preset">🏭 MSME</button>
+                                <button onclick="sePreset('freelancer')" class="grat-preset" data-i18n="selfempl.qs.freelancer">💻 Freelancer</button>
+                                <button onclick="sePreset('doctor')"     class="grat-preset" data-i18n="selfempl.qs.doctor">🩺 Doctor</button>
+                                <button onclick="sePreset('trader')"     class="grat-preset" data-i18n="selfempl.qs.trader">🏪 Trader</button>
+                                <button onclick="sePreset('msme')"       class="grat-preset" data-i18n="selfempl.qs.msme">🏭 MSME</button>
                             </div>
                         </div>
                     </div>
@@ -120,27 +120,27 @@
 
                     <!-- Big result card -->
                     <div class="rounded-2xl px-4 py-3 shine-header" style="background:linear-gradient(135deg,#0c2340,#1a4a7a);border:2px solid rgba(245,200,66,0.35);">
-                        <div class="text-[9px] font-black text-blue-200 uppercase tracking-wider mb-2">Tax Liability Breakdown</div>
+                        <div class="text-[9px] font-black text-blue-200 uppercase tracking-wider mb-2" data-i18n="selfempl.res.title">Tax Liability Breakdown</div>
                         <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
                             <div>
-                                <div class="text-[8px] text-blue-300 uppercase font-bold">Presumptive Profit</div>
+                                <div class="text-[8px] text-blue-300 uppercase font-bold" data-i18n="selfempl.res.profit">Presumptive Profit</div>
                                 <div id="se-res-profit" class="text-lg font-black text-white">—</div>
                                 <div class="text-[8px] text-blue-400" id="se-res-profit-pct">deemed income</div>
                             </div>
                             <div>
-                                <div class="text-[8px] text-blue-300 uppercase font-bold">Total Taxable Income</div>
+                                <div class="text-[8px] text-blue-300 uppercase font-bold" data-i18n="selfempl.res.taxable">Total Taxable Income</div>
                                 <div id="se-res-taxable" class="text-lg font-black text-white">—</div>
-                                <div class="text-[8px] text-blue-400">after deductions</div>
+                                <div class="text-[8px] text-blue-400" data-i18n="selfempl.res.taxable.sub">after deductions</div>
                             </div>
                             <div>
-                                <div class="text-[8px] text-blue-300 uppercase font-bold">Tax + Cess</div>
+                                <div class="text-[8px] text-blue-300 uppercase font-bold" data-i18n="selfempl.res.tax">Tax + Cess</div>
                                 <div id="se-res-tax" class="text-lg font-black text-amber-300">—</div>
-                                <div class="text-[8px] text-blue-400">incl. 4% health cess</div>
+                                <div class="text-[8px] text-blue-400" data-i18n="selfempl.res.tax.sub">incl. 4% health cess</div>
                             </div>
                             <div>
-                                <div class="text-[8px] text-blue-300 uppercase font-bold">Effective Rate</div>
+                                <div class="text-[8px] text-blue-300 uppercase font-bold" data-i18n="selfempl.res.effrate">Effective Rate</div>
                                 <div id="se-res-effrate" class="text-lg font-black text-emerald-300">—</div>
-                                <div class="text-[8px] text-blue-400">on gross turnover</div>
+                                <div class="text-[8px] text-blue-400" data-i18n="selfempl.res.effrate.sub">on gross turnover</div>
                             </div>
                         </div>
                     </div>
@@ -148,20 +148,20 @@
                     <!-- Monthly set-aside + quarterly advance -->
                     <div class="grid grid-cols-2 gap-2">
                         <div class="rounded-xl px-3 py-2.5" style="background:#f0fdf4;border:1px solid #86efac;">
-                            <div class="text-[9px] font-black text-emerald-700 uppercase tracking-wider">Set Aside Monthly</div>
+                            <div class="text-[9px] font-black text-emerald-700 uppercase tracking-wider" data-i18n="selfempl.setaside.title">Set Aside Monthly</div>
                             <div id="se-res-monthly-setaside" class="text-xl font-black text-emerald-800">—</div>
-                            <div class="text-[9px] text-emerald-600 mt-0.5">Park in liquid fund/FD to avoid Q4 shock</div>
+                            <div class="text-[9px] text-emerald-600 mt-0.5" data-i18n="selfempl.setaside.sub">Park in liquid fund/FD to avoid Q4 shock</div>
                         </div>
                         <div class="rounded-xl px-3 py-2.5" style="background:#eff6ff;border:1px solid #93c5fd;">
-                            <div class="text-[9px] font-black text-blue-700 uppercase tracking-wider">Each Advance Tax Instalment</div>
+                            <div class="text-[9px] font-black text-blue-700 uppercase tracking-wider" data-i18n="selfempl.advtax.title">Each Advance Tax Instalment</div>
                             <div id="se-res-advance-tax" class="text-xl font-black text-blue-800">—</div>
-                            <div class="text-[9px] text-blue-600 mt-0.5">Jun 15 · Sep 15 · Dec 15 · Mar 15</div>
+                            <div class="text-[9px] text-blue-600 mt-0.5" data-i18n="selfempl.advtax.sub">Jun 15 · Sep 15 · Dec 15 · Mar 15</div>
                         </div>
                     </div>
 
                     <!-- Presumptive vs Regular comparison -->
                     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
-                        <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">📊 Presumptive vs Regular Books — Which saves more?</div>
+                        <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2" data-i18n="selfempl.cmp.title">📊 Presumptive vs Regular Books — Which saves more?</div>
                         <div id="se-comparison-table" class="overflow-x-auto text-[10px]">
                             <!-- Filled by JS -->
                         </div>
@@ -169,7 +169,7 @@
 
                     <!-- Slab workings -->
                     <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-3">
-                        <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">📐 Tax Workings</div>
+                        <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2" data-i18n="selfempl.workings.title">📐 Tax Workings</div>
                         <div id="se-tax-workings" class="text-[10px] text-slate-600 leading-relaxed space-y-0.5"></div>
                     </div>
                 </div>
@@ -179,10 +179,10 @@
             <div id="se-panel-bef" class="hidden grid grid-cols-1 lg:grid-cols-5 gap-3">
 
                 <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
-                    <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">Monthly Operating Costs</div>
+                    <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2" data-i18n="selfempl.bef.title">Monthly Operating Costs</div>
                     <div class="space-y-2">
                         <div>
-                            <label class="epf-label">Staff / Contractor Salaries (₹/mo)</label>
+                            <label class="epf-label" data-i18n="selfempl.bef.lbl.salaries">Staff / Contractor Salaries (₹/mo)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
                             <input id="se-bef-salaries" type="text" inputmode="numeric" placeholder="80,000" maxlength="15"
                                 class="epf-input pl-7 text-slate-400"
@@ -192,7 +192,7 @@
                             </div>
                         </div>
                         <div>
-                            <label class="epf-label">Rent / Coworking / Office (₹/mo)</label>
+                            <label class="epf-label" data-i18n="selfempl.bef.lbl.rent">Rent / Coworking / Office (₹/mo)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
                             <input id="se-bef-rent" type="text" inputmode="numeric" placeholder="25,000" maxlength="15"
                                 class="epf-input pl-7 text-slate-400"
@@ -202,7 +202,7 @@
                             </div>
                         </div>
                         <div>
-                            <label class="epf-label">Software / Tools / Subscriptions (₹/mo)</label>
+                            <label class="epf-label" data-i18n="selfempl.bef.lbl.tools">Software / Tools / Subscriptions (₹/mo)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
                             <input id="se-bef-tools" type="text" inputmode="numeric" placeholder="10,000" maxlength="15"
                                 class="epf-input pl-7 text-slate-400"
@@ -212,7 +212,7 @@
                             </div>
                         </div>
                         <div>
-                            <label class="epf-label">Loan EMIs / Equipment Finance (₹/mo)</label>
+                            <label class="epf-label" data-i18n="selfempl.bef.lbl.loans">Loan EMIs / Equipment Finance (₹/mo)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
                             <input id="se-bef-loans" type="text" inputmode="numeric" placeholder="15,000" maxlength="15"
                                 class="epf-input pl-7 text-slate-400"
@@ -222,7 +222,7 @@
                             </div>
                         </div>
                         <div>
-                            <label class="epf-label">Utilities + Internet + Phone (₹/mo)</label>
+                            <label class="epf-label" data-i18n="selfempl.bef.lbl.utilities">Utilities + Internet + Phone (₹/mo)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
                             <input id="se-bef-utilities" type="text" inputmode="numeric" placeholder="5,000" maxlength="15"
                                 class="epf-input pl-7 text-slate-400"
@@ -232,7 +232,7 @@
                             </div>
                         </div>
                         <div>
-                            <label class="epf-label">Raw Materials / Inventory (₹/mo)</label>
+                            <label class="epf-label" data-i18n="selfempl.bef.lbl.inventory">Raw Materials / Inventory (₹/mo)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
                             <input id="se-bef-inventory" type="text" inputmode="numeric" placeholder="0" maxlength="15"
                                 class="epf-input pl-7 text-slate-400"
@@ -242,7 +242,7 @@
                             </div>
                         </div>
                         <div>
-                            <label class="epf-label">Personal Monthly Expenses (₹/mo)</label>
+                            <label class="epf-label" data-i18n="selfempl.bef.lbl.personal">Personal Monthly Expenses (₹/mo)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
                             <input id="se-bef-personal" type="text" inputmode="numeric" placeholder="60,000" maxlength="15"
                                 class="epf-input pl-7 text-slate-400"
@@ -252,16 +252,16 @@
                             </div>
                         </div>
                         <div>
-                            <label class="epf-label">Target Coverage (months)</label>
+                            <label class="epf-label" data-i18n="selfempl.bef.lbl.months">Target Coverage (months)</label>
                             <select id="se-bef-months" class="epf-input" onchange="seCalcBEF();">
-                                <option value="3">3 months (minimum)</option>
-                                <option value="6" selected>6 months (recommended)</option>
-                                <option value="9">9 months (conservative)</option>
-                                <option value="12">12 months (very safe)</option>
+                                <option value="3" data-i18n-opt="selfempl.bef.months.3">3 months (minimum)</option>
+                                <option value="6" selected data-i18n-opt="selfempl.bef.months.6">6 months (recommended)</option>
+                                <option value="9" data-i18n-opt="selfempl.bef.months.9">9 months (conservative)</option>
+                                <option value="12" data-i18n-opt="selfempl.bef.months.12">12 months (very safe)</option>
                             </select>
                         </div>
                         <div>
-                            <label class="epf-label">Current Business Emergency Fund (₹)</label>
+                            <label class="epf-label" data-i18n="selfempl.bef.lbl.current">Current Business Emergency Fund (₹)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
                             <input id="se-bef-current" type="text" inputmode="numeric" placeholder="0" maxlength="15"
                                 class="epf-input pl-7 text-slate-400"
@@ -276,33 +276,33 @@
                 <div class="lg:col-span-3 flex flex-col gap-2">
                     <!-- BEF results -->
                     <div class="rounded-2xl px-4 py-3 shine-header" style="background:linear-gradient(135deg,#0c2340,#1a4a7a);border:2px solid rgba(245,200,66,0.35);">
-                        <div class="text-[9px] font-black text-blue-200 uppercase tracking-wider mb-2">Business Emergency Fund Analysis</div>
+                        <div class="text-[9px] font-black text-blue-200 uppercase tracking-wider mb-2" data-i18n="selfempl.bef.res.title">Business Emergency Fund Analysis</div>
                         <div class="grid grid-cols-2 lg:grid-cols-3 gap-3">
-                            <div><div class="text-[8px] text-blue-300 uppercase">Total Monthly Burn</div><div id="se-bef-burn" class="text-xl font-black text-white">—</div><div class="text-[8px] text-blue-400">biz + personal</div></div>
-                            <div><div class="text-[8px] text-blue-300 uppercase">Target BEF</div><div id="se-bef-target" class="text-xl font-black text-amber-300">—</div><div id="se-bef-target-sub" class="text-[8px] text-blue-400">—</div></div>
-                            <div><div class="text-[8px] text-blue-300 uppercase">Shortfall</div><div id="se-bef-shortfall" class="text-xl font-black text-red-300">—</div><div class="text-[8px] text-blue-400">still to build</div></div>
+                            <div><div class="text-[8px] text-blue-300 uppercase" data-i18n="selfempl.bef.res.burn">Total Monthly Burn</div><div id="se-bef-burn" class="text-xl font-black text-white">—</div><div class="text-[8px] text-blue-400" data-i18n="selfempl.bef.res.burn.sub">biz + personal</div></div>
+                            <div><div class="text-[8px] text-blue-300 uppercase" data-i18n="selfempl.bef.res.target">Target BEF</div><div id="se-bef-target" class="text-xl font-black text-amber-300">—</div><div id="se-bef-target-sub" class="text-[8px] text-blue-400">—</div></div>
+                            <div><div class="text-[8px] text-blue-300 uppercase" data-i18n="selfempl.bef.res.shortfall">Shortfall</div><div id="se-bef-shortfall" class="text-xl font-black text-red-300">—</div><div class="text-[8px] text-blue-400" data-i18n="selfempl.bef.res.shortfall.sub">still to build</div></div>
                         </div>
                     </div>
                     <div class="grid grid-cols-3 gap-2">
                         <div class="rounded-xl px-3 py-2 text-center" style="background:#f0fdf4;border:1px solid #86efac;">
-                            <div class="text-[8px] font-black text-emerald-700 uppercase">Monthly SIP to build in 6mo</div>
+                            <div class="text-[8px] font-black text-emerald-700 uppercase" data-i18n="selfempl.bef.sip6.title">Monthly SIP to build in 6mo</div>
                             <div id="se-bef-sip-6" class="text-base font-black text-emerald-800">—</div>
                         </div>
                         <div class="rounded-xl px-3 py-2 text-center" style="background:#eff6ff;border:1px solid #93c5fd;">
-                            <div class="text-[8px] font-black text-blue-700 uppercase">Monthly SIP to build in 12mo</div>
+                            <div class="text-[8px] font-black text-blue-700 uppercase" data-i18n="selfempl.bef.sip12.title">Monthly SIP to build in 12mo</div>
                             <div id="se-bef-sip-12" class="text-base font-black text-blue-800">—</div>
                         </div>
                         <div class="rounded-xl px-3 py-2 text-center" style="background:#fdf4ff;border:1px solid #e9d5ff;">
-                            <div class="text-[8px] font-black text-purple-700 uppercase">Best instrument</div>
-                            <div class="text-sm font-black text-purple-800">Liquid Fund</div>
-                            <div class="text-[8px] text-purple-600">~7% · instant withdrawal</div>
+                            <div class="text-[8px] font-black text-purple-700 uppercase" data-i18n="selfempl.bef.instrument.title">Best instrument</div>
+                            <div class="text-sm font-black text-purple-800" data-i18n="selfempl.bef.instrument.name">Liquid Fund</div>
+                            <div class="text-[8px] text-purple-600" data-i18n="selfempl.bef.instrument.sub">~7% · instant withdrawal</div>
                         </div>
                     </div>
                     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
-                        <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">📋 Cost Breakdown</div>
+                        <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2" data-i18n="selfempl.bef.breakdown.title">📋 Cost Breakdown</div>
                         <div id="se-bef-breakdown" class="space-y-1"></div>
                     </div>
-                    <div class="rounded-xl px-3 py-2 text-[10px] leading-relaxed" style="background:#fffbeb;border:1px solid #fde68a;color:#78350f;">
+                    <div class="rounded-xl px-3 py-2 text-[10px] leading-relaxed" style="background:#fffbeb;border:1px solid #fde68a;color:#78350f;" data-i18n-html="selfempl.bef.warning">
                         <strong>⚠️ Why Business EF ≠ Personal EF:</strong> Salaried emergency funds cover 3–6× monthly expenses. Self-employed need 6× <em>total burn</em> (business ops + personal). If a client delays payment by 90 days or a large order falls through, your <em>staff still need to be paid</em>. No BEF = staff exodus and GST penalties.
                     </div>
                 </div>
@@ -311,20 +311,20 @@
             <!-- ── TAB 3: GST CASH-FLOW ────────────────────────────────── -->
             <div id="se-panel-gst" class="hidden grid grid-cols-1 lg:grid-cols-5 gap-3">
                 <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
-                    <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">GST Profile</div>
+                    <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2" data-i18n="selfempl.gst.sec.title">GST Profile</div>
                     <div class="space-y-2">
                         <div>
-                            <label class="epf-label">GST Registration Type</label>
+                            <label class="epf-label" data-i18n="selfempl.gst.lbl.type">GST Registration Type</label>
                             <select id="se-gst-type" class="epf-input" onchange="seCalcGST();">
-                                <option value="regular">Regular (monthly / quarterly filer)</option>
-                                <option value="composition">Composition Scheme (1%/2%/5%)</option>
-                                <option value="none">Unregistered / Exempt</option>
+                                <option value="regular" data-i18n-opt="selfempl.gst.type.regular">Regular (monthly / quarterly filer)</option>
+                                <option value="composition" data-i18n-opt="selfempl.gst.type.composition">Composition Scheme (1%/2%/5%)</option>
+                                <option value="none" data-i18n-opt="selfempl.gst.type.none">Unregistered / Exempt</option>
                             </select>
                         </div>
                         <div id="se-gst-regular-inputs">
                             <div class="space-y-2">
                                 <div>
-                                    <label class="epf-label">Monthly Revenue (₹)</label>
+                                    <label class="epf-label" data-i18n="selfempl.gst.lbl.revenue">Monthly Revenue (₹)</label>
                                     <div class="relative"><span class="epf-prefix">₹</span>
                                     <input id="se-gst-revenue" type="text" inputmode="numeric" placeholder="8,00,000" maxlength="15"
                                         class="epf-input pl-7 text-slate-400"
@@ -334,16 +334,16 @@
                                     </div>
                                 </div>
                                 <div>
-                                    <label class="epf-label">GST Rate on Sales (%)</label>
+                                    <label class="epf-label" data-i18n="selfempl.gst.lbl.rateout">GST Rate on Sales (%)</label>
                                     <select id="se-gst-rate-out" class="epf-input" onchange="seCalcGST();">
-                                        <option value="5">5% (essential goods/services)</option>
-                                        <option value="12">12% (standard)</option>
-                                        <option value="18" selected>18% (most services)</option>
-                                        <option value="28">28% (luxury)</option>
+                                        <option value="5" data-i18n-opt="selfempl.gst.rate.5">5% (essential goods/services)</option>
+                                        <option value="12" data-i18n-opt="selfempl.gst.rate.12">12% (standard)</option>
+                                        <option value="18" selected data-i18n-opt="selfempl.gst.rate.18">18% (most services)</option>
+                                        <option value="28" data-i18n-opt="selfempl.gst.rate.28">28% (luxury)</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="epf-label">Monthly Purchases / Expenses (₹)</label>
+                                    <label class="epf-label" data-i18n="selfempl.gst.lbl.purchases">Monthly Purchases / Expenses (₹)</label>
                                     <div class="relative"><span class="epf-prefix">₹</span>
                                     <input id="se-gst-purchases" type="text" inputmode="numeric" placeholder="3,00,000" maxlength="15"
                                         class="epf-input pl-7 text-slate-400"
@@ -353,7 +353,7 @@
                                     </div>
                                 </div>
                                 <div>
-                                    <label class="epf-label">GST Rate on Purchases (%)</label>
+                                    <label class="epf-label" data-i18n="selfempl.gst.lbl.ratein">GST Rate on Purchases (%)</label>
                                     <select id="se-gst-rate-in" class="epf-input" onchange="seCalcGST();">
                                         <option value="5">5%</option>
                                         <option value="12">12%</option>
@@ -362,13 +362,13 @@
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="epf-label">Avg Days Clients Take to Pay</label>
+                                    <label class="epf-label" data-i18n="selfempl.gst.lbl.delay">Avg Days Clients Take to Pay</label>
                                     <input id="se-gst-delay" type="number" min="0" max="180" placeholder="45"
                                         class="epf-input text-slate-400"
                                         onfocus="if(this.classList.contains('text-slate-400')){this.value='';this.classList.remove('text-slate-400');}"
                                         onblur="if(!this.value){this.value='45';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                         oninput="this.classList.remove('text-slate-400');seCalcGST();">
-                                    <div class="text-[9px] text-slate-400 mt-0.5">You must deposit GST by 20th regardless of when client pays</div>
+                                    <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="selfempl.gst.delay.hint">You must deposit GST by 20th regardless of when client pays</div>
                                 </div>
                             </div>
                         </div>
@@ -377,24 +377,24 @@
 
                 <div class="lg:col-span-3 flex flex-col gap-2">
                     <div class="rounded-2xl px-4 py-3 shine-header" style="background:linear-gradient(135deg,#0c2340,#1a4a7a);border:2px solid rgba(245,200,66,0.35);">
-                        <div class="text-[9px] font-black text-blue-200 uppercase tracking-wider mb-2">GST Cash-Flow Analysis</div>
+                        <div class="text-[9px] font-black text-blue-200 uppercase tracking-wider mb-2" data-i18n="selfempl.gst.res.title">GST Cash-Flow Analysis</div>
                         <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                            <div><div class="text-[8px] text-blue-300 uppercase">Output GST</div><div id="se-gst-out" class="text-lg font-black text-white">—</div><div class="text-[8px] text-blue-400">you collect</div></div>
-                            <div><div class="text-[8px] text-blue-300 uppercase">Input Credit (ITC)</div><div id="se-gst-itc" class="text-lg font-black text-emerald-300">—</div><div class="text-[8px] text-blue-400">you reclaim</div></div>
-                            <div><div class="text-[8px] text-blue-300 uppercase">Net GST Payable</div><div id="se-gst-net" class="text-lg font-black text-amber-300">—</div><div class="text-[8px] text-blue-400">deposit by 20th</div></div>
-                            <div><div class="text-[8px] text-blue-300 uppercase">Cash Tied Up</div><div id="se-gst-cashgap" class="text-lg font-black text-red-300">—</div><div class="text-[8px] text-blue-400">float during delay</div></div>
+                            <div><div class="text-[8px] text-blue-300 uppercase" data-i18n="selfempl.gst.res.out">Output GST</div><div id="se-gst-out" class="text-lg font-black text-white">—</div><div class="text-[8px] text-blue-400" data-i18n="selfempl.gst.res.out.sub">you collect</div></div>
+                            <div><div class="text-[8px] text-blue-300 uppercase" data-i18n="selfempl.gst.res.itc">Input Credit (ITC)</div><div id="se-gst-itc" class="text-lg font-black text-emerald-300">—</div><div class="text-[8px] text-blue-400" data-i18n="selfempl.gst.res.itc.sub">you reclaim</div></div>
+                            <div><div class="text-[8px] text-blue-300 uppercase" data-i18n="selfempl.gst.res.net">Net GST Payable</div><div id="se-gst-net" class="text-lg font-black text-amber-300">—</div><div class="text-[8px] text-blue-400" data-i18n="selfempl.gst.res.net.sub">deposit by 20th</div></div>
+                            <div><div class="text-[8px] text-blue-300 uppercase" data-i18n="selfempl.gst.res.cashgap">Cash Tied Up</div><div id="se-gst-cashgap" class="text-lg font-black text-red-300">—</div><div class="text-[8px] text-blue-400" data-i18n="selfempl.gst.res.cashgap.sub">float during delay</div></div>
                         </div>
                     </div>
                     <div id="se-gst-insight" class="rounded-xl px-3 py-2.5 text-[10px] leading-relaxed" style="background:#f0f9ff;border:1px solid #bae6fd;color:#0c4a6e;"></div>
                     <!-- GST education -->
                     <div class="grid grid-cols-2 gap-2">
                         <div class="rounded-xl p-2.5" style="background:#fef2f2;border:1px solid #fecaca;">
-                            <div class="text-[10px] font-black text-red-800 mb-1">⚠️ Late GST Filing Penalty</div>
-                            <div class="text-[9px] text-red-700 leading-relaxed">₹50/day (₹20 for nil return) + 18% p.a. interest on unpaid GST from due date. For 3R filers, GSTR-3B due by 20th of next month. GSTR-1 by 11th. Missing both = double penalty.</div>
+                            <div class="text-[10px] font-black text-red-800 mb-1" data-i18n="selfempl.gst.penalty.title">⚠️ Late GST Filing Penalty</div>
+                            <div class="text-[9px] text-red-700 leading-relaxed" data-i18n="selfempl.gst.penalty.body">₹50/day (₹20 for nil return) + 18% p.a. interest on unpaid GST from due date. For 3R filers, GSTR-3B due by 20th of next month. GSTR-1 by 11th. Missing both = double penalty.</div>
                         </div>
                         <div class="rounded-xl p-2.5" style="background:#f0fdf4;border:1px solid #86efac;">
-                            <div class="text-[10px] font-black text-emerald-800 mb-1">💡 GST Cash-Flow Tip</div>
-                            <div class="text-[9px] text-emerald-700 leading-relaxed">Never mix GST collected with operating funds. Open a dedicated GST escrow account. Transfer net GST payable on the day of invoicing — not on the 20th. This eliminates the monthly cash crunch completely.</div>
+                            <div class="text-[10px] font-black text-emerald-800 mb-1" data-i18n="selfempl.gst.tip.title">💡 GST Cash-Flow Tip</div>
+                            <div class="text-[9px] text-emerald-700 leading-relaxed" data-i18n="selfempl.gst.tip.body">Never mix GST collected with operating funds. Open a dedicated GST escrow account. Transfer net GST payable on the day of invoicing — not on the 20th. This eliminates the monthly cash crunch completely.</div>
                         </div>
                     </div>
                 </div>
@@ -403,10 +403,10 @@
             <!-- ── TAB 4: ADVANCE TAX PLANNER ─────────────────────────── -->
             <div id="se-panel-adv" class="hidden grid grid-cols-1 lg:grid-cols-2 gap-3">
                 <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
-                    <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">Quarterly Advance Tax Schedule</div>
+                    <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2" data-i18n="selfempl.adv.sec.title">Quarterly Advance Tax Schedule</div>
                     <div class="space-y-2 mb-3">
                         <div>
-                            <label class="epf-label">Estimated Annual Tax Liability (₹)</label>
+                            <label class="epf-label" data-i18n="selfempl.adv.lbl.tax">Estimated Annual Tax Liability (₹)</label>
                             <div class="relative"><span class="epf-prefix">₹</span>
                             <input id="se-adv-tax" type="text" inputmode="numeric" placeholder="1,80,000" maxlength="15"
                                 class="epf-input pl-7 text-slate-400"
@@ -414,32 +414,32 @@
                                 onblur="if(!this.value){this.value='1,80,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
                                 oninput="seFmt(this);seCalcAdv();">
                             </div>
-                            <div class="text-[9px] text-slate-400 mt-0.5">Use the Presumptive Tax tab to calculate this</div>
+                            <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="selfempl.adv.hint.tax">Use the Presumptive Tax tab to calculate this</div>
                         </div>
                     </div>
                     <div id="se-adv-schedule" class="space-y-1.5"></div>
-                    <div class="mt-3 px-3 py-2 rounded-xl text-[9px] leading-relaxed" style="background:#fef9c3;border:1px solid #fde047;color:#78350f;">
+                    <div class="mt-3 px-3 py-2 rounded-xl text-[9px] leading-relaxed" style="background:#fef9c3;border:1px solid #fde047;color:#78350f;" data-i18n-html="selfempl.adv.penalty">
                         <strong>Penalty for non-payment:</strong> Interest at <strong>1% per month</strong> under Sec 234B (shortfall from 90%) and 234C (quarterly shortfall). On ₹1L annual tax, missing all instalments costs ₹12,000 extra per year — for zero benefit.
                     </div>
                 </div>
                 <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
-                    <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">📚 Self-Employed Tax Rules You Must Know</div>
+                    <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2" data-i18n="selfempl.adv.rules.title">📚 Self-Employed Tax Rules You Must Know</div>
                     <div class="space-y-1.5 text-[10px]">
                         <div class="rounded-xl p-2" style="background:#f0fdf4;border:1px solid #86efac;">
-                            <div class="font-black text-emerald-800">✅ 44AD: Who Qualifies?</div>
-                            <div class="text-emerald-700 mt-0.5">Any business (not professional) with turnover ≤₹3Cr (if 95%+ receipts are digital). Deemed profit = 6% (digital) or 8% (cash) of turnover. <strong>No books of accounts needed.</strong> Cannot claim deductions separately.</div>
+                            <div class="font-black text-emerald-800" data-i18n="selfempl.adv.rule44ad.title">✅ 44AD: Who Qualifies?</div>
+                            <div class="text-emerald-700 mt-0.5" data-i18n-html="selfempl.adv.rule44ad.body">Any business (not professional) with turnover ≤₹3Cr (if 95%+ receipts are digital). Deemed profit = 6% (digital) or 8% (cash) of turnover. <strong>No books of accounts needed.</strong> Cannot claim deductions separately.</div>
                         </div>
                         <div class="rounded-xl p-2" style="background:#eff6ff;border:1px solid #93c5fd;">
-                            <div class="font-black text-blue-800">✅ 44ADA: Professionals</div>
-                            <div class="text-blue-700 mt-0.5">Doctors, lawyers, CAs, architects, engineers, consultants with gross receipts ≤₹75L. Deemed profit = 50% of receipts. <strong>No books required</strong> if opting in. Very powerful for high-margin professionals.</div>
+                            <div class="font-black text-blue-800" data-i18n="selfempl.adv.rule44ada.title">✅ 44ADA: Professionals</div>
+                            <div class="text-blue-700 mt-0.5" data-i18n-html="selfempl.adv.rule44ada.body">Doctors, lawyers, CAs, architects, engineers, consultants with gross receipts ≤₹75L. Deemed profit = 50% of receipts. <strong>No books required</strong> if opting in. Very powerful for high-margin professionals.</div>
                         </div>
                         <div class="rounded-xl p-2" style="background:#fef9c3;border:1px solid #fde047;">
-                            <div class="font-black text-yellow-800">⚠️ When Regular Books Beat Presumptive</div>
-                            <div class="text-yellow-700 mt-0.5">If your actual profit margin is below 6%/8% (trading, thin margins), maintaining regular books and claiming actual profit + all deductions saves more tax. Use the comparison tab to decide.</div>
+                            <div class="font-black text-yellow-800" data-i18n="selfempl.adv.rulebooks.title">⚠️ When Regular Books Beat Presumptive</div>
+                            <div class="text-yellow-700 mt-0.5" data-i18n="selfempl.adv.rulebooks.body">If your actual profit margin is below 6%/8% (trading, thin margins), maintaining regular books and claiming actual profit + all deductions saves more tax. Use the comparison tab to decide.</div>
                         </div>
                         <div class="rounded-xl p-2" style="background:#fdf4ff;border:1px solid #e9d5ff;">
-                            <div class="font-black text-purple-800">🔒 Opting Out Restriction</div>
-                            <div class="text-purple-700 mt-0.5">Once you opt out of presumptive scheme, you <strong>cannot re-opt for 5 years</strong>. Think carefully before switching. If you opt in and your actual profit is lower than deemed, you still pay tax on deemed profit.</div>
+                            <div class="font-black text-purple-800" data-i18n="selfempl.adv.ruleoptout.title">🔒 Opting Out Restriction</div>
+                            <div class="text-purple-700 mt-0.5" data-i18n-html="selfempl.adv.ruleoptout.body">Once you opt out of presumptive scheme, you <strong>cannot re-opt for 5 years</strong>. Think carefully before switching. If you opt in and your actual profit is lower than deemed, you still pay tax on deemed profit.</div>
                         </div>
                     </div>
                 </div>

@@ -80,10 +80,10 @@
         // Compute presumptive profit
         var pctLabel = '';
         var profit = 0;
-        if (bizType === '44AD_digital')  { profit = turnover * 0.06; pctLabel = '6% of turnover (44AD digital)'; }
-        else if (bizType === '44AD_cash'){ profit = turnover * 0.08; pctLabel = '8% of turnover (44AD cash)'; }
-        else if (bizType === '44ADA')    { profit = turnover * 0.50; pctLabel = '50% of receipts (44ADA)'; }
-        else { profit = _seParse('se-actual-profit'); pctLabel = 'actual profit (regular books)'; }
+        if (bizType === '44AD_digital')  { profit = turnover * 0.06; pctLabel = _t('selfempl.pct.44ad_digital'); }
+        else if (bizType === '44AD_cash'){ profit = turnover * 0.08; pctLabel = _t('selfempl.pct.44ad_cash'); }
+        else if (bizType === '44ADA')    { profit = turnover * 0.50; pctLabel = _t('selfempl.pct.44ada'); }
+        else { profit = _seParse('se-actual-profit'); pctLabel = _t('selfempl.pct.regular'); }
 
         var totalIncome = profit + otherInc;
 
@@ -112,34 +112,34 @@
 
         // Workings
         var w = '';
-        w += '• Gross turnover / receipts: ' + _seInr(turnover) + '<br>';
-        w += '• Presumptive profit (' + pctLabel + '): ' + _seInr(profit) + '<br>';
-        if (otherInc) w += '• Other income: ' + _seInr(otherInc) + '<br>';
-        if (regime === 'old' && deductions) w += '• Deductions (std + 80C + NPS): ' + _seInr(deductions) + '<br>';
-        w += '• Taxable income: ' + _seInr(Math.max(0, regime === 'new' ? totalIncome : totalIncome - deductions)) + '<br>';
-        w += '• Income tax: ' + _seInr(tax) + '<br>';
-        w += '• Health & Education Cess (4%): ' + _seInr(cess) + '<br>';
-        w += '• <strong>Total tax + cess: ' + _seInr(totalTax) + '</strong>';
+        w += '• ' + _t('selfempl.wrk.turnover') + ': ' + _seInr(turnover) + '<br>';
+        w += '• ' + _t('selfempl.wrk.profit') + ' (' + pctLabel + '): ' + _seInr(profit) + '<br>';
+        if (otherInc) w += '• ' + _t('selfempl.wrk.other') + ': ' + _seInr(otherInc) + '<br>';
+        if (regime === 'old' && deductions) w += '• ' + _t('selfempl.wrk.deductions') + ': ' + _seInr(deductions) + '<br>';
+        w += '• ' + _t('selfempl.wrk.taxable') + ': ' + _seInr(Math.max(0, regime === 'new' ? totalIncome : totalIncome - deductions)) + '<br>';
+        w += '• ' + _t('selfempl.wrk.tax') + ': ' + _seInr(tax) + '<br>';
+        w += '• ' + _t('selfempl.wrk.cess') + ': ' + _seInr(cess) + '<br>';
+        w += '• <strong>' + _t('selfempl.wrk.total') + ': ' + _seInr(totalTax) + '</strong>';
         document.getElementById('se-tax-workings').innerHTML = w;
 
         // Comparison table: presumptive vs regular (assume regular profit = 15% margin)
         var regProfit15 = turnover * 0.15;
         var regTax15 = regime === 'new' ? _seNewTax(regProfit15 + otherInc) * 1.04 : _seOldTax(regProfit15 + otherInc, deductions) * 1.04;
         var rows = [
-            { label: bizType === '44ADA' ? '44ADA (50% deemed)' : '44AD (6%/8% deemed)', profit: profit, tax: totalTax },
-            { label: 'Regular books (15% margin)', profit: regProfit15, tax: regTax15 },
-            { label: 'Regular books (25% margin)', profit: turnover*0.25, tax: (regime==='new'?_seNewTax(turnover*0.25+otherInc)*1.04:_seOldTax(turnover*0.25+otherInc,deductions)*1.04) },
+            { label: bizType === '44ADA' ? _t('selfempl.cmp.label.44ada') : _t('selfempl.cmp.label.44ad'), profit: profit, tax: totalTax },
+            { label: _t('selfempl.cmp.label.regular15'), profit: regProfit15, tax: regTax15 },
+            { label: _t('selfempl.cmp.label.regular25'), profit: turnover*0.25, tax: (regime==='new'?_seNewTax(turnover*0.25+otherInc)*1.04:_seOldTax(turnover*0.25+otherInc,deductions)*1.04) },
         ];
-        var tbl = '<table class="w-full text-[10px]"><thead><tr class="text-left"><th class="pb-1 font-black text-slate-500">Method</th><th class="pb-1 font-black text-slate-500">Profit</th><th class="pb-1 font-black text-slate-500">Tax + Cess</th><th class="pb-1 font-black text-slate-500">Saving vs 44AD</th></tr></thead><tbody>';
+        var tbl = '<table class="w-full text-[10px]"><thead><tr class="text-left"><th class="pb-1 font-black text-slate-500">' + _t('selfempl.cmp.th.method') + '</th><th class="pb-1 font-black text-slate-500">' + _t('selfempl.cmp.th.profit') + '</th><th class="pb-1 font-black text-slate-500">' + _t('selfempl.cmp.th.tax') + '</th><th class="pb-1 font-black text-slate-500">' + _t('selfempl.cmp.th.saving') + '</th></tr></thead><tbody>';
         rows.forEach(function(r, idx) {
             var saving = rows[0].tax - r.tax;
             var isBase = idx === 0;
             tbl += '<tr style="border-bottom:1px solid #f1f5f9;' + (isBase?'background:#f0f9ff;':'') + '">' +
-                '<td class="py-1.5 font-bold text-slate-700">' + r.label + (isBase?' ← current':'') + '</td>' +
+                '<td class="py-1.5 font-bold text-slate-700">' + r.label + (isBase ? _t('selfempl.cmp.current') : '') + '</td>' +
                 '<td class="py-1.5">' + _seInr(r.profit) + '</td>' +
                 '<td class="py-1.5 font-bold ' + (r.tax <= rows[0].tax ? 'text-emerald-700' : 'text-red-600') + '">' + _seInr(r.tax) + '</td>' +
                 '<td class="py-1.5 font-bold ' + (saving > 0 ? 'text-red-500' : saving < 0 ? 'text-emerald-600' : 'text-slate-400') + '">' +
-                (isBase ? '—' : (saving > 0 ? '+' + _seInr(saving) + ' saved' : saving < 0 ? _seInr(-saving) + ' more tax' : '—')) + '</td></tr>';
+                (isBase ? '—' : (saving > 0 ? '+' + _seInr(saving) + _t('selfempl.cmp.saved') : saving < 0 ? _seInr(-saving) + _t('selfempl.cmp.moretax') : '—')) + '</td></tr>';
         });
         tbl += '</tbody></table>';
         document.getElementById('se-comparison-table').innerHTML = tbl;
@@ -172,20 +172,20 @@
 
         document.getElementById('se-bef-burn').textContent       = _seInr(totalBurn) + '/mo';
         document.getElementById('se-bef-target').textContent     = _seInr(target);
-        document.getElementById('se-bef-target-sub').textContent = months + ' months of total burn';
-        document.getElementById('se-bef-shortfall').textContent  = shortfall > 0 ? _seInr(shortfall) : '✅ Fully funded';
+        document.getElementById('se-bef-target-sub').textContent = _t('selfempl.bef.months_burn').replace('{n}', months);
+        document.getElementById('se-bef-shortfall').textContent  = shortfall > 0 ? _seInr(shortfall) : _t('selfempl.bef.funded');
         document.getElementById('se-bef-sip-6').textContent      = shortfall > 0 ? _seInr(shortfall/6) + '/mo' : '—';
         document.getElementById('se-bef-sip-12').textContent     = shortfall > 0 ? _seInr(shortfall/12) + '/mo' : '—';
 
         // Breakdown bars
         var items = [
-            { label:'Salaries',    val: sal,  color:'#ef4444' },
-            { label:'Rent/Office', val: rent, color:'#f59e0b' },
-            { label:'Tools/SaaS',  val: tools,color:'#3b82f6' },
-            { label:'Loan EMIs',   val: loans,color:'#8b5cf6' },
-            { label:'Utilities',   val: util, color:'#10b981' },
-            { label:'Inventory',   val: inv,  color:'#f97316' },
-            { label:'Personal',    val: pers, color:'#ec4899' },
+            { label: _t('selfempl.bef.cat.salaries'),  val: sal,  color:'#ef4444' },
+            { label: _t('selfempl.bef.cat.rent'),       val: rent, color:'#f59e0b' },
+            { label: _t('selfempl.bef.cat.tools'),      val: tools,color:'#3b82f6' },
+            { label: _t('selfempl.bef.cat.loans'),      val: loans,color:'#8b5cf6' },
+            { label: _t('selfempl.bef.cat.utilities'),  val: util, color:'#10b981' },
+            { label: _t('selfempl.bef.cat.inventory'),  val: inv,  color:'#f97316' },
+            { label: _t('selfempl.bef.cat.personal'),   val: pers, color:'#ec4899' },
         ].filter(function(x){ return x.val > 0; });
         var html = '';
         items.forEach(function(x) {
@@ -196,7 +196,7 @@
                 '<div class="text-[9px] font-bold text-slate-700 w-16 text-right">' + _seInr(x.val) + ' (' + pct + '%)</div>' +
                 '</div>';
         });
-        document.getElementById('se-bef-breakdown').innerHTML = html || '<div class="text-[10px] text-slate-400">Enter costs above</div>';
+        document.getElementById('se-bef-breakdown').innerHTML = html || '<div class="text-[10px] text-slate-400">' + _t('selfempl.bef.empty') + '</div>';
     }
 
     function seCalcGST() {
@@ -217,8 +217,8 @@
             document.getElementById('se-gst-cashgap').textContent = '—';
             var insEl = document.getElementById('se-gst-insight');
             if (insEl) insEl.innerHTML = type === 'composition'
-                ? '📋 <strong>Composition Scheme:</strong> Pay 1% (traders) / 2% (manufacturers) / 5% (restaurants) on turnover. Cannot collect GST from customers. Cannot claim ITC. Simpler compliance — ideal if turnover ₹40L–₹1.5Cr.'
-                : '✅ You are unregistered. GST registration mandatory if turnover exceeds ₹40L (goods) or ₹20L (services) per year.';
+                ? _t('selfempl.gst.msg.composition')
+                : _t('selfempl.gst.msg.none');
             return;
         }
 
@@ -235,11 +235,16 @@
 
         var insEl = document.getElementById('se-gst-insight');
         if (insEl) {
-            var msg = '📊 You collect <strong>' + _seInr(gstOut) + '</strong> GST monthly and can reclaim <strong>' + _seInr(itc) + '</strong> ITC. ' +
-                'Net GST payable by 20th: <strong>' + _seInr(netGST) + '</strong>. ';
-            if (delay > 30) msg += '⚠️ With clients paying after <strong>' + delay + ' days</strong>, you have ~<strong>' + _seInr(cashGap) + '</strong> in GST float — money you\'ve collected from clients but not yet received in your bank. Set aside net GST on the day you raise the invoice, not when client pays.';
-            else msg += '✅ Your collection cycle (' + delay + ' days) is reasonable. Still, maintain a dedicated GST account to avoid mixing.';
-            insEl.innerHTML = msg;
+            var _pfx = _t('selfempl.gst.insight.prefix')
+                .replace('{out}', '<strong>' + _seInr(gstOut) + '</strong>')
+                .replace('{itc}', '<strong>' + _seInr(itc) + '</strong>')
+                .replace('{net}', '<strong>' + _seInr(netGST) + '</strong>');
+            var _sfx = delay > 30
+                ? _t('selfempl.gst.insight.delay.warn')
+                    .replace('{days}', '<strong>' + delay + '</strong>')
+                    .replace('{cashgap}', '<strong>' + _seInr(cashGap) + '</strong>')
+                : _t('selfempl.gst.insight.delay.ok').replace('{days}', delay);
+            insEl.innerHTML = '📊 ' + _pfx + _sfx;
         }
     }
 
@@ -248,10 +253,10 @@
         var today    = new Date();
         var fy       = today.getMonth() >= 3 ? today.getFullYear() : today.getFullYear() - 1;
         var instalments = [
-            { date: new Date(fy,5,15),  pct: 15, label: '1st — June 15' },
-            { date: new Date(fy,8,15),  pct: 45, label: '2nd — September 15' },
-            { date: new Date(fy,11,15), pct: 75, label: '3rd — December 15' },
-            { date: new Date(fy+1,2,15),pct: 100,label: '4th — March 15' },
+            { date: new Date(fy,5,15),  pct: 15, label: _t('selfempl.adv.ins1') },
+            { date: new Date(fy,8,15),  pct: 45, label: _t('selfempl.adv.ins2') },
+            { date: new Date(fy,11,15), pct: 75, label: _t('selfempl.adv.ins3') },
+            { date: new Date(fy+1,2,15),pct: 100,label: _t('selfempl.adv.ins4') },
         ];
         var html = '';
         var prevPct = 0;
@@ -263,11 +268,11 @@
             var bg       = isPast ? '#f8fafc' : isNear ? '#fef2f2' : '#f0f9ff';
             var border   = isPast ? '#e2e8f0' : isNear ? '#fecaca' : '#bae6fd';
             var badgeClr = isPast ? '#94a3b8' : isNear ? '#dc2626' : '#1a5276';
-            var badge    = isPast ? 'Done / Past' : diff === 0 ? 'TODAY' : diff + ' days';
+            var badge    = isPast ? _t('selfempl.adv.past') : diff === 0 ? _t('selfempl.adv.today') : _t('selfempl.adv.days').replace('{n}', diff);
             html += '<div class="rounded-xl px-3 py-2 flex items-center justify-between gap-3" style="background:' + bg + ';border:1px solid ' + border + ';">' +
                 '<div>' +
-                '<div class="text-[10px] font-black text-slate-800">' + ins.label + ' <span class="text-[8px] font-bold text-slate-400">(cumulative ' + ins.pct + '%)</span></div>' +
-                '<div class="text-[9px] text-slate-500">' + ins.date.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}) + ' — pay this instalment</div>' +
+                '<div class="text-[10px] font-black text-slate-800">' + ins.label + ' <span class="text-[8px] font-bold text-slate-400">(' + _t('selfempl.adv.cum').replace('{pct}', ins.pct) + ')</span></div>' +
+                '<div class="text-[9px] text-slate-500">' + ins.date.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}) + ' — ' + _t('selfempl.adv.pay') + '</div>' +
                 '</div>' +
                 '<div class="text-right flex-shrink-0">' +
                 '<div class="text-base font-black text-slate-800">' + _seInr(amount) + '</div>' +
