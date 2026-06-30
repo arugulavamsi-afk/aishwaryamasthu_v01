@@ -159,12 +159,12 @@
                 </div>
                 <!-- Legend -->
                 <div class="flex flex-wrap gap-3 mt-2 pt-2 border-t border-slate-100">
-                    <div class="flex items-center gap-1"><div class="w-2.5 h-2.5 rounded-sm" style="background:#ef4444;"></div><span class="text-[9px] text-slate-500">Tax deadline</span></div>
-                    <div class="flex items-center gap-1"><div class="w-2.5 h-2.5 rounded-sm" style="background:#f59e0b;"></div><span class="text-[9px] text-slate-500">Investment window</span></div>
-                    <div class="flex items-center gap-1"><div class="w-2.5 h-2.5 rounded-sm" style="background:#3b82f6;"></div><span class="text-[9px] text-slate-500">Credit / bank</span></div>
-                    <div class="flex items-center gap-1"><div class="w-2.5 h-2.5 rounded-sm" style="background:#8b5cf6;"></div><span class="text-[9px] text-slate-500">EPF / PF</span></div>
-                    <div class="flex items-center gap-1"><div class="w-2.5 h-2.5 rounded-sm" style="background:#10b981;"></div><span class="text-[9px] text-slate-500">General</span></div>
-                    <span class="text-[9px] text-slate-400 ml-auto italic">Click a date to see events</span>
+                    <div class="flex items-center gap-1"><div class="w-2.5 h-2.5 rounded-sm" style="background:#ef4444;"></div><span class="text-[9px] text-slate-500" data-i18n="fincal.leg.tax">Tax deadline</span></div>
+                    <div class="flex items-center gap-1"><div class="w-2.5 h-2.5 rounded-sm" style="background:#f59e0b;"></div><span class="text-[9px] text-slate-500" data-i18n="fincal.leg.invest">Investment window</span></div>
+                    <div class="flex items-center gap-1"><div class="w-2.5 h-2.5 rounded-sm" style="background:#3b82f6;"></div><span class="text-[9px] text-slate-500" data-i18n="fincal.leg.credit">Credit / bank</span></div>
+                    <div class="flex items-center gap-1"><div class="w-2.5 h-2.5 rounded-sm" style="background:#8b5cf6;"></div><span class="text-[9px] text-slate-500" data-i18n="fincal.leg.epf">EPF / PF</span></div>
+                    <div class="flex items-center gap-1"><div class="w-2.5 h-2.5 rounded-sm" style="background:#10b981;"></div><span class="text-[9px] text-slate-500" data-i18n="fincal.leg.general">General</span></div>
+                    <span class="text-[9px] text-slate-400 ml-auto italic" data-i18n="fincal.leg.click">Click a date to see events</span>
                 </div>
                 <!-- Day event detail (populated on click) -->
                 <div id="fc-day-detail"></div>
@@ -173,20 +173,20 @@
             <!-- EDUCATION CARDS -->
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 <div class="rounded-xl p-2.5" style="background:#fef2f2;border:1px solid #fecaca;">
-                    <div class="text-[10px] font-black text-red-800 mb-1">💸 Advance Tax: Cost of Missing</div>
-                    <div class="text-[9px] text-red-700 leading-relaxed">Miss an advance tax instalment? You owe <strong>1% interest per month</strong> under Sec 234B/234C. On ₹1L tax liability, that's ₹12,000 extra per year — for no reason. Pay quarterly: Jun 15, Sep 15, Dec 15, Mar 15.</div>
+                    <div class="text-[10px] font-black text-red-800 mb-1" data-i18n="fincal.edu.adv.title">💸 Advance Tax: Cost of Missing</div>
+                    <div class="text-[9px] text-red-700 leading-relaxed" data-i18n-html="fincal.edu.adv.desc">Miss an advance tax instalment? You owe <strong>1% interest per month</strong> under Sec 234B/234C. On ₹1L tax liability, that's ₹12,000 extra per year — for no reason. Pay quarterly: Jun 15, Sep 15, Dec 15, Mar 15.</div>
                 </div>
                 <div class="rounded-xl p-2.5" style="background:#fff7ed;border:1px solid #fed7aa;">
-                    <div class="text-[10px] font-black text-orange-800 mb-1">📋 ITR: Beyond the Deadline</div>
-                    <div class="text-[9px] text-orange-700 leading-relaxed">Miss Jul 31? You can file a belated return by Dec 31, but you'll pay <strong>₹1,000–₹5,000 late fee</strong> (₹5,000 if income above ₹5L) + 1% interest/month on unpaid tax. Losses also <strong>cannot be carried forward</strong>.</div>
+                    <div class="text-[10px] font-black text-orange-800 mb-1" data-i18n="fincal.edu.itr.title">📋 ITR: Beyond the Deadline</div>
+                    <div class="text-[9px] text-orange-700 leading-relaxed" data-i18n-html="fincal.edu.itr.desc">Miss Jul 31? You can file a belated return by Dec 31, but you'll pay <strong>₹1,000–₹5,000 late fee</strong> (₹5,000 if income above ₹5L) + 1% interest/month on unpaid tax. Losses also <strong>cannot be carried forward</strong>.</div>
                 </div>
                 <div class="rounded-xl p-2.5" style="background:#f0fdf4;border:1px solid #86efac;">
-                    <div class="text-[10px] font-black text-emerald-800 mb-1">🏛️ PPF: The April Rule</div>
-                    <div class="text-[9px] text-emerald-700 leading-relaxed">Deposit before <strong>5th of each month</strong> to earn interest for that month. Deposit before April 5 to earn interest for the entire April — a free month of 7.1% p.a. on up to ₹1.5L. Most people miss this.</div>
+                    <div class="text-[10px] font-black text-emerald-800 mb-1" data-i18n="fincal.edu.ppf.title">🏛️ PPF: The April Rule</div>
+                    <div class="text-[9px] text-emerald-700 leading-relaxed" data-i18n-html="fincal.edu.ppf.desc">Deposit before <strong>5th of each month</strong> to earn interest for that month. Deposit before April 5 to earn interest for the entire April — a free month of 7.1% p.a. on up to ₹1.5L. Most people miss this.</div>
                 </div>
                 <div class="rounded-xl p-2.5" style="background:#eff6ff;border:1px solid #93c5fd;">
-                    <div class="text-[10px] font-black text-blue-800 mb-1">📈 ELSS: The March Trap</div>
-                    <div class="text-[9px] text-blue-700 leading-relaxed">Invest in ELSS <strong>before March 31</strong> to claim 80C for that FY. But March mutual fund servers crash — payment fails but units aren't allotted in time. Invest in Jan–Feb. Rushed March investments cause ₹1,000s in lost deductions.</div>
+                    <div class="text-[10px] font-black text-blue-800 mb-1" data-i18n="fincal.edu.elss.title">📈 ELSS: The March Trap</div>
+                    <div class="text-[9px] text-blue-700 leading-relaxed" data-i18n-html="fincal.edu.elss.desc">Invest in ELSS <strong>before March 31</strong> to claim 80C for that FY. But March mutual fund servers crash — payment fails but units aren't allotted in time. Invest in Jan–Feb. Rushed March investments cause ₹1,000s in lost deductions.</div>
                 </div>
             </div>
 
