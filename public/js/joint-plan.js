@@ -143,7 +143,7 @@
                 splitHtml += 'ELSS SIP counts toward 80C.</div>';
             }
         } else {
-            splitHtml = '<div class="text-slate-400 text-[10px]">Enter monthly investment amounts to see split recommendations</div>';
+            splitHtml = '<div class="text-slate-400 text-[10px]">' + (typeof _t === 'function' ? _t('joint.split.placeholder') : 'Enter monthly investment amounts to see split recommendations') + '</div>';
         }
         document.getElementById('jp-split-content').innerHTML = splitHtml;
 
