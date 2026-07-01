@@ -77,11 +77,11 @@
         // Dedup check (case-insensitive)
         var allKeys = _btAllCats().map(function (c) { return c.key.toLowerCase(); });
         if (allKeys.indexOf(name.toLowerCase()) !== -1) {
-            if (nameEl) { nameEl.style.borderColor = '#f59e0b'; nameEl.placeholder = 'Already exists!'; }
+            if (nameEl) { nameEl.style.borderColor = '#f59e0b'; nameEl.placeholder = _btT('bt.cat.exists','Already exists!'); }
             return;
         }
         window._btCustomCats.push({ key: name, icon: '📌' });
-        if (nameEl) { nameEl.value = ''; nameEl.style.borderColor = ''; nameEl.placeholder = 'Category name…'; }
+        if (nameEl) { nameEl.value = ''; nameEl.style.borderColor = ''; nameEl.placeholder = _btT('bt.cat.placeholder','Category name…'); }
         _btRenderTable();
         _btRenderSummary();
         _btRenderChart();
@@ -197,7 +197,7 @@
                             '<div style="font-size:11px;font-weight:700;color:#1e293b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + _btEsc(cat.key) + '</div>' +
                             '<div style="font-size:9px;color:#94a3b8;">' + _btT('bt.cat.custom','Custom') + '</div>' +
                         '</div>' +
-                        '<button onclick="window._btDeleteCustomCat(' + JSON.stringify(cat.key) + ')" title="Remove category" ' +
+                        '<button onclick="window._btDeleteCustomCat(' + JSON.stringify(cat.key) + ')" title="' + _btEsc(_btT('bt.cat.remove','Remove category')) + '" ' +
                             'style="flex-shrink:0;padding:2px 5px;border-radius:5px;font-size:10px;font-weight:900;color:#94a3b8;background:transparent;border:1px solid #e2e8f0;cursor:pointer;line-height:1;" ' +
                             'onmouseover="this.style.color=\'#ef4444\';this.style.borderColor=\'#fca5a5\';" ' +
                             'onmouseout="this.style.color=\'#94a3b8\';this.style.borderColor=\'#e2e8f0\';">×</button>' +
