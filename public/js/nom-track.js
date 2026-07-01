@@ -153,7 +153,8 @@
             doc.rect(x, bY, w, h, 'F');
         }
 
-        var T = function(k, fb) { return (typeof _t === 'function') ? _t(k) : fb; };
+        /* jsPDF Helvetica only supports Latin — always use English fallbacks in PDF */
+        var T = function(k, fb) { return fb; };
         // Status display helper
         function statusLabel(v) {
             if (v === 'done')         return T('nt.pdf.status.done',  'Done');
@@ -409,7 +410,8 @@
         var w2Occ    = (document.getElementById('wg-w2-occ')?.value || '').trim();
         var w2Addr   = (document.getElementById('wg-w2-addr')?.value || '').trim();
 
-        var T = function(k, fb) { return (typeof _t === 'function') ? _t(k) : fb; };
+        /* jsPDF Helvetica only supports Latin — always use English fallbacks in PDF */
+        var T = function(k, fb) { return fb; };
         if (!name) { alert(T('nt.pdf.will.name.req', 'Please enter the testator\'s full name before generating the Will.')); return; }
 
         // Collect beneficiaries
