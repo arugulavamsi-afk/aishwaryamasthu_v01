@@ -153,20 +153,21 @@
             doc.rect(x, bY, w, h, 'F');
         }
 
+        var T = function(k, fb) { return (typeof _t === 'function') ? _t(k) : fb; };
         // Status display helper
         function statusLabel(v) {
-            if (v === 'done')         return 'Done';
-            if (v === 'na')           return 'N/A';
-            if (v === 'registered')   return 'Registered';
-            if (v === 'unregistered') return 'Unregistered';
-            if (v === 'yes')          return 'Yes';
-            if (v === 'no')           return 'No';
-            return 'Pending';
+            if (v === 'done')         return T('nt.pdf.status.done',  'Done');
+            if (v === 'na')           return T('nt.pdf.status.na',    'N/A');
+            if (v === 'registered')   return T('nt.pdf.status.reg',   'Registered');
+            if (v === 'unregistered') return T('nt.pdf.status.unreg', 'Unregistered');
+            if (v === 'yes')          return T('nt.pdf.status.yes',   'Yes');
+            if (v === 'no')           return T('nt.pdf.status.no',    'No');
+            return T('nt.pdf.status.pending', 'Pending');
         }
         function statusDot(v) {
-            if (v === 'done' || v === 'yes' || v === 'registered') return '[DONE]';
-            if (v === 'na')  return '[N/A]';
-            return '[PENDING]';
+            if (v === 'done' || v === 'yes' || v === 'registered') return T('nt.pdf.dot.done',    '[DONE]');
+            if (v === 'na')  return T('nt.pdf.dot.na',      '[N/A]');
+            return T('nt.pdf.dot.pending', '[PENDING]');
         }
         function fmtDate(d) {
             if (!d) return '—';
@@ -192,17 +193,17 @@
         doc.setTextColor(245, 200, 66);          // gold
         doc.setFontSize(15);
         doc.setFont('helvetica', 'bold');
-        line('NOMINATION & WILL DECLARATION DOCUMENT', W / 2, 14, { align: 'center' });
+        line(T('nt.pdf.nom.title', 'NOMINATION & WILL DECLARATION DOCUMENT'), W / 2, 14, { align: 'center' });
 
         doc.setTextColor(147, 197, 253);         // light blue
         doc.setFontSize(8);
         doc.setFont('helvetica', 'normal');
-        line('Personal Estate Planning Reference  |  AishwaryaMasthu', W / 2, 21, { align: 'center' });
+        line(T('nt.pdf.nom.ref', 'Personal Estate Planning Reference  |  AishwaryaMasthu'), W / 2, 21, { align: 'center' });
         line('aishwaryamasthu-66c6f.web.app', W / 2, 27, { align: 'center' });
 
         doc.setTextColor(200, 220, 255);
         doc.setFontSize(7.5);
-        line('Generated on: ' + today, W / 2, 34, { align: 'center' });
+        line(T('nt.pdf.nom.gen', 'Generated on: {today}').replace('{today}', today), W / 2, 34, { align: 'center' });
 
         y = 52;
 
@@ -215,15 +216,15 @@
         doc.setTextColor(30, 58, 138);
         doc.setFontSize(8.5);
         doc.setFont('helvetica', 'bold');
-        line('DECLARATION', margin + 4, y + 1);
+        line(T('nt.pdf.nom.decl.title', 'DECLARATION'), margin + 4, y + 1);
 
         doc.setTextColor(51, 65, 85);
         doc.setFontSize(7.5);
         doc.setFont('helvetica', 'normal');
         var declText = [
-            'I hereby declare that the following nomination records and Will-related information are accurate and maintained in good faith.',
-            'This document serves as a personal estate planning reference to ensure seamless transfer of assets to the nominated',
-            'beneficiaries in the event of my demise. This information has been recorded and reviewed using AishwaryaMasthu.'
+            T('nt.pdf.nom.decl.1', 'I hereby declare that the following nomination records and Will-related information are accurate and maintained in good faith.'),
+            T('nt.pdf.nom.decl.2', 'This document serves as a personal estate planning reference to ensure seamless transfer of assets to the nominated'),
+            T('nt.pdf.nom.decl.3', 'beneficiaries in the event of my demise. This information has been recorded and reviewed using AishwaryaMasthu.')
         ];
         declText.forEach(function(t, i) { line(t, margin + 4, y + 8 + i * 5); });
 
@@ -234,7 +235,7 @@
         box(margin, y, W - margin * 2, 8, 30, 58, 138);
         doc.setFontSize(8.5);
         doc.setFont('helvetica', 'bold');
-        line('SECTION A  ·  FINANCIAL ACCOUNT NOMINATIONS', margin + 4, y + 5.5);
+        line(T('nt.pdf.nom.secA', 'SECTION A  ·  FINANCIAL ACCOUNT NOMINATIONS'), margin + 4, y + 5.5);
         y += 11;
 
         // Table header
@@ -244,7 +245,7 @@
         doc.setTextColor(71, 85, 105);
         doc.setFontSize(7);
         doc.setFont('helvetica', 'bold');
-        ['ASSET', 'STATUS', 'NOMINEE NAME', 'LAST UPDATED', ''].forEach(function(h, i) {
+        [T('nt.pdf.nom.col.asset','ASSET'), T('nt.pdf.nom.col.status','STATUS'), T('nt.pdf.nom.col.nominee','NOMINEE NAME'), T('nt.pdf.nom.col.updated','LAST UPDATED'), ''].forEach(function(h, i) {
             if (i < 4) line(h, cols[i] + 1.5, y + 4.5);
         });
         y += 8;
@@ -268,7 +269,7 @@
 
             doc.setTextColor(30, 41, 59);
             doc.setFont('helvetica', 'normal');
-            line(a.label,   cols[0] + 1.5, y + 4.5);
+            line(T('nt.asset.' + a.key, a.label), cols[0] + 1.5, y + 4.5);
             line(nominee,   cols[2] + 1.5, y + 4.5);
             line(date,      cols[3] + 1.5, y + 4.5);
 
@@ -286,14 +287,14 @@
         box(margin, y, W - margin * 2, 8, 14, 92, 58);
         doc.setFontSize(8.5);
         doc.setFont('helvetica', 'bold');
-        line('SECTION B  ·  WILL & ESTATE READINESS', margin + 4, y + 5.5);
+        line(T('nt.pdf.nom.secB', 'SECTION B  ·  WILL & ESTATE READINESS'), margin + 4, y + 5.5);
         y += 11;
 
         var willItems = [
-            { label: 'Will Status',    id: 'nt-will-status' },
-            { label: 'Executor Named', id: 'nt-exec-status' },
-            { label: 'Family Aware',   id: 'nt-fam-status' },
-            { label: 'Digital Assets', id: 'nt-digital-status' }
+            { label: T('nt.pdf.nom.will.lbl',    'Will Status'),    id: 'nt-will-status' },
+            { label: T('nt.pdf.nom.exec.lbl',    'Executor Named'), id: 'nt-exec-status' },
+            { label: T('nt.pdf.nom.fam.lbl',     'Family Aware'),   id: 'nt-fam-status' },
+            { label: T('nt.pdf.nom.digital.lbl', 'Digital Assets'), id: 'nt-digital-status' }
         ];
 
         willItems.forEach(function(item, idx) {
@@ -327,7 +328,7 @@
         doc.setTextColor(22, 101, 52);
         doc.setFontSize(8);
         doc.setFont('helvetica', 'bold');
-        line('Estate Readiness Score:  ' + score.done + ' / ' + score.total + '  (' + score.pct + '%)', margin + 4, y + 6.5);
+        line(T('nt.pdf.nom.score', 'Estate Readiness Score:') + '  ' + score.done + ' / ' + score.total + '  (' + score.pct + '%)', margin + 4, y + 6.5);
 
         var badgeText = _waFmt(document.getElementById('nt-score-badge'));
         doc.setFont('helvetica', 'normal');
@@ -342,7 +343,7 @@
             box(margin, y, W - margin * 2, 8, 88, 28, 135);
             doc.setFontSize(8.5);
             doc.setFont('helvetica', 'bold');
-            line('SECTION C  ·  NOTES & IMPORTANT CONTACTS', margin + 4, y + 5.5);
+            line(T('nt.pdf.nom.secC', 'SECTION C  ·  NOTES & IMPORTANT CONTACTS'), margin + 4, y + 5.5);
             y += 11;
 
             box(margin, y, W - margin * 2, 4, 250, 245, 255);
@@ -365,17 +366,11 @@
         doc.setTextColor(148, 163, 184);
         doc.setFontSize(6.5);
         doc.setFont('helvetica', 'italic');
-        doc.text(
-            'DISCLAIMER: This document is generated by AishwaryaMasthu for personal reference only. It is not a legal document and does not constitute legal advice.',
-            W / 2, footerY + 4, { align: 'center' }
-        );
-        doc.text(
-            'For legal validity, please consult a qualified legal professional registered with the Bar Council of India.',
-            W / 2, footerY + 8.5, { align: 'center' }
-        );
+        doc.text(T('nt.pdf.nom.disc1', 'DISCLAIMER: This document is generated by AishwaryaMasthu for personal reference only. It is not a legal document and does not constitute legal advice.'), W / 2, footerY + 4, { align: 'center' });
+        doc.text(T('nt.pdf.nom.disc2', 'For legal validity, please consult a qualified legal professional registered with the Bar Council of India.'), W / 2, footerY + 8.5, { align: 'center' });
         doc.setFont('helvetica', 'normal');
         doc.setTextColor(100, 116, 139);
-        doc.text('aishwaryamasthu-66c6f.web.app  |  Generated: ' + today, W / 2, footerY + 13, { align: 'center' });
+        doc.text('aishwaryamasthu-66c6f.web.app  |  ' + T('nt.pdf.nom.gen', 'Generated on: {today}').replace('{today}', today), W / 2, footerY + 13, { align: 'center' });
 
         // Save
         doc.save('Nomination-Will-Declaration-' + today.replace(/\//g, '-') + '.pdf');
@@ -414,7 +409,8 @@
         var w2Occ    = (document.getElementById('wg-w2-occ')?.value || '').trim();
         var w2Addr   = (document.getElementById('wg-w2-addr')?.value || '').trim();
 
-        if (!name) { alert('Please enter the testator\'s full name before generating the Will.'); return; }
+        var T = function(k, fb) { return (typeof _t === 'function') ? _t(k) : fb; };
+        if (!name) { alert(T('nt.pdf.will.name.req', 'Please enter the testator\'s full name before generating the Will.')); return; }
 
         // Collect beneficiaries
         var beneNames  = Array.from(document.querySelectorAll('.wg-bene-name')).map(function(e) { return e.value.trim(); });
@@ -427,9 +423,9 @@
 
         // Format date
         function fmtWillDate(d) {
-            if (!d) return 'the date stated below';
+            if (!d) return T('nt.pdf.will.date.blank', 'the date stated below');
             try {
-                var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+                var months = T('nt.pdf.months', 'January,February,March,April,May,June,July,August,September,October,November,December').split(',');
                 var parts = d.split('-');
                 return parseInt(parts[2]) + ' ' + months[parseInt(parts[1]) - 1] + ' ' + parts[0];
             } catch(e) { return d; }
@@ -492,7 +488,7 @@
                 doc.setTextColor(180, 180, 200);
                 doc.setFontSize(6.5);
                 doc.setFont('helvetica', 'italic');
-                txt('Last Will & Testament of ' + name + '  |  Draft generated by AishwaryaMasthu  |  Page ' + doc.internal.getNumberOfPages(), W / 2, 289, { align: 'center' });
+                txt(T('nt.pdf.will.page.hdr', 'Last Will & Testament of {name}  |  Draft generated by AishwaryaMasthu  |  Page {page}').replace('{name}', name).replace('{page}', doc.internal.getNumberOfPages()), W / 2, 289, { align: 'center' });
             }
         }
 
@@ -509,18 +505,18 @@
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(18);
         doc.setTextColor(76, 29, 149);
-        txt('LAST WILL AND TESTAMENT', W / 2, y, { align: 'center' });
+        txt(T('nt.pdf.will.title', 'LAST WILL AND TESTAMENT'), W / 2, y, { align: 'center' });
         y += 7;
 
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(9);
         doc.setTextColor(124, 58, 237);
-        txt('of  ' + (name || '____________________'), W / 2, y, { align: 'center' });
+        txt(T('nt.pdf.will.of', 'of') + '  ' + (name || '____________________'), W / 2, y, { align: 'center' });
         y += 5;
 
         doc.setFontSize(7.5);
         doc.setTextColor(148, 163, 184);
-        txt('Draft prepared on ' + today + '  |  AishwaryaMasthu  |  For personal reference only', W / 2, y, { align: 'center' });
+        txt(T('nt.pdf.will.draft', 'Draft prepared on {today}  |  AishwaryaMasthu  |  For personal reference only').replace('{today}', today), W / 2, y, { align: 'center' });
         y += 5;
 
         hRule(y, 124, 58, 237, 0.6);
@@ -534,12 +530,12 @@
         doc.setLineWidth(0.3);
         doc.rect(M, y - 2, TW, 30);
 
-        var parentClause = parent ? (', son/daughter/spouse of ' + parent) : '';
-        var ageClause    = age    ? (', aged ' + age + ' years') : '';
-        var preamble = 'I, ' + name + parentClause + ageClause + ', residing at ' + (address || '___________') +
-            ', being a ' + religion + ' by faith' +
-            ', being of sound and disposing mind, memory, and understanding, and not acting under any fraud, coercion, or undue influence,' +
-            ' do hereby make, publish, and declare this document to be my LAST WILL AND TESTAMENT, this ' + dateStr + '.';
+        var parentClause = parent ? T('nt.pdf.will.parent', ', son/daughter/spouse of {parent}').replace('{parent}', parent) : '';
+        var ageClause    = age    ? T('nt.pdf.will.aged', ', aged {age} years').replace('{age}', age) : '';
+        var preamble = T('nt.pdf.will.preamble',
+            'I, {name}{parent}{age}, residing at {addr}, being a {rel} by faith, being of sound and disposing mind, memory, and understanding, and not acting under any fraud, coercion, or undue influence, do hereby make, publish, and declare this document to be my LAST WILL AND TESTAMENT, this {date}.')
+            .replace('{name}', name).replace('{parent}', parentClause).replace('{age}', ageClause)
+            .replace('{addr}', address || '___________').replace('{rel}', religion).replace('{date}', dateStr);
 
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(8.5);
@@ -548,31 +544,33 @@
 
         // ══ CLAUSE I — REVOCATION ═════════════════════════════════════
         checkY(18);
-        y = clauseHead('I', 'REVOCATION OF PRIOR WILLS', y);
-        y = body('I hereby revoke, cancel, and annul all former Wills, codicils, and testamentary dispositions previously made by me, and declare this to be my Last Will and Testament.', M + 5, y, TW - 5) + 7;
+        y = clauseHead('I', T('nt.pdf.will.cl1.title', 'REVOCATION OF PRIOR WILLS'), y);
+        y = body(T('nt.pdf.will.cl1.body', 'I hereby revoke, cancel, and annul all former Wills, codicils, and testamentary dispositions previously made by me, and declare this to be my Last Will and Testament.'), M + 5, y, TW - 5) + 7;
 
         // ══ CLAUSE II — EXECUTOR ══════════════════════════════════════
         checkY(22);
-        y = clauseHead('II', 'APPOINTMENT OF EXECUTOR', y);
+        y = clauseHead('II', T('nt.pdf.will.cl2.title', 'APPOINTMENT OF EXECUTOR'), y);
         if (execName) {
-            var execClause = 'I hereby appoint ' + execName + (execRel ? ' (' + execRel + ')' : '') +
-                (execAddr ? ', residing at ' + execAddr : '') +
-                ', as the Executor of this Will. The Executor shall have the full power and authority to administer my estate, pay all just debts and funeral expenses, and distribute the residue as directed herein. If the said Executor is unable or unwilling to act, I request the beneficiaries to mutually appoint an Executor.';
+            var execClause = T('nt.pdf.will.cl2.body',
+                'I hereby appoint {name}{rel}{addr}, as the Executor of this Will. The Executor shall have the full power and authority to administer my estate, pay all just debts and funeral expenses, and distribute the residue as directed herein. If the said Executor is unable or unwilling to act, I request the beneficiaries to mutually appoint an Executor.')
+                .replace('{name}', execName)
+                .replace('{rel}', execRel ? ' (' + execRel + ')' : '')
+                .replace('{addr}', execAddr ? T('nt.pdf.will.residing', ', residing at ') + execAddr : '');
             y = body(execClause, M + 5, y, TW - 5) + 7;
         } else {
-            y = body('I appoint __________________________ as the Executor of this Will, with full power and authority to administer my estate and distribute assets as directed herein.', M + 5, y, TW - 5) + 7;
+            y = body(T('nt.pdf.will.cl2.blank', 'I appoint __________________________ as the Executor of this Will, with full power and authority to administer my estate and distribute assets as directed herein.'), M + 5, y, TW - 5) + 7;
         }
 
         // ══ CLAUSE III — DEBTS & EXPENSES ═════════════════════════════
         checkY(18);
-        y = clauseHead('III', 'PAYMENT OF DEBTS AND FUNERAL EXPENSES', y);
-        y = body('I direct my Executor to pay all my just and lawful debts, funeral and cremation expenses, and the costs of administering my estate as soon as practicable after my death.', M + 5, y, TW - 5) + 7;
+        y = clauseHead('III', T('nt.pdf.will.cl3.title', 'PAYMENT OF DEBTS AND FUNERAL EXPENSES'), y);
+        y = body(T('nt.pdf.will.cl3.body', 'I direct my Executor to pay all my just and lawful debts, funeral and cremation expenses, and the costs of administering my estate as soon as practicable after my death.'), M + 5, y, TW - 5) + 7;
 
         // ══ CLAUSE IV — DISTRIBUTION ══════════════════════════════════
         checkY(20);
-        y = clauseHead('IV', 'DISTRIBUTION OF ESTATE', y);
+        y = clauseHead('IV', T('nt.pdf.will.cl4.title', 'DISTRIBUTION OF ESTATE'), y);
         if (beneficiaries.length > 0) {
-            y = body('Subject to the payment of debts and expenses under Clause III above, I give, bequeath, and devise my estate as follows:', M + 5, y, TW - 5) + 4;
+            y = body(T('nt.pdf.will.cl4.intro', 'Subject to the payment of debts and expenses under Clause III above, I give, bequeath, and devise my estate as follows:'), M + 5, y, TW - 5) + 4;
             beneficiaries.forEach(function(b, i) {
                 checkY(18);
                 doc.setFont('helvetica', 'bold');
@@ -581,19 +579,19 @@
                 txt('(' + String.fromCharCode(97 + i) + ')', M + 7, y);
                 doc.setFont('helvetica', 'normal');
                 doc.setTextColor(30, 41, 59);
-                var bText = 'To ' + b.name + (b.rel ? ' (' + b.rel + ')' : '') + ': ' + (b.share || '___________') + '.';
-                if (b.cont) bText += ' In the event that ' + b.name + ' predeceases me, ' + b.cont + '.';
+                var bText = T('nt.pdf.will.cl4.to', 'To {name}{rel}: {share}.').replace('{name}', b.name).replace('{rel}', b.rel ? ' (' + b.rel + ')' : '').replace('{share}', b.share || '___________');
+                if (b.cont) bText += ' ' + T('nt.pdf.will.cl4.predec', 'In the event that {name} predeceases me, {cont}.').replace('{name}', b.name).replace('{cont}', b.cont);
                 y = para(bText, M + 14, y, TW - 14) + 5;
             });
             y += 2;
         } else {
-            y = body('To __________________________ (__________), I give and bequeath ____________________________.', M + 5, y, TW - 5) + 7;
+            y = body(T('nt.pdf.will.cl4.blank', 'To __________________________ (__________), I give and bequeath ____________________________.'), M + 5, y, TW - 5) + 7;
         }
 
         // ══ CLAUSE V — NOMINATION SUMMARY ═════════════════════════════
         checkY(20);
-        y = clauseHead('V', 'FINANCIAL ACCOUNT NOMINATIONS (FOR REFERENCE)', y);
-        y = body('The following persons have been nominated as beneficiaries in my financial accounts as of the date of this Will. These nominations are separate legal instruments and take precedence for the specific instruments listed. This clause serves as a cross-reference for my Executor.', M + 5, y, TW - 5) + 4;
+        y = clauseHead('V', T('nt.pdf.will.cl5.title', 'FINANCIAL ACCOUNT NOMINATIONS (FOR REFERENCE)'), y);
+        y = body(T('nt.pdf.will.cl5.body', 'The following persons have been nominated as beneficiaries in my financial accounts as of the date of this Will. These nominations are separate legal instruments and take precedence for the specific instruments listed. This clause serves as a cross-reference for my Executor.'), M + 5, y, TW - 5) + 4;
 
         var donePairs = _ntAssets.filter(function(a) {
             return _ntGet('nt-' + a.key + '-status') === 'done' && _ntGet('nt-' + a.key + '-nominee');
@@ -604,27 +602,27 @@
                 doc.setFont('helvetica', 'normal');
                 doc.setFontSize(8.5);
                 doc.setTextColor(30, 41, 59);
-                txt('•  ' + a.label + ':  ' + _ntGet('nt-' + a.key + '-nominee'), M + 9, y);
+                txt('•  ' + T('nt.asset.' + a.key, a.label) + ':  ' + _ntGet('nt-' + a.key + '-nominee'), M + 9, y);
                 y += 5;
             });
         } else {
-            y = body('(No nominations marked as completed in the tracker — please update your nomination status.)', M + 5, y, TW - 5);
+            y = body(T('nt.pdf.will.cl5.none', '(No nominations marked as completed in the tracker — please update your nomination status.)'), M + 5, y, TW - 5);
         }
         y += 4;
 
         // ══ CLAUSE VI — SPECIAL INSTRUCTIONS ═════════════════════════
         if (special) {
             checkY(20);
-            y = clauseHead('VI', 'SPECIAL BEQUESTS AND INSTRUCTIONS', y);
+            y = clauseHead('VI', T('nt.pdf.will.cl6.title', 'SPECIAL BEQUESTS AND INSTRUCTIONS'), y);
             y = body(special, M + 5, y, TW - 5) + 7;
         }
 
         // ══ CLAUSE VII — RESIDUARY ESTATE ════════════════════════════
         var clauseNum = special ? 'VII' : 'VI';
         checkY(18);
-        y = clauseHead(clauseNum, 'RESIDUARY ESTATE', y);
+        y = clauseHead(clauseNum, T('nt.pdf.will.cl7.title', 'RESIDUARY ESTATE'), y);
         var residBenef = beneficiaries.length > 0 ? beneficiaries[0].name + (beneficiaries[0].rel ? ' (' + beneficiaries[0].rel + ')' : '') : '__________________________';
-        y = body('All the rest, residue, and remainder of my estate, both real and personal, of whatsoever nature and wheresoever situated, which I may own or be entitled to at the time of my death and not otherwise disposed of by this Will, I give, bequeath, and devise to ' + residBenef + ', absolutely and forever.', M + 5, y, TW - 5) + 8;
+        y = body(T('nt.pdf.will.cl7.body', 'All the rest, residue, and remainder of my estate, both real and personal, of whatsoever nature and wheresoever situated, which I may own or be entitled to at the time of my death and not otherwise disposed of by this Will, I give, bequeath, and devise to {beneficiary}, absolutely and forever.').replace('{beneficiary}', residBenef), M + 5, y, TW - 5) + 8;
 
         // ══ DECLARATION & SIGNATURE ════════════════════════════════════
         checkY(60);
@@ -634,10 +632,10 @@
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(9);
         doc.setTextColor(76, 29, 149);
-        txt('TESTATOR\'S DECLARATION AND SIGNATURE', W / 2, y, { align: 'center' });
+        txt(T('nt.pdf.will.decl.title', 'TESTATOR\'S DECLARATION AND SIGNATURE'), W / 2, y, { align: 'center' });
         y += 7;
 
-        var declText = 'I, ' + name + ', the Testator, sign my name to this instrument this _______ day of ________________, _______, and being first duly sworn, declare to the undersigned authority that I sign and execute this instrument as my Last Will and that I sign it willingly, that I execute it as my free and voluntary act for the purposes therein expressed.';
+        var declText = T('nt.pdf.will.decl.body', 'I, {name}, the Testator, sign my name to this instrument this _______ day of ________________, _______, and being first duly sworn, declare to the undersigned authority that I sign and execute this instrument as my Last Will and that I sign it willingly, that I execute it as my free and voluntary act for the purposes therein expressed.').replace('{name}', name);
         y = body(declText, M, y, TW) + 10;
 
         // Signature box
@@ -647,7 +645,7 @@
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(7.5);
         doc.setTextColor(148, 163, 184);
-        txt('Signature / Thumb impression of Testator', M + 4, y + 13);
+        txt(T('nt.pdf.will.sig', 'Signature / Thumb impression of Testator'), M + 4, y + 13);
         txt(name, M + 4, y + 16.5);
         y += 24;
 
@@ -659,12 +657,12 @@
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(9);
         doc.setTextColor(76, 29, 149);
-        txt('ATTESTATION BY WITNESSES', W / 2, y, { align: 'center' });
+        txt(T('nt.pdf.will.wit.title', 'ATTESTATION BY WITNESSES'), W / 2, y, { align: 'center' });
         y += 5;
-        y = body('We, the undersigned, being present at the same time, witness the signature of the above-named Testator to this, their Last Will and Testament, and in the presence and at the request of the Testator, and in the presence of each other, subscribe our names as witnesses thereto, believing said Testator to be of sound and disposing mind and memory.', M, y, TW) + 8;
+        y = body(T('nt.pdf.will.wit.body', 'We, the undersigned, being present at the same time, witness the signature of the above-named Testator to this, their Last Will and Testament, and in the presence and at the request of the Testator, and in the presence of each other, subscribe our names as witnesses thereto, believing said Testator to be of sound and disposing mind and memory.'), M, y, TW) + 8;
 
         var colW = (TW - 10) / 2;
-        [[w1Name, w1Occ, w1Addr, 'Witness 1'], [w2Name, w2Occ, w2Addr, 'Witness 2']].forEach(function(w, i) {
+        [[w1Name, w1Occ, w1Addr, T('nt.pdf.will.wit1','Witness 1')], [w2Name, w2Occ, w2Addr, T('nt.pdf.will.wit2','Witness 2')]].forEach(function(w, i) {
             var cx = M + i * (colW + 10);
             doc.setDrawColor(196, 181, 253);
             doc.setLineWidth(0.3);
@@ -676,13 +674,13 @@
             doc.setFont('helvetica', 'normal');
             doc.setFontSize(7.5);
             doc.setTextColor(30, 41, 59);
-            txt('Name: ' + (w[0] || '____________________'), cx + 4, y + 11);
-            txt('Occupation: ' + (w[1] || '____________________'), cx + 4, y + 17);
-            var addrLines = wrapTxt('Address: ' + (w[2] || '____________________'), colW - 8);
+            txt(T('nt.pdf.will.wit.name','Name: ') + (w[0] || '____________________'), cx + 4, y + 11);
+            txt(T('nt.pdf.will.wit.occ','Occupation: ') + (w[1] || '____________________'), cx + 4, y + 17);
+            var addrLines = wrapTxt(T('nt.pdf.will.wit.addr','Address: ') + (w[2] || '____________________'), colW - 8);
             addrLines.forEach(function(l, li) { txt(l, cx + 4, y + 22 + li * 4); });
             doc.setTextColor(148, 163, 184);
             doc.setFontSize(7);
-            txt('Signature: ____________________', cx + 4, y + 29);
+            txt(T('nt.pdf.will.wit.sig','Signature: ____________________'), cx + 4, y + 29);
         });
         y += 38;
 
@@ -695,9 +693,9 @@
         doc.setFont('helvetica', 'italic');
         doc.setFontSize(6.5);
         doc.setTextColor(148, 163, 184);
-        txt('DISCLAIMER: This document is a draft template generated by AishwaryaMasthu (aishwaryamasthu-66c6f.web.app) for personal reference and', M + 3, y + 4.5);
-        txt('planning purposes only. It does NOT constitute legal advice or a legally executed Will. To be legally valid, this document must be signed by', M + 3, y + 8.5);
-        txt('the Testator in the presence of two witnesses who must also sign. Registration at the Sub-Registrar\'s office is strongly recommended.', M + 3, y + 12.5);
+        txt(T('nt.pdf.will.disc1', 'DISCLAIMER: This document is a draft template generated by AishwaryaMasthu (aishwaryamasthu-66c6f.web.app) for personal reference and'), M + 3, y + 4.5);
+        txt(T('nt.pdf.will.disc2', 'planning purposes only. It does NOT constitute legal advice or a legally executed Will. To be legally valid, this document must be signed by'), M + 3, y + 8.5);
+        txt(T('nt.pdf.will.disc3', 'the Testator in the presence of two witnesses who must also sign. Registration at the Sub-Registrar\'s office is strongly recommended.'), M + 3, y + 12.5);
 
         // ── Save ────────────────────────────────────────────────────────
         var safeName = name.replace(/[^a-zA-Z0-9]/g, '_').substring(0, 30);
