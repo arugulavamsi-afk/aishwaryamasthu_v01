@@ -34,6 +34,7 @@
     }
 
     function nomRenderScore(s) {
+        var T = function(k, fb) { return (typeof _t === 'function') ? _t(k) : fb; };
         var el = document.getElementById('nt-score-val');
         if (el) el.textContent = s.done + '/' + s.total;
         var bar = document.getElementById('nt-score-bar');
@@ -46,10 +47,10 @@
         var badge = document.getElementById('nt-score-badge');
         if (badge) {
             var level, bg, col;
-            if (s.pct >= 80)      { level = '✅ Estate Ready';    bg = '#dcfce7'; col = '#166534'; }
-            else if (s.pct >= 60) { level = '🟡 Good Progress';   bg = '#fef9c3'; col = '#713f12'; }
-            else if (s.pct >= 35) { level = '🟠 Action Needed';   bg = '#ffedd5'; col = '#9a3412'; }
-            else                  { level = '🔴 Critical Risk';   bg = '#fee2e2'; col = '#991b1b'; }
+            if (s.pct >= 80)      { level = T('nt.badge.ready',  '✅ Estate Ready');  bg = '#dcfce7'; col = '#166534'; }
+            else if (s.pct >= 60) { level = T('nt.badge.good',   '🟡 Good Progress'); bg = '#fef9c3'; col = '#713f12'; }
+            else if (s.pct >= 35) { level = T('nt.badge.action', '🟠 Action Needed'); bg = '#ffedd5'; col = '#9a3412'; }
+            else                  { level = T('nt.badge.critical','🔴 Critical Risk'); bg = '#fee2e2'; col = '#991b1b'; }
             badge.textContent = level;
             badge.style.background = bg;
             badge.style.color = col;
@@ -57,6 +58,7 @@
     }
 
     function nomRenderAlerts() {
+        var T = function(k, fb) { return (typeof _t === 'function') ? _t(k) : fb; };
         var el = document.getElementById('nt-alerts');
         if (!el) return;
         var alerts = [];
@@ -65,32 +67,33 @@
             var status = _ntGet('nt-' + a.key + '-status');
             if (status !== 'pending') return;
             var isEpf = a.key === 'epf';
+            var tLabel = T('nt.asset.' + a.key, a.label);
             alerts.push({
                 critical: isEpf,
-                msg: (isEpf ? '⚠️ ' : '') + '<strong>' + a.label + '</strong>' + (isEpf
-                    ? ': ~30% of EPF accounts in India have <em>no nominee</em>. Log in to EPFO Unified Portal → Manage → Nomination and update immediately.'
-                    : ': Nomination pending — ' + a.note)
+                msg: (isEpf ? '⚠️ ' : '') + '<strong>' + tLabel + '</strong>' + (isEpf
+                    ? T('nt.alert.epf', ': ~30% of EPF accounts in India have <em>no nominee</em>. Log in to EPFO Unified Portal → Manage → Nomination and update immediately.')
+                    : ': ' + T('nt.alert.pending.pre', 'Nomination pending — ') + T('nt.alert.nom.note.' + a.key, a.note))
             });
         });
 
         var willV = _ntGet('nt-will-status');
         if (willV === 'none') {
-            alerts.push({ critical: true,  msg: '⚠️ <strong>Will</strong>: No Will found. Without a registered Will, assets may be distributed as per personal law — often leading to family disputes and lengthy court battles.' });
+            alerts.push({ critical: true,  msg: '⚠️ <strong>' + T('nt.lbl.will', 'Will') + '</strong>: ' + T('nt.alert.will.none', 'No Will found. Without a registered Will, assets may be distributed as per personal law — often leading to family disputes and lengthy court battles.') });
         } else if (willV === 'unregistered') {
-            alerts.push({ critical: false, msg: '📋 <strong>Will</strong>: Unregistered Wills are legally valid but can be challenged. Consider registering at Sub-Registrar\'s office (₹200–₹500) for added certainty.' });
+            alerts.push({ critical: false, msg: '📋 <strong>' + T('nt.lbl.will', 'Will') + '</strong>: ' + T('nt.alert.will.unreg', 'Unregistered Wills are legally valid but can be challenged. Consider registering at Sub-Registrar\'s office (₹200–₹500) for added certainty.') });
         }
         if (_ntGet('nt-exec-status') === 'no') {
-            alerts.push({ critical: false, msg: '👤 <strong>Executor</strong>: No executor named in your Will. An executor speeds up estate settlement significantly — name one explicitly.' });
+            alerts.push({ critical: false, msg: '👤 <strong>' + T('nt.lbl.exec', 'Executor') + '</strong>: ' + T('nt.alert.exec', 'No executor named in your Will. An executor speeds up estate settlement significantly — name one explicitly.') });
         }
         if (_ntGet('nt-fam-status') === 'no') {
-            alerts.push({ critical: false, msg: '👨‍👩‍👧 <strong>Family Awareness</strong>: Your family may not know where your Will/documents are. This alone causes 60%+ of estate disputes in India.' });
+            alerts.push({ critical: false, msg: '👨‍👩‍👧 <strong>' + T('nt.lbl.fam', 'Family Awareness') + '</strong>: ' + T('nt.alert.fam', 'Your family may not know where your Will/documents are. This alone causes 60%+ of estate disputes in India.') });
         }
         if (_ntGet('nt-digital-status') === 'no') {
-            alerts.push({ critical: false, msg: '💻 <strong>Digital Assets</strong>: Online accounts, UPI, crypto, email — share access via a sealed envelope or trusted password manager.' });
+            alerts.push({ critical: false, msg: '💻 <strong>' + T('nt.lbl.digital', 'Digital Assets') + '</strong>: ' + T('nt.alert.digital', 'Online accounts, UPI, crypto, email — share access via a sealed envelope or trusted password manager.') });
         }
 
         el.innerHTML = alerts.length === 0
-            ? '<div class="flex items-center gap-2 text-emerald-700 font-bold text-[11px]"><span class="text-base">✅</span><span>All items tracked! Review nominations annually and after major life events.</span></div>'
+            ? '<div class="flex items-center gap-2 text-emerald-700 font-bold text-[11px]"><span class="text-base">✅</span><span>' + T('nt.alerts.done', 'All items tracked! Review nominations annually and after major life events.') + '</span></div>'
             : alerts.slice(0, 5).map(function(a) {
                 return '<div class="flex gap-2 items-start py-1.5 border-b border-slate-100 last:border-0">' +
                     '<span class="flex-shrink-0 mt-0.5 text-xs">' + (a.critical ? '🔴' : '🟡') + '</span>' +
