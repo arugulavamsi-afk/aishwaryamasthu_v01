@@ -142,14 +142,16 @@ function cgCalc() {
     if (!resEl) return;
 
     if (!buyStr || !sellStr || !cost || !salePrice) {
-        resEl.innerHTML = '<p class="text-[11px] text-slate-400 text-center py-6 font-semibold">Fill in all fields to calculate your capital gains tax</p>';
+        var ph = (typeof _t === 'function') ? _t('cg.placeholder') : 'Fill in all fields to calculate your capital gains tax';
+        resEl.innerHTML = '<p class="text-[11px] text-slate-400 text-center py-6 font-semibold">' + ph + '</p>';
         return;
     }
 
     var buyDate  = new Date(buyStr);
     var sellDate = new Date(sellStr);
     if (isNaN(buyDate) || isNaN(sellDate) || sellDate <= buyDate) {
-        resEl.innerHTML = '<p class="text-[11px] text-red-500 text-center py-4 font-semibold">Sale date must be after purchase date</p>';
+        var errMsg = (typeof _t === 'function') ? _t('cg.err.date') : 'Sale date must be after purchase date';
+        resEl.innerHTML = '<p class="text-[11px] text-red-500 text-center py-4 font-semibold">' + errMsg + '</p>';
         return;
     }
 
