@@ -5,17 +5,21 @@
     var _MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
     var _BT_CATS = [
-        { key:'Housing',      icon:'🏠', hint:'Rent · EMI · Maintenance' },
-        { key:'Food',         icon:'🍽️', hint:'Groceries · Dining · Delivery' },
-        { key:'Transport',    icon:'🚌', hint:'Fuel · Cab · Public transport' },
-        { key:'EMIs & Loans', icon:'💳', hint:'Personal loan · Credit card' },
-        { key:'Entertainment',icon:'🎬', hint:'OTT · Movies · Outings' },
-        { key:'Health',       icon:'💊', hint:'Doctor · Medicines · Gym' },
-        { key:'Shopping',     icon:'🛍️', hint:'Clothes · Electronics · Gifts' },
-        { key:'Utilities',    icon:'⚡', hint:'Electricity · Water · Internet' },
-        { key:'Education',    icon:'📚', hint:'School · Courses · Books' },
-        { key:'Others',       icon:'💸', hint:'Miscellaneous expenses' }
+        { key:'Housing',      tkey:'Housing',       icon:'🏠', hint:'Rent · EMI · Maintenance' },
+        { key:'Food',         tkey:'Food',          icon:'🍽️', hint:'Groceries · Dining · Delivery' },
+        { key:'Transport',    tkey:'Transport',     icon:'🚌', hint:'Fuel · Cab · Public transport' },
+        { key:'EMIs & Loans', tkey:'EMIs',          icon:'💳', hint:'Personal loan · Credit card' },
+        { key:'Entertainment',tkey:'Entertainment', icon:'🎬', hint:'OTT · Movies · Outings' },
+        { key:'Health',       tkey:'Health',        icon:'💊', hint:'Doctor · Medicines · Gym' },
+        { key:'Shopping',     tkey:'Shopping',      icon:'🛍️', hint:'Clothes · Electronics · Gifts' },
+        { key:'Utilities',    tkey:'Utilities',     icon:'⚡', hint:'Electricity · Water · Internet' },
+        { key:'Education',    tkey:'Education',     icon:'📚', hint:'School · Courses · Books' },
+        { key:'Others',       tkey:'Others',        icon:'💸', hint:'Miscellaneous expenses' }
     ];
+
+    function _btT(k, fb) { return (typeof _t === 'function') ? _t(k) : (fb !== undefined ? fb : k); }
+    function _btCatLabel(cat) { return cat.tkey ? _btT('bt.cat.' + cat.tkey, cat.key) : cat.key; }
+    function _btCatHint(cat)  { return cat.tkey ? _btT('bt.hint.' + cat.tkey, cat.hint) : (cat.hint || ''); }
 
     var _BT_COLORS = ['#6366f1','#22c55e','#f59e0b','#ef4444','#a78bfa',
                       '#06b6d4','#ec4899','#f97316','#84cc16','#8b5cf6',
@@ -138,7 +142,7 @@
             var prevData = window._btData[prevKey] || {};
             var hasPrevBudget = _btAllCats().some(function (cat) { return (prevData[cat.key] || {}).b > 0; });
             var prevLabel = _MONTHS_SHORT[d.getMonth()] + ' ' + d.getFullYear();
-            copyBtn.textContent = 'Copy ' + prevLabel + ' budgets';
+            copyBtn.textContent = _btT('bt.copy.prev', 'Copy {mon} budgets').replace('{mon}', prevLabel);
             copyBtn.style.display = hasPrevBudget ? '' : 'none';
         }
     }
@@ -170,8 +174,8 @@
         var diff = budget - actual;
         if (budget === 0 && actual === 0) return '<span style="color:#94a3b8;font-size:10px;">—</span>';
         if (over) return '<span style="color:#ef4444;font-weight:700;font-size:10px;">⚠ +₹' + _btFmt(Math.abs(diff)) + '</span>';
-        if (budget > 0) return '<span style="color:#16a34a;font-size:10px;">✓ ₹' + (diff === 0 ? '0' : _btFmt(diff)) + ' left</span>';
-        return '<span style="color:#94a3b8;font-size:10px;">no budget</span>';
+        if (budget > 0) return '<span style="color:#16a34a;font-size:10px;">✓ ₹' + (diff === 0 ? '0' : _btFmt(diff)) + ' ' + _btT('bt.status.left','left') + '</span>';
+        return '<span style="color:#94a3b8;font-size:10px;">' + _btT('bt.status.nobudget','no budget') + '</span>';
     }
 
     function _btMakeRow(cat, data) {
@@ -191,7 +195,7 @@
                         '<span style="font-size:14px;flex-shrink:0;">' + cat.icon + '</span>' +
                         '<div style="flex:1;min-width:0;">' +
                             '<div style="font-size:11px;font-weight:700;color:#1e293b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + _btEsc(cat.key) + '</div>' +
-                            '<div style="font-size:9px;color:#94a3b8;">Custom</div>' +
+                            '<div style="font-size:9px;color:#94a3b8;">' + _btT('bt.cat.custom','Custom') + '</div>' +
                         '</div>' +
                         '<button onclick="window._btDeleteCustomCat(' + JSON.stringify(cat.key) + ')" title="Remove category" ' +
                             'style="flex-shrink:0;padding:2px 5px;border-radius:5px;font-size:10px;font-weight:900;color:#94a3b8;background:transparent;border:1px solid #e2e8f0;cursor:pointer;line-height:1;" ' +
@@ -205,8 +209,8 @@
                     '<div style="display:flex;align-items:center;gap:5px;">' +
                         '<span style="font-size:14px;flex-shrink:0;">' + cat.icon + '</span>' +
                         '<div>' +
-                            '<div style="font-size:11px;font-weight:700;color:#1e293b;">' + cat.key + '</div>' +
-                            '<div style="font-size:9px;color:#94a3b8;line-height:1.2;">' + cat.hint + '</div>' +
+                            '<div style="font-size:11px;font-weight:700;color:#1e293b;">' + _btCatLabel(cat) + '</div>' +
+                            '<div style="font-size:9px;color:#94a3b8;line-height:1.2;">' + _btCatHint(cat) + '</div>' +
                         '</div>' +
                     '</div>' +
                 '</td>';
@@ -222,7 +226,7 @@
                     '<span style="position:absolute;left:7px;top:50%;transform:translateY(-50%);font-size:10px;color:#94a3b8;pointer-events:none;font-weight:700;">₹</span>' +
                     '<input type="text" inputmode="numeric"' +
                     ' data-cat="' + _btEsc(cat.key) + '" data-field="b"' +
-                    ' value="' + bStr + '" placeholder="Budget"' +
+                    ' value="' + bStr + '" placeholder="' + _btEsc(_btT('bt.input.budget','Budget')) + '"' +
                     ' class="bt-num-inp' + (bStr ? '' : ' text-slate-400') + '"' +
                     ' onfocus="window._btInputFocus(this)" oninput="window._btInputChange(this)" onblur="window._btInputBlur(this)">' +
                 '</div>' +
@@ -232,7 +236,7 @@
                     '<span style="position:absolute;left:7px;top:50%;transform:translateY(-50%);font-size:10px;color:#94a3b8;pointer-events:none;font-weight:700;">₹</span>' +
                     '<input type="text" inputmode="numeric"' +
                     ' data-cat="' + _btEsc(cat.key) + '" data-field="a"' +
-                    ' value="' + aStr + '" placeholder="Spent"' +
+                    ' value="' + aStr + '" placeholder="' + _btEsc(_btT('bt.input.spent','Spent')) + '"' +
                     ' class="bt-num-inp' + (aStr ? '' : ' text-slate-400') + '"' +
                     ' onfocus="window._btInputFocus(this)" oninput="window._btInputChange(this)" onblur="window._btInputBlur(this)">' +
                 '</div>' +
@@ -261,16 +265,16 @@
             '<td colspan="4" style="padding:6px 8px;border-top:2px dashed #e2e8f0;">' +
                 '<div style="display:flex;align-items:center;gap:6px;">' +
                     '<span style="font-size:14px;">📌</span>' +
-                    '<input id="bt-new-cat-name" type="text" maxlength="30" placeholder="Category name…" ' +
+                    '<input id="bt-new-cat-name" type="text" maxlength="30" placeholder="' + _btEsc(_btT('bt.cat.placeholder','Category name…')) + '" ' +
                         'style="flex:1;padding:5px 8px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:7px;font-size:11px;font-weight:600;color:#1e293b;outline:none;" ' +
                         'onkeydown="window._btNewCatKeydown(event)" ' +
                         'onfocus="this.style.borderColor=\'#6366f1\';" ' +
                         'onblur="this.style.borderColor=\'#e2e8f0\';">' +
                     '<button onclick="window._btAddCustomCat()" ' +
                         'style="padding:5px 12px;border-radius:7px;font-size:11px;font-weight:700;background:#6366f1;color:#fff;border:none;cursor:pointer;white-space:nowrap;flex-shrink:0;" ' +
-                        'onmouseover="this.style.background=\'#4f46e5\';" onmouseout="this.style.background=\'#6366f1\';">+ Add</button>' +
+                        'onmouseover="this.style.background=\'#4f46e5\';" onmouseout="this.style.background=\'#6366f1\';">' + _btT('bt.cat.add','+ Add') + '</button>' +
                 '</div>' +
-                '<div style="font-size:9px;color:#94a3b8;margin-top:3px;margin-left:22px;">Type your category name and press Enter or click Add</div>' +
+                '<div style="font-size:9px;color:#94a3b8;margin-top:3px;margin-left:22px;">' + _btT('bt.cat.hint','Type your category name and press Enter or click Add') + '</div>' +
             '</td>';
         tbody.appendChild(addTr);
     }
@@ -344,17 +348,17 @@
             if (t.budget === 0) {
                 dEl.textContent = '—'; dEl.style.color = '#94a3b8';
             } else if (diff >= 0) {
-                dEl.textContent = '₹' + _btFmt(diff) + ' saved'; dEl.style.color = '#16a34a';
+                dEl.textContent = '₹' + _btFmt(diff) + ' ' + _btT('bt.sum.diff.saved','saved'); dEl.style.color = '#16a34a';
             } else {
-                dEl.textContent = '₹' + _btFmt(Math.abs(diff)) + ' over'; dEl.style.color = '#dc2626';
+                dEl.textContent = '₹' + _btFmt(Math.abs(diff)) + ' ' + _btT('bt.sum.diff.over','over'); dEl.style.color = '#dc2626';
             }
         }
 
         var oEl = document.getElementById('bt-sum-outliers');
         if (oEl) {
             oEl.textContent = t.over > 0
-                ? t.over + ' categor' + (t.over === 1 ? 'y' : 'ies') + ' over budget'
-                : t.budget > 0 ? 'All categories within budget ✓' : 'Set budgets to track spending';
+                ? t.over + (t.over === 1 ? _btT('bt.status.over.single',' category over budget') : _btT('bt.status.over.plural',' categories over budget'))
+                : t.budget > 0 ? _btT('bt.sum.allok','All categories within budget ✓') : _btT('bt.sum.empty','Set budgets to track spending');
             oEl.style.color = t.over > 0 ? '#dc2626' : t.budget > 0 ? '#16a34a' : '#94a3b8';
         }
 
@@ -364,18 +368,12 @@
             barEl.style.background = pct > 100 ? '#ef4444' : pct > 80 ? '#f59e0b' : '#22c55e';
         }
         var pctEl = document.getElementById('bt-bar-pct');
-        if (pctEl) pctEl.textContent = t.budget > 0 ? pct + '% of budget used' : '';
+        if (pctEl) pctEl.textContent = t.budget > 0 ? pct + _btT('bt.pct.used','% of budget used') : '';
 
         _btRenderEF();
     }
 
     // ── Render: chart ──────────────────────────────────────────
-    var _BT_CHART_DESC = {
-        bar:   'Budget vs Actual spend per category this month',
-        line:  'Total monthly spend over the last 12 months',
-        donut: 'Actual spend split by category this month'
-    };
-
     function _btSetChartType(type) {
         window._btChartType = type;
         ['bar', 'line', 'donut'].forEach(function (t) {
@@ -387,8 +385,13 @@
             btn.style.color       = active ? '#c7d2fe'              : 'rgba(255,255,255,0.45)';
             btn.style.fontWeight  = active ? '700' : '500';
         });
+        var _btChartDescs = {
+            bar:   _btT('bt.chart.bar',   'Budget vs Actual spend per category this month'),
+            line:  _btT('bt.chart.line',  'Total monthly spend over the last 12 months'),
+            donut: _btT('bt.chart.donut', 'Actual spend split by category this month')
+        };
         var descEl = document.getElementById('bt-chart-desc');
-        if (descEl) descEl.textContent = _BT_CHART_DESC[type] || '';
+        if (descEl) descEl.textContent = _btChartDescs[type] || '';
         _btRenderChart();
     }
     window._btSetChartType = _btSetChartType;
@@ -416,8 +419,8 @@
                 data: {
                     labels: labels,
                     datasets: [
-                        { label:'Budget', data:budgets, backgroundColor:'rgba(99,102,241,0.55)', borderColor:'#6366f1', borderWidth:1, borderRadius:4 },
-                        { label:'Actual', data:actuals,
+                        { label:_btT('bt.chart.legend.budget','Budget'), data:budgets, backgroundColor:'rgba(99,102,241,0.55)', borderColor:'#6366f1', borderWidth:1, borderRadius:4 },
+                        { label:_btT('bt.chart.legend.actual','Actual'), data:actuals,
                           backgroundColor: actuals.map(function(a,i){ return budgets[i]>0 && a>budgets[i] ? 'rgba(239,68,68,0.7)' : 'rgba(34,197,94,0.65)'; }),
                           borderColor:     actuals.map(function(a,i){ return budgets[i]>0 && a>budgets[i] ? '#ef4444' : '#22c55e'; }),
                           borderWidth:1, borderRadius:4 }
@@ -455,8 +458,8 @@
                 data: {
                     labels: months,
                     datasets: [
-                        { label:'Actual Spend', data:totals, borderColor:'#6366f1', backgroundColor:'rgba(99,102,241,0.12)', pointBackgroundColor:'#a5b4fc', pointRadius:4, fill:true, tension:0.35 },
-                        { label:'Budget',       data:budgetLines, borderColor:'#f59e0b', backgroundColor:'transparent', borderDash:[4,3], pointRadius:3, pointBackgroundColor:'#fbbf24', fill:false, tension:0.35 }
+                        { label:_btT('bt.chart.legend.actual2','Actual Spend'), data:totals, borderColor:'#6366f1', backgroundColor:'rgba(99,102,241,0.12)', pointBackgroundColor:'#a5b4fc', pointRadius:4, fill:true, tension:0.35 },
+                        { label:_btT('bt.chart.legend.budget','Budget'),        data:budgetLines, borderColor:'#f59e0b', backgroundColor:'transparent', borderDash:[4,3], pointRadius:3, pointBackgroundColor:'#fbbf24', fill:false, tension:0.35 }
                     ]
                 },
                 options: {
@@ -483,7 +486,7 @@
                 ctx.fillStyle = 'rgba(255,255,255,0.3)';
                 ctx.font = '12px Inter, sans-serif';
                 ctx.textAlign = 'center';
-                ctx.fillText('Enter actual spend to see breakdown', canvas.width/2, canvas.height/2);
+                ctx.fillText(_btT('bt.chart.donut.empty','Enter actual spend to see breakdown'), canvas.width/2, canvas.height/2);
                 return;
             }
             window._btChartInst = new Chart(ctx, {
@@ -538,20 +541,21 @@
 
         if (monthly === 0) {
             resEl.textContent = '—';
-            if (lblEl) lblEl.textContent = 'Fill in your monthly expenses above to see your target';
-            if (basisEl) basisEl.textContent = 'Based on your monthly expenses';
+            if (lblEl) lblEl.textContent = _btT('bt.ef.empty','Fill in your monthly expenses above to see your target');
+            if (basisEl) basisEl.textContent = _btT('bt.ef.basis.default','Based on your monthly expenses');
             if (el3)  el3.textContent  = '—';
             if (el6)  el6.textContent  = '—';
             if (el12) el12.textContent = '—';
             return;
         }
 
-        var source = t.actual > 0 ? 'actual spend' : 'budgeted amount';
-        if (basisEl) basisEl.textContent = 'Based on ' + source + ' of ' + fmt(monthly) + ' / month';
+        var basisKey = t.actual > 0 ? 'bt.ef.basis.actual' : 'bt.ef.basis.budgeted';
+        var basisFb  = t.actual > 0 ? 'Based on actual spend of {amount} / month' : 'Based on budgeted amount of {amount} / month';
+        if (basisEl) basisEl.textContent = _btT(basisKey, basisFb).replace('{amount}', fmt(monthly));
 
         var target = monthly * _btEFMonths;
         resEl.textContent = fmt(target);
-        if (lblEl) lblEl.textContent = _btEFMonths + '-month emergency corpus target';
+        if (lblEl) lblEl.textContent = _btT('bt.ef.target','{n}-month emergency corpus target').replace('{n}', _btEFMonths);
         if (typeof window.saveToolSummary === 'function')
             window.saveToolSummary('budgetTracker', { efTarget: target, efMonths: _btEFMonths, monthlyExpenses: monthly });
 
