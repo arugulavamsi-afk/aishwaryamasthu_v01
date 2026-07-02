@@ -259,7 +259,7 @@
                 '<div style="margin-bottom:14px;position:relative;">' +
                     '<span style="position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:13px;pointer-events:none;opacity:0.4;">🔍</span>' +
                     '<input type="text" autocomplete="off" ' +
-                        ‘placeholder="’ + _ug_t(‘ug.search.ph’, ‘Search guide — try ‘SIP’, ‘tax’, ‘CIBIL’, ‘gold’, ‘nominee’…’) + ‘" ‘ +
+                        'placeholder="' + _ug_t('ug.search.ph', 'Search guide…') + '" ' +
                         'oninput="_ugSearch(this.value)" ' +
                         'style="width:100%;padding:10px 12px 10px 34px;border-radius:12px;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);color:#fff;font-size:12px;font-weight:600;font-family:\'Inter\',sans-serif;outline:none;box-sizing:border-box;" ' +
                         'onfocus="this.style.borderColor=\'rgba(245,200,66,0.5)\'" ' +
