@@ -15421,6 +15421,9 @@
         if (_cm === 'goaltracker') {
             if (typeof _gtRefreshAll === 'function') try { _gtRefreshAll(); } catch(e) {}
         }
+        if (_cm === 'userguide') {
+            if (typeof initUserGuide === 'function') try { initUserGuide(); } catch(e) {}
+        }
         if (_cm && typeof injectHowToUse === 'function') {
             try { injectHowToUse(_cm); } catch(e) {}
         }
