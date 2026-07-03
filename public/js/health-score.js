@@ -56,6 +56,41 @@
             return parseInt(raw, 10) || 0;
         }
 
+        function _hsSet(id, val) {
+            const el = document.getElementById(id);
+            if (!el || !(val > 0)) return;
+            el.value = Math.round(val).toLocaleString('en-IN');
+            el.classList.remove('text-slate-400');
+        }
+
+        // Net Worth Tracker → FinHealth Score portfolio auto-fill
+        function hsRefreshNwBanner() {
+            const banner = document.getElementById('nw-banner-healthscore');
+            if (!banner) return;
+            const nw = (window._toolSummaries || {}).netWorth;
+            banner.classList.toggle('hidden', !nw);
+        }
+
+        function hsApplyNetWorth() {
+            const nw = (window._toolSummaries || {}).netWorth;
+            if (!nw) return;
+            _hsSet('hs-pf-equity',  nw.equity);
+            _hsSet('hs-pf-debt',    nw.debtMf);
+            _hsSet('hs-pf-retiral', nw.retiral);
+            _hsSet('hs-pf-realty',  nw.realty);
+            _hsSet('hs-pf-gold',    nw.gold);
+            _hsSet('hs-pf-other',   nw.other);
+            calcHealthScore();
+
+            const btn = document.querySelector('#nw-banner-healthscore .up-apply-btn');
+            if (btn) {
+                const orig = btn.textContent;
+                btn.textContent = _t('up.applied');
+                btn.style.background = '#059669';
+                setTimeout(() => { btn.textContent = orig; btn.style.background = ''; }, 1500);
+            }
+        }
+
         function resetHealthScore() {
             const moneyFields = ['hs-income','hs-emi','hs-expenses','hs-savings','hs-health-ins','hs-term-ins','hs-efund',
                                   'hs-pf-equity','hs-pf-debt','hs-pf-realty','hs-pf-gold','hs-pf-retiral','hs-pf-other'];

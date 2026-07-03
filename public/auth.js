@@ -799,6 +799,7 @@
         }
         if (typeof upRefreshToolSummaries === 'function') upRefreshToolSummaries();
         if (typeof _dashUpdateNetWorthWidget === 'function') _dashUpdateNetWorthWidget();
+        if (toolName === 'netWorth' && typeof hsRefreshNwBanner === 'function') hsRefreshNwBanner();
     }
     window.saveToolSummary = saveToolSummary;
 

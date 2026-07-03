@@ -104,7 +104,14 @@
 
         if (totalAssets > 0 || totalLiab > 0) {
             if (typeof window.saveToolSummary === 'function')
-                window.saveToolSummary('netWorth', { totalAssets: totalAssets, totalLiab: totalLiab, netWorth: netWorth });
+                window.saveToolSummary('netWorth', {
+                    totalAssets: totalAssets, totalLiab: totalLiab, netWorth: netWorth,
+                    // Category breakdown — lets other tools (e.g. FinHealth Score) auto-fill
+                    // from tracked net worth without needing the panel loaded in the DOM.
+                    equity: stocks + eqMf, debtMf: debtMf, retiral: epf + ppf + nps,
+                    realty: home + property, gold: goldPhys + goldPaper,
+                    other: crypto + insSv + other
+                });
         }
 
         // Summary cards
