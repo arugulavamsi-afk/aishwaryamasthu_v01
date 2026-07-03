@@ -87,6 +87,7 @@
         _btRenderChart();
         window._btLastUpdated = new Date().toISOString();
         if (typeof saveUserData === 'function') saveUserData();
+        if (typeof _dashUpdateBudgetWidget === 'function') _dashUpdateBudgetWidget();
     }
     window._btAddCustomCat = _btAddCustomCat;
 
@@ -99,6 +100,7 @@
         _btRenderChart();
         window._btLastUpdated = new Date().toISOString();
         if (typeof saveUserData === 'function') saveUserData();
+        if (typeof _dashUpdateBudgetWidget === 'function') _dashUpdateBudgetWidget();
     }
     window._btDeleteCustomCat = _btDeleteCustomCat;
 
@@ -165,6 +167,7 @@
         _btRefreshAll();
         window._btLastUpdated = new Date().toISOString();
         if (typeof saveUserData === 'function') saveUserData();
+        if (typeof _dashUpdateBudgetWidget === 'function') _dashUpdateBudgetWidget();
     }
     window._btCopyBudgetFromPrev = _btCopyBudgetFromPrev;
 
@@ -301,6 +304,7 @@
         _btRenderChart();
         window._btLastUpdated = new Date().toISOString();
         if (typeof saveUserData === 'function') saveUserData();
+        if (typeof _dashUpdateBudgetWidget === 'function') _dashUpdateBudgetWidget();
     }
 
     function _btInputBlur(el) {

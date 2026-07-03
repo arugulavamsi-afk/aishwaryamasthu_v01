@@ -593,7 +593,7 @@
         };
 
         var now = new Date();
-        var curMon    = now.toISOString().slice(0, 7);
+        var curMon    = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
         var monthLabel = now.toLocaleString('en-IN', { month: 'long', year: 'numeric' });
         var monthData  = (window._btData && window._btData[curMon]) ? window._btData[curMon] : null;
         var hasAnyEntry = monthData && Object.keys(monthData).some(function(k) {
@@ -824,8 +824,12 @@
 
         // ── Budget ─────────────────────────────────────────────
         var _CI   = {'Housing':'🏠','Food':'🍽️','Transport':'🚌','EMIs & Loans':'💳','Entertainment':'🎬','Health':'💊','Shopping':'🛍️','Utilities':'⚡','Education':'📚','Others':'💸'};
-        var curMon   = new Date().toISOString().slice(0, 7);
-        var monLabel = new Date().toLocaleString('en-IN', { month: 'short', year: 'numeric' });
+        var _dashNowD = new Date();
+        // Must match budget-tracker.js's _btNow(), which keys by LOCAL year/month —
+        // using toISOString() (UTC) here would mismatch during the first ~5.5 hours
+        // of each month for IST users, hiding just-entered current-month data.
+        var curMon   = _dashNowD.getFullYear() + '-' + String(_dashNowD.getMonth() + 1).padStart(2, '0');
+        var monLabel = _dashNowD.toLocaleString('en-IN', { month: 'short', year: 'numeric' });
         var md       = window._btData && window._btData[curMon];
         var hasBt    = md && Object.keys(md).some(function(k) { var e=md[k]; return (e.b||0)>0||(e.a||0)>0; });
         var budgetContent, budgetTs;

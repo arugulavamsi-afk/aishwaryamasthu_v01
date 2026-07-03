@@ -1629,6 +1629,7 @@
                     try { window._btCustomCats = JSON.parse(_btRestore.customCats); } catch(e2) {}
                 }
                 if (_btRestore.lastUpdated) window._btLastUpdated = _btRestore.lastUpdated;
+                if (typeof _dashUpdateBudgetWidget === 'function') _dashUpdateBudgetWidget();
                 _applyWhenReady('bt-month-disp', function() {
                     try {
                         if (typeof initBudgetTracker === 'function') initBudgetTracker();
