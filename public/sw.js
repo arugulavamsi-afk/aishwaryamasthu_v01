@@ -1,5 +1,5 @@
 /* AishwaryaMasthu Service Worker */
-var CACHE = 'am-v11';
+var CACHE = 'am-v12';
 
 /* App shell — pre-cached on SW install. Other files are cached on first access. */
 var SHELL = [
@@ -92,9 +92,11 @@ self.addEventListener('fetch', function(e) {
   if (e.request.method !== 'GET') return;
   if (url.startsWith('chrome-extension')) return;
 
-  /* Network-only: Firebase Auth/Firestore, MF API */
+  /* Network-only: Firebase Auth/Firestore, Google sign-in (gapi), MF API */
   if (url.includes('firebaseapp.com') ||
       url.includes('googleapis.com') ||
+      url.includes('apis.google.com') ||
+      url.includes('accounts.google.com') ||
       url.includes('firestore.googleapis.com') ||
       url.includes('identitytoolkit') ||
       url.includes('securetoken') ||
