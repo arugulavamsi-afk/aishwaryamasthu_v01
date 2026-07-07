@@ -327,7 +327,7 @@
         // emails have accounts (email enumeration)
         const done = () => {
             if (okEl) {
-                okEl.textContent = `📬 If an account exists for ${email}, a password reset link is on its way.`;
+                okEl.textContent = `📬 If a password-based account exists for ${email}, a reset link is on its way. Signed up with Google? Just use "Continue with Google" — there's no password to reset.`;
                 okEl.style.display = 'block';
             }
         };
