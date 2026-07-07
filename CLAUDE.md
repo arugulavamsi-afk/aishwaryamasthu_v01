@@ -47,6 +47,7 @@ Never run `firebase deploy` (full) without explicit user confirmation.
 - **Input parsing:** strip formatting before parsing — see `hlNum()` in `home-loan.js:18`
 - **Service worker:** bump `CACHE = 'am-vN'` in `public/sw.js` on EVERY deploy that changes `public/` assets (cache-first serving mixes old/new code otherwise), and add any new JS module or panel HTML to the `SHELL` list so offline mode covers it
 - **Tax figures:** always include 4% Health & Education Cess (`× 1.04`) and label it, and apply §87A marginal relief above ₹12L in new-regime slab math (`t = Math.min(t, taxable − 12,00,000)`)
+- **Translations:** only English lives inline in `public/js/i18n.js`; hi/te/ta dictionaries live in `public/i18n/{hi,te,ta}.json`, lazy-fetched by `loadLangDict()`. Keep key sets identical across all four languages — add new keys to `_T.en` AND all three JSON files
 
 ## Additional documentation
 Check these when working on the relevant area:
