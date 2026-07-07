@@ -26,12 +26,13 @@
     <link rel="preconnect" href="https://identitytoolkit.googleapis.com" crossorigin>
     <link rel="preconnect" href="https://securetoken.googleapis.com" crossorigin>
     <link rel="dns-prefetch" href="https://firebaseinstallations.googleapis.com">
-    <!-- Download Firebase SDK and Chart.js in parallel while Tailwind is executing -->
-    <link rel="preload" as="script" href="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js">
-    <link rel="preload" as="script" href="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js">
-    <link rel="preload" as="script" href="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js">
-    <link rel="preload" as="script" href="https://cdn.jsdelivr.net/npm/chart.js">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Download Firebase SDK and Chart.js in parallel with page parse -->
+    <link rel="preload" as="script" href="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js" integrity="sha384-sEVIly94UBRLKWdkYoPpSG7GD/e79YHMrxVyZaOk712Ga7+EAw6w1EFi+xBzBdd+" crossorigin="anonymous">
+    <link rel="preload" as="script" href="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js" integrity="sha384-EkqK+ezBWJuvO3hfrSx2iVqr3YQbhmnzn8kPhOpBZ+0GMVU5oGSgptwIu8D84HjE" crossorigin="anonymous">
+    <link rel="preload" as="script" href="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js" integrity="sha384-M481iNZJtbpypKgvlvZ+78Giq0BsewFLk5r2k+MOcGXlwKCc27DQRZ+WCV/zpmpC" crossorigin="anonymous">
+    <link rel="preload" as="script" href="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js" integrity="sha384-jb8JQMbMoBUzgWatfe6COACi2ljcDdZQ2OxczGA3bGNeWe+6DChMTBJemed7ZnvJ" crossorigin="anonymous">
+    <!-- Compiled Tailwind (was the dev-only Play CDN) — rebuild with `npm run build:css` after adding new utility classes -->
+    <link rel="stylesheet" href="tailwind.css">
     <!-- Chart.js moved to bottom of body — not needed for splash screen -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -953,7 +954,7 @@
             </div>
         </div>
     </footer>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js" integrity="sha384-jb8JQMbMoBUzgWatfe6COACi2ljcDdZQ2OxczGA3bGNeWe+6DChMTBJemed7ZnvJ" crossorigin="anonymous"></script>
     <script src="app.js"></script>
     <!-- Investment Detail Modal -->
     <div id="invest-modal" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 hidden" onclick="closeModal(event)">
@@ -2529,8 +2530,8 @@
     <script src="js/cg-calc.js"></script>
     <script src="js/hra-calc.js"></script>
     <script src="js/health-score.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha384-JcnsjUPPylna1s1fvi1u12X5qjY5OL56iySh75FdtrwhO/SWXgMjoVqcKyIIWOLk" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" integrity="sha384-vtjasyidUo0kW94K5MXDXntzOJpQgBKXmE7e2Ga4LG0skTTLeBi97eFAXsqewJjw" crossorigin="anonymous"></script>
     <script src="js/nom-track.js"></script>
     <script src="js/budget-tracker.js"></script>
     <script src="js/goal-tracker.js"></script>

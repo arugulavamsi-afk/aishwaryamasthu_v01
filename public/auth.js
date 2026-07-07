@@ -7,17 +7,22 @@
 
     // ── Firebase SDK (CDN, no build tools needed) ──
     const _fbScripts = [
-        'https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js',
-        'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js',
-        'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js'
+        { src: 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js',
+          integrity: 'sha384-sEVIly94UBRLKWdkYoPpSG7GD/e79YHMrxVyZaOk712Ga7+EAw6w1EFi+xBzBdd+' },
+        { src: 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js',
+          integrity: 'sha384-EkqK+ezBWJuvO3hfrSx2iVqr3YQbhmnzn8kPhOpBZ+0GMVU5oGSgptwIu8D84HjE' },
+        { src: 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js',
+          integrity: 'sha384-M481iNZJtbpypKgvlvZ+78Giq0BsewFLk5r2k+MOcGXlwKCc27DQRZ+WCV/zpmpC' }
     ];
     let _fbLoaded = 0;
     let _fbAuth, _fbDb;
 
     function _loadFirebase() {
-        _fbScripts.forEach(src => {
+        _fbScripts.forEach(({ src, integrity }) => {
             const s = document.createElement('script');
             s.src = src;
+            s.integrity = integrity;
+            s.crossOrigin = 'anonymous';
             s.onload = () => { _fbLoaded++; if (_fbLoaded === _fbScripts.length) _initFirebase(); };
             document.head.appendChild(s);
         });

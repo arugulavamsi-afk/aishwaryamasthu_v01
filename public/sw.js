@@ -1,10 +1,11 @@
 /* AishwaryaMasthu Service Worker */
-var CACHE = 'am-v9';
+var CACHE = 'am-v10';
 
 /* App shell — pre-cached on SW install. Other files are cached on first access. */
 var SHELL = [
   '/',
   '/styles.css',
+  '/tailwind.css',
   '/app.js',
   '/auth.js',
   '/dashboard.js',
@@ -101,9 +102,8 @@ self.addEventListener('fetch', function(e) {
     return; /* let the browser handle it normally */
   }
 
-  /* Network-first for CDN scripts (Tailwind, Chart.js, Firebase SDK) */
-  if (url.includes('cdn.tailwindcss') ||
-      url.includes('cdn.jsdelivr') ||
+  /* Network-first for CDN scripts (Chart.js, Firebase SDK, jsPDF, xlsx) */
+  if (url.includes('cdn.jsdelivr') ||
       url.includes('cdnjs.cloudflare') ||
       url.includes('gstatic.com')) {
     e.respondWith(
