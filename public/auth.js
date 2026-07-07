@@ -171,16 +171,12 @@
         const tabLogin    = document.getElementById('auth-tab-login');
         const tabSignup   = document.getElementById('auth-tab-signup');
 
-        const scroll = document.querySelector('.auth-forms-scroll');
         if (tab === 'login') {
             signupForm.style.display = 'none';
             loginForm.style.display  = 'flex';
-            if (scroll) scroll.style.height = ''; // release; login sizes naturally
             tabLogin.classList.add('active');
             tabSignup.classList.remove('active');
         } else {
-            // Lock scroll height to login's current size before revealing signup
-            if (scroll) scroll.style.height = scroll.offsetHeight + 'px';
             loginForm.style.display  = 'none';
             signupForm.style.display = 'flex';
             tabSignup.classList.add('active');

@@ -260,10 +260,12 @@
             overflow: hidden;
             cursor: pointer;
         }
-        /* Title region — fixed height so the title never shifts when auth appears */
+        /* Title region — content-sized so the auth card below gets the remaining room.
+           min-height keeps the title nicely placed while Firebase initialises. */
         #splash-inner {
-            flex: 0 0 42vh;
-            flex: 0 0 42svh; /* svh = small viewport height — stable even as mobile chrome hides */
+            flex: 0 0 auto;
+            min-height: 30vh;
+            min-height: 30svh; /* svh = small viewport height — stable as mobile chrome hides */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -280,9 +282,32 @@
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
-            padding: 0 16px 80px;
+            padding: 4px 16px 90px;
             overflow-y: auto;
             z-index: 2;
+        }
+        /* ── Desktop split-screen: brand hero left, auth card right ── */
+        @media (min-width: 900px) {
+            #splash {
+                flex-direction: row;
+                align-items: stretch;
+            }
+            #splash-inner {
+                flex: 1 1 55%;
+                min-height: 0;
+                height: 100%;
+                padding: 0 32px;
+            }
+            #splash-auth {
+                flex: 1 1 45%;
+                height: 100%;
+                justify-content: center;
+                padding: 48px 40px 64px;
+                background: rgba(2, 12, 14, 0.35);
+                border-left: 1px solid rgba(245, 200, 66, 0.14);
+                backdrop-filter: blur(6px);
+                -webkit-backdrop-filter: blur(6px);
+            }
         }
         #splash-inner.splash-inner--centered { }
         #splash.fade-out {
@@ -427,6 +452,8 @@
         .auth-panel {
             position: relative;
             z-index: 2;
+            /* flex child of #splash-auth — never shrink, overflow scrolls instead */
+            flex-shrink: 0;
             width: min(420px, 92vw);
             margin-top: 0;
             background: rgba(255,255,255,0.04);
@@ -438,35 +465,14 @@
             opacity: 0;
             transform: translateY(22px) scale(0.97);
             animation: authReveal 0.3s cubic-bezier(0.22,1,0.36,1) 0.3s forwards;
-            /* overflow:hidden clips the inner scrollbar within the border-radius */
+            /* clips the tab-bar highlight inside the border-radius */
             overflow: hidden;
         }
-        /* Scroll wrapper sits below the tab bar — max-height set directly here
-           so overflow-y triggers without needing a definite parent height */
+        /* Forms wrapper — sizes to content; on short screens the whole
+           #splash-auth region scrolls instead of a cramped inner box */
         .auth-forms-scroll {
-            overflow-x: hidden;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-            /* viewport minus: padding-top(36) + lang-bar-mobile(30) + title/ticker(88)
-               + tiles(88) + panel-margin(12) + tab-bar(38) + padding-bottom(72) ≈ 364px */
-            max-height: max(140px, calc(100svh - 364px));
-            max-height: max(140px, calc(100dvh - 364px));
+            overflow: visible;
         }
-        /* Gold scrollbar — track margin keeps thumb inside the border-radius curve */
-        .auth-forms-scroll::-webkit-scrollbar { width: 4px; }
-        .auth-forms-scroll::-webkit-scrollbar-button { display: none; height: 0; }
-        .auth-forms-scroll::-webkit-scrollbar-track {
-            background: rgba(245,200,66,0.06);
-            border-radius: 4px;
-            margin: 22px 0;   /* 22px > border-radius(20px): stays inside curve */
-        }
-        .auth-forms-scroll::-webkit-scrollbar-thumb {
-            background: linear-gradient(to bottom, #f5c842, #c97f3a);
-            border-radius: 4px;
-            min-height: 32px;
-        }
-        .auth-forms-scroll::-webkit-scrollbar-thumb:hover { background: #f5c842; }
-        .auth-forms-scroll { scrollbar-width: thin; scrollbar-color: #f5c842 rgba(245,200,66,0.06); }
         @keyframes authReveal {
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
@@ -506,10 +512,10 @@
         .auth-tab-btn:not(.active):hover { color: rgba(232,213,163,0.75); }
 
         .auth-form {
-            padding: 12px 16px 14px;
+            padding: 16px 18px 18px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 11px;
         }
         .auth-field-label {
             display: block;
@@ -522,7 +528,7 @@
         }
         .auth-input {
             width: 100%;
-            padding: 11px 14px;
+            padding: 12px 14px;
             background: rgba(255,255,255,0.06);
             border: 1.5px solid rgba(255,255,255,0.12);
             border-radius: 11px;
@@ -613,6 +619,50 @@
             text-decoration: underline;
         }
         .auth-row-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+        /* Small gold text-link buttons (forgot password etc.) */
+        .auth-link-btn {
+            background: none;
+            border: none;
+            color: rgba(245,200,66,0.65);
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.68rem;
+            font-family: 'Inter', sans-serif;
+            transition: color 0.15s;
+        }
+        .auth-link-btn:hover { color: #f5c842; }
+
+        /* Google sign-in — hidden until auth.js enables it (display:flex) */
+        .auth-google-btn {
+            display: none;
+            width: 100%;
+            padding: 11px;
+            margin-top: 2px;
+            border-radius: 11px;
+            border: 1px solid rgba(255,255,255,0.18);
+            background: rgba(255,255,255,0.07);
+            color: rgba(255,255,255,0.85);
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: 'Inter', sans-serif;
+            transition: background 0.15s, border-color 0.15s;
+        }
+        .auth-google-btn:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.3); }
+
+        /* One-line reassurance under the signup button */
+        .auth-secure-note {
+            text-align: center;
+            font-size: 0.62rem;
+            color: rgba(232,213,163,0.4);
+            letter-spacing: 0.02em;
+            margin-top: 2px;
+            line-height: 1.5;
+        }
 
         /* Welcome greeting on splash when already logged in */
         .auth-welcome {

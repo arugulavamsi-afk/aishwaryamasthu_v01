@@ -403,8 +403,8 @@
         'hl.slab.30':             '30% — taxable income above ₹24L',
         /* Splash */
         'splash.tagline':       'Indian Wealth Generation Calculator',
-        'splash.login':         '🔑  Login',
-        'splash.signup':        '✨  Sign Up',
+        'splash.login':         'Login',
+        'splash.signup':        'Sign Up',
         'splash.email':         'Email Address',
         'splash.password':      'Password',
         'splash.confirmpassword': 'Confirm Password',
@@ -3891,8 +3891,8 @@
         'ssh.goals':            '🎯 लक्ष्य (आज का मूल्य — महंगाई स्वचालित रूप से समायोजित)',
         /* Splash */
         'splash.tagline':       'भारतीय धन सृजन कैलकुलेटर',
-        'splash.login':         '🔑  लॉगिन',
-        'splash.signup':        '✨  साइन अप',
+        'splash.login':         'लॉगिन',
+        'splash.signup':        'साइन अप',
         'splash.email':         'ईमेल पता',
         'splash.password':      'पासवर्ड',
         'splash.confirmpassword': 'पासवर्ड की पुष्टि करें',
@@ -7660,8 +7660,8 @@
         'hl.slab.30':             '30% — పన్ను విధించదగిన ఆదాయం ₹24L పైన',
         /* Splash */
         'splash.tagline':       'భారతీయ సంపద వృద్ధి కాల్క్యులేటర్',
-        'splash.login':         '🔑  లాగిన్',
-        'splash.signup':        '✨  సైన్ అప్',
+        'splash.login':         'లాగిన్',
+        'splash.signup':        'సైన్ అప్',
         'splash.email':         'ఇమెయిల్ చిరునామా',
         'splash.password':      'పాస్‌వర్డ్',
         'splash.confirmpassword': 'పాస్‌వర్డ్ నిర్ధారించండి',
@@ -11150,8 +11150,8 @@
         'ssh.goals':            '🎯 இலக்குகள் (இன்றைய விலை — பணவீக்கம் தானாக சரிசெய்யப்படும்)',
         /* Splash */
         'splash.tagline':       'இந்திய செல்வம் உருவாக்கும் கணிப்பான்',
-        'splash.login':         '🔑  உள்நுழைய',
-        'splash.signup':        '✨  பதிவு செய்ய',
+        'splash.login':         'உள்நுழைய',
+        'splash.signup':        'பதிவு செய்ய',
         'splash.email':         'மின்னஞ்சல் முகவரி',
         'splash.password':      'கடவுச்சொல்',
         'splash.confirmpassword': 'கடவுச்சொல்லை உறுதிப்படுத்தவும்',
