@@ -5,6 +5,12 @@ service cloud.firestore {
     // User data — each user reads/writes only their own document
     match /users/{uid} {
       allow read, write: if request.auth != null && request.auth.uid == uid;
+
+      // Per-tool app data (users/{uid}/tools/{toolId}) — rules don't cascade
+      // into subcollections, so the tools docs need their own match
+      match /tools/{toolId} {
+        allow read, write: if request.auth != null && request.auth.uid == uid;
+      }
     }
 
     // Experts — any authenticated user can read; writes are admin-only (Firebase Console)

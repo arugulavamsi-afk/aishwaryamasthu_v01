@@ -404,7 +404,15 @@
         if (!confirm('Reset all your saved numbers?\n\nThis clears Growth, Goal, Emergency Fund, Health Score, and Financial Plan data. Your account stays safe.')) return;
         const user = _fbAuth && _fbAuth.currentUser;
         if (user && _fbDb) {
-            _fbDb.collection('users').doc(user.uid).update({ appData: firebase.firestore.FieldValue.delete() })
+            const userRef = _fbDb.collection('users').doc(user.uid);
+            userRef.collection('tools').get()
+                .then(function(toolsSnap) {
+                    var batch = _fbDb.batch();
+                    toolsSnap.forEach(function(d) { batch.delete(d.ref); });
+                    // Also clear the legacy appData field for not-yet-migrated users
+                    batch.set(userRef, { appData: firebase.firestore.FieldValue.delete() }, { merge: true });
+                    return batch.commit();
+                })
                 .then(() => location.reload()).catch(() => location.reload());
         } else { location.reload(); }
     }
@@ -803,10 +811,10 @@
                 return obj;
             });
             // Seed from last Firestore snapshot so panel data isn't lost when panels
-            // are lazy-loaded and not currently in the DOM.  Firestore's merge:true
-            // only preserves OTHER document fields (e.g. riskProfile), NOT nested
-            // sub-fields within appData — so we must carry forward missing panel data
-            // ourselves using the cached snapshot as the starting point.
+            // are lazy-loaded and not currently in the DOM — carry forward missing
+            // panel data using the cached snapshot as the starting point, so the
+            // per-tool diff in _writeToolDocs sees a complete picture and skips
+            // unchanged docs.
             var _base = window._cachedRestoreData ? Object.assign({}, window._cachedRestoreData) : {};
             var data = Object.assign(_base, {
                 growth:    window._tabState ? Object.assign({}, window._tabState.growth) : (_base.growth || {}),
@@ -858,10 +866,64 @@
             });
             // Keep in-memory cache in sync so subsequent saves inherit current values
             window._cachedRestoreData = data;
-            _fbDb.collection('users').doc(user.uid)
-                .set({ appData: data }, { merge: true })
-                .catch(e => console.warn('saveUserData Firestore failed:', e));
+            _writeToolDocs(user, data);
         } catch(e) { console.warn('saveUserData failed:', e); }
+    }
+
+    // ── Per-tool Firestore layout ──
+    // Each top-level key of the assembled data object lives in its own doc at
+    // users/{uid}/tools/{toolId}, payload under field `v` — the user doc itself
+    // stays small (profile, riskProfile, toolSummaries) and no doc approaches
+    // Firestore's 1 MB limit as the 26+ tools accumulate data.
+    // _toolWriteBaseline holds a JSON snapshot of the last loaded/written payload
+    // per tool, so a debounced save only writes docs whose data actually changed
+    // (typically just the panel being edited).
+    var _toolWriteBaseline = {};
+
+    function _writeToolDocs(user, data) {
+        var toolsCol = _fbDb.collection('users').doc(user.uid).collection('tools');
+        var batch = _fbDb.batch();
+        var written = [];
+        Object.keys(data).forEach(function(toolId) {
+            var payload = data[toolId];
+            if (payload === undefined) return;
+            var json = JSON.stringify(payload);
+            if (_toolWriteBaseline[toolId] === json) return;
+            // merge:true — same deep-merge semantics the appData map had, so a
+            // partial payload never clobbers fields written by another session
+            batch.set(toolsCol.doc(toolId), { v: payload }, { merge: true });
+            written.push({ id: toolId, json: json });
+        });
+        if (written.length === 0) return;
+        batch.commit()
+            .then(function() {
+                // Only advance the baseline on success so a failed write retries
+                // on the next debounced save
+                written.forEach(function(w) { _toolWriteBaseline[w.id] = w.json; });
+            })
+            .catch(function(e) { console.warn('saveUserData Firestore failed:', e); });
+    }
+
+    // One-time migration from the legacy layout (everything under users/{uid}.appData):
+    // copy each key into its own tool doc and drop the appData field in a single
+    // atomic batch — if the commit fails, appData is untouched and migration
+    // simply retries on the next login.
+    function _migrateAppDataToToolDocs(user, appData) {
+        var userRef = _fbDb.collection('users').doc(user.uid);
+        var batch = _fbDb.batch();
+        Object.keys(appData).forEach(function(toolId) {
+            if (appData[toolId] === undefined) return;
+            batch.set(userRef.collection('tools').doc(toolId), { v: appData[toolId] }, { merge: true });
+        });
+        batch.set(userRef, { appData: firebase.firestore.FieldValue.delete() }, { merge: true });
+        batch.commit()
+            .then(function() {
+                Object.keys(appData).forEach(function(toolId) {
+                    if (appData[toolId] !== undefined) _toolWriteBaseline[toolId] = JSON.stringify(appData[toolId]);
+                });
+                console.log('[auth] migrated appData to', Object.keys(appData).length, 'per-tool docs');
+            })
+            .catch(function(e) { console.warn('[auth] appData migration failed (retries next login):', e); });
     }
 
     function loadUserData(preloaded) {
@@ -873,7 +935,9 @@
         const user = _fbAuth && _fbAuth.currentUser;
         if (!user || !_fbDb) return;
 
-        _fbDb.collection('users').doc(user.uid).get().then(snap => {
+        const userRef = _fbDb.collection('users').doc(user.uid);
+        Promise.all([userRef.get(), userRef.collection('tools').get()]).then(function(res) {
+            var snap = res[0], toolsSnap = res[1];
             // ── Load risk profile into cache (one-time activity) ──
             if (snap.exists && snap.data() && snap.data().riskProfile) {
                 window._fpRiskCache = snap.data().riskProfile;
@@ -884,7 +948,19 @@
                 window._toolSummaries = snap.data().toolSummaries;
                 if (typeof upRefreshToolSummaries === 'function') upRefreshToolSummaries();
             }
-            const data = snap.exists && snap.data() && snap.data().appData ? snap.data().appData : null;
+            var data = null;
+            if (!toolsSnap.empty) {
+                // Current layout — one doc per tool under users/{uid}/tools
+                data = {};
+                toolsSnap.forEach(function(d) {
+                    data[d.id] = d.data().v;
+                    _toolWriteBaseline[d.id] = JSON.stringify(d.data().v);
+                });
+            } else if (snap.exists && snap.data() && snap.data().appData) {
+                // Legacy layout — restore from the appData field, then migrate it
+                data = snap.data().appData;
+                _migrateAppDataToToolDocs(user, data);
+            }
             if (!data) return;
             window._cachedRestoreData = data;
             _applyData(data);
