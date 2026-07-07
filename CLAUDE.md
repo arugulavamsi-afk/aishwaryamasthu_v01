@@ -33,12 +33,13 @@ firebase emulators:start          # Local dev with Firebase emulators
 firebase deploy --only hosting    # Deploy frontend
 firebase deploy --only firestore  # Deploy Firestore rules only
 node scripts/compute-mf-scores.js # Regenerate output/mf-data.json
+node scripts/test-tax-engine.js   # Test tax slab math (run after ANY tax-guide.js change)
 ```
 Never run `firebase deploy` (full) without explicit user confirmation.
 
 ## Critical rules
 - **Currency:** display with `toLocaleString('en-IN')` — always ₹, never truncate, round to 2dp
-- **Tax slabs:** New regime uses Budget 2025 slabs (87A rebate ≤₹12L) — verify before changing (`tax-guide.js:1`)
+- **Tax slabs:** New regime uses Budget 2025 slabs (87A rebate ≤₹12L) — verify before changing (`tax-guide.js:1`) and run `node scripts/test-tax-engine.js` after any change to `tgTaxNew`/`tgTaxOld`
 - **MF data:** treat `mfapi.in` responses as read-only; never mutate fetched objects
 - **Routing:** new tools must be registered in `app.js` (`switchMode()`) before anything else works
 - **Styles:** all CSS goes in `styles.css`; no inline styles injected from JS
