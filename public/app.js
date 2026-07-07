@@ -1182,7 +1182,7 @@
                 return '<div class="flex items-center gap-2 py-1.5 border-b border-amber-100 last:border-0">' +
                     '<span class="text-base leading-none flex-shrink-0">' + g.emoji + '</span>' +
                     '<div class="flex-1 min-w-0">' +
-                        '<div class="text-[11px] font-bold text-slate-700 truncate">' + g.label + '</div>' +
+                        '<div class="text-[11px] font-bold text-slate-700 truncate">' + window.esc(g.label) + '</div>' +
                         '<div class="text-[9px] text-slate-400">' + fmt(g.targetAmt) + ' · ' + g.years + ' yrs</div>' +
                     '</div>' +
                     (already

@@ -86,7 +86,7 @@
                     recent.map(function (c) {
                         return '<div style="display:flex;align-items:center;justify-content:space-between;padding:3px 0;font-size:11px;">' +
                             '<span style="color:#94a3b8;">' + _fmtDate(c.ts) + '</span>' +
-                            (c.note ? '<span style="color:#cbd5e1;font-style:italic;flex:1;margin:0 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + c.note + '</span>' : '<span style="flex:1;"></span>') +
+                            (c.note ? '<span style="color:#cbd5e1;font-style:italic;flex:1;margin:0 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + window.esc(c.note) + '</span>' : '<span style="flex:1;"></span>') +
                             '<span style="font-weight:800;color:#334155;">' + _fmt(c.amt) + '</span>' +
                         '</div>';
                     }).join('') +
@@ -101,7 +101,7 @@
                 '<div style="display:flex;align-items:center;gap:12px;">' +
                     '<div style="width:44px;height:44px;border-radius:12px;background:#f8fafc;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">' + g.emoji + '</div>' +
                     '<div>' +
-                        '<div style="font-size:14px;font-weight:900;color:#1e293b;">' + g.label + '</div>' +
+                        '<div style="font-size:14px;font-weight:900;color:#1e293b;">' + window.esc(g.label) + '</div>' +
                         '<div style="font-size:11px;color:#94a3b8;margin-top:2px;">' + targetLabel + '</div>' +
                     '</div>' +
                 '</div>' +
@@ -183,7 +183,7 @@
         formDiv.innerHTML =
             '<div style="margin-top:12px;padding:14px;border-radius:14px;background:#f8fafc;border:1.5px solid #e2e8f0;">' +
                 '<div style="font-size:11px;font-weight:600;color:#64748b;margin-bottom:10px;">' +
-                    _gtT('gt.form.label', 'Total saved toward {name} so far:').replace('{name}', '<strong style="color:#1e293b;">' + g.label + '</strong>') +
+                    _gtT('gt.form.label', 'Total saved toward {name} so far:').replace('{name}', '<strong style="color:#1e293b;">' + window.esc(g.label) + '</strong>') +
                 '</div>' +
                 '<div style="position:relative;margin-bottom:8px;">' +
                     '<span style="position:absolute;left:11px;top:50%;transform:translateY(-50%);font-weight:800;color:#94a3b8;font-size:14px;pointer-events:none;">₹</span>' +
@@ -275,7 +275,7 @@
             '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">' +
                 '<div style="font-size:22px;flex-shrink:0;">' + g.emoji + '</div>' +
                 '<div style="flex:1;min-width:0;">' +
-                    '<div style="font-size:13px;font-weight:800;color:#1e293b;margin-bottom:2px;">' + _gtT('gt.del.confirm', 'Remove {name}?').replace('{name}', '<em>' + g.label + '</em>') + '</div>' +
+                    '<div style="font-size:13px;font-weight:800;color:#1e293b;margin-bottom:2px;">' + _gtT('gt.del.confirm', 'Remove {name}?').replace('{name}', '<em>' + window.esc(g.label) + '</em>') + '</div>' +
                     '<div style="font-size:11px;color:#94a3b8;">' + _gtT('gt.del.sub', 'This will delete the goal and all check-in history.') + '</div>' +
                 '</div>' +
                 '<div style="display:flex;gap:8px;flex-shrink:0;">' +

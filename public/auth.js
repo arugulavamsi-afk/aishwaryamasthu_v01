@@ -5,10 +5,31 @@
        Data stored in Firestore, isolated per user by security rules
     ============================================================ */
 
+    // ── Shared HTML escape helper — use for ANY user-entered string that
+    //    lands in an innerHTML sink. auth.js loads first, so window.esc is
+    //    available to every other module. ──
+    function esc(s) {
+        return String(s == null ? '' : s)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+    window.esc = esc;
+
+    // ── Firebase App Check (reCAPTCHA v3) ──
+    // To enable: Firebase console → App Check → register web app with
+    // reCAPTCHA v3, paste the site key below, then turn on enforcement
+    // for Firestore + Auth once token metrics look healthy.
+    const APP_CHECK_SITE_KEY = '';
+
     // ── Firebase SDK (CDN, no build tools needed) ──
     const _fbScripts = [
         { src: 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js',
           integrity: 'sha384-sEVIly94UBRLKWdkYoPpSG7GD/e79YHMrxVyZaOk712Ga7+EAw6w1EFi+xBzBdd+' },
+        { src: 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app-check-compat.js',
+          integrity: 'sha384-E3vxFxXu8FhW5kvqdQJ5Yf8ugrV7iCJP8jgnItRH2Rk8Q08cJzJGTi/oMC3FEp3j' },
         { src: 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js',
           integrity: 'sha384-EkqK+ezBWJuvO3hfrSx2iVqr3YQbhmnzn8kPhOpBZ+0GMVU5oGSgptwIu8D84HjE' },
         { src: 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js',
@@ -23,6 +44,7 @@
             s.src = src;
             s.integrity = integrity;
             s.crossOrigin = 'anonymous';
+            s.async = false;   // preserve execution order — compat SDKs need app-compat first
             s.onload = () => { _fbLoaded++; if (_fbLoaded === _fbScripts.length) _initFirebase(); };
             document.head.appendChild(s);
         });
@@ -39,6 +61,15 @@
             appId:             "1:270484363947:web:494c86d4f8a94ac618f5ee"
         };
         if (!firebase.apps.length) firebase.initializeApp(cfg);
+        // App Check — attests requests come from this app before they hit
+        // Firestore/Auth. No-op until a reCAPTCHA v3 site key is configured.
+        if (APP_CHECK_SITE_KEY && firebase.appCheck) {
+            try {
+                firebase.appCheck().activate(APP_CHECK_SITE_KEY, /* autoRefresh */ true);
+            } catch (e) {
+                console.error('[auth] App Check activation failed:', e);
+            }
+        }
         _fbAuth = firebase.auth();
         _fbDb   = firebase.firestore();
         // Expose to window so app.js / dashboard.js can do direct Firestore writes
@@ -74,6 +105,12 @@
                 }
                 var _menuInitial = document.getElementById('user-menu-initial');
                 if (_menuInitial) _menuInitial.textContent = fname ? fname[0].toUpperCase() : '👤';
+                // Gentle nudge for password accounts that haven't verified their email
+                var verifyNote = document.getElementById('verify-email-note');
+                if (verifyNote) {
+                    var isPwdUser = (user.providerData || []).some(p => p.providerId === 'password');
+                    verifyNote.style.display = (isPwdUser && !user.emailVerified) ? 'block' : 'none';
+                }
                 // Centre the welcome content vertically in the splash
                 if (splashInner) splashInner.classList.add('splash-inner--centered');
                 // Check if this user is a registered expert before loading user data
@@ -150,7 +187,7 @@
             tabLogin.classList.remove('active');
         }
         // Clear errors
-        ['login-error','signup-error','signup-success'].forEach(id => {
+        ['login-error','login-success','signup-error','signup-success'].forEach(id => {
             const el = document.getElementById(id);
             if (el) { el.style.display = 'none'; el.textContent = ''; }
         });
@@ -204,13 +241,16 @@
 
         _fbAuth.createUserWithEmailAndPassword(email, pwd)
             .then(cred => {
+                // Verification email is best-effort — never block account creation on it
+                cred.user.sendEmailVerification().catch(err =>
+                    console.warn('[auth] verification email failed:', err.code));
                 return cred.user.updateProfile({ displayName: fname + ' ' + lname })
                     .then(() => _fbDb.collection('users').doc(cred.user.uid).set({
                         fname, lname, email, createdAt: Date.now()
                     }));
             })
             .then(() => {
-                okEl.textContent = `🎉 Account created! Welcome, ${fname}!`;
+                okEl.textContent = `🎉 Account created! Welcome, ${fname}! We've sent a verification link to your email.`;
                 okEl.style.display = 'block';
                 // onAuthStateChanged will fire and dismiss the splash
             })
@@ -233,9 +273,11 @@
         const email  = document.getElementById('login-email').value.trim().toLowerCase();
         const pwd    = document.getElementById('login-password').value;
         const errEl  = document.getElementById('login-error');
+        const okEl   = document.getElementById('login-success');
         const btn    = document.querySelector('[onclick="doLogin()"]');
 
         errEl.style.display = 'none'; errEl.textContent = '';
+        if (okEl) { okEl.style.display = 'none'; okEl.textContent = ''; }
 
         if (!email || !pwd) {
             errEl.textContent = 'Please enter your email and password.';
@@ -259,6 +301,59 @@
                 if (btn) { btn.disabled = false; btn.textContent = 'Enter the Dashboard →'; }
             });
         // onAuthStateChanged fires on success and handles splash dismiss + data load
+    }
+
+    /* ============================================================
+       FORGOT PASSWORD — Firebase Auth reset email
+    ============================================================ */
+    function doForgotPassword() {
+        const email = document.getElementById('login-email').value.trim().toLowerCase();
+        const errEl = document.getElementById('login-error');
+        const okEl  = document.getElementById('login-success');
+
+        errEl.style.display = 'none'; errEl.textContent = '';
+        if (okEl) { okEl.style.display = 'none'; okEl.textContent = ''; }
+
+        if (!email || !/^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/.test(email)) {
+            errEl.textContent = 'Enter your email address above first, then tap "Forgot password?".';
+            errEl.style.display = 'block'; return;
+        }
+        if (!_fbAuth) {
+            errEl.textContent = 'Still connecting… please wait a moment and try again.';
+            errEl.style.display = 'block'; return;
+        }
+
+        // Same message on success and user-not-found — don't reveal which
+        // emails have accounts (email enumeration)
+        const done = () => {
+            if (okEl) {
+                okEl.textContent = `📬 If an account exists for ${email}, a password reset link is on its way.`;
+                okEl.style.display = 'block';
+            }
+        };
+        _fbAuth.sendPasswordResetEmail(email)
+            .then(done)
+            .catch(err => {
+                if (err.code === 'auth/user-not-found') return done();
+                errEl.textContent = err.code === 'auth/too-many-requests'
+                    ? 'Too many attempts — please try again in a few minutes.'
+                    : 'Could not send the reset email. Please try again.';
+                errEl.style.display = 'block';
+            });
+    }
+
+    /* ── Resend verification email (welcome panel nudge) ── */
+    function resendVerification() {
+        const note = document.getElementById('verify-email-note');
+        const user = _fbAuth && _fbAuth.currentUser;
+        if (!user || !note) return;
+        user.sendEmailVerification()
+            .then(() => { note.textContent = '📬 Verification link sent — check your inbox (and spam folder).'; })
+            .catch(err => {
+                note.textContent = err.code === 'auth/too-many-requests'
+                    ? '⏳ Too many attempts — try again in a few minutes.'
+                    : '⚠️ Could not send the email right now. Try again later.';
+            });
     }
 
     /* ── Google Sign-In ── */

@@ -31,7 +31,7 @@
             return '<div class="flex items-start gap-2 rounded-xl px-3 py-2" style="background:rgba(245,200,66,0.08);border:1px solid rgba(245,200,66,0.28);">' +
                 '<span class="text-sm leading-none flex-shrink-0 mt-0.5">' + (g.emoji || '🎯') + '</span>' +
                 '<div class="flex-1 min-w-0">' +
-                    '<div class="text-[11px] font-bold truncate" style="color:#1e293b;">' + g.label + '</div>' +
+                    '<div class="text-[11px] font-bold truncate" style="color:#1e293b;">' + window.esc(g.label) + '</div>' +
                     '<div class="text-[9px] text-slate-500 leading-snug">' +
                         (amt ? amt + ' &middot; ' : '') + g.years + ' yr' + (g.years !== 1 ? 's' : '') +
                         ' &middot; <span style="color:#b45309;">' + srcLabel + '</span>' +

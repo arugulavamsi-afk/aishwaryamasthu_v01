@@ -267,7 +267,7 @@
                         (g.type === 'custom' ?
                         '<div class="col-span-2">' +
                             '<div class="fp-mini-label">Goal Name</div>' +
-                            '<input type="text" class="fp-mini-input" placeholder="e.g. Dream car" value="' + (g.customName||'') + '" ' +
+                            '<input type="text" class="fp-mini-input" placeholder="e.g. Dream car" value="' + window.esc(g.customName||'') + '" ' +
                                 'oninput="fpUpdateGoal(' + i + ',\'customName\',this.value); fpLiveUpdate(); document.querySelector(\'#fp-horiz-label-' + i + '\').previousElementSibling && (document.getElementById(\'fp-goal-cards\').querySelectorAll(\'.text-xs.font-black\')[' + i + '].textContent = this.value || \'Custom Goal\')">' +
                         '</div>' : '') +
                     '</div>';
@@ -762,7 +762,7 @@
                     listEl.innerHTML = '<span class="text-xs text-slate-400 italic">None selected yet</span>';
                 } else {
                     listEl.innerHTML = fpState.goals.map(function(g) {
-                        return '<div class="text-xs font-bold text-violet-600">' + g.emoji + ' ' + g.label + (g.years ? ' · ' + g.years + 'yr' : '') + '</div>';
+                        return '<div class="text-xs font-bold text-violet-600">' + g.emoji + ' ' + window.esc(g.label) + (g.years ? ' · ' + g.years + 'yr' : '') + '</div>';
                     }).join('');
                 }
             }
@@ -1436,7 +1436,7 @@
                     '<div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">SIP split by goal</div>' +
                     goalSIPs.map(function(g) {
                         return '<div class="fp-sip-row" style="border-left:3px solid ' + g.color + ';padding-left:10px;">' +
-                            '<div class="flex items-center gap-2"><span class="text-sm">' + g.label + '</span><span class="text-[10px] text-slate-400">' + g.years + 'yr horizon</span></div>' +
+                            '<div class="flex items-center gap-2"><span class="text-sm">' + window.esc(g.label) + '</span><span class="text-[10px] text-slate-400">' + g.years + 'yr horizon</span></div>' +
                             '<span class="text-xs font-black text-slate-800">₹' + fmt(g.amt) + '/mo</span>' +
                         '</div>';
                     }).join('') +
@@ -1605,7 +1605,7 @@
                             + '<div class="flex items-center gap-2">'
                                 + '<span class="text-lg">' + g.emoji + '</span>'
                                 + '<div>'
-                                    + '<div class="text-xs font-black text-slate-700">' + g.label + '</div>'
+                                    + '<div class="text-xs font-black text-slate-700">' + window.esc(g.label) + '</div>'
                                     + '<div class="text-[10px] text-slate-400">Needed in ' + g.years + ' year' + (g.years !== 1 ? 's' : '') + ' · Redeem in order shown ↓</div>'
                                 + '</div>'
                             + '</div>'

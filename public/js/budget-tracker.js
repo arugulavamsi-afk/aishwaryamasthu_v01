@@ -200,7 +200,9 @@
                             '<div style="font-size:11px;font-weight:700;color:#1e293b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + _btEsc(cat.key) + '</div>' +
                             '<div style="font-size:9px;color:#94a3b8;">' + _btT('bt.cat.custom','Custom') + '</div>' +
                         '</div>' +
-                        '<button onclick="window._btDeleteCustomCat(' + JSON.stringify(cat.key) + ')" title="' + _btEsc(_btT('bt.cat.remove','Remove category')) + '" ' +
+                        // key goes into an onclick JS string inside an HTML attribute:
+                        // JS-escape first, then HTML-escape the result
+                        '<button onclick="window._btDeleteCustomCat(\'' + _btEsc(String(cat.key).replace(/\\/g, '\\\\').replace(/'/g, "\\'")) + '\')" title="' + _btEsc(_btT('bt.cat.remove','Remove category')) + '" ' +
                             'style="flex-shrink:0;padding:2px 5px;border-radius:5px;font-size:10px;font-weight:900;color:#94a3b8;background:transparent;border:1px solid #e2e8f0;cursor:pointer;line-height:1;" ' +
                             'onmouseover="this.style.color=\'#ef4444\';this.style.borderColor=\'#fca5a5\';" ' +
                             'onmouseout="this.style.color=\'#94a3b8\';this.style.borderColor=\'#e2e8f0\';">×</button>' +
@@ -249,7 +251,7 @@
     }
 
     function _btEsc(s) {
-        return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        return window.esc(s);   // shared escape helper from auth.js
     }
 
     function _btRenderTable() {

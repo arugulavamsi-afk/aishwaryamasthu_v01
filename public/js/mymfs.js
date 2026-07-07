@@ -245,8 +245,9 @@ function _myMFescRegex(s) {
 }
 
 function _myMFesc(s) {
-    return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    return window.esc(s);   // shared escape helper from auth.js
 }
 function _myMFescAttr(s) {
-    return String(s || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+    // For onclick JS strings inside HTML attributes: JS-escape, then HTML-escape
+    return window.esc(String(s || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'"));
 }

@@ -106,7 +106,7 @@
                 '<div class="flex items-center gap-1" style="min-width:0;">' +
 
                 // Name — no grey (it's real text); no debtRenderLoans on oninput to avoid focus loss
-                '<input class="debt-loan-input" style="flex:1;min-width:0;" value="' + (l.name||'') + '" placeholder="Loan name" maxlength="100" ' +
+                '<input class="debt-loan-input" style="flex:1;min-width:0;" value="' + window.esc(l.name||'') + '" placeholder="Loan name" maxlength="100" ' +
                 'oninput="debtUpdateLoan(' + l.id + ',\'name\',this.value);debtCalc();">' +
 
                 // Balance
@@ -253,7 +253,7 @@
                 return '<div class="flex items-center gap-2 rounded-lg px-2.5 py-2" style="background:#f8fafc;border:1px solid #e2e8f0;">' +
                     '<div class="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black text-white flex-shrink-0" style="background:' + color + ';">' + (i+1) + '</div>' +
                     '<div class="flex-1 min-w-0">' +
-                    '<div class="text-[10px] font-black text-slate-700">' + l.name + badge + '</div>' +
+                    '<div class="text-[10px] font-black text-slate-700">' + window.esc(l.name) + badge + '</div>' +
                     '<div class="text-[9px] text-slate-400">' + debtFmt(l.balance) + ' @ ' + l.rate + '% · EMI ' + debtFmt(l.emi) + _t('debt.emi_mo') + '</div>' +
                     '</div>' +
                     '<div class="text-[10px] font-black flex-shrink-0" style="color:' + color + ';">' + l.rate.toFixed(1) + '%</div>' +
@@ -268,8 +268,8 @@
             var topLoan = sorted[0];
             var monthsSaved = withoutExtra.months - withExtra.months;
             var insAction = _debtMethod === 'avalanche'
-                ? _t('debt.insight.avalanche').replace('{name}', topLoan.name).replace('{rate}', topLoan.rate)
-                : _t('debt.insight.snowball').replace('{name}', topLoan.name).replace('{bal}', debtFmt(topLoan.balance));
+                ? _t('debt.insight.avalanche').replace('{name}', window.esc(topLoan.name)).replace('{rate}', topLoan.rate)
+                : _t('debt.insight.snowball').replace('{name}', window.esc(topLoan.name)).replace('{bal}', debtFmt(topLoan.balance));
             var insExtra = _t('debt.insight.extra')
                 .replace('{extra}', Number(extraMonthly).toLocaleString('en-IN'))
                 .replace('{saved}', debtFmt(interestSaved));

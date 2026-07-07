@@ -1282,6 +1282,7 @@
         'dd.sufficient':        '✅ Corpus sufficient for 100+ age',
         /* ── Auth Screen ── */
         'auth.google':          'Continue with Google',
+        'auth.forgotpwd':       'Forgot password?',
         'auth.newhere':         'New here?',
         'auth.createaccount':   'Create an account',
         'auth.haveaccount':     'Already have an account?',
@@ -4900,6 +4901,7 @@
         'dd.sufficient':        '✅ 100+ आयु के लिए कोष पर्याप्त',
         /* ── Auth Screen ── */
         'auth.google':          'Google से जारी रखें',
+        'auth.forgotpwd':       'पासवर्ड भूल गए?',
         'auth.newhere':         'नए हैं?',
         'auth.createaccount':   'खाता बनाएं',
         'auth.haveaccount':     'पहले से खाता है?',
@@ -8534,6 +8536,7 @@
         'dd.sufficient':        '✅ 100+ వయసుకు కార్పస్ తగినది',
         /* ── Auth Screen ── */
         'auth.google':          'Googleతో కొనసాగండి',
+        'auth.forgotpwd':       'పాస్‌వర్డ్ మర్చిపోయారా?',
         'auth.newhere':         'కొత్తగా వచ్చారా?',
         'auth.createaccount':   'ఖాతా సృష్టించండి',
         'auth.haveaccount':     'ఇప్పటికే ఖాతా ఉందా?',
@@ -12157,6 +12160,7 @@
         'dd.sufficient':        '✅ 100+ வயதிற்கு கார்பஸ் போதுமானது',
         /* ── Auth Screen ── */
         'auth.google':          'Google மூலம் தொடரவும்',
+        'auth.forgotpwd':       'கடவுச்சொல்லை மறந்துவிட்டீர்களா?',
         'auth.newhere':         'புதியவரா?',
         'auth.createaccount':   'கணக்கை உருவாக்குங்கள்',
         'auth.haveaccount':     'ஏற்கனவே கணக்கு உள்ளதா?',

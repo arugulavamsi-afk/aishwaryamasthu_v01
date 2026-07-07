@@ -1656,7 +1656,7 @@
 
     function _mfeShow(id){document.getElementById(id)?.classList.remove('hidden');}
     function _mfeHide(id){document.getElementById(id)?.classList.add('hidden');}
-    function _esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+    function _esc(s){return window.esc(s);}   // shared escape helper from auth.js
 
     function mfeParseCat(n) {
         const nl = n.toLowerCase();

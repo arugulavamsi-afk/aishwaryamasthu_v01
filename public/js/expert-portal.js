@@ -109,7 +109,10 @@
 
                     var statusColors = { confirmed:'#059669', completed:'#0891b2', pending:'#b45309', cancelled:'#dc2626' };
                     var sc = statusColors[b.status] || '#64748b';
-                    var sl = (b.status || 'pending').charAt(0).toUpperCase() + (b.status || '').slice(1);
+                    var sl = _epEscHtml((b.status || 'pending').charAt(0).toUpperCase() + (b.status || '').slice(1));
+                    // Chat button injects the name into an onclick JS string inside an
+                    // HTML attribute: JS-escape first, then HTML-escape the result
+                    var chatName = _epEscHtml(String(b.userName || b.userEmail || 'Client').replace(/\\/g, '\\\\').replace(/'/g, "\\'"));
                     var dismissBtn = (isDone && !isArchived)
                         ? '<button onclick="_epArchiveSingle(\'' + bid + '\')" ' +
                           'class="text-[10px] text-slate-300 hover:text-red-400 transition-colors ml-1 px-1 leading-none" title="Archive">✕</button>'
@@ -117,9 +120,9 @@
                     var card = '<div id="epb-' + bid + '" class="bg-white rounded-2xl border border-[#f5c842]/30 shadow-sm p-4' + (isDone ? ' opacity-70' : '') + '">' +
                         '<div class="flex items-start justify-between gap-3 flex-wrap">' +
                             '<div>' +
-                                '<div class="font-black text-[13px] text-slate-800">👤 ' + (b.userName || b.userEmail || 'Client') + '</div>' +
-                                '<div class="text-[11px] text-slate-500 mt-0.5">📅 ' + (b.slot ? b.slot.date + ' at ' + b.slot.time : 'N/A') + '</div>' +
-                                '<div class="text-[10px] text-slate-400 mt-0.5">' + (b.userEmail || '') + '</div>' +
+                                '<div class="font-black text-[13px] text-slate-800">👤 ' + _epEscHtml(b.userName || b.userEmail || 'Client') + '</div>' +
+                                '<div class="text-[11px] text-slate-500 mt-0.5">📅 ' + (b.slot ? _epEscHtml(b.slot.date + ' at ' + b.slot.time) : 'N/A') + '</div>' +
+                                '<div class="text-[10px] text-slate-400 mt-0.5">' + _epEscHtml(b.userEmail || '') + '</div>' +
                             '</div>' +
                             '<div class="flex items-center gap-1 flex-shrink-0">' +
                                 '<span class="text-[10px] font-bold px-2 py-1 rounded-full" style="background:' + sc + '22;color:' + sc + ';">' + sl + '</span>' +
@@ -130,7 +133,7 @@
                             '<button onclick="epViewClientProfile(\'' + bid + '\')" class="consult-tab px-3 py-1.5 rounded-xl text-[11px] font-bold">👤 View Profile</button>' +
                             '<button onclick="epViewClientPdf(\'' + bid + '\')" class="px-3 py-1.5 rounded-xl text-[11px] font-bold" style="background:#f0fdf4;color:#065f46;border:1px solid #6ee7b7;">📄 View PDF</button>' +
                             (b.status === 'confirmed' || b.status === 'completed'
-                                ? '<button onclick="epOpenChat(\'' + bid + '\',\'' + (b.userName || b.userEmail || 'Client').replace(/'/g, "\\'") + '\')" class="px-3 py-1.5 rounded-xl text-[11px] font-bold" style="background:linear-gradient(130deg,#0c2340,#1a4a7a);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">💬 Chat</button>'
+                                ? '<button onclick="epOpenChat(\'' + bid + '\',\'' + chatName + '\')" class="px-3 py-1.5 rounded-xl text-[11px] font-bold" style="background:linear-gradient(130deg,#0c2340,#1a4a7a);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">💬 Chat</button>'
                                 : '') +
                             (b.status === 'confirmed' ? '<button onclick="epMarkComplete(\'' + bid + '\')" class="px-3 py-1.5 rounded-xl text-[11px] font-bold" style="background:#d1fae5;color:#065f46;border:1px solid #6ee7b7;">✓ Mark Complete</button>' : '') +
                         '</div>' +
@@ -267,7 +270,7 @@
         var html = rows.map(function(r) {
             return '<div class="flex justify-between items-center py-1.5 border-b border-slate-50">' +
                 '<span class="text-slate-400 font-semibold text-[11px]">' + r[0] + '</span>' +
-                '<span class="font-bold text-slate-800 text-right ml-2">' + r[1] + '</span>' +
+                '<span class="font-bold text-slate-800 text-right ml-2">' + _epEscHtml(r[1]) + '</span>' +
             '</div>';
         }).join('');
         if (!html) html = '<div class="text-slate-400 text-[12px] text-center py-4">No profile data captured.</div>';
@@ -487,7 +490,7 @@
     }
 
     function _epEscHtml(s) {
-        return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        return window.esc(s);   // shared escape helper from auth.js
     }
 
     /* ── Expert's own profile ── */
@@ -505,9 +508,9 @@
         el.innerHTML = rows.map(function(r) {
             return '<div class="flex justify-between items-center py-2 border-b border-slate-50">' +
                 '<span class="text-slate-400 font-semibold text-[11px] uppercase tracking-wide">' + r[0] + '</span>' +
-                '<span class="font-bold text-slate-800">' + r[1] + '</span>' +
+                '<span class="font-bold text-slate-800">' + _epEscHtml(r[1]) + '</span>' +
             '</div>';
         }).join('') +
-        '<p class="text-[11px] text-slate-400 mt-3 leading-relaxed">' + (expert.bio || '') + '</p>' +
+        '<p class="text-[11px] text-slate-400 mt-3 leading-relaxed">' + _epEscHtml(expert.bio || '') + '</p>' +
         '<p class="text-[10px] text-slate-300 mt-3">To update your profile, contact the admin.</p>';
     }

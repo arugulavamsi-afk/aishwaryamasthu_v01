@@ -129,24 +129,24 @@
         }
         listEl.innerHTML = _consultExperts.map(function(e) {
             var tags = (e.specialization || []).slice(0, 3).map(function(s) {
-                return '<span class="px-2 py-0.5 rounded-full text-[9px] font-bold" style="background:rgba(245,200,66,0.15);color:#b45309;">' + s + '</span>';
+                return '<span class="px-2 py-0.5 rounded-full text-[9px] font-bold" style="background:rgba(245,200,66,0.15);color:#b45309;">' + _escHtml(s) + '</span>';
             }).join('');
             var langs = (e.languages || []).join(' · ');
             var initials = (e.name || 'E').split(' ').map(function(w){ return w[0]; }).join('').toUpperCase().slice(0,2);
             var photoHtml = e.photo
-                ? '<img src="' + e.photo + '" class="w-14 h-14 rounded-2xl object-cover flex-shrink-0" style="border:2px solid rgba(245,200,66,0.3);">'
-                : '<div class="w-14 h-14 rounded-2xl flex-shrink-0 flex items-center justify-center text-lg font-black text-white" style="background:linear-gradient(135deg,#0c2340,#1a4a7a);border:2px solid rgba(245,200,66,0.3);">' + initials + '</div>';
+                ? '<img src="' + _escHtml(e.photo) + '" class="w-14 h-14 rounded-2xl object-cover flex-shrink-0" style="border:2px solid rgba(245,200,66,0.3);">'
+                : '<div class="w-14 h-14 rounded-2xl flex-shrink-0 flex items-center justify-center text-lg font-black text-white" style="background:linear-gradient(135deg,#0c2340,#1a4a7a);border:2px solid rgba(245,200,66,0.3);">' + _escHtml(initials) + '</div>';
             return '<div class="bg-white rounded-2xl border border-[#f5c842]/30 shadow-sm p-4">' +
                 '<div class="flex gap-3">' +
                     photoHtml +
                     '<div class="flex-1 min-w-0">' +
-                        '<div class="font-black text-[13px] text-slate-800">' + (e.name || '') + '</div>' +
-                        '<div class="text-[10px] font-semibold mt-0.5" style="color:#b45309;">' + (e.qualifications || '') + '</div>' +
-                        '<div class="text-[10px] text-slate-400 mt-0.5">' + (e.experience || 0) + ' yrs experience · ' + langs + '</div>' +
+                        '<div class="font-black text-[13px] text-slate-800">' + _escHtml(e.name || '') + '</div>' +
+                        '<div class="text-[10px] font-semibold mt-0.5" style="color:#b45309;">' + _escHtml(e.qualifications || '') + '</div>' +
+                        '<div class="text-[10px] text-slate-400 mt-0.5">' + _escHtml(e.experience || 0) + ' yrs experience · ' + _escHtml(langs) + '</div>' +
                         '<div class="flex flex-wrap gap-1 mt-1.5">' + tags + '</div>' +
                     '</div>' +
                 '</div>' +
-                '<p class="text-[11px] text-slate-500 mt-2.5 leading-relaxed">' + (e.bio || '') + '</p>' +
+                '<p class="text-[11px] text-slate-500 mt-2.5 leading-relaxed">' + _escHtml(e.bio || '') + '</p>' +
                 '<button onclick="consultSelectExpert(\'' + e.id + '\')" ' +
                     'class="mt-3 w-full py-2 rounded-xl text-[12px] font-bold transition-all" ' +
                     'style="background:linear-gradient(130deg,#0c2340,#1a4a7a);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">Book a 1-Hour Slot →</button>' +
@@ -215,17 +215,20 @@
 
         var initials = (e.name || 'E').split(' ').map(function(w){ return w[0]; }).join('').toUpperCase().slice(0,2);
         var photoHtml = e.photo
-            ? '<img src="' + e.photo + '" class="w-10 h-10 rounded-xl object-cover" style="border:1.5px solid rgba(245,200,66,0.3);">'
-            : '<div class="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black text-white" style="background:linear-gradient(135deg,#0c2340,#1a4a7a);">' + initials + '</div>';
+            ? '<img src="' + _escHtml(e.photo) + '" class="w-10 h-10 rounded-xl object-cover" style="border:1.5px solid rgba(245,200,66,0.3);">'
+            : '<div class="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black text-white" style="background:linear-gradient(135deg,#0c2340,#1a4a7a);">' + _escHtml(initials) + '</div>';
 
         var slotsHtml = slots.length === 0
             ? '<div class="text-center py-6 text-slate-400 text-[12px]">No slots available in the next 7 days.</div>'
             : slots.map(function(s) {
                 var dateLabel = s.date.toLocaleDateString('en-IN', { weekday:'short', day:'numeric', month:'short' });
                 var timeBtns = s.times.map(function(t) {
-                    return '<button onclick="consultConfirmSlot(\'' + s.date.toISOString().split('T')[0] + '\',\'' + t + '\')" ' +
+                    // t goes into an onclick JS string inside an HTML attribute:
+                    // JS-escape first, then HTML-escape the result
+                    var tArg = _escHtml(String(t).replace(/\\/g, '\\\\').replace(/'/g, "\\'"));
+                    return '<button onclick="consultConfirmSlot(\'' + s.date.toISOString().split('T')[0] + '\',\'' + tArg + '\')" ' +
                         'class="px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all hover:shadow" ' +
-                        'style="background:linear-gradient(130deg,#f5c842,#e8a44a);color:#162a10;border:1px solid rgba(245,200,66,0.5);">' + t + '</button>';
+                        'style="background:linear-gradient(130deg,#f5c842,#e8a44a);color:#162a10;border:1px solid rgba(245,200,66,0.5);">' + _escHtml(t) + '</button>';
                 }).join('');
                 return '<div class="bg-white rounded-xl border border-[#f5c842]/20 px-3 py-2.5">' +
                     '<div class="text-[10px] font-black text-slate-500 uppercase tracking-wider mb-2">' + dateLabel + '</div>' +
@@ -242,8 +245,8 @@
                 '<div class="flex items-center gap-3">' +
                     photoHtml +
                     '<div>' +
-                        '<div class="font-black text-[13px] text-slate-800">' + e.name + '</div>' +
-                        '<div class="text-[10px] text-slate-400">' + (e.qualifications || '') + '</div>' +
+                        '<div class="font-black text-[13px] text-slate-800">' + _escHtml(e.name) + '</div>' +
+                        '<div class="text-[10px] text-slate-400">' + _escHtml(e.qualifications || '') + '</div>' +
                     '</div>' +
                 '</div>' +
             '</div>' +
@@ -432,11 +435,14 @@
                     var isDone    = b.status === 'completed' || b.status === 'cancelled';
                     if (isDone) hasDone = true;
                     var statusColor = b.status === 'confirmed' ? '#059669' : b.status === 'completed' ? '#0891b2' : '#dc2626';
-                    var statusLabel = (b.status || 'pending').charAt(0).toUpperCase() + (b.status || '').slice(1);
+                    var statusLabel = _escHtml((b.status || 'pending').charAt(0).toUpperCase() + (b.status || '').slice(1));
                     var canChat   = b.status === 'confirmed' || b.status === 'completed';
                     var canCancel = b.status === 'confirmed';
+                    // Name goes into an onclick JS string inside an HTML attribute:
+                    // JS-escape first, then HTML-escape the result
+                    var chatName = _escHtml(String(b.expertName || 'Expert').replace(/\\/g, '\\\\').replace(/'/g, "\\'"));
                     var chatBtn = canChat
-                        ? '<button onclick="consultOpenChat(\'' + bid + '\',\'' + (b.expertName || 'Expert').replace(/'/g, "\\'") + '\')" ' +
+                        ? '<button onclick="consultOpenChat(\'' + bid + '\',\'' + chatName + '\')" ' +
                           'class="flex-1 py-1.5 rounded-xl text-[11px] font-bold transition-all" ' +
                           'style="background:linear-gradient(130deg,#0c2340,#1a4a7a);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">💬 Open Chat</button>'
                         : '';
@@ -452,8 +458,8 @@
                     html += '<div id="cb-' + bid + '" class="bg-white rounded-2xl border border-[#f5c842]/30 shadow-sm p-4' + (isDone ? ' opacity-70' : '') + '">' +
                         '<div class="flex items-start justify-between gap-2">' +
                             '<div>' +
-                                '<div class="font-black text-[13px] text-slate-800">🧑‍💼 ' + (b.expertName || 'Expert') + '</div>' +
-                                '<div class="text-[11px] text-slate-500 mt-0.5">📅 ' + (b.slot && b.slot.date ? b.slot.date : '') + ' at ' + (b.slot && b.slot.time ? b.slot.time : '') + '</div>' +
+                                '<div class="font-black text-[13px] text-slate-800">🧑‍💼 ' + _escHtml(b.expertName || 'Expert') + '</div>' +
+                                '<div class="text-[11px] text-slate-500 mt-0.5">📅 ' + _escHtml((b.slot && b.slot.date ? b.slot.date : '') + ' at ' + (b.slot && b.slot.time ? b.slot.time : '')) + '</div>' +
                             '</div>' +
                             '<div class="flex items-center gap-1 flex-shrink-0">' +
                                 '<span class="text-[10px] font-bold px-2 py-1 rounded-full" style="background:' + statusColor + '22;color:' + statusColor + ';">' + statusLabel + '</span>' +
@@ -624,7 +630,7 @@
     }
 
     function _escHtml(s) {
-        return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        return window.esc(s);   // shared escape helper from auth.js
     }
 
     /* ── PDF profile builder ── */

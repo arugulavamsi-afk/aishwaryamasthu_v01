@@ -592,6 +592,26 @@
             padding: 8px 12px;
             text-align: center;
         }
+        .auth-verify-note {
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: #fbbf24;
+            background: rgba(251,191,36,0.1);
+            border: 1px solid rgba(251,191,36,0.25);
+            border-radius: 8px;
+            padding: 8px 12px;
+            text-align: center;
+        }
+        .auth-verify-note button {
+            background: none;
+            border: none;
+            color: rgba(245,200,66,0.9);
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.72rem;
+            font-family: 'Inter', sans-serif;
+            text-decoration: underline;
+        }
         .auth-row-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
         /* Welcome greeting on splash when already logged in */
