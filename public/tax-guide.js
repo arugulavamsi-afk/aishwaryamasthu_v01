@@ -44,6 +44,8 @@
         }
         // 87A Rebate: full rebate if taxable income ≤ ₹12L (Budget 2025)
         if (taxable <= 1200000) t = 0;
+        // 87A marginal relief: just above ₹12L, tax cannot exceed the income above ₹12L
+        else t = Math.min(t, taxable - 1200000);
         return t;
     }
 
@@ -325,6 +327,9 @@
         });
         if (bestTaxable <= 1200000 && winner === 'new') {
             slabHtml += '<div class="text-[9px] text-emerald-600 font-bold mt-1">' + _t('tg.res.rebate87a') + '</div>';
+        }
+        if (winner === 'new' && newTaxable > 1200000 && newTax === newTaxable - 1200000) {
+            slabHtml += '<div class="text-[9px] text-emerald-600 font-bold mt-1">87A Marginal Relief: tax capped at income above ₹12L — ' + fmt(newTax) + ' instead of full slab tax</div>';
         }
         if (bestTaxable <= 500000 && winner !== 'new') {
             slabHtml += '<div class="text-[9px] text-emerald-600 font-bold mt-1">87A Rebate: Full tax waived — taxable income \u2264 \u20b95L (old regime limit \u20b912,500)</div>';

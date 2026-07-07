@@ -45,6 +45,8 @@ Never run `firebase deploy` (full) without explicit user confirmation.
 - **Auth:** Firebase Auth is the only source of truth for sessions — no custom auth logic
 - **Firestore saves:** always go through `saveUserData()` in `auth.js` (debounced, merged writes)
 - **Input parsing:** strip formatting before parsing — see `hlNum()` in `home-loan.js:18`
+- **Service worker:** bump `CACHE = 'am-vN'` in `public/sw.js` on EVERY deploy that changes `public/` assets (cache-first serving mixes old/new code otherwise), and add any new JS module or panel HTML to the `SHELL` list so offline mode covers it
+- **Tax figures:** always include 4% Health & Education Cess (`× 1.04`) and label it, and apply §87A marginal relief above ₹12L in new-regime slab math (`t = Math.min(t, taxable − 12,00,000)`)
 
 ## Additional documentation
 Check these when working on the relevant area:

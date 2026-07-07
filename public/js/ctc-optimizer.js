@@ -83,6 +83,7 @@
                 }
             }
             if (taxable <= 1200000) tax = 0; // 87A rebate: full rebate if taxable ≤₹12L (Budget 2025)
+            else tax = Math.min(tax, taxable - 1200000); // 87A marginal relief just above ₹12L
         } else {
             // Old regime slabs: 0-2.5L=0%, 2.5-5L=5%, 5-10L=20%, >10L=30%
             if (taxable <= 250000) tax = 0;

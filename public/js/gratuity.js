@@ -81,7 +81,7 @@
         var taxFreeLimit = 2500000;
         var taxFreeAmt   = Math.min(grossGratuity, taxFreeLimit);
         var taxableAmt   = Math.max(0, grossGratuity - taxFreeLimit);
-        var taxOnExcess  = Math.round(taxableAmt * slabPct);
+        var taxOnExcess  = Math.round(taxableAmt * slabPct * 1.04); // incl 4% cess
         var netGratuity  = grossGratuity - taxOnExcess;
 
         // Per year value and % of annual basic
@@ -113,7 +113,7 @@
                 [_gt('gratuity.work.gross') || 'Gross gratuity', gratFmt(grossGratuity)],
                 [_gt('gratuity.work.taxfree_limit') || 'Tax-free limit u/s 10(10)', gratFmt(taxFreeLimit)],
                 [_gt('gratuity.work.taxable') || 'Taxable amount', taxableAmt > 0 ? gratFmt(taxableAmt) : (_gt('gratuity.work.nil') || 'Nil (within ₹25L limit)')],
-                [(_gt('gratuity.work.incometax') || 'Income tax @ {pct}%').replace('{pct}', (slabPct * 100).toFixed(0)), taxOnExcess > 0 ? '−' + gratFmt(taxOnExcess) : '₹0'],
+                [(_gt('gratuity.work.incometax') || 'Income tax @ {pct}% + 4% cess').replace('{pct}', (slabPct * 100).toFixed(0)), taxOnExcess > 0 ? '−' + gratFmt(taxOnExcess) : '₹0'],
                 [_gt('gratuity.work.net') || 'Net gratuity in hand', gratFmt(netGratuity)]
             ];
             w.innerHTML = rows.map(function(r, i) {

@@ -97,7 +97,7 @@
         // Annual figures
         var annualExempt   = hraExempt * 12;
         var annualTaxable  = hraTaxable * 12;
-        var annualTaxSaved = annualExempt * (slab / 100);
+        var annualTaxSaved = annualExempt * (slab / 100) * 1.04; // incl 4% cess (matches home-loan.js)
 
         // Limiting factor (translated)
         var limiting = '';

@@ -691,7 +691,8 @@
             [[400000,0],[400000,.05],[400000,.10],[400000,.15],[400000,.20],[400000,.25],[Infinity,.30]].forEach(function(s){
                 var c=Math.min(r,s[0]); tax+=c*s[1]; r-=c;
             });
-            if (ti<=1200000) tax=0; return Math.round(tax*1.04);
+            if (ti<=1200000) tax=0; else tax=Math.min(tax, ti-1200000); /* 87A marginal relief */
+            return Math.round(tax*1.04);
         }
         function taxOld(gross, deduct) {
             var ti=Math.max(0,gross-50000-(deduct||0)), tax=0;

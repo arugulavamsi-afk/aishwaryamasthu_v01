@@ -450,20 +450,28 @@
         if (_restoring) return;
         const user = _fbAuth && _fbAuth.currentUser;
         if (!user || !_fbDb) return;
-        // Debounce: wait 1.5s after last change before writing to Firestore
+        // Debounce: wait 0.8s after last change before writing to Firestore
+        // (short enough that a quick tab close rarely races the write)
         clearTimeout(_saveTimer);
-        _saveTimer = setTimeout(() => _doSaveUserData(user), 1500);
+        _saveTimer = setTimeout(() => { _saveTimer = null; _doSaveUserData(user); }, 800);
     }
 
-    // Flush any pending debounced save immediately on page unload (refresh/close).
-    // Without this, a save triggered within the 1.5s window before a refresh is lost.
-    window.addEventListener('beforeunload', function() {
+    // Flush any pending debounced save immediately when the page is leaving or
+    // hidden. beforeunload alone is unreliable — it often never fires on mobile
+    // (tab discard, app switch), so visibilitychange === 'hidden' is the
+    // primary signal; beforeunload stays as a desktop refresh/close fallback.
+    function _flushPendingSave() {
         const user = _fbAuth && _fbAuth.currentUser;
         if (_saveTimer && user && _fbDb) {
             clearTimeout(_saveTimer);
+            _saveTimer = null;
             _doSaveUserData(user);
         }
+    }
+    document.addEventListener('visibilitychange', function() {
+        if (document.visibilityState === 'hidden') _flushPendingSave();
     });
+    window.addEventListener('beforeunload', _flushPendingSave);
 
     function _doSaveUserData(user) {
         try {

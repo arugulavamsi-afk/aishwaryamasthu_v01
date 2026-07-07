@@ -93,6 +93,8 @@
             tax = _seNewTax(totalIncome);
             // Rebate u/s 87A if income ≤ 12L (new regime)
             if (totalIncome <= 1200000) tax = 0;
+            // 87A marginal relief just above ₹12L
+            else tax = Math.min(tax, totalIncome - 1200000);
         } else {
             deductions = 50000 + c80 + nps; // std deduction 50K for professionals
             tax = _seOldTax(totalIncome, deductions);
