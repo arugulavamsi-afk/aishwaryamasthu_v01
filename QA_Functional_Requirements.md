@@ -861,6 +861,10 @@ If corpus ≤ 0: corpus depleted in this year
 - Expected return and inflation inputs per asset class
 - Projection to life expectancy (default 90)
 - Shows corpus sufficiency, depletion year if applicable, recommended drawdown
+- PPF deposits modelled only for the remaining years of the 15-year term (`Years Done` input); balance then compounds deposit-free to retirement
+- EPS pension estimated from future service: `min(basic, ₹15,000) × min(service, 35) ÷ 70`, requires ≥10 years of service; added to retirement income
+- Depletion simulation inflates general and medical expenses annually through retirement (general and healthcare inflation applied separately, net of NPS + EPS pensions)
+- Stress test (−30% Year-1 crash) applies only to market-linked assets (NPS lumpsum, SIP, Other); EPF/PPF are unaffected
 
 ---
 

@@ -150,6 +150,7 @@
                                     oninput="retHubCalc();this.classList.remove('text-slate-400');"
                                     onfocus="if(this.value==='0'){this.value='';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');"
                                     onblur="if(!this.value){this.value='0';this.classList.add('text-slate-400');}else this.classList.remove('text-slate-400');">
+                                <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="rh.hint.ppfterm">Deposits till year 15, then corpus keeps compounding</div>
                             </div>
                         </div>
                     </div>
@@ -325,7 +326,7 @@
                     </div>
 
                     <!-- Monthly Income Row -->
-                    <div class="grid grid-cols-3 gap-2">
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
                         <div class="rounded-2xl p-3 text-center" style="background:linear-gradient(135deg,#0c2340,#1a4a7a);border:1px solid rgba(147,197,253,0.3);">
                             <div class="text-[9px] font-black text-blue-300 uppercase" data-i18n="rh.res.swppool">SWP from Pool</div>
                             <div id="rh-swp" class="text-lg font-black text-white mt-0.5">—</div>
@@ -336,10 +337,15 @@
                             <div id="rh-nps-pension-d" class="text-lg font-black text-white mt-0.5">—</div>
                             <div class="text-[8px] text-indigo-400 mt-0.5" data-i18n="rh.res.guarannuity">Guaranteed annuity</div>
                         </div>
+                        <div class="rounded-2xl p-3 text-center" style="background:linear-gradient(135deg,#0c2340,#164e63);border:1px solid rgba(147,197,253,0.3);">
+                            <div class="text-[9px] font-black text-cyan-300 uppercase" data-i18n="rh.res.epspension">EPS Pension</div>
+                            <div id="rh-eps-pension-d" class="text-lg font-black text-white mt-0.5">—</div>
+                            <div class="text-[8px] text-cyan-400 mt-0.5" data-i18n="rh.res.epsfrom">Est. from EPF service</div>
+                        </div>
                         <div class="rounded-2xl p-3 text-center" style="background:linear-gradient(135deg,#1a1a2e,#3b0764);border:2px solid rgba(245,200,66,0.5);">
                             <div class="text-[9px] font-black text-yellow-300 uppercase" data-i18n="rh.res.totalincome">Total Income</div>
                             <div id="rh-total-income" class="text-lg font-black text-white mt-0.5">—</div>
-                            <div class="text-[8px] text-purple-300 mt-0.5" data-i18n="rh.res.swpnps">SWP + NPS pension</div>
+                            <div class="text-[8px] text-purple-300 mt-0.5" data-i18n="rh.res.swpnps">SWP + NPS + EPS pension</div>
                         </div>
                     </div>
 
@@ -376,7 +382,7 @@
                             </div>
                             <div class="rounded-xl p-3 text-center" style="background:linear-gradient(135deg,#431407,#7c2d12);border:2px solid rgba(239,68,68,0.4);">
                                 <div class="text-[9px] font-black text-orange-300 uppercase mb-1" data-i18n="rh.stress.stresscase">Stress Case</div>
-                                <div class="text-[8px] text-orange-400 mb-2" data-i18n="rh.stress.crash30">−30% crash in Year 1</div>
+                                <div class="text-[8px] text-orange-400 mb-2" data-i18n="rh.stress.crash30rh">−30% on NPS+SIP+Other (EPF/PPF safe)</div>
                                 <div class="text-[9px] font-black text-slate-300 uppercase" data-i18n="rh.stress.corpuslasts">Corpus Lasts Until</div>
                                 <div id="rh-stress-depletion" class="text-2xl font-black text-white mt-0.5">—</div>
                                 <div id="rh-stress-label" class="text-[9px] mt-0.5">—</div>
