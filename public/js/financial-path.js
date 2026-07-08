@@ -195,9 +195,14 @@ function pathRenderChart(proj, plan) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            // Hover anywhere along the line (not just on the milestone dots, which
+            // are the only points with a non-zero radius) to see that year's value.
+            interaction: { mode: 'index', intersect: false, axis: 'x' },
             plugins: {
                 legend: { display: false },
                 tooltip: {
+                    mode: 'index',
+                    intersect: false,
                     callbacks: {
                         title: function (items) {
                             var yr = proj.startYear + items[0].dataIndex;
