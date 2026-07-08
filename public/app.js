@@ -1170,41 +1170,62 @@
             if (typeof saveUserData === 'function') saveUserData();
         }
 
+        // Goals are defined only in the Goal Planner and live in window._savedGoals.
+        // Financial Plan mirrors them into fpState.goals (so the SIP engine below is
+        // unchanged) and shows them read-only. This single function keeps the plan's
+        // working goal list in sync and re-renders the read-only list. Kept under the
+        // old name because many callers (save, delete, restore, step nav) invoke it.
         function gpRenderSavedGoalsBanner() {
-            var banner = document.getElementById('fp-saved-goals-banner');
-            if (!banner) return;
-            var goals = window._savedGoals || [];
-            if (goals.length === 0) { banner.classList.add('hidden'); return; }
-            banner.classList.remove('hidden');
+            fpSyncGoalsFromSaved();
+            fpRenderGoalsReadonly();
+        }
 
+        // Mirror the unified goal list into the plan's working array (derived — no
+        // longer user-edited in FP). Maps _savedGoals shape → fpState.goals shape.
+        function fpSyncGoalsFromSaved() {
+            var state = window._fpState;
+            if (!state) return;
+            var saved = window._savedGoals || [];
+            state.goals = saved.map(function(sg) {
+                var type = sg.fpType || 'custom';
+                if (typeof FP_GOAL_META !== 'undefined' && !FP_GOAL_META[type]) type = 'custom';
+                var meta = (typeof FP_GOAL_META !== 'undefined' && FP_GOAL_META[type]) || {};
+                var goalObj = {
+                    type: type,
+                    emoji: sg.emoji || meta.emoji || '🎯',
+                    label: sg.label || meta.label || 'Goal',
+                    targetAmt: sg.targetAmt ? String(sg.targetAmt) : '',
+                    years: sg.years || meta.defaultYrs || 1
+                };
+                if (type === 'custom') goalObj.customName = sg.label || '';
+                return goalObj;
+            });
+        }
+        window.fpSyncGoalsFromSaved = fpSyncGoalsFromSaved;
+
+        // Render the read-only goal list in Financial Plan step 2.
+        function fpRenderGoalsReadonly() {
+            var el = document.getElementById('fp-goals-readonly');
+            if (!el) return;
+            var saved = window._savedGoals || [];
+            if (saved.length === 0) {
+                var emptyTxt = (typeof _t === 'function' && _t('fp.goals.empty') !== 'fp.goals.empty')
+                    ? _t('fp.goals.empty') : 'No goals yet — add them in the Goal Planner below.';
+                el.innerHTML = '<div class="text-[11px] text-slate-400 italic px-1 py-2">' + emptyTxt + '</div>';
+                return;
+            }
             var fmt = function(n){ return '₹' + Number(n).toLocaleString('en-IN'); };
-            var state = (window._fpState && window._fpState.goals) || [];
-
-            var rows = goals.map(function(g, i) {
-                var already = state.some(function(fg){
-                    return fg.type === g.fpType && (g.fpType !== 'custom' || fg.label === g.label);
-                });
-                return '<div class="flex items-center gap-2 py-1.5 border-b border-amber-100 last:border-0">' +
-                    '<span class="text-base leading-none flex-shrink-0">' + g.emoji + '</span>' +
+            el.innerHTML = saved.map(function(g) {
+                return '<div class="flex items-center gap-2 py-2 px-3 rounded-xl" style="background:#f8fafc;border:1px solid #eef2f7;">' +
+                    '<span class="text-base leading-none flex-shrink-0">' + (g.emoji || '🎯') + '</span>' +
                     '<div class="flex-1 min-w-0">' +
-                        '<div class="text-[11px] font-bold text-slate-700 truncate">' + window.esc(g.label) + '</div>' +
-                        '<div class="text-[9px] text-slate-400">' + fmt(g.targetAmt) + ' · ' + g.years + ' yrs</div>' +
+                        '<div class="text-[12px] font-bold text-slate-700 truncate">' + window.esc(g.label) + '</div>' +
+                        '<div class="text-[10px] text-slate-400">' + fmt(g.targetAmt || 0) + ' · ' + (g.years || 0) + ' yrs</div>' +
                     '</div>' +
-                    (already
-                        ? '<span class="text-[9px] font-bold text-emerald-600 px-1.5 py-0.5 rounded-full flex-shrink-0" style="background:#ecfdf5;">Added ✓</span>'
-                        : '<button onclick="gpImportGoal(' + i + ')" class="text-[10px] font-bold px-2 py-1 rounded-lg flex-shrink-0 transition-colors" style="background:#fef3c7;border:1px solid #fde68a;color:#92400e;">+ Add to Plan</button>') +
-                    '<button onclick="gpRemoveSavedGoal(' + i + ')" class="text-[10px] text-slate-300 hover:text-red-400 flex-shrink-0 ml-0.5 transition-colors leading-none" title="Remove">✕</button>' +
                 '</div>';
             }).join('');
-
-            banner.innerHTML =
-                '<div class="flex items-center gap-1.5 mb-2">' +
-                    '<span class="text-sm leading-none">📌</span>' +
-                    '<span class="text-[10px] font-black text-amber-700 uppercase tracking-wider">' + _t('fp.goals.from.planner') + '</span>' +
-                    '<span class="ml-auto text-[9px] font-semibold text-amber-500">' + goals.length + ' goal' + (goals.length !== 1 ? 's' : '') + '</span>' +
-                '</div>' +
-                rows;
         }
+        window.fpRenderGoalsReadonly = fpRenderGoalsReadonly;
 
         function gpImportGoal(idx) {
             var g = (window._savedGoals || [])[idx];
@@ -2981,19 +3002,10 @@
         // ---- Multi-goal tile toggle ----
         // Restore goal tile visual state from fpState.goals after a page reload.
         // Called by loadUserData once the state has been re-applied to window._fpState.
+        // Called on Financial Plan data restore. Goals are now sourced solely from
+        // the Goal Planner (window._savedGoals), so just re-derive + render them.
         function fpRestoreGoalTiles() {
-            // 1. Clear all active visual states first
-            document.querySelectorAll('.fp-goal-tile').forEach(function(btn) {
-                btn.classList.remove('fp-goal-tile-active');
-            });
-            // 2. Re-apply active state for every goal that was saved
-            if (!window._fpState) return;
-            window._fpState.goals.forEach(function(g) {
-                var tile = document.querySelector('.fp-goal-tile[data-goal="' + g.type + '"]');
-                if (tile) tile.classList.add('fp-goal-tile-active');
-            });
-            // 3. Rebuild the goal detail cards (target amounts, horizons, custom names)
-            if (typeof fpRenderGoalCards === 'function') fpRenderGoalCards();
+            gpRenderSavedGoalsBanner();
         }
 
                 function fpToggleGoalTile(btn, type, emoji, label) {
@@ -3452,6 +3464,7 @@
         }
 
         function fpGoStep(n) {
+            fpSyncGoalsFromSaved(); // goals come from the Goal Planner
             if (n === 2) {
                 var age = parseInt(document.getElementById('fp-age').value);
                 var income = document.getElementById('fp-income').value.replace(/,/g,'');
@@ -3460,7 +3473,7 @@
                 gpRenderSavedGoalsBanner();
                 fpRefreshNwBanner();
             }
-            if (n === 3 && fpState.goals.length === 0) { alert('Please select at least one financial goal.'); return; }
+            if (n === 3 && fpState.goals.length === 0) { alert('Please add at least one goal in the Goal Planner first.'); switchMode('goal'); return; }
             fpState.step = n;
             [1,2,3].forEach(function(s) {
                 var el = document.getElementById('fp-step-' + s); if (el) el.classList.toggle('hidden', s !== n);
@@ -3475,6 +3488,8 @@
 
         /* ---- Tab Navigation: allows free movement between steps ---- */
         function fpNavTab(n) {
+            // Goals are sourced from the Goal Planner — refresh before validating.
+            fpSyncGoalsFromSaved();
             // Going backward: always allow
             // Going forward: validate required steps
             if (n > 1) {
@@ -3486,7 +3501,7 @@
             }
             if (n === 2) { gpRenderSavedGoalsBanner(); fpRefreshNwBanner(); }
             if (n >= 3 && fpState.goals.length === 0) {
-                alert('Please select at least one financial goal first.'); fpGoStep(2); return;
+                alert('Please add at least one goal in the Goal Planner first.'); switchMode('goal'); return;
             }
             if (n === 3) {
                 // If risk profile already saved, skip questionnaire — go straight to plan
@@ -4022,6 +4037,9 @@
 
         // ---- Generate Plan ----
         function fpCalculatePlan() {
+            // Goals come solely from the Goal Planner — ensure the plan's working list
+            // reflects the latest saved goals before computing SIPs.
+            fpSyncGoalsFromSaved();
             // Check if we have all answers (either freshly answered or loaded from saved)
             var answered = fpQuestions.filter(function(q){ return fpState.answers[q.id] !== undefined; }).length;
             var savedRisk = fpLoadRiskScore();

@@ -124,52 +124,16 @@
                             <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-black text-sm">2</div>
                             <div>
                                 <div class="font-black text-slate-800 text-sm" data-i18n="fp.step2.title">Your Financial Goals</div>
-                                <div class="text-[11px] text-slate-400" data-i18n="fp.step2.sub">Select all that apply — add a target amount &amp; timeline for each</div>
+                                <div class="text-[11px] text-slate-400" data-i18n="fp.step2.sub">Pulled from your Goal Planner — add or edit them there</div>
                             </div>
                         </div>
                         <div class="p-5 space-y-4">
 
-                            <!-- Saved goals from Goal Planner -->
-                            <div id="fp-saved-goals-banner" class="hidden rounded-xl px-3 py-2.5" style="background:#fffbeb;border:1.5px solid #fde68a;"></div>
-
-                            <!-- Goal tiles picker -->
+                            <!-- Goals — defined & managed in the Goal Planner (single source) -->
                             <div>
-                                <label class="fp-label"><span data-i18n="fp.goal.select">Select Your Goals</span> <span class="normal-case font-medium text-slate-400" data-i18n="fp.goal.select.sub">(pick one or more)</span></label>
-                                <div class="grid grid-cols-3 gap-2" id="fp-goals-grid">
-                                    <button onclick="fpToggleGoalTile(this,'retirement','🏖️','Retirement')" class="fp-goal-tile" data-goal="retirement">
-                                        <span class="text-xl">🏖️</span><span class="text-[11px] font-bold text-slate-600 mt-1 leading-tight" data-i18n="fp.goal.retirement">Retirement</span>
-                                    </button>
-                                    <button onclick="fpToggleGoalTile(this,'home','🏠','Buy a Home')" class="fp-goal-tile" data-goal="home">
-                                        <span class="text-xl">🏠</span><span class="text-[11px] font-bold text-slate-600 mt-1 leading-tight" data-i18n="fp.goal.home">Buy a Home</span>
-                                    </button>
-                                    <button onclick="fpToggleGoalTile(this,'education','🎓','Child\'s Education')" class="fp-goal-tile" data-goal="education">
-                                        <span class="text-xl">🎓</span><span class="text-[11px] font-bold text-slate-600 mt-1 leading-tight" data-i18n="fp.goal.education">Education</span>
-                                    </button>
-                                    <button onclick="fpToggleGoalTile(this,'wealth','💰','Wealth Creation')" class="fp-goal-tile" data-goal="wealth">
-                                        <span class="text-xl">💰</span><span class="text-[11px] font-bold text-slate-600 mt-1 leading-tight" data-i18n="fp.goal.wealth">Wealth Creation</span>
-                                    </button>
-                                    <button onclick="fpToggleGoalTile(this,'marriage','💍','Marriage')" class="fp-goal-tile" data-goal="marriage">
-                                        <span class="text-xl">💍</span><span class="text-[11px] font-bold text-slate-600 mt-1 leading-tight" data-i18n="fp.goal.marriage">Marriage</span>
-                                    </button>
-                                    <button onclick="fpToggleGoalTile(this,'travel','✈️','Travel / Break')" class="fp-goal-tile" data-goal="travel">
-                                        <span class="text-xl">✈️</span><span class="text-[11px] font-bold text-slate-600 mt-1 leading-tight" data-i18n="fp.goal.travel">Travel / Break</span>
-                                    </button>
-                                    <button onclick="fpToggleGoalTile(this,'emergency','🛡️','Emergency Fund')" class="fp-goal-tile" data-goal="emergency">
-                                        <span class="text-xl">🛡️</span><span class="text-[11px] font-bold text-slate-600 mt-1 leading-tight" data-i18n="fp.goal.emergency">Emergency Fund</span>
-                                    </button>
-                                    <button onclick="fpToggleGoalTile(this,'business','🚀','Start a Business')" class="fp-goal-tile" data-goal="business">
-                                        <span class="text-xl">🚀</span><span class="text-[11px] font-bold text-slate-600 mt-1 leading-tight" data-i18n="fp.goal.business">Start Business</span>
-                                    </button>
-                                    <button onclick="fpToggleGoalTile(this,'custom','✏️','Custom Goal')" class="fp-goal-tile" data-goal="custom">
-                                        <span class="text-xl">✏️</span><span class="text-[11px] font-bold text-slate-600 mt-1 leading-tight" data-i18n="fp.goal.custom">Custom</span>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Dynamic goal detail cards -->
-                            <div id="fp-goal-details" class="space-y-3 hidden">
-                                <label class="fp-label"><span data-i18n="fp.goal.details.lbl">Goal Details</span> <span class="normal-case font-medium text-slate-400" data-i18n="fp.goal.details.sub">(optional but improves your plan)</span></label>
-                                <div id="fp-goal-cards"></div>
+                                <label class="fp-label"><span data-i18n="fp.goal.select">Your Goals</span> <span class="normal-case font-medium text-slate-400" data-i18n="fp.goal.frommgr">(managed in Goal Planner)</span></label>
+                                <div id="fp-goals-readonly" class="space-y-2 mt-1"></div>
+                                <button onclick="switchMode('goal')" class="mt-2 w-full py-2.5 rounded-xl border border-indigo-200 text-indigo-600 hover:bg-indigo-50 font-bold text-[13px] flex items-center justify-center gap-2 transition-all" data-i18n="fp.goal.manage">➕ Add / edit goals in Goal Planner →</button>
                             </div>
 
                             <!-- Existing investments -->
