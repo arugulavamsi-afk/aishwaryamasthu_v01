@@ -118,7 +118,9 @@ function pathProjectSeries(plan) {
             });
             balance -= outflowByYear[y];
         }
-        series.push({ year: startYear + y, value: Math.max(balance, 0) });
+        // Plot the true running balance — it may go negative when goals outpace
+        // the corpus, so the shortfall is visible below zero rather than hidden.
+        series.push({ year: startYear + y, value: Math.round(balance) });
     }
     return { series: series, milestones: milestones, startYear: startYear, horizon: horizon };
 }
@@ -189,13 +191,14 @@ function pathRenderChart(proj, plan) {
                 label: 'Projected net worth',
                 data: series.map(function (p) { return p.value; }),
                 borderColor: '#6366f1',
-                backgroundColor: 'rgba(99,102,241,0.08)',
                 borderWidth: 2.5,
                 pointRadius: pointRadius,
                 pointHoverRadius: 6,
                 pointBackgroundColor: pointColors,
                 pointBorderColor: pointColors,
-                fill: true,
+                // Fill relative to the zero line: indigo above, red "underwater"
+                // below — so a shortfall reads instantly.
+                fill: { target: 'origin', above: 'rgba(99,102,241,0.10)', below: 'rgba(239,68,68,0.16)' },
                 tension: 0.3
             }]
         },
@@ -229,7 +232,12 @@ function pathRenderChart(proj, plan) {
                 x: { ticks: { font: { size: 9 }, maxTicksLimit: 12 }, grid: { display: false } },
                 y: {
                     ticks: { font: { size: 9 }, callback: function (v) { return pathFmt(v); } },
-                    grid: { color: 'rgba(0,0,0,0.04)' }
+                    grid: {
+                        // Draw a stronger red baseline at ₹0 so a dip below it — the
+                        // "underwater" zone — is obvious.
+                        color: function (ctx) { return ctx.tick.value === 0 ? 'rgba(239,68,68,0.45)' : 'rgba(0,0,0,0.04)'; },
+                        lineWidth: function (ctx) { return ctx.tick.value === 0 ? 1.5 : 1; }
+                    }
                 }
             }
         }

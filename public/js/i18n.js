@@ -1091,7 +1091,7 @@
         'finpath.empty.sub':    'Generate a plan in Financial Plan, then tap “Save to Your Financial Path” to see your money’s trajectory here.',
         'finpath.empty.cta':    '📋 Go to Financial Plan',
         'finpath.chart.title':  '📈 Net Worth Trajectory',
-        'finpath.chart.note':   'Directional projection — net worth grows with your SIP & blended return, and dips as each goal is funded. Green dots = goals on track, red = shortfall.',
+        'finpath.chart.note':   'Directional projection — net worth grows with your SIP & blended return, and dips as each goal is funded. Green dots = goals on track, red = shortfall. If the line drops below the red zero line, your goals outpace your available corpus.',
         'finpath.archive.title':'🕑 Saved History',
         'finpath.disc':         '⚠️ Directional estimate, not a guarantee. Projections use your risk-profile blended return; actual returns vary and equity is not guaranteed. Re-save your plan whenever your net worth, income, or goals change to keep this path current.',
         'finpath.alert.noplan': 'Generate a plan in Financial Plan first, then save it to Your Financial Path.',
