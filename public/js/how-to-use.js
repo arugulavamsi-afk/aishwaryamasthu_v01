@@ -128,14 +128,14 @@
             tip: 'Fill in My Profile first — it auto-fills your income, age, family, and investment details here.'
         },
         finpath: {
-            what: 'See where your money is heading — your saved Financial Plan projected forward as a net-worth trajectory, goal by goal.',
+            what: 'Your goals hub — track what you have actually saved toward each goal with check-ins, and see your saved plan projected forward as a net-worth trajectory.',
             steps: [
-                '1. Generate a plan in Financial Plan, then tap "Save to Your Financial Path"',
-                '2. Read the trajectory chart: your net worth grows with SIPs & returns and dips as each goal is funded',
-                '3. Check the goal cards — green means on track, red flags a shortfall and how much extra SIP closes it',
-                '4. Re-save whenever your net worth, income, or goals change; older paths stay in History to compare'
+                '1. Set goals in the Goal Planner (or generate a Financial Plan) — they appear as cards under "Your Goals"',
+                '2. Tap "+ Update Progress" on a goal and enter the total saved so far — the bar and on-track status update',
+                '3. Save a Financial Plan here to see the trajectory chart: net worth growing, each goal funded, then retirement drawdown',
+                '4. Green = on track, red = behind or a projected shortfall; re-check monthly to stay on course'
             ],
-            tip: 'Green dots on the chart are goals you are on track to fund; red dots are shortfalls. Hover any point to see the projected value for that year.'
+            tip: 'The goal cards track your ACTUAL savings; the trajectory chart shows the PROJECTED plan. Together they tell you both where you are and where you are heading.'
         },
         taxguide: {
             what: 'Compare old vs new tax regime, calculate MF capital gains tax, and find your optimal filing strategy.',

@@ -21,7 +21,7 @@
         },
         {
             id: 'planning-tax', emoji: '🗺️', title: 'Planning & Tax', titleKey: 'ug.sec.plan',
-            tools: ['finplan','healthscore','networth','taxguide','ctcoptimizer','cgcalc','fixedincome','ulipcheck','debtplan','ssaplanner','jointplan','cibil','fincal','selfempl','goldcomp','nomtrack','budgettrack','goaltracker','gratuity']
+            tools: ['finplan','finpath','healthscore','networth','taxguide','ctcoptimizer','cgcalc','fixedincome','ulipcheck','debtplan','ssaplanner','jointplan','cibil','fincal','selfempl','goldcomp','nomtrack','budgettrack','gratuity']
         },
         {
             id: 'account', emoji: '👤', title: 'Account & Your Data', titleKey: 'ug.sec.account', tools: null
@@ -61,7 +61,7 @@
         cgcalc:        { emoji:'📉', title:'Capital Gains Calculator',          titleKey:'card.cgcalc.title' },
         nomtrack:      { emoji:'📜', title:'Nomination Tracker',                titleKey:'card.nomtrack.title' },
         budgettrack:   { emoji:'📊', title:'Budget & Expense Tracker',          titleKey:'card.budget.title' },
-        goaltracker:   { emoji:'🎯', title:'Goal Tracker',                      titleKey:'card.goaltrack.title' }
+        finpath:       { emoji:'🧭', title:'Your Financial Path',               titleKey:'card.finpath.title' }
     };
 
     function _getHu(mode) {

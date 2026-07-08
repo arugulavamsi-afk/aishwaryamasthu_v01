@@ -314,12 +314,12 @@
 
     // Allow dashboard to trigger a re-render after goals load from Firestore
     window._gtRefreshIfOpen = function () {
-        if (window._currentMode === 'goaltracker') _renderAll();
+        if (window._currentMode === 'goaltracker' || window._currentMode === 'finpath') _renderAll();
     };
 
     // Called by applyLang() when language changes while goaltracker is open
     window._gtRefreshAll = function () {
-        if (window._currentMode === 'goaltracker') _renderAll();
+        if (window._currentMode === 'goaltracker' || window._currentMode === 'finpath') _renderAll();
     };
 
 })();

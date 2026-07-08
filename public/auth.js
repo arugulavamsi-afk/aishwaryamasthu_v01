@@ -1834,7 +1834,7 @@
                     active:  data.finPath.active  || null,
                     archive: data.finPath.archive || []
                 };
-                _applyWhenReady('path-content', function() {
+                _applyWhenReady('path-plan', function() {
                     try { if (typeof pathRender === 'function') pathRender(); }
                     catch(e) { console.warn('loadUserData finPath:', e); }
                 });

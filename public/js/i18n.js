@@ -1083,13 +1083,18 @@
         'fp.savepath.done':     '✅ Saved to Your Financial Path',
         'fp.savepath.view':     'View →',
         'page.finpath.h':       '🧭 Your Financial Path',
-        'page.finpath.sub':     'Where your money is heading — your saved plan projected forward, goal by goal.',
+        'page.finpath.sub':     'Track every goal and see where your money is heading — your plan projected forward.',
         'btn.finpath.plan':     '📋 Financial Plan',
         'card.finpath.title':   'Your Financial Path',
-        'card.finpath.desc':    'Saved plan trajectory · Net worth projection · Goal on-track / shortfall · Life events',
-        'finpath.empty.title':  'No saved path yet',
-        'finpath.empty.sub':    'Generate a plan in Financial Plan, then tap “Save to Your Financial Path” to see your money’s trajectory here.',
+        'card.finpath.desc':    'Track goals with check-ins · Net worth trajectory · Retirement drawdown · Life events',
+        'finpath.empty.title':  'Nothing to track yet',
+        'finpath.empty.sub':    'Set goals in the Goal Planner or generate a Financial Plan — then track your progress and see your trajectory here.',
         'finpath.empty.cta':    '📋 Go to Financial Plan',
+        'finpath.empty.cta.goal':'🎯 Goal Planner',
+        'finpath.empty.cta.plan':'📋 Financial Plan',
+        'finpath.goals.title':  '🎯 Your Goals',
+        'finpath.goals.sub':    'Log what you\'ve actually saved toward each goal to see if you\'re on track.',
+        'finpath.goals.add':    '＋ New Goal',
         'finpath.chart.title':  '📈 Net Worth Trajectory',
         'finpath.chart.note':   'Directional projection — net worth grows with your SIP & blended return and dips as each goal is funded. From retirement (amber dot) SIPs stop and an inflation-linked income is withdrawn, so the corpus draws down. Green = on track, red = shortfall; below the red zero line your money has run out.',
         'finpath.chart.retire': '🏖️ Retirement — drawdown begins',
@@ -4239,6 +4244,10 @@
         }
         if (_cm === 'goaltracker') {
             if (typeof _gtRefreshAll === 'function') try { _gtRefreshAll(); } catch(e) {}
+        }
+        if (_cm === 'finpath') {
+            // Re-render Path (chart, plan cards) and the merged goal-tracking cards.
+            if (typeof pathRender === 'function') try { pathRender(); } catch(e) {}
         }
         if (_cm === 'userguide') {
             if (typeof initUserGuide === 'function') try { initUserGuide(); } catch(e) {}

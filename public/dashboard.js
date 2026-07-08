@@ -145,7 +145,7 @@
         { mode:'ulipcheck',    emoji:'🔍', title:'ULIP / LIC Policy Analyzer',     desc:'LIC ULIP surrender value, IRR, buy term + invest the difference' },
         { mode:'networth',     emoji:'⚖️', title:'Net Worth Tracker',              desc:'Assets liabilities, balance sheet, debt ratio, financial picture' },
         { mode:'finplan',      emoji:'📋', title:'Financial Plan',                 desc:'Personalised SIP plan, goals, risk profile, existing investments' },
-        { mode:'finpath',      emoji:'🧭', title:'Your Financial Path',            desc:'Saved plan trajectory, net worth projection, goal on-track shortfall, life events' },
+        { mode:'finpath',      emoji:'🧭', title:'Your Financial Path',            desc:'Goal tracker, track savings progress, monthly check-ins, on-track status, saved plan trajectory, net worth projection, drawdown, life events' },
         { mode:'taxguide',     emoji:'🧾', title:'Tax Guide',                      desc:'Old vs new tax regime, capital gains, crypto tax, which regime saves more' },
         { mode:'healthscore',  emoji:'💗', title:'Financial Health Score',         desc:'Honest money score, insurance check, emergency fund, savings rate' },
         { mode:'ssaplanner',   emoji:'👧', title:'SSA + Child Education Planner',  desc:'Sukanya Samriddhi, daughter education marriage corpus, ELSS SIP' },
@@ -160,7 +160,6 @@
         { mode:'cgcalc',       emoji:'📉', title:'Capital Gains Calculator',       desc:'LTCG STCG equity debt gold, Budget 2024, indexation, tax on sale' },
         { mode:'nomtrack',     emoji:'📜', title:'Nomination Tracker',             desc:'Nominee for EPF bank MF insurance demat, will checklist, estate readiness' },
         { mode:'budgettrack',  emoji:'📊', title:'Budget & Expense Tracker',       desc:'Monthly budget, spending categories, where is my money going' },
-        { mode:'goaltracker',  emoji:'🎯', title:'Goal Tracker',                   desc:'Track savings progress toward goals, monthly check-ins, on-track status' },
     ];
 
     var _situations = [
@@ -175,7 +174,7 @@
           modes:['mfkit','mfexplorer','fundpicker','growth','stepupsip','fixedincome','goldcomp','coffeecan'] },
         { emoji:'🎯', key:'sit.goals', label:'I have big goals — home, education, travel',
           intro:'Every goal is reachable with the right plan and the right SIP amount.',
-          modes:['goal','goaltracker','finplan','ssaplanner','jointplan'] },
+          modes:['goal','finpath','finplan','ssaplanner','jointplan'] },
         { emoji:'🏖️', key:'sit.retire', label:'I want to retire comfortably',
           intro:'Build the corpus you need and know exactly when you can stop working.',
           modes:['retirementhub','epfcalc','ppfnps','finplan','goal'] },
@@ -190,7 +189,7 @@
           modes:['insure','ulipcheck','ssaplanner','nomtrack'] },
         { emoji:'📊', key:'sit.track', label:'I want to track where my money goes',
           intro:'See the full picture — spending, net worth, goals, and what to fix.',
-          modes:['budgettrack','networth','goaltracker','mymfs','healthscore','fincal'] },
+          modes:['budgettrack','networth','finpath','mymfs','healthscore','fincal'] },
         { emoji:'🧑‍💻', key:'sit.business', label:'I run my own business or freelance',
           intro:'Tax, GST, cashflow — tools built for self-employed Indians.',
           modes:['selfempl','taxguide','cgcalc','fixedincome','budgettrack'] },
@@ -570,7 +569,7 @@
             '<div ' + _GT_CARD + '>' +
                 '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;">' +
                     '<span style="font-size:12px;font-weight:800;color:rgba(255,255,255,0.7);">🎯 My Goals' + moreLabel + '</span>' +
-                    '<button onclick="switchMode(\'goaltracker\')" ' + _GT_ACTBTN + '>Track →</button>' +
+                    '<button onclick="switchMode(\'finpath\')" ' + _GT_ACTBTN + '>Track →</button>' +
                 '</div>' +
                 rows +
                 gtTsLine +
@@ -883,7 +882,7 @@
             '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">' +
                 _card('healthscore', '💗', _t('dash.card.hs'), healthContent, healthTs) +
                 _card('networth',    '⚖️', _t('dash.card.nw'), nwContent, nwTs) +
-                _card('goaltracker', '🎯', _t('dash.card.goals'), goalsContent, goalsTs) +
+                _card('finpath', '🎯', _t('dash.card.goals'), goalsContent, goalsTs) +
                 _card('budgettrack', '📊', _t('dash.card.budget'), budgetContent, budgetTs) +
             '</div>';
     }

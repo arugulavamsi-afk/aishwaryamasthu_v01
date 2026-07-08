@@ -422,6 +422,8 @@
         function switchMode(mode) {
             // Retirement Drawdown is now part of Retirement Hub
             if (mode === 'drawdown') mode = 'retirementhub';
+            // Goal Tracker is now merged into Your Financial Path
+            if (mode === 'goaltracker') mode = 'finpath';
 
             // Track category context for breadcrumb back-navigation.
             // Must happen BEFORE the lazy-load early-return so the first visit to a

@@ -53,12 +53,39 @@ function pathSaveCurrentPlan() {
     }
     st.active = plan;
     window._pathState = st;
+    pathSyncPlanGoalsToTracker(plan);   // make the plan's goals trackable
     if (typeof saveUserData === 'function') saveUserData();
     var done = document.getElementById('fp-path-saved');
     if (done) done.classList.remove('hidden');
     pathRender();
 }
 window.pathSaveCurrentPlan = pathSaveCurrentPlan;
+
+// Add the plan's goals to the tracked list (window._savedGoals) so they can be
+// tracked with check-ins in the "Your Goals" section. Add-only: never touches an
+// existing tracked goal's savedAmt / checkIns / createdAt. Dedup mirrors the
+// Goal Planner bridge (app.js saveGoalToFP): match by fpType, and for custom by label.
+function pathSyncPlanGoalsToTracker(plan) {
+    if (!plan || !plan.goalSIPs || !plan.goalSIPs.length) return;
+    window._savedGoals = window._savedGoals || [];
+    var added = 0;
+    plan.goalSIPs.forEach(function (g) {
+        var fpType = g.type || 'custom';
+        var label  = g.label || 'Goal';
+        var exists = window._savedGoals.some(function (sg) {
+            return sg.fpType === fpType && (fpType !== 'custom' || sg.label === label);
+        });
+        if (exists) return;
+        window._savedGoals.push({
+            fpType: fpType, label: label, emoji: g.emoji || '🎯',
+            targetAmt: g.target || 0, years: g.years || 1,
+            createdAt: new Date().toISOString(), savedAmt: 0, checkIns: []
+        });
+        added++;
+    });
+    if (added > 0) window._savedGoalsTs = new Date().toISOString();
+}
+window.pathSyncPlanGoalsToTracker = pathSyncPlanGoalsToTracker;
 
 // Restore an archived path to active (swaps the current active into archive)
 function pathRestore(idx) {
@@ -167,21 +194,37 @@ window.pathProjectSeries = pathProjectSeries;
 
 // ── Render ────────────────────────────────────────────────────────
 function pathRender() {
-    var empty = document.getElementById('path-empty');
-    var content = document.getElementById('path-content');
-    if (!empty || !content) return; // panel not in DOM yet
+    var empty    = document.getElementById('path-empty');
+    var planWrap = document.getElementById('path-plan');
+    var goalsWrap = document.getElementById('path-goals-wrap');
+    var disc     = document.getElementById('path-disc');
+    if (!empty || !planWrap) return; // panel not in DOM yet
+
     var st = window._pathState || { active: null, archive: [] };
     var plan = st.active;
+    var savedGoals = window._savedGoals || [];
+    var hasPlan  = !!plan;
+    var hasGoals = savedGoals.length > 0;
 
-    if (!plan) {
-        empty.classList.remove('hidden');
-        content.classList.add('hidden');
+    // Goals tracking section — independent of whether a plan exists (this is the
+    // merged Goal Tracker). Reuses initGoalTracker() to fill #gt-goals-container.
+    if (goalsWrap) {
+        goalsWrap.classList.toggle('hidden', !hasGoals);
+        if (hasGoals && typeof initGoalTracker === 'function') initGoalTracker();
+    }
+
+    // Plan-dependent sections
+    planWrap.classList.toggle('hidden', !hasPlan);
+    if (disc) disc.classList.toggle('hidden', !hasPlan);
+    // Empty state only when there's neither a plan nor any goals to track.
+    empty.classList.toggle('hidden', hasPlan || hasGoals);
+
+    pathRenderArchive(st.archive || []);
+
+    if (!hasPlan) {
         if (_pathChart) { _pathChart.destroy(); _pathChart = null; }
-        pathRenderArchive(st.archive || []);
         return;
     }
-    empty.classList.add('hidden');
-    content.classList.remove('hidden');
 
     // Header
     var hd = document.getElementById('path-header');
@@ -343,32 +386,10 @@ function pathRenderCards(plan) {
             : '') +
     '</div>';
 
-    // Per-goal on-track / shortfall
-    var goals = plan.goalSIPs || [];
-    if (goals.length) {
-        html += '<div class="path-card">' +
-            '<div class="path-card-title">' + _pt('finpath.card.goals', '🎯 Goals — Are You On Track?') + '</div>' +
-            goals.map(function (g) {
-                var c = g.onTrack ? '#10b981' : '#ef4444';
-                var badge = g.onTrack ? _pt('finpath.ontrack', '✅ On track') : _pt('finpath.shortfall', '🔴 Shortfall');
-                var shortfallLine = (!g.onTrack && g.gap > 0)
-                    ? '<div class="text-[10px] text-rose-500 mt-0.5">' + _pt('finpath.goal.shortby', 'Short by {g}', { g: pathFmt(g.gap) }) +
-                      (g.extraSIP > 0 ? _pt('finpath.goal.addclose', ' · add {e}/mo to close it', { e: pathFull(g.extraSIP) }) : '') + '</div>'
-                    : '';
-                return '<div class="py-2 border-b border-slate-50 last:border-0">' +
-                    '<div class="flex items-center gap-2">' +
-                        '<span class="text-base flex-shrink-0">' + (g.emoji || '🎯') + '</span>' +
-                        '<div class="flex-1 min-w-0">' +
-                            '<div class="text-[11px] font-bold text-slate-700 truncate">' + _pathEsc(g.label) + '</div>' +
-                            '<div class="text-[10px] text-slate-400">' + _pt('finpath.goal.detail', 'in {y} yrs · target {t} · projected {p}', { y: g.years, t: pathFmt(g.target), p: pathFmt(g.effectiveCorpus || g.corpus || 0) }) + '</div>' +
-                        '</div>' +
-                        '<span class="text-[10px] font-black px-2 py-0.5 rounded-full flex-shrink-0" style="background:' + c + '18;color:' + c + ';">' + badge + '</span>' +
-                    '</div>' +
-                    shortfallLine +
-                '</div>';
-            }).join('') +
-        '</div>';
-    }
+    // NOTE: projected per-goal cards were removed here — actual goal tracking now
+    // lives in the "Your Goals" section (reused Goal Tracker). The chart milestones
+    // still convey projected on-track/shortfall, so the split is: chart = projected,
+    // Your Goals = actual. This avoids two competing per-goal "on track" badges.
 
     el.innerHTML = html;
 }
