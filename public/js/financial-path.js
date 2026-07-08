@@ -82,21 +82,43 @@ function pathDeleteArchived(idx) {
 window.pathDeleteArchived = pathDeleteArchived;
 
 // ── Directional trajectory projection (chart only) ────────────────
-// start = today's net worth (fallback existing corpus); each year the
-// balance compounds at the blended return and adds the annual SIP;
-// each goal's target is drawn down in its target year.
+// Two phases:
+//  • Accumulation (until retirement): balance compounds at the blended return
+//    and adds the annual SIP; each goal's target is drawn down in its year.
+//  • Drawdown (retirement → life expectancy): SIP stops, the corpus earns a
+//    conservative 7% and an inflation-growing living expense is withdrawn, so
+//    the corpus depletes. Expense = 70% of current income, inflated to
+//    retirement (a replacement-rate proxy — finpath has no explicit expenses).
+//    Assumptions match the Retirement Hub: 6% inflation, 7% post-retirement return.
+var PATH_LIFE_EXPECTANCY = 85;
+var PATH_POST_RET_RETURN = 0.07;
+var PATH_INFLATION       = 0.06;
+var PATH_REPLACEMENT     = 0.70;
+
 function pathProjectSeries(plan) {
     var startYear = new Date().getFullYear();
+    var age       = plan.age || 30;
+    var retireAge = plan.retireAge || 60;
     var goals = plan.goalSIPs || [];
     var goalYears = goals.map(function (g) { return parseInt(g.years) || 0; });
+    var yearsToRetire = Math.max(retireAge - age, 1);
+    // Extend past retirement to life expectancy so drawdown depletion is visible.
     var horizon = Math.max(
-        (plan.retireAge || 60) - (plan.age || 30),
+        yearsToRetire,
         goalYears.length ? Math.max.apply(null, goalYears) : 0,
+        PATH_LIFE_EXPECTANCY - age,
         1
     );
     var balance = plan.netWorthToday > 0 ? plan.netWorthToday : (plan.existingCorpus || 0);
     var annualSIP = (plan.monthlyInvest || 0) * 12;
     var r = (plan.blendedReturn || 10) / 100;
+
+    // Annual living expense at the moment of retirement (0 if income unknown —
+    // e.g. a plan saved before income was captured; then the corpus just grows).
+    var annualIncomeNow = (plan.monthlyIncome || 0) * 12;
+    var retExpenseAtRet = annualIncomeNow > 0
+        ? annualIncomeNow * PATH_REPLACEMENT * Math.pow(1 + PATH_INFLATION, yearsToRetire)
+        : 0;
 
     var outflowByYear = {};
     goals.forEach(function (g) {
@@ -104,9 +126,20 @@ function pathProjectSeries(plan) {
         outflowByYear[y] = (outflowByYear[y] || 0) + (g.target || 0);
     });
 
-    var series = [], milestones = [];
+    var series = [], milestones = [], depletionYear = null;
     for (var y = 0; y <= horizon; y++) {
-        if (y > 0) balance = balance * (1 + r) + annualSIP;
+        var curAge = age + y;
+        if (y > 0) {
+            if (curAge <= retireAge) {
+                // Accumulation — grow at blended return, add the year's SIP.
+                balance = balance * (1 + r) + annualSIP;
+            } else {
+                // Drawdown — conservative return minus an inflation-growing expense.
+                var yearsIntoRet = curAge - retireAge; // 1, 2, 3 …
+                var expense = retExpenseAtRet * Math.pow(1 + PATH_INFLATION, yearsIntoRet - 1);
+                balance = balance * (1 + PATH_POST_RET_RETURN) - expense;
+            }
+        }
         if (outflowByYear[y]) {
             goals.forEach(function (g) {
                 if ((parseInt(g.years) || 0) === y) {
@@ -118,11 +151,17 @@ function pathProjectSeries(plan) {
             });
             balance -= outflowByYear[y];
         }
-        // Plot the true running balance — it may go negative when goals outpace
-        // the corpus, so the shortfall is visible below zero rather than hidden.
+        // First year the corpus runs out during retirement (money outlives you = bad).
+        if (depletionYear === null && curAge > retireAge && balance < 0) depletionYear = startYear + y;
+        // Plot the true running balance — it may go negative (shortfall / depletion)
+        // so the downside is visible below zero rather than hidden.
         series.push({ year: startYear + y, value: Math.round(balance) });
     }
-    return { series: series, milestones: milestones, startYear: startYear, horizon: horizon };
+    return {
+        series: series, milestones: milestones, startYear: startYear, horizon: horizon,
+        retireIndex: (retireAge - age), retireYear: startYear + (retireAge - age),
+        depletionYear: depletionYear
+    };
 }
 window.pathProjectSeries = pathProjectSeries;
 
@@ -176,11 +215,17 @@ function pathRenderChart(proj, plan) {
     var milestoneYears = {};
     proj.milestones.forEach(function (m) { milestoneYears[m.year] = m; });
 
-    var pointRadius = series.map(function (p) { return milestoneYears[p.year] ? 5 : 0; });
+    // The retirement year gets its own amber marker — drawdown starts here.
+    var pointRadius = series.map(function (p) {
+        if (milestoneYears[p.year]) return 5;
+        if (p.year === proj.retireYear) return 5;
+        return 0;
+    });
     var pointColors = series.map(function (p) {
         var m = milestoneYears[p.year];
-        if (!m) return 'rgba(0,0,0,0)';
-        return m.onTrack ? '#10b981' : '#ef4444';
+        if (m) return m.onTrack ? '#10b981' : '#ef4444';
+        if (p.year === proj.retireYear) return '#f59e0b'; // retirement marker
+        return 'rgba(0,0,0,0)';
     });
 
     _pathChart = new Chart(canvas.getContext('2d'), {
@@ -221,9 +266,11 @@ function pathRenderChart(proj, plan) {
                         label: function (c) { return ' ' + pathFmt(c.parsed.y); },
                         afterLabel: function (c) {
                             var yr = proj.startYear + c.dataIndex;
+                            var lines = [];
                             var m = milestoneYears[yr];
-                            if (!m) return '';
-                            return (m.onTrack ? '✅ ' : '🔴 ') + _pt('finpath.chart.mstip', '{label} — target {t}', { label: m.label, t: pathFmt(m.target) });
+                            if (m) lines.push((m.onTrack ? '✅ ' : '🔴 ') + _pt('finpath.chart.mstip', '{label} — target {t}', { label: m.label, t: pathFmt(m.target) }));
+                            if (yr === proj.retireYear) lines.push(_pt('finpath.chart.retire', '🏖️ Retirement — drawdown begins'));
+                            return lines.join('\n');
                         }
                     }
                 }
@@ -334,12 +381,16 @@ function pathRenderArchive(archive) {
     wrap.classList.remove('hidden');
     el.innerHTML = archive.map(function (p, i) {
         var proj = pathProjectSeries(p);
-        var endVal = proj.series.length ? proj.series[proj.series.length - 1].value : 0;
+        // Summarise by the corpus at retirement (the meaningful peak), not the
+        // depleted end-of-life value the extended horizon now reaches.
+        var ri = proj.retireIndex;
+        var retVal = (ri >= 0 && proj.series[ri]) ? proj.series[ri].value
+                   : (proj.series.length ? proj.series[proj.series.length - 1].value : 0);
         return '<div class="flex items-center gap-2 py-2 border-b border-slate-50 last:border-0">' +
             '<div class="flex-1 min-w-0">' +
                 '<div class="text-[11px] font-bold text-slate-700">' + _pathDate(p.generatedAt) + '</div>' +
                 '<div class="text-[10px] text-slate-400 truncate">' + _pathEsc(p.profileLabel || '') +
-                    _pt('finpath.arch.detail', ' · projected {v} by {y}', { v: pathFmt(endVal), y: (proj.startYear + proj.horizon) }) + '</div>' +
+                    _pt('finpath.arch.detail', ' · projected {v} by {y}', { v: pathFmt(retVal), y: proj.retireYear }) + '</div>' +
             '</div>' +
             '<button onclick="pathRestore(' + i + ')" class="text-[10px] font-bold text-indigo-600 px-2 py-1 rounded-lg border border-indigo-100 hover:bg-indigo-50 flex-shrink-0">' + _pt('finpath.arch.restore', 'Restore') + '</button>' +
             '<button onclick="pathDeleteArchived(' + i + ')" class="text-[10px] font-bold text-slate-400 px-1.5 py-1 rounded-lg hover:text-rose-500 flex-shrink-0" title="' + _pt('finpath.arch.delete', 'Delete') + '">✕</button>' +

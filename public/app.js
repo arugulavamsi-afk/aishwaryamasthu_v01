@@ -4116,6 +4116,7 @@
             window._fpPathSnapshot = {
                 generatedAt: new Date().toISOString(),
                 name: name, age: age, retireAge: retireAge, monthlyInvest: monthlyInvest,
+                monthlyIncome: parseInt((document.getElementById('fp-income').value || '').replace(/,/g, '')) || 0,
                 profileKey: profileKey, profileLabel: profile.label, profileSub: profile.sub,
                 profileGradient: profile.gradient, profileBarColor: profile.barColor,
                 totalScore: totalScore, blendedReturn: profile.blendedReturn,
