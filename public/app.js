@@ -308,6 +308,7 @@
             fundpicker:  { label: 'Fund Picker Guide',  icon: '🔬' },
             healthscore: { label: 'Fin Health Score',   icon: '💗' },
             finplan:     { label: 'Financial Plan',     icon: '📋' },
+            finpath:     { label: 'Your Financial Path', icon: '🧭' },
             mfexplorer:  { label: 'MF Explorer',        icon: '🔭' },
             taxguide:    { label: 'Tax Guide',            icon: '🧾' },
             homeloan:    { label: 'Home Loan Advisor',     icon: '🏠' },

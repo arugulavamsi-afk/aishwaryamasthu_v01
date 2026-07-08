@@ -26,6 +26,13 @@ function _pathDate(iso) {
     try { return new Date(iso).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }); }
     catch (e) { return ''; }
 }
+// i18n helper: translate key, fall back to English; supports {placeholder} vars
+function _pt(key, fallback, vars) {
+    var s = fallback;
+    if (typeof _t === 'function') { var v = _t(key); if (v && v !== key) s = v; }
+    if (vars) { Object.keys(vars).forEach(function (k) { s = s.replace('{' + k + '}', vars[k]); }); }
+    return s;
+}
 
 // Reset the finplan "Save to Path" confirmation when a fresh plan is generated
 function fpRefreshSaveToPath() {
@@ -37,7 +44,7 @@ window.fpRefreshSaveToPath = fpRefreshSaveToPath;
 // ── Save the currently generated plan as the active path ──────────
 function pathSaveCurrentPlan() {
     var plan = window._fpPathSnapshot;
-    if (!plan) { alert('Generate a plan in Financial Plan first, then save it to Your Financial Path.'); return; }
+    if (!plan) { alert(_pt('finpath.alert.noplan', 'Generate a plan in Financial Plan first, then save it to Your Financial Path.')); return; }
     var st = window._pathState || { active: null, archive: [] };
     if (st.active) {
         st.archive = st.archive || [];
@@ -141,11 +148,11 @@ function pathRender() {
         hd.innerHTML =
             '<div class="flex items-center justify-between gap-2 flex-wrap">' +
                 '<div>' +
-                    '<div class="text-sm font-black text-slate-800">' + _pathEsc(plan.name && plan.name !== 'there' ? plan.name + "'s Path" : 'Your Financial Path') + '</div>' +
-                    '<div class="text-[10px] text-slate-400">Saved ' + _pathDate(plan.generatedAt) + '</div>' +
+                    '<div class="text-sm font-black text-slate-800">' + (plan.name && plan.name !== 'there' ? _pt('finpath.hd.named', "{n}'s Path", { n: _pathEsc(plan.name) }) : _pt('finpath.hd.title', 'Your Financial Path')) + '</div>' +
+                    '<div class="text-[10px] text-slate-400">' + _pt('finpath.hd.saved', 'Saved {d}', { d: _pathDate(plan.generatedAt) }) + '</div>' +
                 '</div>' +
                 '<span class="text-[10px] font-black px-2.5 py-1 rounded-full" style="background:' + (plan.profileBarColor || '#6366f1') + '20;color:' + (plan.profileBarColor || '#6366f1') + ';">' +
-                    _pathEsc(plan.profileLabel || '') + ' · ' + (plan.blendedReturn || 0) + '% blended' +
+                    _pathEsc(plan.profileLabel || '') + ' · ' + _pt('finpath.hd.blended', '{p}% blended', { p: (plan.blendedReturn || 0) }) +
                 '</span>' +
             '</div>';
     }
@@ -206,14 +213,14 @@ function pathRenderChart(proj, plan) {
                     callbacks: {
                         title: function (items) {
                             var yr = proj.startYear + items[0].dataIndex;
-                            return 'Year ' + yr;
+                            return _pt('finpath.chart.year', 'Year {y}', { y: yr });
                         },
                         label: function (c) { return ' ' + pathFmt(c.parsed.y); },
                         afterLabel: function (c) {
                             var yr = proj.startYear + c.dataIndex;
                             var m = milestoneYears[yr];
                             if (!m) return '';
-                            return (m.onTrack ? '✅ ' : '🔴 ') + m.label + ' — target ' + pathFmt(m.target);
+                            return (m.onTrack ? '✅ ' : '🔴 ') + _pt('finpath.chart.mstip', '{label} — target {t}', { label: m.label, t: pathFmt(m.target) });
                         }
                     }
                 }
@@ -235,12 +242,12 @@ function pathRenderMilestones(milestones) {
     if (!milestones || milestones.length === 0) { el.innerHTML = ''; return; }
     el.innerHTML = milestones.map(function (m) {
         var c = m.onTrack ? '#10b981' : '#ef4444';
-        var badge = m.onTrack ? '✅ On track' : '🔴 Shortfall';
+        var badge = m.onTrack ? _pt('finpath.ontrack', '✅ On track') : _pt('finpath.shortfall', '🔴 Shortfall');
         return '<div class="flex items-center gap-2 py-1.5 border-b border-slate-50 last:border-0">' +
             '<span class="text-base flex-shrink-0">' + (m.emoji || '🎯') + '</span>' +
             '<div class="flex-1 min-w-0">' +
                 '<div class="text-[11px] font-bold text-slate-700 truncate">' + _pathEsc(m.label) + '</div>' +
-                '<div class="text-[10px] text-slate-400">' + m.year + ' · target ' + pathFmt(m.target) + '</div>' +
+                '<div class="text-[10px] text-slate-400">' + _pt('finpath.ms.detail', '{y} · target {t}', { y: m.year, t: pathFmt(m.target) }) + '</div>' +
             '</div>' +
             '<span class="text-[10px] font-black px-2 py-0.5 rounded-full flex-shrink-0" style="background:' + c + '18;color:' + c + ';">' + badge + '</span>' +
         '</div>';
@@ -256,7 +263,7 @@ function pathRenderCards(plan) {
     var allocs = plan.allocs || [];
     if (allocs.length) {
         html += '<div class="path-card">' +
-            '<div class="path-card-title">📊 Recommended Allocation</div>' +
+            '<div class="path-card-title">' + _pt('finpath.card.alloc', '📊 Recommended Allocation') + '</div>' +
             allocs.map(function (a) {
                 return '<div class="flex items-center gap-2 py-1">' +
                     '<div style="width:8px;height:8px;border-radius:50%;background:' + a.color + ';flex-shrink:0;"></div>' +
@@ -270,12 +277,12 @@ function pathRenderCards(plan) {
     // Monthly SIP total
     html += '<div class="path-card">' +
         '<div class="flex items-center justify-between">' +
-            '<span class="text-[11px] font-bold text-slate-500">💸 Monthly SIP</span>' +
-            '<span class="text-sm font-black text-indigo-600">' + pathFull(plan.monthlyInvest || 0) + '/mo</span>' +
+            '<span class="text-[11px] font-bold text-slate-500">' + _pt('finpath.card.sip', '💸 Monthly SIP') + '</span>' +
+            '<span class="text-sm font-black text-indigo-600">' + _pt('finpath.card.permonth', '{v}/mo', { v: pathFull(plan.monthlyInvest || 0) }) + '</span>' +
         '</div>' +
         (plan.existingCorpus > 0
             ? '<div class="flex items-center justify-between mt-1.5 pt-1.5 border-t border-slate-100">' +
-                '<span class="text-[11px] font-bold text-slate-500">🏦 Existing corpus</span>' +
+                '<span class="text-[11px] font-bold text-slate-500">' + _pt('finpath.card.existing', '🏦 Existing corpus') + '</span>' +
                 '<span class="text-xs font-black text-slate-700">' + pathFmt(plan.existingCorpus) + '</span>' +
               '</div>'
             : '') +
@@ -285,21 +292,20 @@ function pathRenderCards(plan) {
     var goals = plan.goalSIPs || [];
     if (goals.length) {
         html += '<div class="path-card">' +
-            '<div class="path-card-title">🎯 Goals — Are You On Track?</div>' +
+            '<div class="path-card-title">' + _pt('finpath.card.goals', '🎯 Goals — Are You On Track?') + '</div>' +
             goals.map(function (g) {
                 var c = g.onTrack ? '#10b981' : '#ef4444';
-                var badge = g.onTrack ? '✅ On track' : '🔴 Shortfall';
+                var badge = g.onTrack ? _pt('finpath.ontrack', '✅ On track') : _pt('finpath.shortfall', '🔴 Shortfall');
                 var shortfallLine = (!g.onTrack && g.gap > 0)
-                    ? '<div class="text-[10px] text-rose-500 mt-0.5">Short by ' + pathFmt(g.gap) +
-                      (g.extraSIP > 0 ? ' · add ' + pathFull(g.extraSIP) + '/mo to close it' : '') + '</div>'
+                    ? '<div class="text-[10px] text-rose-500 mt-0.5">' + _pt('finpath.goal.shortby', 'Short by {g}', { g: pathFmt(g.gap) }) +
+                      (g.extraSIP > 0 ? _pt('finpath.goal.addclose', ' · add {e}/mo to close it', { e: pathFull(g.extraSIP) }) : '') + '</div>'
                     : '';
                 return '<div class="py-2 border-b border-slate-50 last:border-0">' +
                     '<div class="flex items-center gap-2">' +
                         '<span class="text-base flex-shrink-0">' + (g.emoji || '🎯') + '</span>' +
                         '<div class="flex-1 min-w-0">' +
                             '<div class="text-[11px] font-bold text-slate-700 truncate">' + _pathEsc(g.label) + '</div>' +
-                            '<div class="text-[10px] text-slate-400">in ' + g.years + ' yrs · target ' + pathFmt(g.target) +
-                                ' · projected ' + pathFmt(g.effectiveCorpus || g.corpus || 0) + '</div>' +
+                            '<div class="text-[10px] text-slate-400">' + _pt('finpath.goal.detail', 'in {y} yrs · target {t} · projected {p}', { y: g.years, t: pathFmt(g.target), p: pathFmt(g.effectiveCorpus || g.corpus || 0) }) + '</div>' +
                         '</div>' +
                         '<span class="text-[10px] font-black px-2 py-0.5 rounded-full flex-shrink-0" style="background:' + c + '18;color:' + c + ';">' + badge + '</span>' +
                     '</div>' +
@@ -325,10 +331,10 @@ function pathRenderArchive(archive) {
             '<div class="flex-1 min-w-0">' +
                 '<div class="text-[11px] font-bold text-slate-700">' + _pathDate(p.generatedAt) + '</div>' +
                 '<div class="text-[10px] text-slate-400 truncate">' + _pathEsc(p.profileLabel || '') +
-                    ' · projected ' + pathFmt(endVal) + ' by ' + (proj.startYear + proj.horizon) + '</div>' +
+                    _pt('finpath.arch.detail', ' · projected {v} by {y}', { v: pathFmt(endVal), y: (proj.startYear + proj.horizon) }) + '</div>' +
             '</div>' +
-            '<button onclick="pathRestore(' + i + ')" class="text-[10px] font-bold text-indigo-600 px-2 py-1 rounded-lg border border-indigo-100 hover:bg-indigo-50 flex-shrink-0">Restore</button>' +
-            '<button onclick="pathDeleteArchived(' + i + ')" class="text-[10px] font-bold text-slate-400 px-1.5 py-1 rounded-lg hover:text-rose-500 flex-shrink-0" title="Delete">✕</button>' +
+            '<button onclick="pathRestore(' + i + ')" class="text-[10px] font-bold text-indigo-600 px-2 py-1 rounded-lg border border-indigo-100 hover:bg-indigo-50 flex-shrink-0">' + _pt('finpath.arch.restore', 'Restore') + '</button>' +
+            '<button onclick="pathDeleteArchived(' + i + ')" class="text-[10px] font-bold text-slate-400 px-1.5 py-1 rounded-lg hover:text-rose-500 flex-shrink-0" title="' + _pt('finpath.arch.delete', 'Delete') + '">✕</button>' +
         '</div>';
     }).join('');
 }
