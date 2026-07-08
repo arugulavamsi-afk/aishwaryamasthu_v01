@@ -3270,7 +3270,11 @@
             var banner = document.getElementById('fp-nw-banner');
             if (!banner) return;
             var nw = (window._toolSummaries || {}).netWorth;
-            banner.classList.toggle('hidden', !(nw && nw.detail));
+            // Show whenever there's tracked net worth — the granular detail{} is
+            // preferred, but we fall back to the aggregate category totals for
+            // users whose summary was saved before detail{} existed.
+            var hasData = nw && (nw.detail || nw.totalAssets > 0);
+            banner.classList.toggle('hidden', !hasData);
         }
         window.fpRefreshNwBanner = fpRefreshNwBanner;
 
@@ -3290,22 +3294,36 @@
 
         function fpApplyNetWorth() {
             var nw = (window._toolSummaries || {}).netWorth;
-            var d  = nw && nw.detail;
-            if (!d) return;
-            // Net Worth field(s) → fin-plan existing bucket. Savings (transactional
-            // cash) and LIC/ULIP surrender value are intentionally excluded — they
-            // aren't goal-investment corpus.
-            var mapped = {
-                fd:          d.fd || 0,
-                stocks:      d.stocks || 0,
-                mf:          (d.eqMf || 0) + (d.debtMf || 0),
-                epf:         d.epf || 0,
-                ppf:         d.ppf || 0,
-                nps:         d.nps || 0,
-                gold:        (d.goldPhys || 0) + (d.goldPaper || 0),
-                real_estate: (d.home || 0) + (d.property || 0),
-                crypto:      d.crypto || 0
-            };
+            if (!nw) return;
+            var d = nw.detail;
+            var mapped;
+            if (d) {
+                // Precise: granular per-instrument breakdown. Savings (transactional
+                // cash) and LIC/ULIP surrender value are intentionally excluded —
+                // they aren't goal-investment corpus.
+                mapped = {
+                    fd:          d.fd || 0,
+                    stocks:      d.stocks || 0,
+                    mf:          (d.eqMf || 0) + (d.debtMf || 0),
+                    epf:         d.epf || 0,
+                    ppf:         d.ppf || 0,
+                    nps:         d.nps || 0,
+                    gold:        (d.goldPhys || 0) + (d.goldPaper || 0),
+                    real_estate: (d.home || 0) + (d.property || 0),
+                    crypto:      d.crypto || 0
+                };
+            } else {
+                // Fallback: only aggregate category totals available (summary saved
+                // before detail{} existed). Approximate mapping — preserves the total
+                // existing corpus; becomes precise once Net Worth Tracker is re-opened.
+                mapped = {
+                    mf:          nw.equity || 0,   // stocks + equity MF
+                    fd:          nw.debtMf || 0,   // debt funds → FD-like
+                    ppf:         nw.retiral || 0,  // EPF+PPF+NPS lumped
+                    gold:        nw.gold || 0,
+                    real_estate: nw.realty || 0
+                };
+            }
             Object.keys(mapped).forEach(function(key) {
                 var val = mapped[key];
                 if (!(val > 0)) return;
