@@ -4269,12 +4269,18 @@
                         if (!val && key !== 'epf') return '';
                         if (key === 'epf' && val === 0) return ''; // skip EPF row if balance not entered
                         var longestYrs = fpState.goals.reduce(function(mx,g){ return Math.max(mx, parseInt(g.years)||0); }, yearsToRetire);
+                        // Per-instrument realistic horizon: short-term / cash-like money
+                        // isn't left untouched for the full 15+ yr goal horizon, so cap
+                        // it. Long-term wealth (equity, EPF/PPF/NPS, real estate, gold)
+                        // projects the full distance. Never exceeds longestYrs.
+                        var _EXIST_HZ_CAP = { fd:3, pomis:3, rbi_frb:3, scss:5, nsc:5, kvp:9, custom_inv:5 };
+                        var hz = _EXIST_HZ_CAP[key] ? Math.min(_EXIST_HZ_CAP[key], longestYrs) : longestYrs;
                         // Crypto: use effective post-tax return for projection, not gross
                         if (key === 'crypto' && val > 0) {
                             var grossR   = (meta.grossReturn || 15) / 100;
                             var effR     = (meta.effectiveReturn || 10.5) / 100;
-                            var fvGross  = val * Math.pow(1 + grossR, longestYrs);
-                            var fvEff    = val * Math.pow(1 + effR,   longestYrs);
+                            var fvGross  = val * Math.pow(1 + grossR, hz);
+                            var fvEff    = val * Math.pow(1 + effR,   hz);
                             return '<div class="rounded-xl border border-red-200 p-2.5 mb-1" style="background:#fef2f2;">' +
                                 '<div class="flex items-center justify-between gap-2 mb-1.5">' +
                                     '<div class="flex items-center gap-1.5">' +
@@ -4311,8 +4317,8 @@
                             var erEpf   = empEpf - eps;
                             var monthly = empEpf + erEpf; // total monthly into EPF account
                             var r = meta.returnRate / 100;
-                            var balFV = val * Math.pow(1 + r, longestYrs);
-                            var sipFV = monthly > 0 ? monthly * 12 * ((Math.pow(1 + r, longestYrs) - 1) / r) * (1 + r/12) : 0;
+                            var balFV = val * Math.pow(1 + r, hz);
+                            var sipFV = monthly > 0 ? monthly * 12 * ((Math.pow(1 + r, hz) - 1) / r) * (1 + r/12) : 0;
                             fv = balFV + sipFV;
                             if (monthly > 0) {
                                 extraNote = ' + ₹' + fmt(monthly) + '/mo contribution · EPS ₹' + fmt(eps) + '/mo pension';
@@ -4323,7 +4329,7 @@
                                         '<span class="text-sm flex-shrink-0">🏢</span>' +
                                         '<div class="min-w-0">' +
                                             '<div class="text-xs font-bold text-blue-700">EPF Balance</div>' +
-                                            '<div class="text-[10px] text-blue-500">' + meta.returnRate + '% p.a. · ' + longestYrs + ' yrs</div>' +
+                                            '<div class="text-[10px] text-blue-500">' + meta.returnRate + '% p.a. · ' + hz + ' yrs</div>' +
                                         '</div>' +
                                     '</div>' +
                                     '<span class="text-xs font-black text-slate-800 flex-shrink-0">₹' + fmt(val) + '</span>' +
@@ -4331,19 +4337,19 @@
                                 '<div class="mt-1.5 text-[10px] text-blue-600 leading-relaxed">' +
                                     (monthly > 0 ? '📥 Ongoing: ₹' + fmt(monthly) + '/mo into EPF (you + employer, excl. EPS)<br>' : '') +
                                     (eps > 0     ? '🧓 EPS pension component: ₹' + fmt(eps) + '/mo (builds pension, not EPF balance)<br>' : '') +
-                                    '📈 Projected corpus: ₹' + fmt(fv) + ' in ' + longestYrs + ' yrs (tax-free at maturity)' +
+                                    '📈 Projected corpus: ₹' + fmt(fv) + ' in ' + hz + ' yrs (tax-free at maturity)' +
                                 '</div>' +
                             '</div>';
                         }
 
-                        fv = val * Math.pow(1 + meta.returnRate / 100, longestYrs);
+                        fv = val * Math.pow(1 + meta.returnRate / 100, hz);
                         var noteHtml = meta.note ? '<div class="text-[9px] text-slate-400">' + meta.note + '</div>' : '';
                         return '<div class="flex items-center justify-between gap-2 py-1.5 border-b border-slate-50 last:border-0">' +
                             '<div class="flex items-center gap-2 min-w-0">' +
                                 '<span class="text-sm flex-shrink-0">' + meta.icon + '</span>' +
                                 '<div class="min-w-0">' +
                                     '<div class="text-xs font-bold text-slate-700 truncate">' + meta.label + '</div>' +
-                                    '<div class="text-[10px] text-slate-400">~' + meta.returnRate + '% p.a. · ' + longestYrs + ' yrs → projected ₹' + fmt(fv) + '</div>' +
+                                    '<div class="text-[10px] text-slate-400">~' + meta.returnRate + '% p.a. · ' + hz + ' yrs → projected ₹' + fmt(fv) + '</div>' +
                                     noteHtml +
                                 '</div>' +
                             '</div>' +
