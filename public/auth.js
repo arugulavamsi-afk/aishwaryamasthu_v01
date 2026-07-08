@@ -850,6 +850,9 @@
                 ...(hraCalc      ? { hraCalc }      : {}),
                 ...(nomTrack      ? { nomTrack }      : {}),
                 ...(budgetTracker ? { budgetTracker } : {}),
+                ...((window._pathState && (window._pathState.active || (window._pathState.archive || []).length))
+                    ? { finPath: window._pathState }
+                    : (_base.finPath ? { finPath: _base.finPath } : {})),
                 roadmap: window._rmState ? {
                     profile: window._rmState.profile || null,
                     visited: window._rmState.visited  || [],
@@ -980,6 +983,7 @@
         if (typeof upRefreshToolSummaries === 'function') upRefreshToolSummaries();
         if (typeof _dashUpdateNetWorthWidget === 'function') _dashUpdateNetWorthWidget();
         if (toolName === 'netWorth' && typeof hsRefreshNwBanner === 'function') hsRefreshNwBanner();
+        if (toolName === 'netWorth' && typeof fpRefreshNwBanner === 'function') fpRefreshNwBanner();
     }
     window.saveToolSummary = saveToolSummary;
 
@@ -1822,6 +1826,18 @@
             if (data.roadmap) {
                 window._rmState = Object.assign({ profile: null, visited: [], dismissed: false, collapsed: false }, data.roadmap);
                 if (typeof initRoadmap === 'function') initRoadmap();
+            }
+
+            // Your Financial Path — restore saved active path + archive
+            if (data.finPath) {
+                window._pathState = {
+                    active:  data.finPath.active  || null,
+                    archive: data.finPath.archive || []
+                };
+                _applyWhenReady('path-content', function() {
+                    try { if (typeof pathRender === 'function') pathRender(); }
+                    catch(e) { console.warn('loadUserData finPath:', e); }
+                });
             }
 
             // Health Score snapshot — pre-populate _hsLastResult so dashboard widget renders

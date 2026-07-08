@@ -1,0 +1,50 @@
+<div id="finpath-panel" class="hidden w-full flex flex-col gap-3">
+
+            <!-- HEADER -->
+            <div class="rounded-2xl px-4 py-3 text-white flex items-center justify-between gap-3 flex-wrap shine-header" style="background:linear-gradient(135deg,#312e81 0%,#4f46e5 50%,#7c3aed 100%);border:2px solid rgba(245,200,66,0.4);box-shadow:0 4px 18px rgba(0,0,0,0.25);">
+                <div>
+                    <h2 class="text-base font-black flex items-center gap-2" data-i18n="page.finpath.h">🧭 Your Financial Path</h2>
+                    <p class="text-indigo-200 text-[11px] mt-0.5" data-i18n="page.finpath.sub">Where your money is heading — your saved plan projected forward, goal by goal.</p>
+                </div>
+                <div class="flex items-center gap-2 flex-wrap">
+                    <button onclick="switchMode('finplan')" class="flex items-center gap-1 px-3 py-1.5 rounded-xl text-[11px] font-bold" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);" data-i18n="btn.finpath.plan">📋 Financial Plan</button>
+                </div>
+            </div>
+
+            <!-- EMPTY STATE -->
+            <div id="path-empty" class="bg-white rounded-2xl shadow-sm border border-indigo-100 p-8 flex flex-col items-center justify-center text-center gap-3">
+                <div class="text-4xl">🧭</div>
+                <div class="text-sm font-black text-slate-700" data-i18n="finpath.empty.title">No saved path yet</div>
+                <div class="text-[11px] text-slate-400 max-w-xs leading-relaxed" data-i18n="finpath.empty.sub">Generate a plan in Financial Plan, then tap “Save to Your Financial Path” to see your money’s trajectory here.</div>
+                <button onclick="switchMode('finplan')" class="mt-1 px-4 py-2.5 rounded-xl font-bold text-sm text-white" style="background:linear-gradient(135deg,#4f46e5,#7c3aed);" data-i18n="finpath.empty.cta">📋 Go to Financial Plan</button>
+            </div>
+
+            <!-- CONTENT -->
+            <div id="path-content" class="hidden flex flex-col gap-3">
+
+                <!-- Header card -->
+                <div id="path-header" class="bg-white rounded-2xl shadow-sm border border-slate-100 px-4 py-3"></div>
+
+                <!-- Trajectory chart -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-4">
+                    <h3 class="text-xs font-black text-slate-400 uppercase tracking-wider mb-2" data-i18n="finpath.chart.title">📈 Net Worth Trajectory</h3>
+                    <div style="position:relative;height:220px;"><canvas id="path-chart"></canvas></div>
+                    <p class="text-[10px] text-slate-400 mt-2 leading-relaxed" data-i18n="finpath.chart.note">Directional projection — net worth grows with your SIP &amp; blended return, and dips as each goal is funded. Green dots = goals on track, red = shortfall.</p>
+                    <div id="path-milestones" class="mt-2"></div>
+                </div>
+
+                <!-- Plan detail cards -->
+                <div id="path-cards" class="flex flex-col gap-3"></div>
+
+                <!-- History / archive -->
+                <div id="path-archive-wrap" class="hidden bg-white rounded-2xl shadow-sm border border-slate-100 p-4">
+                    <h3 class="text-xs font-black text-slate-400 uppercase tracking-wider mb-2" data-i18n="finpath.archive.title">🕑 Saved History</h3>
+                    <div id="path-archive"></div>
+                </div>
+
+                <!-- Disclaimer -->
+                <div class="px-4 py-3 rounded-xl border border-amber-100 text-[10px] text-amber-700 leading-relaxed" style="background:#fffbeb;" data-i18n="finpath.disc">
+                    ⚠️ <strong>Directional estimate, not a guarantee.</strong> Projections use your risk-profile blended return; actual returns vary and equity is not guaranteed. Re-save your plan whenever your net worth, income, or goals change to keep this path current.
+                </div>
+            </div>
+</div>

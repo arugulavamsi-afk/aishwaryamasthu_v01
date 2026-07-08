@@ -110,7 +110,17 @@
                     // from tracked net worth without needing the panel loaded in the DOM.
                     equity: stocks + eqMf, debtMf: debtMf, retiral: epf + ppf + nps,
                     realty: home + property, gold: goldPhys + goldPaper,
-                    other: crypto + insSv + other
+                    other: crypto + insSv + other,
+                    // Granular per-instrument values — lets Financial Plan map each asset
+                    // back into its own "existing investment" bucket without the NW panel
+                    // being in the DOM. Backward-compatible: aggregate fields above unchanged.
+                    detail: {
+                        fd: fd, stocks: stocks, eqMf: eqMf, debtMf: debtMf,
+                        epf: epf, ppf: ppf, nps: nps,
+                        home: home, property: property,
+                        goldPhys: goldPhys, goldPaper: goldPaper,
+                        crypto: crypto, insSv: insSv
+                    }
                 });
         }
 

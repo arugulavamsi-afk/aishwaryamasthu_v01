@@ -514,11 +514,12 @@
             const isGoalTracker   = mode === 'goaltracker';
             const isDashSituation = mode === 'dashcat-situation';
             const isUserGuide     = mode === 'userguide';
-            const isFullPanel  = isDashboard || isMFKit || isFundPicker || isHealthScore || isFinPlan || isMFExplorer || isTaxGuide || isHomeLoan || isStepUpSIP || isEPFCalc || isSSAPlanner || isPPFNPS || isCtcOptimizer || isInsure || isGratuity || isDebtPlan || isJointPlan || isCibil || isFinCal || isSelfEmpl || isGoldComp || isDashCalc || isDashMF || isDashTax || isDashFav || isCoffeeCan || isNetWorth || isUlipCheck || isFixedIncome || isRetirementHub || isMyProfile || isCgCalc || isHraCalc || isNomTrack || isBudgetTrack || isMyMFs || isConsult || isGoalTracker || isDashSituation || isUserGuide;
+            const isFinPath       = mode === 'finpath';
+            const isFullPanel  = isDashboard || isMFKit || isFundPicker || isHealthScore || isFinPlan || isMFExplorer || isTaxGuide || isHomeLoan || isStepUpSIP || isEPFCalc || isSSAPlanner || isPPFNPS || isCtcOptimizer || isInsure || isGratuity || isDebtPlan || isJointPlan || isCibil || isFinCal || isSelfEmpl || isGoldComp || isDashCalc || isDashMF || isDashTax || isDashFav || isCoffeeCan || isNetWorth || isUlipCheck || isFixedIncome || isRetirementHub || isMyProfile || isCgCalc || isHraCalc || isNomTrack || isBudgetTrack || isMyMFs || isConsult || isGoalTracker || isDashSituation || isUserGuide || isFinPath;
 
             // Show/hide main panels
             const growthWrapper = document.getElementById('growth-wrapper');
-            const _panelIds = ['dashboard-panel','mfkit-panel','fundpicker-panel','healthscore-panel','finplan-panel','mfexplorer-panel','taxguide-panel','homeloan-panel','stepupsip-panel','epfcalc-panel','ssaplanner-panel','ppfnps-panel','ctcoptimizer-panel','insure-panel','gratuity-panel','debtplan-panel','jointplan-panel','cibil-panel','fincal-panel','selfempl-panel','goldcomp-panel','dashcat-calc-panel','dashcat-mf-panel','dashcat-tax-panel','dashcat-fav-panel','dashcat-situation-panel','coffeecan-panel','networth-panel','ulipcheck-panel','fixedincome-panel','retirementhub-panel','myprofile-panel','cgcalc-panel','hracalc-panel','nomtrack-panel','budgettrack-panel','mymfs-panel','consult-panel','goaltracker-panel','userguide-panel'];
+            const _panelIds = ['dashboard-panel','mfkit-panel','fundpicker-panel','healthscore-panel','finplan-panel','mfexplorer-panel','taxguide-panel','homeloan-panel','stepupsip-panel','epfcalc-panel','ssaplanner-panel','ppfnps-panel','ctcoptimizer-panel','insure-panel','gratuity-panel','debtplan-panel','jointplan-panel','cibil-panel','fincal-panel','selfempl-panel','goldcomp-panel','dashcat-calc-panel','dashcat-mf-panel','dashcat-tax-panel','dashcat-fav-panel','dashcat-situation-panel','coffeecan-panel','networth-panel','ulipcheck-panel','fixedincome-panel','retirementhub-panel','myprofile-panel','cgcalc-panel','hracalc-panel','nomtrack-panel','budgettrack-panel','mymfs-panel','consult-panel','goaltracker-panel','userguide-panel','finpath-panel'];
 
             // Find currently visible element for crossfade exit
             let _outEl = null;
@@ -530,7 +531,7 @@
                 _outEl = growthWrapper;
             }
 
-            const activeId = isDashboard ? 'dashboard-panel' : isMFKit ? 'mfkit-panel' : isFundPicker ? 'fundpicker-panel' : isHealthScore ? 'healthscore-panel' : isFinPlan ? 'finplan-panel' : isMFExplorer ? 'mfexplorer-panel' : isTaxGuide ? 'taxguide-panel' : isHomeLoan ? 'homeloan-panel' : isStepUpSIP ? 'stepupsip-panel' : isEPFCalc ? 'epfcalc-panel' : isSSAPlanner ? 'ssaplanner-panel' : isPPFNPS ? 'ppfnps-panel' : isCtcOptimizer ? 'ctcoptimizer-panel' : isInsure ? 'insure-panel' : isGratuity ? 'gratuity-panel' : isDebtPlan ? 'debtplan-panel' : isJointPlan ? 'jointplan-panel' : isCibil ? 'cibil-panel' : isFinCal ? 'fincal-panel' : isSelfEmpl ? 'selfempl-panel' : isGoldComp ? 'goldcomp-panel' : isDashCalc ? 'dashcat-calc-panel' : isDashMF ? 'dashcat-mf-panel' : isDashTax ? 'dashcat-tax-panel' : isDashFav ? 'dashcat-fav-panel' : isDashSituation ? 'dashcat-situation-panel' : isCoffeeCan ? 'coffeecan-panel' : isNetWorth ? 'networth-panel' : isUlipCheck ? 'ulipcheck-panel' : isFixedIncome ? 'fixedincome-panel' : isRetirementHub ? 'retirementhub-panel' : isMyProfile ? 'myprofile-panel' : isCgCalc ? 'cgcalc-panel' : isHraCalc ? 'hracalc-panel' : isNomTrack ? 'nomtrack-panel' : isBudgetTrack ? 'budgettrack-panel' : isMyMFs ? 'mymfs-panel' : isConsult ? 'consult-panel' : isGoalTracker ? 'goaltracker-panel' : isUserGuide ? 'userguide-panel' : null;
+            const activeId = isDashboard ? 'dashboard-panel' : isMFKit ? 'mfkit-panel' : isFundPicker ? 'fundpicker-panel' : isHealthScore ? 'healthscore-panel' : isFinPlan ? 'finplan-panel' : isMFExplorer ? 'mfexplorer-panel' : isTaxGuide ? 'taxguide-panel' : isHomeLoan ? 'homeloan-panel' : isStepUpSIP ? 'stepupsip-panel' : isEPFCalc ? 'epfcalc-panel' : isSSAPlanner ? 'ssaplanner-panel' : isPPFNPS ? 'ppfnps-panel' : isCtcOptimizer ? 'ctcoptimizer-panel' : isInsure ? 'insure-panel' : isGratuity ? 'gratuity-panel' : isDebtPlan ? 'debtplan-panel' : isJointPlan ? 'jointplan-panel' : isCibil ? 'cibil-panel' : isFinCal ? 'fincal-panel' : isSelfEmpl ? 'selfempl-panel' : isGoldComp ? 'goldcomp-panel' : isDashCalc ? 'dashcat-calc-panel' : isDashMF ? 'dashcat-mf-panel' : isDashTax ? 'dashcat-tax-panel' : isDashFav ? 'dashcat-fav-panel' : isDashSituation ? 'dashcat-situation-panel' : isCoffeeCan ? 'coffeecan-panel' : isNetWorth ? 'networth-panel' : isUlipCheck ? 'ulipcheck-panel' : isFixedIncome ? 'fixedincome-panel' : isRetirementHub ? 'retirementhub-panel' : isMyProfile ? 'myprofile-panel' : isCgCalc ? 'cgcalc-panel' : isHraCalc ? 'hracalc-panel' : isNomTrack ? 'nomtrack-panel' : isBudgetTrack ? 'budgettrack-panel' : isMyMFs ? 'mymfs-panel' : isConsult ? 'consult-panel' : isGoalTracker ? 'goaltracker-panel' : isUserGuide ? 'userguide-panel' : isFinPath ? 'finpath-panel' : null;
 
             // Web Animations API — fires immediately, compositor-driven, no reflow
             function _animatePanel(el) {
@@ -601,6 +602,7 @@
                 if (isConsult)       { if (typeof initConsult === 'function') initConsult(); applyLang(); return; }
                 if (isGoalTracker)   { if (typeof initGoalTracker === 'function') initGoalTracker(); applyLang(); return; }
                 if (isUserGuide)     { if (typeof initUserGuide === 'function') initUserGuide(); applyLang(); return; }
+                if (isFinPath)       { if (typeof pathRender === 'function') pathRender(); applyLang(); return; }
 
                 // Show/hide reset buttons
                 document.getElementById('reset-growth-btn').style.display = isGoal ? 'none' : 'flex';
@@ -3259,6 +3261,69 @@
             return total > 0 ? (weightedSum / total) : 0;
         }
 
+        /* ── Net Worth Tracker → Financial Plan autofill ──────────────────
+           Opt-in: the "Pull from Net Worth" banner (fp-nw-banner) calls
+           fpApplyNetWorth(). Maps the granular netWorth.detail (net-worth.js)
+           into fin-plan's own "existing investment" buckets. Never runs
+           automatically — so a user's manual entries are never clobbered. */
+        function fpRefreshNwBanner() {
+            var banner = document.getElementById('fp-nw-banner');
+            if (!banner) return;
+            var nw = (window._toolSummaries || {}).netWorth;
+            banner.classList.toggle('hidden', !(nw && nw.detail));
+        }
+        window.fpRefreshNwBanner = fpRefreshNwBanner;
+
+        // Mark the toggle button for a bucket active (visual parity with a manual tap)
+        function _fpMarkExistingBtn(key) {
+            var grid = document.getElementById('fp-existing-grid');
+            if (!grid) return;
+            var btns = grid.querySelectorAll('button');
+            for (var i = 0; i < btns.length; i++) {
+                var oc = btns[i].getAttribute('onclick') || '';
+                var isMatch = key === 'crypto'
+                    ? btns[i].id === 'fp-existing-crypto-btn'
+                    : oc.indexOf("'" + key + "'") !== -1;
+                if (isMatch) { btns[i].classList.add('fp-existing-active'); return; }
+            }
+        }
+
+        function fpApplyNetWorth() {
+            var nw = (window._toolSummaries || {}).netWorth;
+            var d  = nw && nw.detail;
+            if (!d) return;
+            // Net Worth field(s) → fin-plan existing bucket. Savings (transactional
+            // cash) and LIC/ULIP surrender value are intentionally excluded — they
+            // aren't goal-investment corpus.
+            var mapped = {
+                fd:          d.fd || 0,
+                stocks:      d.stocks || 0,
+                mf:          (d.eqMf || 0) + (d.debtMf || 0),
+                epf:         d.epf || 0,
+                ppf:         d.ppf || 0,
+                nps:         d.nps || 0,
+                gold:        (d.goldPhys || 0) + (d.goldPaper || 0),
+                real_estate: (d.home || 0) + (d.property || 0),
+                crypto:      d.crypto || 0
+            };
+            Object.keys(mapped).forEach(function(key) {
+                var val = mapped[key];
+                if (!(val > 0)) return;
+                if (fpState.existing.indexOf(key) === -1) fpState.existing.push(key);
+                fpState.existingAmounts[key] = val;
+                _fpMarkExistingBtn(key);
+                // Crypto has its own risk opt-in element — reveal the warning note
+                // since the user explicitly pulled tracked crypto in.
+                if (key === 'crypto') {
+                    var cryptoActive = document.getElementById('fp-crypto-active');
+                    if (cryptoActive) cryptoActive.classList.remove('hidden');
+                }
+            });
+            fpRenderExistingAmounts();
+            fpLiveUpdate();
+        }
+        window.fpApplyNetWorth = fpApplyNetWorth;
+
         function fpToggleExisting(btn, key) {
             btn.classList.toggle('fp-existing-active');
             var idx = fpState.existing.indexOf(key);
@@ -3372,6 +3437,7 @@
                 if (!age || age < 18 || age > 80) { alert('Please enter a valid age (18–80).'); return; }
                 if (!income || parseInt(income) < 1000) { alert('Please enter your monthly income.'); return; }
                 gpRenderSavedGoalsBanner();
+                fpRefreshNwBanner();
             }
             if (n === 3 && fpState.goals.length === 0) { alert('Please select at least one financial goal.'); return; }
             fpState.step = n;
@@ -3397,7 +3463,7 @@
                     alert('Please complete your Personal Profile first (age + income).'); fpGoStep(1); return;
                 }
             }
-            if (n === 2) gpRenderSavedGoalsBanner();
+            if (n === 2) { gpRenderSavedGoalsBanner(); fpRefreshNwBanner(); }
             if (n >= 3 && fpState.goals.length === 0) {
                 alert('Please select at least one financial goal first.'); fpGoStep(2); return;
             }
@@ -4013,6 +4079,43 @@
                 };
             });
             var redeemPlan = redeemInput.length > 0 ? fpBuildRedemptionPlan(redeemInput, allocs) : [];
+
+            // ── Structured snapshot for "Your Financial Path" ──────────────
+            // Assembly only — every value is already computed above. onTrack /
+            // effectiveCorpus mirror the corpus-card logic below so a saved path
+            // shows numbers identical to this generated plan.
+            var _snapGoals = goalSIPs || fpState.goals.map(function(g) {
+                return {
+                    goalLabel: g.customName || g.label, emoji: g.emoji, type: g.type, years: g.years,
+                    target: parseInt((g.targetAmt || '').replace(/,/g, '')) || 0,
+                    corpus: 0, gap: null, extraSIP: 0, amt: 0,
+                    rate: profile.blendedReturn, color: FP_GOAL_META[g.type].color
+                };
+            });
+            // NOTE: distinct from window._fpLastPlan (which the Excel export reuses
+            // with a different shape and overwrites later in this function).
+            window._fpPathSnapshot = {
+                generatedAt: new Date().toISOString(),
+                name: name, age: age, retireAge: retireAge, monthlyInvest: monthlyInvest,
+                profileKey: profileKey, profileLabel: profile.label, profileSub: profile.sub,
+                profileGradient: profile.gradient, profileBarColor: profile.barColor,
+                totalScore: totalScore, blendedReturn: profile.blendedReturn,
+                allocs: allocs.map(function(a) { return { name: a.name, pct: a.pct, color: a.color, icon: a.icon }; }),
+                goalSIPs: _snapGoals.map(function(g) {
+                    var goalExistingFV = existingCorpus > 0 ? existingCorpus * Math.pow(1 + existingReturn / 100, g.years) : 0;
+                    var effectiveCorpus = (g.corpus || 0) + goalExistingFV;
+                    var onTrack = g.gap !== null && (effectiveCorpus >= g.target || g.gap <= 0);
+                    return {
+                        label: g.goalLabel, emoji: g.emoji, type: g.type, years: g.years,
+                        target: g.target, corpus: g.corpus || 0, gap: g.gap, extraSIP: g.extraSIP || 0,
+                        monthlySip: g.amt || 0, rate: g.rate, color: g.color,
+                        effectiveCorpus: effectiveCorpus, onTrack: onTrack
+                    };
+                }),
+                existingCorpus: existingCorpus, existingReturn: existingReturn,
+                netWorthToday: ((window._toolSummaries || {}).netWorth || {}).netWorth || 0
+            };
+            if (typeof fpRefreshSaveToPath === 'function') fpRefreshSaveToPath();
 
             fpState.planGenerated = true;
             var fmt = function(n){ return new Intl.NumberFormat('en-IN').format(Math.round(n)); };

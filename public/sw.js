@@ -1,5 +1,5 @@
 /* AishwaryaMasthu Service Worker */
-var CACHE = 'am-v16';
+var CACHE = 'am-v17';
 
 /* App shell — pre-cached on SW install. Other files are cached on first access. */
 var SHELL = [
@@ -41,6 +41,7 @@ var SHELL = [
   '/js/hra-calc.js',
   '/js/ssa-planner.js',
   '/js/health-score.js',
+  '/js/financial-path.js',
   '/js/emergency.js',
   '/js/fund-picker.js',
   '/js/mf-kit.js',
@@ -61,6 +62,7 @@ var SHELL = [
   '/panels/epfcalc.html',
   '/panels/fincal.html',
   '/panels/finplan.html',
+  '/panels/finpath.html',
   '/panels/fixedincome.html',
   '/panels/fundpicker.html',
   '/panels/goaltracker.html',

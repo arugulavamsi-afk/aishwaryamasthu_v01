@@ -606,6 +606,10 @@
         <div id="finplan-panel" class="hidden w-full flex flex-col gap-3" data-panel-src="panels/finplan.html"></div>
         <!-- =================== END FINANCIAL PLAN PANEL ================== -->
 
+        <!-- ===================== YOUR FINANCIAL PATH PANEL ===================== -->
+        <div id="finpath-panel" class="hidden w-full flex flex-col gap-3" data-panel-src="panels/finpath.html"></div>
+        <!-- =================== END YOUR FINANCIAL PATH PANEL ================== -->
+
         <!-- ===================== MF EXPLORER PANEL ===================== -->
         <div id="mfexplorer-panel" class="hidden w-full flex flex-col gap-3" data-panel-src="panels/mfexplorer.html"></div>
         <div id="mymfs-panel" class="hidden w-full flex flex-col gap-3" data-panel-src="panels/mymfs.html"></div>
@@ -784,6 +788,7 @@
                 <button onclick="switchMode('ulipcheck')" class="dash-card group" data-color="#dc2626"><div class="dash-card-icon">🔍</div><div class="dash-card-title" data-i18n="card.ulip.title">ULIP / Policy Analyzer</div><div class="dash-card-desc" data-i18n="card.ulip.desc">Should I surrender? · IRR of your LIC/ULIP · Buy Term + Invest the Difference · Saves crores of Indians</div><div class="dash-card-arrow">→</div></button>
                 <button onclick="switchMode('networth')" class="dash-card group" data-color="#059669"><div class="dash-card-icon">⚖️</div><div class="dash-card-title" data-i18n="card.networth.title">Net Worth Tracker</div><div class="dash-card-desc" data-i18n="card.networth.desc">Assets vs Liabilities · Full balance sheet · Allocation chart · Debt ratio · Your financial snapshot</div><div class="dash-card-arrow">→</div></button>
                 <button onclick="switchMode('finplan')" class="dash-card group" data-color="#dc2626"><div class="dash-card-icon">📋</div><div class="dash-card-title" data-i18n="card.finplan.title">Financial Plan</div><div class="dash-card-desc" data-i18n="card.finplan.desc">Personalised SIP plan · Goals · Risk profile · EPF · Existing wealth</div><div class="dash-card-arrow">→</div></button>
+                <button onclick="switchMode('finpath')" class="dash-card group" data-color="#4f46e5"><div class="dash-card-icon">🧭</div><div class="dash-card-title" data-i18n="card.finpath.title">Your Financial Path</div><div class="dash-card-desc" data-i18n="card.finpath.desc">Saved plan trajectory · Net worth projection · Goal on-track / shortfall · Life events</div><div class="dash-card-arrow">→</div></button>
                 <button onclick="switchMode('taxguide')" class="dash-card group" data-color="#b45309"><div class="dash-card-icon">🧾</div><div class="dash-card-title" data-i18n="card.tax.title">Tax Guide</div><div class="dash-card-desc" data-i18n="card.tax.desc">Old vs New regime · MF capital gains · Crypto tax · Surplus calc</div><div class="dash-card-arrow">→</div></button>
                 <button onclick="switchMode('healthscore')" class="dash-card group" data-color="#e11d48"><div class="dash-card-icon">💗</div><div class="dash-card-title" data-i18n="card.hs.title">Financial Health Score</div><div class="dash-card-desc" data-i18n="card.hs.desc">Get an honest score for your money life · Insurance · EF · Savings</div><div class="dash-card-arrow">→</div></button>
                 <button onclick="switchMode('ssaplanner')" class="dash-card group" data-color="#ec4899"><div class="dash-card-icon">👧</div><div class="dash-card-title" data-i18n="card.ssa.title">SSA + Child Education Planner</div><div class="dash-card-desc" data-i18n="card.ssa.desc">Sukanya Samriddhi 8.2% · ELSS SIP top-up · Daughter's education &amp; marriage corpus</div><div class="dash-card-arrow">→</div></button>
@@ -2530,6 +2535,7 @@
     <script src="js/cg-calc.js"></script>
     <script src="js/hra-calc.js"></script>
     <script src="js/health-score.js"></script>
+    <script src="js/financial-path.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha384-JcnsjUPPylna1s1fvi1u12X5qjY5OL56iySh75FdtrwhO/SWXgMjoVqcKyIIWOLk" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" integrity="sha384-vtjasyidUo0kW94K5MXDXntzOJpQgBKXmE7e2Ga4LG0skTTLeBi97eFAXsqewJjw" crossorigin="anonymous"></script>
     <script src="js/nom-track.js"></script>

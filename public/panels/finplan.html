@@ -175,6 +175,10 @@
                             <!-- Existing investments -->
                             <div>
                                 <label class="fp-label"><span data-i18n="fp.existing.title">Any existing investments?</span> <span class="normal-case font-medium text-slate-400" data-i18n="fp.existing.sub">(optional — add amounts to improve your plan)</span></label>
+                                <div id="fp-nw-banner" class="up-banner hidden mb-3">
+                                    <span class="text-[10px] text-sky-700 font-semibold" data-i18n="fp.nw.banner">⚖️ Net Worth Tracker data available</span>
+                                    <button class="up-apply-btn" onclick="fpApplyNetWorth()" data-i18n="fp.nw.apply">↙ Pull from Net Worth</button>
+                                </div>
                                 <div class="grid grid-cols-3 gap-2" id="fp-existing-grid">
                                     <button onclick="fpToggleExisting(this,'epf')"         class="fp-existing-btn" id="fp-existing-epf-btn">🏢 EPF / PF</button>
                                     <button onclick="fpToggleExisting(this,'ppf')"         class="fp-existing-btn">🔒 PPF</button>
@@ -427,6 +431,18 @@
                         <div class="px-5 pb-5 mt-2">
                             <h3 class="text-xs font-black text-slate-400 uppercase tracking-wider mb-2" data-i18n="fp.result.roadmap.title">🚀 Your Action Roadmap</h3>
                             <div id="fp-roadmap" class="space-y-2"></div>
+                        </div>
+
+                        <!-- Save to Your Financial Path -->
+                        <div class="px-5 pb-3">
+                            <button onclick="pathSaveCurrentPlan()" id="fp-save-path-btn" class="w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2" style="background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;">
+                                <span class="text-base">🧭</span>
+                                <span data-i18n="fp.savepath.btn">Save to Your Financial Path</span>
+                            </button>
+                            <div id="fp-path-saved" class="hidden mt-2 px-3 py-2.5 rounded-xl border border-indigo-100 text-[11px] text-indigo-700 leading-relaxed flex items-center justify-between gap-2" style="background:#eef2ff;">
+                                <span data-i18n="fp.savepath.done">✅ Saved to Your Financial Path</span>
+                                <button onclick="switchMode('finpath')" class="font-bold underline whitespace-nowrap" data-i18n="fp.savepath.view">View →</button>
+                            </div>
                         </div>
 
                         <!-- Export & Share -->
