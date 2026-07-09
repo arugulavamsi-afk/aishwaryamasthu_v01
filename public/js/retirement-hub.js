@@ -19,6 +19,21 @@
         if (mo <= 0 || n <= 0) return 0;
         return r > 0 ? mo * ((Math.pow(1 + r, n) - 1) / r) * (1 + r) : mo * n;
     }
+    // First-year monthly withdrawal of an INFLATION-ADJUSTED SWP: month-end
+    // withdrawals that hold level within each year and step up by `gAnnual` every
+    // year, draining the pool `P` to exactly zero after `years` (pool earns `rMo`
+    // monthly). Matches the annual-step, grow-then-withdraw depletion sim below, so
+    // the SWP figure and the depletion timeline stay consistent. Reduces to the
+    // classic flat annuity when gAnnual = 0.
+    function rhGrowingSWP(P, rMo, gAnnual, years) {
+        if (P <= 0 || years <= 0) return 0;
+        if (rMo <= 0 && gAnnual <= 0) return Math.round(P / (years * 12));
+        var a12 = rMo > 0 ? (1 - Math.pow(1 + rMo, -12)) / rMo : 12; // PV of 12 month-end ₹1 payments
+        var q   = (1 + gAnnual) / Math.pow(1 + rMo, 12);            // yearly growth vs yearly discount
+        var series = Math.abs(q - 1) < 1e-9 ? years : (1 - Math.pow(q, years)) / (1 - q);
+        var denom  = a12 * series;
+        return denom > 0 ? Math.round(P / denom) : 0;
+    }
     function rhFormatInput(el) {
         var raw = el.value.replace(/[^0-9]/g, '');
         if (raw) el.value = parseInt(raw).toLocaleString('en-IN');
@@ -133,13 +148,14 @@
         // ── Total withdrawable corpus ──────────────────────────────────────
         var totalCorpus = epfCorpus + ppfCorpus + npsLumpsum + sipCorpus + otherFV;
 
-        // ── SWP (monthly, lasts drawYrs) ───────────────────────────────────
+        // ── SWP (inflation-adjusted, lasts drawYrs) ────────────────────────
+        // First-year monthly withdrawal of a stream that STEPS UP with general
+        // inflation each year and drains the pool to zero exactly at "Live Till".
+        // Because it inflates like the expense side, it no longer contradicts the
+        // depletion timeline below (which withdraws rising real expenses).
         var rMo = retReturn / 12;
         var n   = drawYrs * 12;
-        var swp = totalCorpus > 0
-            ? (rMo > 0 ? Math.round(totalCorpus * rMo / (1 - Math.pow(1 + rMo, -n)))
-                       : Math.round(totalCorpus / n))
-            : 0;
+        var swp = rhGrowingSWP(totalCorpus, rMo, inflation, drawYrs);
         var totalIncome = swp + npsPension + epsPension;
 
         // ── Expenses at retirement ─────────────────────────────────────────
