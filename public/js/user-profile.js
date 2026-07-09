@@ -75,6 +75,10 @@
             basicSalary:    _upDomVal('up-basic-salary',existing.basicSalary || ''),
             retireAge:      _upDomVal('up-retire-age',  existing.retireAge   || ''),
             epfBalance:     _upDomVal('up-epf-balance', existing.epfBalance  || ''),
+            ppfBalance:     _upDomVal('up-ppf-balance', existing.ppfBalance  || ''),
+            npsBalance:     _upDomVal('up-nps-balance', existing.npsBalance  || ''),
+            rent:           _upDomVal('up-rent',        existing.rent        || ''),
+            inflation:      _upDomVal('up-inflation',   existing.inflation   || ''),
             assetsBank:     _upDomVal('up-assets-bank',    existing.assetsBank    || '0'),
             assetsMf:       _upDomVal('up-assets-mf',      existing.assetsMf      || '0'),
             assetsStocks:   _upDomVal('up-assets-stocks',  existing.assetsStocks  || '0'),
@@ -111,7 +115,7 @@
         if (!p) return;
         window._userProfile = p;
         // Basic fields
-        ['name','age','occupation','dependents','expenses','regime','city'].forEach(function(k) {
+        ['name','age','occupation','dependents','expenses','regime','city','rent','inflation'].forEach(function(k) {
             var el = document.getElementById('up-' + k);
             if (el && p[k] !== undefined) el.value = p[k];
         });
@@ -125,13 +129,14 @@
         // Retirement Age
         var raEl = document.getElementById('up-retire-age');
         if (raEl && p.retireAge) raEl.value = p.retireAge;
-        // EPF Balance
-        var epfEl = document.getElementById('up-epf-balance');
-        if (epfEl) {
-            var epfVal = p.epfBalance || '0';
-            epfEl.value = epfVal;
-            if (epfVal === '0' || !epfVal) epfEl.classList.add('text-slate-400'); else epfEl.classList.remove('text-slate-400');
-        }
+        // EPF / PPF / NPS Balances
+        [['up-epf-balance', p.epfBalance], ['up-ppf-balance', p.ppfBalance], ['up-nps-balance', p.npsBalance]].forEach(function(pair) {
+            var el = document.getElementById(pair[0]);
+            if (!el) return;
+            var val = pair[1] || '0';
+            el.value = val;
+            if (val === '0' || !val) el.classList.add('text-slate-400'); else el.classList.remove('text-slate-400');
+        });
         // Income (text field — strip commas not needed, value already formatted)
         var incEl = document.getElementById('up-income');
         if (incEl && p.income) incEl.value = p.income;
@@ -534,14 +539,39 @@
         if (badgeEl)   { badgeEl.textContent = label; badgeEl.classList.remove('hidden'); }
     }
 
-    function _upSet(id, val, formatted) {
+    // A text/number field counts as empty (safe to auto-fill) when blank or "0".
+    function _upIsEmpty(el) {
+        if (!el) return false;
+        var v = (el.value || '').replace(/,/g, '').trim();
+        return v === '' || v === '0';
+    }
+
+    // Set a text/number field. In auto mode (onlyEmpty) it won't clobber a value
+    // the user already entered/saved in the tool — it only fills blank fields.
+    function _upSet(id, val, formatted, onlyEmpty) {
         var el = document.getElementById(id);
         if (!el || val === '' || val === null || val === undefined) return;
+        if (onlyEmpty && !_upIsEmpty(el)) return;
         el.value = formatted !== undefined ? formatted : val;
         el.classList.remove('text-slate-400');
     }
 
-    function upApply(tool) {
+    // Set a <select> from the profile. Selects (regime/slab/city) are profile-owned
+    // stable preferences, so they are always applied when the profile has a value.
+    // A value with no matching <option> is silently ignored by the browser.
+    function _upSetSel(id, val) {
+        var el = document.getElementById(id);
+        if (!el || val === '' || val === null || val === undefined) return;
+        el.value = val;
+        el.classList.remove('text-slate-400');
+    }
+
+    // upApplyAuto(tool): pull profile values into a tool without touching values the
+    // user already set (fills empty inputs only) and without the banner flash.
+    function upApplyAuto(tool) { upApply(tool, true); }
+
+    function upApply(tool, auto) {
+        var oe = auto === true; // onlyEmpty for money/number fields in auto mode
         var p       = window._userProfile;
         var inc     = upNum('up-income');          // monthly in-hand
         var exp     = upNum('up-expenses');         // monthly expenses
@@ -552,97 +582,189 @@
         var slab    = p.taxSlab || '';
         var deps    = p.dependents || '';
         var annInc  = parseFloat((p.annualIncome || '').replace(/,/g,'')) || (inc * 12);
+        var rent    = parseFloat((p.rent       || '').replace(/,/g,'')) || 0;
+        var ppfBal  = parseFloat((p.ppfBalance || '').replace(/,/g,'')) || 0;
+        var npsBal  = parseFloat((p.npsBalance || '').replace(/,/g,'')) || 0;
+        var infl    = parseFloat((p.inflation  || '')) || 0;
+
+        // Rebuild a regime-driven slab <select> for the profile's regime, then select
+        // the profile slab. Used for tools whose slab options change with the regime.
+        function _upRegimeSlab(regId, slabId, rebuild) {
+            _upSetSel(regId, p.regime);
+            if (rebuild) rebuild();
+            _upSetSel(slabId, slab);
+        }
 
         if (tool === 'taxguide') {
-            if (annInc > 0) _upSet('tg-income', annInc, annInc.toLocaleString('en-IN'));
-            if (p.regime) { var re = document.getElementById('tg-regime'); if (re) re.value = p.regime; }
-            if (basic > 0) _upSet('tg-epf-basic', basic, basic.toLocaleString('en-IN'));
+            if (annInc > 0) _upSet('tg-income', annInc, annInc.toLocaleString('en-IN'), oe);
+            _upSetSel('tg-regime', p.regime);
+            if (basic > 0) _upSet('tg-epf-basic', basic, basic.toLocaleString('en-IN'), oe);
+            _upSetSel('ptc-slab', slab);
             if (typeof tgCalc === 'function') tgCalc();
         }
 
         if (tool === 'finplan') {
-            if (p.name)   _upSet('fp-name', p.name);
-            if (age > 0)  _upSet('fp-age', age);
-            if (retAge > 0) _upSet('fp-retire-age', retAge);
-            if (inc > 0)  { var fi = document.getElementById('fp-income'); if (fi) { fi.value = inc.toLocaleString('en-IN'); fi.classList.remove('text-slate-400'); if (typeof fpFormatMoney === 'function') fpFormatMoney(fi, 'fp-income-words'); } }
-            if (inc > 0 && exp > 0 && inc > exp) { var fs = document.getElementById('fp-invest-amt'); if (fs) { fs.value = (inc - exp).toLocaleString('en-IN'); fs.classList.remove('text-slate-400'); if (typeof fpFormatMoney === 'function') fpFormatMoney(fs, 'fp-invest-words'); } }
-            if (basic > 0) _upSet('fp-epf-basic', basic, basic.toLocaleString('en-IN'));
+            _upSet('fp-name', p.name, undefined, oe);
+            if (age > 0)  _upSet('fp-age', age, undefined, oe);
+            if (retAge > 0) _upSet('fp-retire-age', retAge, undefined, oe);
+            if (inc > 0)  { var fi = document.getElementById('fp-income'); if (fi && (!oe || _upIsEmpty(fi))) { fi.value = inc.toLocaleString('en-IN'); fi.classList.remove('text-slate-400'); if (typeof fpFormatMoney === 'function') fpFormatMoney(fi, 'fp-income-words'); } }
+            if (inc > 0 && exp > 0 && inc > exp) { var fs = document.getElementById('fp-invest-amt'); if (fs && (!oe || _upIsEmpty(fs))) { fs.value = (inc - exp).toLocaleString('en-IN'); fs.classList.remove('text-slate-400'); if (typeof fpFormatMoney === 'function') fpFormatMoney(fs, 'fp-invest-words'); } }
+            if (basic > 0) _upSet('fp-epf-basic', basic, basic.toLocaleString('en-IN'), oe);
             if (typeof fpLiveUpdate === 'function') fpLiveUpdate();
         }
 
         if (tool === 'drawdown') {
-            if (age > 0)  _upSet('dd-current-age', age);
-            if (retAge > 0) _upSet('dd-ret-age', retAge);
-            if (exp > 0)  _upSet('dd-expenses', exp, exp.toLocaleString('en-IN'));
+            if (age > 0)  _upSet('dd-current-age', age, undefined, oe);
+            if (retAge > 0) _upSet('dd-ret-age', retAge, undefined, oe);
+            if (exp > 0)  _upSet('dd-expenses', exp, exp.toLocaleString('en-IN'), oe);
+            if (infl > 0) _upSet('dd-inflation', infl, undefined, oe);
             if (typeof drawdownCalc === 'function') drawdownCalc();
         }
 
         if (tool === 'epfcalc') {
-            if (age > 0)    _upSet('epf-age', age);
-            if (retAge > 0) _upSet('epf-retire', retAge);
-            if (basic > 0)  _upSet('epf-basic', basic, basic.toLocaleString('en-IN'));
-            if (epfBal > 0) _upSet('epf-balance', epfBal, epfBal.toLocaleString('en-IN'));
+            if (age > 0)    _upSet('epf-age', age, undefined, oe);
+            if (retAge > 0) _upSet('epf-retire', retAge, undefined, oe);
+            if (basic > 0)  _upSet('epf-basic', basic, basic.toLocaleString('en-IN'), oe);
+            if (epfBal > 0) _upSet('epf-balance', epfBal, epfBal.toLocaleString('en-IN'), oe);
             if (typeof epfCalc === 'function') epfCalc();
         }
 
         if (tool === 'ppfnps') {
-            if (age > 0) _upSet('nps-age', age);
+            if (age > 0) _upSet('nps-age', age, undefined, oe);
+            _upRegimeSlab('nps-regime', 'nps-slab', function() {
+                if (typeof _regimeChange === 'function') _regimeChange('nps-regime', 'nps-slab', null);
+            });
+            if (npsBal > 0) _upSet('nps-balance', npsBal, npsBal.toLocaleString('en-IN'), oe);
+            if (ppfBal > 0) _upSet('ppf-balance', ppfBal, ppfBal.toLocaleString('en-IN'), oe);
             if (typeof npsCalc === 'function') npsCalc();
+            if (typeof ppfCalc === 'function') ppfCalc();
         }
 
         if (tool === 'retirementhub') {
-            if (age > 0)    _upSet('rh-age', age);
-            if (retAge > 0) _upSet('rh-ret-age', retAge);
-            if (exp > 0)    _upSet('rh-expenses', exp, exp.toLocaleString('en-IN'));
-            if (basic > 0)  _upSet('rh-epf-basic', basic, basic.toLocaleString('en-IN'));
-            if (epfBal > 0) _upSet('rh-epf-balance', epfBal, epfBal.toLocaleString('en-IN'));
+            if (age > 0)    _upSet('rh-age', age, undefined, oe);
+            if (retAge > 0) _upSet('rh-ret-age', retAge, undefined, oe);
+            if (exp > 0)    _upSet('rh-expenses', exp, exp.toLocaleString('en-IN'), oe);
+            if (basic > 0)  _upSet('rh-epf-basic', basic, basic.toLocaleString('en-IN'), oe);
+            if (epfBal > 0) _upSet('rh-epf-balance', epfBal, epfBal.toLocaleString('en-IN'), oe);
+            if (ppfBal > 0) _upSet('rh-ppf-balance', ppfBal, ppfBal.toLocaleString('en-IN'), oe);
+            if (npsBal > 0) _upSet('rh-nps-balance', npsBal, npsBal.toLocaleString('en-IN'), oe);
+            if (infl > 0)   _upSet('rh-inflation', infl, undefined, oe);
             if (typeof retHubCalc === 'function') retHubCalc();
+            // Retirement Drawdown shares this panel
+            if (age > 0)    _upSet('dd-current-age', age, undefined, oe);
+            if (retAge > 0) _upSet('dd-ret-age', retAge, undefined, oe);
+            if (exp > 0)    _upSet('dd-expenses', exp, exp.toLocaleString('en-IN'), oe);
+            if (infl > 0)   _upSet('dd-inflation', infl, undefined, oe);
+            if (typeof drawdownCalc === 'function') drawdownCalc();
         }
 
         if (tool === 'insure') {
-            if (annInc > 0) _upSet('ins-income', annInc, annInc.toLocaleString('en-IN'));
-            if (age > 0)    _upSet('ins-age', age);
-            if (exp > 0)    _upSet('ins-monthly-exp', exp, exp.toLocaleString('en-IN'));
-            if (deps !== '')_upSet('ins-dependents', deps);
-            if (deps !== '') _upSet('ins-family', deps);
+            if (annInc > 0) _upSet('ins-income', annInc, annInc.toLocaleString('en-IN'), oe);
+            if (age > 0)    _upSet('ins-age', age, undefined, oe);
+            if (exp > 0)    _upSet('ins-monthly-exp', exp, exp.toLocaleString('en-IN'), oe);
+            if (deps !== '')_upSet('ins-dependents', deps, undefined, oe);
+            if (deps !== '') _upSet('ins-family', deps, undefined, oe);
             var totalLiab = ['liabHome','liabCar','liabPersonal','liabCc','liabOther'].reduce(function(s,k){ return s + (parseFloat((p[k]||'0').replace(/,/g,''))||0); }, 0);
-            if (totalLiab > 0) _upSet('ins-loans', totalLiab, totalLiab.toLocaleString('en-IN'));
+            if (totalLiab > 0) _upSet('ins-loans', totalLiab, totalLiab.toLocaleString('en-IN'), oe);
             var hCov = parseFloat((p.healthCoverage || '0').replace(/,/g,'')) || 0;
             var tAss = parseFloat((p.termAssured   || '0').replace(/,/g,'')) || 0;
-            if (hCov > 0) _upSet('ins-health-current', hCov, hCov.toLocaleString('en-IN'));
-            if (tAss > 0) _upSet('ins-term-current',   tAss, tAss.toLocaleString('en-IN'));
+            if (hCov > 0) _upSet('ins-health-current', hCov, hCov.toLocaleString('en-IN'), oe);
+            if (tAss > 0) _upSet('ins-term-current',   tAss, tAss.toLocaleString('en-IN'), oe);
             if (typeof insureCalc === 'function') insureCalc();
         }
 
         if (tool === 'gratuity') {
-            if (basic > 0) _upSet('grat-basic', basic, basic.toLocaleString('en-IN'));
-            if (p.regime) { var gr = document.getElementById('grat-regime'); if (gr) gr.value = p.regime; }
-            if (slab)     { var gs = document.getElementById('grat-slab');   if (gs) gs.value = slab; }
+            if (basic > 0) _upSet('grat-basic', basic, basic.toLocaleString('en-IN'), oe);
+            _upRegimeSlab('grat-regime', 'grat-slab', function() {
+                if (typeof _regimeChange === 'function') _regimeChange('grat-regime', 'grat-slab', null);
+            });
             if (typeof gratCalc === 'function') gratCalc();
         }
 
         if (tool === 'homeloan') {
-            if (slab)     { var ts = document.getElementById('tx-slab');   if (ts) { ts.value = slab; ts.classList.remove('text-slate-400'); } }
-            if (p.regime) { var tr = document.getElementById('tx-regime'); if (tr) tr.value = p.regime; }
+            _upRegimeSlab('tx-regime', 'tx-slab', function() {
+                if (typeof _regimeChange === 'function') _regimeChange('tx-regime', 'tx-slab', null);
+            });
             if (typeof hlTaxCalc === 'function') hlTaxCalc();
         }
 
         if (tool === 'healthscore') {
-            if (inc > 0) _upSet('hs-income', inc, inc.toLocaleString('en-IN'));
-            if (exp > 0) _upSet('hs-expenses', exp, exp.toLocaleString('en-IN'));
-            if (age > 0) _upSet('hs-age', age);
+            if (inc > 0) _upSet('hs-income', inc, inc.toLocaleString('en-IN'), oe);
+            if (exp > 0) _upSet('hs-expenses', exp, exp.toLocaleString('en-IN'), oe);
+            if (age > 0) _upSet('hs-age', age, undefined, oe);
             if (typeof calcHealthScore === 'function') calcHealthScore();
         }
 
         if (tool === 'hracalc') {
-            if (basic > 0) _upSet('hra-basic', basic, basic.toLocaleString('en-IN'));
-            if (p.city)   { var hc = document.getElementById('hra-city');   if (hc) hc.value = p.city; }
-            if (p.regime) { var hr = document.getElementById('hra-regime'); if (hr) hr.value = p.regime; }
-            if (slab)     { var hs = document.getElementById('hra-slab');   if (hs) hs.value = slab; }
+            if (basic > 0) _upSet('hra-basic', basic, basic.toLocaleString('en-IN'), oe);
+            if (rent > 0)  _upSet('hra-rent', rent, rent.toLocaleString('en-IN'), oe);
+            _upSetSel('hra-city', p.city);
+            _upSetSel('hra-regime', p.regime);
+            _upSetSel('hra-slab', slab);
             if (typeof hraCalc === 'function') hraCalc();
         }
 
-        // Flash the banner button to confirm
+        if (tool === 'ctcoptimizer') {
+            if (annInc > 0) _upSet('ctc-annual', annInc, annInc.toLocaleString('en-IN'), oe);
+            if (basic > 0)  _upSet('ctc-basic', basic, basic.toLocaleString('en-IN'), oe);
+            if (rent > 0)   _upSet('ctc-rent', rent, rent.toLocaleString('en-IN'), oe);
+            _upSetSel('ctc-regime', p.regime);
+            _upSetSel('ctc-city', p.city);
+            if (typeof ctcCalc === 'function') ctcCalc();
+        }
+
+        if (tool === 'goldcomp') {
+            _upRegimeSlab('gc-regime', 'gc-slab', function() {
+                if (typeof _regimeChange === 'function') _regimeChange('gc-regime', 'gc-slab', null);
+            });
+            if (typeof goldCalc === 'function') goldCalc();
+        }
+
+        if (tool === 'fincal') {
+            if (annInc > 0) _upSet('fc-income', annInc, annInc.toLocaleString('en-IN'), oe);
+            _upSetSel('fc-regime', p.regime);
+            if (typeof finCalRender === 'function') finCalRender();
+        }
+
+        if (tool === 'ulipcheck') {
+            if (age > 0) _upSet('uc-age', age, undefined, oe);
+            _upSetSel('uc-slab', slab);
+            if (typeof ucCalc === 'function') ucCalc();
+        }
+
+        if (tool === 'cibil') {
+            if (age > 0) _upSet('cibil-age', age, undefined, oe);
+            if (typeof cibilCalc === 'function') cibilCalc();
+        }
+
+        if (tool === 'selfempl') {
+            _upSetSel('se-tax-regime', p.regime);
+            if (typeof seCalcTax === 'function') seCalcTax();
+        }
+
+        if (tool === 'jointplan') {
+            _upSet('jp-p1-name', p.name, undefined, oe);
+            _upRegimeSlab('jp-p1-regime', 'jp-p1-slab', function() {
+                if (typeof _regimeChange === 'function') _regimeChange('jp-p1-regime', 'jp-p1-slab', null);
+            });
+            if (typeof jointPlanCalc === 'function') jointPlanCalc();
+        }
+
+        if (tool === 'fixedincome') {
+            [['fd','fi-fd-regime','fi-fd-slab'],
+             ['scss','fi-scss-regime','fi-scss-slab'],
+             ['pomis','fi-pomis-regime','fi-pomis-slab'],
+             ['nsc','fi-nsc-regime','fi-nsc-slab'],
+             ['elss','fi-cmp-regime','fi-cmp-slab'],
+             ['rd','fi-rd-regime','fi-rd-slab']].forEach(function(row) {
+                _upRegimeSlab(row[1], row[2], function() {
+                    if (typeof fiUpdateSlabs === 'function') fiUpdateSlabs(row[0]);
+                });
+            });
+        }
+
+        // Flash the banner button to confirm (manual apply only)
+        if (auto) return;
         var btn = document.querySelector('#up-banner-' + tool + ' .up-apply-btn');
         if (btn) {
             var orig = btn.textContent;

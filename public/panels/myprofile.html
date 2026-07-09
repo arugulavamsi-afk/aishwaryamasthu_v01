@@ -41,6 +41,85 @@
         </div>
     </div>
 
+    <!-- FINANCIAL DETAILS — editable, auto-fills every tool -->
+    <div class="bg-white rounded-2xl border border-[#f5c842]/30 shadow-sm p-3">
+        <div class="text-[10px] font-black uppercase tracking-wider mb-1 flex items-center gap-1.5" style="color:#7c5c0a;">
+            <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#f5c842;flex-shrink:0;"></span>Financial Details
+        </div>
+        <p class="text-[10px] text-slate-500 mb-2.5">Set these once — they auto-fill the matching field in every tool.</p>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-x-3 gap-y-2">
+            <div>
+                <label class="up-label">Monthly Take-Home Income (₹)</label>
+                <input id="up-income" type="text" inputmode="numeric" class="up-input" placeholder="e.g. 1,00,000"
+                    oninput="upFmt(this);upAutoFillAnnual();upSave()">
+            </div>
+            <div>
+                <label class="up-label">Annual Income / CTC (₹)</label>
+                <input id="up-annual-income" type="text" inputmode="numeric" class="up-input" placeholder="e.g. 12,00,000"
+                    oninput="upFmt(this);upSave()">
+                <div id="up-annual-hint" class="text-[9px] text-slate-400 mt-0.5"></div>
+            </div>
+            <div>
+                <label class="up-label">Monthly Expenses (₹)</label>
+                <input id="up-expenses" type="text" inputmode="numeric" class="up-input" placeholder="e.g. 50,000"
+                    oninput="upFmt(this);upSave()">
+            </div>
+            <div>
+                <label class="up-label">Basic Salary (₹/mo)</label>
+                <input id="up-basic-salary" type="text" inputmode="numeric" class="up-input" placeholder="e.g. 40,000"
+                    oninput="upFmt(this);upSave()">
+            </div>
+            <div>
+                <label class="up-label">Monthly Rent Paid (₹)</label>
+                <input id="up-rent" type="text" inputmode="numeric" class="up-input" placeholder="e.g. 20,000"
+                    oninput="upFmt(this);upSave()">
+            </div>
+            <div>
+                <label class="up-label">Tax Regime</label>
+                <select id="up-regime" class="up-input" onchange="upRegimeChange();upSave()">
+                    <option value="new">New Regime</option>
+                    <option value="old">Old Regime</option>
+                </select>
+            </div>
+            <div>
+                <label class="up-label">Tax Slab</label>
+                <select id="up-tax-slab" class="up-input" onchange="upSave()"></select>
+            </div>
+            <div>
+                <label class="up-label">City Type</label>
+                <select id="up-city" class="up-input" onchange="upSave()">
+                    <option value="metro">Metro (50% HRA)</option>
+                    <option value="nonmetro">Non-Metro (40% HRA)</option>
+                </select>
+            </div>
+            <div>
+                <label class="up-label">Retirement Age</label>
+                <input id="up-retire-age" type="number" min="40" max="75" class="up-input" placeholder="e.g. 60"
+                    oninput="upSave()">
+            </div>
+            <div>
+                <label class="up-label">EPF Balance (₹)</label>
+                <input id="up-epf-balance" type="text" inputmode="numeric" class="up-input" placeholder="e.g. 5,00,000"
+                    oninput="upFmt(this);upSave()">
+            </div>
+            <div>
+                <label class="up-label">PPF Balance (₹)</label>
+                <input id="up-ppf-balance" type="text" inputmode="numeric" class="up-input" placeholder="e.g. 3,00,000"
+                    oninput="upFmt(this);upSave()">
+            </div>
+            <div>
+                <label class="up-label">NPS Balance (₹)</label>
+                <input id="up-nps-balance" type="text" inputmode="numeric" class="up-input" placeholder="e.g. 2,00,000"
+                    oninput="upFmt(this);upSave()">
+            </div>
+            <div>
+                <label class="up-label">Inflation (% p.a.)</label>
+                <input id="up-inflation" type="number" step="0.1" min="0" max="20" class="up-input" placeholder="e.g. 6"
+                    oninput="upSave()">
+            </div>
+        </div>
+    </div>
+
     <!-- TOOL SUMMARY CARDS — 3-col grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
 

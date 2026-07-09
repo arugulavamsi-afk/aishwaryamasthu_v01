@@ -561,6 +561,11 @@
                 }
                 if (growthWrapper) growthWrapper.style.display = isFullPanel ? 'none' : '';
 
+                // Auto-pull My Profile values into this tool's shared/redundant fields.
+                // Deferred (setTimeout 0) so the tool's own init + saved-data restore run
+                // first; upApplyAuto only fills still-empty inputs and never clobbers.
+                if (typeof upApplyAuto === 'function') { (function(m){ setTimeout(function(){ try { upApplyAuto(m); } catch(e){} }, 0); })(mode); }
+
                 if (isMFKit) { renderMFKit(); applyLang(); return; }
                 if (isFundPicker) { renderFundPickerPage(); applyLang(); return; }
                 if (isHealthScore) { if (typeof hsRefreshNwBanner === 'function') hsRefreshNwBanner(); applyLang(); return; }
