@@ -4257,11 +4257,11 @@
             if (!existingSection) {
                 // Insert it before SIP breakdown: find the sip-breakdown parent
                 var sipBreakdownEl = document.getElementById('fp-sip-breakdown');
-                var sipParent = sipBreakdownEl ? sipBreakdownEl.closest('.px-5.pb-3') : null;
+                var sipParent = sipBreakdownEl ? sipBreakdownEl.closest('details.fp-acc') : null;
                 if (sipParent) {
-                    var div = document.createElement('div');
+                    var div = document.createElement('details');
                     div.id = 'fp-existing-section';
-                    div.className = 'px-5 pb-3';
+                    div.className = 'fp-acc';
                     sipParent.parentNode.insertBefore(div, sipParent);
                     existingSection = div;
                 }
@@ -4367,8 +4367,13 @@
                     var combinedCorpus  = totalGoalCorpus + existingFutureVal;
                     var coveragePct     = totalGoalCorpus > 0 ? Math.round((existingFutureVal / totalGoalCorpus) * 100) : 0;
 
+                    existingSection.style.display = '';
                     existingSection.innerHTML =
-                        '<h3 class="text-xs font-black text-slate-400 uppercase tracking-wider mb-2">' + _t('fp.result.existing.title') + '</h3>' +
+                        '<summary>' +
+                            '<h3 class="fp-acc-title">' + _t('fp.result.existing.title') + '</h3>' +
+                            '<svg class="fp-acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>' +
+                        '</summary>' +
+                        '<div class="fp-acc-body">' +
                         '<div class="rounded-2xl border border-emerald-100 overflow-hidden" style="background:#f0fdf4;">' +
                             '<div class="px-4 pt-3 pb-2">' + existingRows + '</div>' +
                             '<div class="px-4 pb-3 pt-1 flex flex-wrap gap-3 border-t border-emerald-100 mt-1">' +
@@ -4391,9 +4396,11 @@
                             '<div class="px-4 py-2 text-[10px] text-emerald-700 font-semibold leading-relaxed border-t border-emerald-100">' +
                                 _t('fp.result.existing.contrib').replace('{v}', '₹' + fmt(existingFutureVal)) +
                             '</div>' +
+                        '</div>' +
                         '</div>';
                 } else {
                     existingSection.innerHTML = '';
+                    existingSection.style.display = 'none';
                 }
             }
 
@@ -4448,6 +4455,7 @@
             // ---- Goal Corpus Projections ----
             var corpusSection = document.getElementById('fp-corpus-section');
             var corpusCards   = document.getElementById('fp-corpus-cards');
+            var vOnTrack = 0, vTargets = 0; // for the verdict line
             if (goalSIPs && goalSIPs.length > 0) {
                 corpusSection.style.display = '';
                 // Distribute existing future value proportionally across goals by weight
@@ -4462,6 +4470,7 @@
                     var effectiveCorpus = g.corpus + goalExistingFV;
                     var onTrack     = g.gap !== null && (effectiveCorpus >= g.target || g.gap <= 0);
                     var noTarget    = g.target <= 0;
+                    if (!noTarget) { vTargets++; if (onTrack) vOnTrack++; }
                     var statusColor = noTarget ? '#6366f1' : (onTrack ? '#10b981' : '#ef4444');
                     var statusIcon  = noTarget ? '📊' : (onTrack ? '✅' : '⚠️');
                     var progressPct = (!noTarget && effectiveCorpus > 0) ? Math.min(100, Math.round((effectiveCorpus / g.target) * 100)) : 100;
@@ -4530,6 +4539,35 @@
                 }).join('');
             } else {
                 corpusSection.style.display = 'none';
+            }
+
+            // ---- Verdict line (one-glance summary at top of card) ----
+            var vEl = document.getElementById('fp-verdict');
+            if (vEl) {
+                var vTone, vHead;
+                if (vTargets > 0 && vOnTrack === vTargets) {
+                    vTone = 'on';      vHead = _t('fp.verdict.head.on').replace('{t}', vTargets);
+                } else if (vTargets > 0 && vOnTrack > 0) {
+                    vTone = 'partial'; vHead = _t('fp.verdict.head.partial').replace('{n}', vOnTrack).replace('{t}', vTargets);
+                } else if (vTargets > 0) {
+                    vTone = 'off';     vHead = _t('fp.verdict.head.off').replace('{n}', vOnTrack).replace('{t}', vTargets);
+                } else {
+                    vTone = 'plain';   vHead = _t('fp.verdict.head.plain');
+                }
+                var vchip = function(val, lbl){
+                    return '<div class="fp-vchip"><div class="fp-vchip-val">' + val + '</div>' +
+                           '<div class="fp-vchip-lbl">' + lbl + '</div></div>';
+                };
+                var vChips = '';
+                if (monthlyInvest > 0) vChips += vchip('₹' + fmt(monthlyInvest), _t('fp.verdict.sip'));
+                if (vTargets > 0)      vChips += vchip(vOnTrack + '/' + vTargets, _t('fp.verdict.goals'));
+                vChips += vchip(_t('fp.verdict.age').replace('{a}', retireAge), _t('fp.verdict.retire'));
+
+                vEl.className = 'fp-verdict fp-verdict-' + vTone;
+                vEl.innerHTML =
+                    '<div class="fp-verdict-head">' + vHead + '</div>' +
+                    '<div class="fp-verdict-chips">' + vChips + '</div>' +
+                    '<div class="fp-verdict-hint">' + _t('fp.acc.hint') + '</div>';
             }
 
             // ---- Redemption Guide ----
@@ -4767,7 +4805,7 @@
             var gd = document.getElementById('fp-goal-details'); if(gd) gd.classList.add('hidden');
             var gc = document.getElementById('fp-goal-cards');   if(gc) gc.innerHTML='';
             var ea = document.getElementById('fp-existing-amounts'); if(ea){ ea.classList.add('hidden'); ea.innerHTML='<p class="text-[10px] text-slate-400 font-semibold uppercase tracking-wide">Current value of each investment ↓</p>'; }
-            var es = document.getElementById('fp-existing-section'); if(es) es.innerHTML='';
+            var es = document.getElementById('fp-existing-section'); if(es){ es.innerHTML=''; es.style.display='none'; }
             fpGoStep(1);
             fpUpdateTabNav(1);
             // Reset two-column layout

@@ -344,6 +344,9 @@
                             </div>
                         </div>
 
+                        <!-- Verdict line — one-glance summary -->
+                        <div id="fp-verdict" class="fp-verdict"></div>
+
                         <!-- Portfolio Donut + Legend -->
                         <div class="p-5">
                             <h3 class="text-xs font-black text-slate-400 uppercase tracking-wider mb-3" data-i18n="fp.result.alloc.title">📊 Illustrative Portfolio Allocation</h3>
@@ -370,32 +373,52 @@
                         </div>
 
                         <!-- SIP Breakdown -->
-                        <div class="px-5 pb-3">
-                            <h3 class="text-xs font-black text-slate-400 uppercase tracking-wider mb-2" data-i18n="fp.result.sip.title">💸 Monthly SIP Breakdown</h3>
-                            <div id="fp-sip-breakdown" class="space-y-1.5"></div>
-                        </div>
+                        <details class="fp-acc" open>
+                            <summary>
+                                <h3 class="fp-acc-title" data-i18n="fp.result.sip.title">💸 Monthly SIP Breakdown</h3>
+                                <svg class="fp-acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+                            </summary>
+                            <div class="fp-acc-body">
+                                <div id="fp-sip-breakdown" class="space-y-1.5"></div>
+                            </div>
+                        </details>
 
                         <!-- Goal Corpus Projections -->
-                        <div class="px-5 pb-3" id="fp-corpus-section" style="display:none">
-                            <h3 class="text-xs font-black text-slate-400 uppercase tracking-wider mb-2" data-i18n="fp.result.corpus.title">🎯 Goal Corpus Projections</h3>
-                            <div id="fp-corpus-cards" class="space-y-3"></div>
-                            <div class="mt-3 px-3 py-2.5 rounded-xl border border-amber-100 text-[10px] text-amber-700 leading-relaxed" style="background:#fffbeb;" data-i18n-html="fp.result.corpus.disc">
-                                ⚠️ <strong>Disclaimer:</strong> Projections use a blended expected return based on your risk profile. Actual returns will vary — equity is not guaranteed. Use these as directional estimates to course-correct, not as guarantees.
+                        <details class="fp-acc" id="fp-corpus-section" style="display:none">
+                            <summary>
+                                <h3 class="fp-acc-title" data-i18n="fp.result.corpus.title">🎯 Goal Corpus Projections</h3>
+                                <svg class="fp-acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+                            </summary>
+                            <div class="fp-acc-body">
+                                <div id="fp-corpus-cards" class="space-y-3"></div>
+                                <div class="mt-3 px-3 py-2.5 rounded-xl border border-amber-100 text-[10px] text-amber-700 leading-relaxed" style="background:#fffbeb;" data-i18n-html="fp.result.corpus.disc">
+                                    ⚠️ <strong>Disclaimer:</strong> Projections use a blended expected return based on your risk profile. Actual returns will vary — equity is not guaranteed. Use these as directional estimates to course-correct, not as guarantees.
+                                </div>
                             </div>
-                        </div>
+                        </details>
 
                         <!-- Redemption Guide -->
-                        <div class="px-5 pb-3" id="fp-redemption-section" style="display:none">
-                            <h3 class="text-xs font-black text-slate-400 uppercase tracking-wider mb-2" data-i18n="fp.result.redeem.title">🏦 When &amp; What to Redeem</h3>
-                            <p class="text-[11px] text-slate-400 mb-3 leading-relaxed" data-i18n="fp.result.redeem.sub">For each goal, redeem in the order shown — most liquid first, equity last. This protects your compounding and avoids selling equity at a bad time.</p>
-                            <div id="fp-redemption-cards" class="space-y-3"></div>
-                        </div>
+                        <details class="fp-acc" id="fp-redemption-section" style="display:none">
+                            <summary>
+                                <h3 class="fp-acc-title" data-i18n="fp.result.redeem.title">🏦 When &amp; What to Redeem</h3>
+                                <svg class="fp-acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+                            </summary>
+                            <div class="fp-acc-body">
+                                <p class="text-[11px] text-slate-400 mb-3 leading-relaxed" data-i18n="fp.result.redeem.sub">For each goal, redeem in the order shown — most liquid first, equity last. This protects your compounding and avoids selling equity at a bad time.</p>
+                                <div id="fp-redemption-cards" class="space-y-3"></div>
+                            </div>
+                        </details>
 
                         <!-- Action Roadmap -->
-                        <div class="px-5 pb-5 mt-2">
-                            <h3 class="text-xs font-black text-slate-400 uppercase tracking-wider mb-2" data-i18n="fp.result.roadmap.title">🚀 Your Action Roadmap</h3>
-                            <div id="fp-roadmap" class="space-y-2"></div>
-                        </div>
+                        <details class="fp-acc">
+                            <summary>
+                                <h3 class="fp-acc-title" data-i18n="fp.result.roadmap.title">🚀 Your Action Roadmap</h3>
+                                <svg class="fp-acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+                            </summary>
+                            <div class="fp-acc-body">
+                                <div id="fp-roadmap" class="space-y-2"></div>
+                            </div>
+                        </details>
 
                         <!-- Save to Your Financial Path -->
                         <div class="px-5 pb-3">
