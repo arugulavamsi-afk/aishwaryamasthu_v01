@@ -1763,7 +1763,7 @@
         'fp.result.existing.contrib':'✅ Your existing investments are projected to contribute <strong>{v}</strong> toward your goals. The SIP amounts below are your <em>additional</em> investment needed on top of this.',
         'fp.result.corpus.title':'🎯 Goal Corpus Projections',
         'fp.result.corpus.disc':'⚠️ <strong>Disclaimer:</strong> Projections use a blended expected return based on your risk profile. Actual returns will vary — equity is not guaranteed. Use these as directional estimates to course-correct, not as guarantees.',
-        'fp.result.redeem.title':'🏦 When &amp; What to Redeem',
+        'fp.result.redeem.title':'🏦 When & What to Redeem',
         'fp.result.redeem.sub': 'For each goal, redeem in the order shown — most liquid first, equity last. This protects your compounding and avoids selling equity at a bad time.',
         'fp.result.roadmap.title':'🚀 Your Action Roadmap',
         'fp.result.existing.title':'🏦 Your Existing Wealth',
