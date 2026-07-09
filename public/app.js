@@ -600,7 +600,7 @@
                 if (isNetWorth)      { initNetWorth();      applyLang(); return; }
                 if (isUlipCheck)     { initUlipCheck();     applyLang(); return; }
                 if (isFixedIncome)    { initFixedIncome();    applyLang(); return; }
-                if (isRetirementHub) { initRetirementHub(); initDrawdown(); applyLang(); return; }
+                if (isRetirementHub) { initRetirementHub(); applyLang(); return; }
                 if (isMyProfile)     { if (typeof initMyProfile === 'function') initMyProfile(); applyLang(); return; }
                 if (isCgCalc)        { initCgCalc();    applyLang(); return; }
                 if (isHraCalc)       { initHraCalc();   applyLang(); return; }

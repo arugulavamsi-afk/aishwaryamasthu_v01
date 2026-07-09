@@ -359,15 +359,15 @@
 
         else if (page === 'retirementhub') {
             var rhTotal   = document.getElementById('rh-total-corpus')?.textContent?.trim() || '';
-            var rhIncome  = document.getElementById('rh-total-income')?.textContent?.trim() || '';
-            var rhGap     = document.getElementById('rh-gap')?.textContent?.trim() || '';
+            var rhNeed    = document.getElementById('rh-need')?.textContent?.trim() || '';
+            var rhLasts   = document.getElementById('rh-lasts-age')?.textContent?.trim() || '';
             var rhRetAge  = document.getElementById('rh-ret-age-disp')?.textContent?.trim() || '';
             msg = '🏖️ I just mapped my *Retirement — all in one view* on Aishwaryamasthu!\n' +
                   (rhRetAge  ? 'Retirement ' + rhRetAge + '\n' : '') +
                   (rhTotal   ? 'Total corpus: *' + rhTotal + '*\n' : '') +
-                  (rhIncome  ? 'Monthly income: *' + rhIncome + '*\n' : '') +
-                  (rhGap     ? 'Surplus/Gap: *' + rhGap + '*\n' : '') +
-                  'EPF + PPF + NPS + SIP — one number, one plan\n' +
+                  (rhNeed    ? 'Monthly need: *' + rhNeed + '*\n' : '') +
+                  (rhLasts   ? 'Corpus lasts until age: *' + rhLasts + '*\n' : '') +
+                  'EPF + PPF + NPS + SIP — will my money last?\n' +
                   '\nPlan your retirement 👇';
         }
 

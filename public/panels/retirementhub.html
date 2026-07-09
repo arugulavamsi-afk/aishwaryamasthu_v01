@@ -325,12 +325,12 @@
                         </div>
                     </div>
 
-                    <!-- Monthly Income Row -->
+                    <!-- Monthly Need & Draw Row -->
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                        <div class="rounded-2xl p-3 text-center" style="background:linear-gradient(135deg,#0c2340,#1a4a7a);border:1px solid rgba(147,197,253,0.3);">
-                            <div class="text-[9px] font-black text-blue-300 uppercase" data-i18n="rh.res.swppool">SWP from Pool</div>
-                            <div id="rh-swp" class="text-lg font-black text-white mt-0.5">—</div>
-                            <div class="text-[8px] text-blue-400 mt-0.5" data-i18n="rh.res.swpfrom">EPF+PPF+SIP+Other · rises w/ inflation</div>
+                        <div class="rounded-2xl p-3 text-center" style="background:linear-gradient(135deg,#1a1a2e,#0c4a6e);border:1px solid rgba(147,197,253,0.3);">
+                            <div class="text-[9px] font-black text-sky-300 uppercase" data-i18n="rh.out.need">Monthly Need @ Retirement</div>
+                            <div id="rh-need" class="text-lg font-black text-white mt-0.5">—</div>
+                            <div id="rh-need-note" class="text-[8px] text-sky-400 mt-0.5"></div>
                         </div>
                         <div class="rounded-2xl p-3 text-center" style="background:linear-gradient(135deg,#0c2340,#1e3a8a);border:1px solid rgba(147,197,253,0.3);">
                             <div class="text-[9px] font-black text-indigo-300 uppercase" data-i18n="rh.res.npspension">NPS Pension</div>
@@ -343,28 +343,31 @@
                             <div class="text-[8px] text-cyan-400 mt-0.5" data-i18n="rh.res.epsfrom">Est. from EPF service</div>
                         </div>
                         <div class="rounded-2xl p-3 text-center" style="background:linear-gradient(135deg,#1a1a2e,#3b0764);border:2px solid rgba(245,200,66,0.5);">
-                            <div class="text-[9px] font-black text-yellow-300 uppercase" data-i18n="rh.res.totalincome">Total Income</div>
-                            <div id="rh-total-income" class="text-lg font-black text-white mt-0.5">—</div>
-                            <div class="text-[8px] text-purple-300 mt-0.5" data-i18n="rh.res.swpnps">SWP + NPS + EPS pension</div>
+                            <div class="text-[9px] font-black text-yellow-300 uppercase" data-i18n="rh.out.netdraw">Net Draw from Corpus</div>
+                            <div id="rh-net-draw" class="text-lg font-black text-white mt-0.5">—</div>
+                            <div class="text-[8px] text-purple-300 mt-0.5" data-i18n="rh.out.netdrawnote">Need − pensions · rises w/ inflation</div>
                         </div>
                     </div>
 
-                    <!-- Expenses vs Gap Row -->
+                    <!-- Verdict Row: will it last? -->
                     <div class="grid grid-cols-2 gap-2">
-                        <div class="rounded-2xl p-3" style="background:linear-gradient(135deg,#1a1a2e,#0c4a6e);border:1px solid rgba(147,197,253,0.25);">
-                            <div class="text-[9px] font-black text-sky-300 uppercase" data-i18n="rh.res.expretirem">Expenses at Retirement</div>
-                            <div id="rh-exp-inflated" class="text-xl font-black text-white mt-0.5">—</div>
-                            <div id="rh-exp-note" class="text-[8px] text-sky-400 mt-0.5"></div>
+                        <div class="rounded-2xl p-3" style="background:linear-gradient(135deg,#0c2340,#1a4a7a);border:2px solid rgba(245,200,66,0.35);">
+                            <div class="text-[9px] font-black text-blue-200 uppercase tracking-wider" data-i18n="rh.out.lasts">Corpus Lasts Until Age</div>
+                            <div id="rh-lasts-age" class="text-3xl font-black text-white mt-0.5">—</div>
+                            <div id="rh-lasts-note" class="text-[9px] text-blue-300 mt-0.5">—</div>
                         </div>
                         <div class="rounded-2xl p-3" style="background:linear-gradient(135deg,#1a1a2e,#0c2340);border:2px solid rgba(245,200,66,0.35);">
-                            <div id="rh-gap-label" class="text-[9px] font-black uppercase" style="color:#fde68a;">Monthly Surplus</div>
-                            <div id="rh-gap" class="text-2xl font-black text-emerald-400 mt-0.5">—</div>
-                            <div class="text-[8px] text-slate-400 mt-0.5" data-i18n="rh.res.incomeminus">Income minus expenses</div>
+                            <div id="rh-verdict-label" class="text-[9px] font-black uppercase" style="color:#fde68a;">Cushion</div>
+                            <div id="rh-verdict" class="text-2xl font-black text-emerald-400 mt-0.5">—</div>
+                            <div id="rh-verdict-note" class="text-[8px] text-slate-400 mt-0.5"></div>
                         </div>
                     </div>
 
-                    <!-- Insight -->
+                    <!-- Plain-language summary -->
                     <div id="rh-insight" class="rounded-2xl px-3 py-2.5 text-[10px] text-slate-700 leading-relaxed" style="background:#f8fafc;border:1px solid #e2e8f0;"></div>
+
+                    <!-- Smart fixes / headroom -->
+                    <div id="rh-fixes" class="rounded-2xl px-3 py-2.5" style="background:#fffbeb;border:1px solid #fde68a;"></div>
 
                     <!-- Stress Test: Sequence of Returns -->
                     <button id="rh-stress-toggle" onclick="rhToggleStress()" class="w-full rounded-xl px-3 py-2 text-left flex items-center justify-between gap-2 text-[11px] font-bold transition-all" style="background:linear-gradient(135deg,#431407,#7c2d12);color:#fed7aa;border:1.5px solid rgba(239,68,68,0.4);">
@@ -400,230 +403,72 @@
                 </div>
             </div>
 
-            <!-- ── SECTION DIVIDER: Drawdown ── -->
+            <!-- ── DEPLETION TIMELINE (driven by the corpus above) ── -->
             <div class="flex items-center gap-3 py-1 mt-1">
                 <div class="flex-1 h-px" style="background:linear-gradient(90deg,transparent,rgba(234,88,12,0.35),transparent);"></div>
-                <div class="flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest" style="background:linear-gradient(135deg,#fff7ed,#fef3c7);color:#c2410c;border:1px solid rgba(234,88,12,0.25);" data-i18n="dd.sec.title">🧮 Retirement Drawdown Planner</div>
+                <div class="flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest" style="background:linear-gradient(135deg,#fff7ed,#fef3c7);color:#c2410c;border:1px solid rgba(234,88,12,0.25);" data-i18n="rh.tl.title">📉 Will Your Money Last?</div>
                 <div class="flex-1 h-px" style="background:linear-gradient(90deg,transparent,rgba(234,88,12,0.35),transparent);"></div>
             </div>
-            <p class="text-[11px] text-slate-500 -mt-1 mb-1 px-0.5" data-i18n="dd.sec.sub">How long will your corpus last? · SWP strategy · 3-bucket allocation · Inflation-adjusted depletion timeline.</p>
+            <p class="text-[11px] text-slate-500 -mt-1 mb-1 px-0.5" data-i18n="rh.tl.sub">Year-by-year depletion of the corpus above, drawing your inflation-adjusted expenses net of pensions · 3-bucket allocation.</p>
 
-            <!-- DRAWDOWN: MAIN GRID -->
-            <div class="grid grid-cols-1 lg:grid-cols-5 gap-3">
-
-                <!-- INPUTS -->
-                <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
-                    <!-- Profile autofill banner -->
-                    <div id="up-banner-drawdown" class="up-banner hidden mb-2">
-                        <span class="text-[11px] font-bold text-sky-700">👤 Fill from My Profile?</span>
-                        <button class="up-apply-btn" onclick="upApply('drawdown')" data-i18n="up.apply">↙ Apply Profile</button>
-                    </div>
-                    <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2" data-i18n="dd.sec.inputs">Your Retirement Inputs</div>
-                    <div class="grid grid-cols-2 gap-x-3 gap-y-2">
-
-                        <div class="col-span-2">
-                            <label class="epf-label" data-i18n="lbl.dd.corpus">Retirement Corpus (₹)</label>
-                            <div class="relative"><span class="epf-prefix">₹</span>
-                            <input id="dd-corpus" type="text" inputmode="numeric" maxlength="15" value="1,00,00,000"
-                                class="epf-input pl-7 text-slate-400"
-                                oninput="ddFormat(this);drawdownCalc();this.classList.remove('text-slate-400');"
-                                onfocus="if(this.value==='1,00,00,000'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
-                                onblur="if(this.value===''||this.value==='1,00,00,000'){this.value='1,00,00,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
-                            </div>
-                            <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="dd.hint.corpussource">EPF + PPF + MF + savings at retirement</div>
-                        </div>
-
-                        <div>
-                            <label class="epf-label" data-i18n="lbl.rh.age">Current Age</label>
-                            <input id="dd-current-age" type="number" min="20" max="74" value="30"
-                                class="epf-input text-slate-400"
-                                oninput="drawdownCalc();this.classList.remove('text-slate-400');var r=document.getElementById('dd-ret-age');r.min=Math.max(40,+this.value+1);if(+r.value<=+this.value)r.value=+this.value+1;"
-                                onfocus="if(this.value==='30'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
-                                onblur="if(this.value===''||this.value==='30'){this.value='30';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
-                            <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="dd.hint.today">Your age today</div>
-                        </div>
-
-                        <div>
-                            <label class="epf-label" data-i18n="lbl.dd.retage">Retirement Age</label>
-                            <input id="dd-ret-age" type="number" min="40" max="75" value="60"
-                                class="epf-input text-slate-400"
-                                oninput="drawdownCalc();this.classList.remove('text-slate-400');"
-                                onfocus="if(this.value==='60'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
-                                onblur="if(this.value===''||this.value==='60'){this.value='60';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
-                            <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="dd.hint.planage">Plan to age 90+</div>
-                        </div>
-
-                        <div class="col-span-2">
-                            <label class="epf-label" data-i18n="lbl.dd.expenses">Today's Monthly Expenses (₹)</label>
-                            <div class="relative"><span class="epf-prefix">₹</span>
-                            <input id="dd-expenses" type="text" inputmode="numeric" maxlength="15" value="60,000"
-                                class="epf-input pl-7 text-slate-400"
-                                oninput="ddFormat(this);drawdownCalc();this.classList.remove('text-slate-400');"
-                                onfocus="if(this.value==='60,000'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
-                                onblur="if(this.value===''||this.value==='60,000'){this.value='60,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
-                            </div>
-                            <div id="dd-future-exp-hint" class="text-[9px] text-indigo-500 font-semibold mt-0.5"></div>
-                        </div>
-
-                        <div>
-                            <label class="epf-label" data-i18n="lbl.dd.inflation">Inflation (%/yr)</label>
-                            <input id="dd-inflation" type="number" min="2" max="15" step="0.5" value="6"
-                                class="epf-input text-slate-400"
-                                oninput="drawdownCalc();this.classList.remove('text-slate-400');"
-                                onfocus="if(this.value==='6'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
-                                onblur="if(this.value===''||this.value==='6'){this.value='6';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
-                            <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="dd.hint.cpi">India CPI ~5–7%</div>
-                        </div>
-
-                        <div>
-                            <label class="epf-label" data-i18n="lbl.dd.return">Portfolio Return (%/yr)</label>
-                            <input id="dd-return" type="number" min="1" max="18" step="0.5" value="8"
-                                class="epf-input text-slate-400"
-                                oninput="drawdownCalc();this.classList.remove('text-slate-400');"
-                                onfocus="if(this.value==='8'||this.value===''){this.value='';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}"
-                                onblur="if(this.value===''||this.value==='8'){this.value='8';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
-                            <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="dd.hint.blended">Blended all buckets</div>
-                        </div>
-
-                        <div class="col-span-2">
-                            <label class="epf-label"><span data-i18n="lbl.dd.otherincome">Other Monthly Income (₹)</span> <span class="normal-case font-semibold text-slate-400" data-i18n="lbl.dd.optional">optional</span></label>
-                            <div class="relative"><span class="epf-prefix">₹</span>
-                            <input id="dd-other-income" type="text" inputmode="numeric" maxlength="15" value="" placeholder="e.g. pension, rent"
-                                class="epf-input pl-7 text-slate-400"
-                                oninput="ddFormat(this);drawdownCalc();if(this.value){this.classList.remove('text-slate-400');}else{this.classList.add('text-slate-400');}"
-                                onfocus="this.classList.remove('text-slate-400');"
-                                onblur="if(!this.value){this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
-                            </div>
-                            <div class="text-[9px] text-slate-400 mt-0.5" data-i18n="dd.hint.otherincsrc">EPS pension, rental, annuity</div>
-                        </div>
-
-                    </div>
-
-                    <!-- Quick Scenarios -->
-                    <div class="mt-3">
-                        <div class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1.5" data-i18n="common.quickscen">Quick Scenarios</div>
-                        <div class="flex flex-wrap gap-1">
-                            <button onclick="ddPreset(10000000,60,60000,6,8,0)"      class="dd-preset">₹1Cr · 60yr</button>
-                            <button onclick="ddPreset(30000000,60,80000,6,8,6428)"   class="dd-preset">₹3Cr · EPS pension</button>
-                            <button onclick="ddPreset(50000000,58,100000,6,9,0)"     class="dd-preset">₹5Cr · 58yr VRS</button>
-                            <button onclick="ddPreset(75000000,60,150000,6,8,15000)" class="dd-preset">₹7.5Cr · affluent</button>
-                        </div>
-                    </div>
+            <!-- 4 stat pills -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                <div class="rounded-xl p-2 text-center" style="background:#f0f9ff;border:1px solid #bae6fd;">
+                    <div class="text-[9px] font-black text-sky-700 uppercase" data-i18n="dd.stat.realreturn">Real Return</div>
+                    <div id="dd-real-return" class="text-sm font-black text-sky-800">—</div>
+                    <div class="text-[8px] text-sky-500" data-i18n="dd.stat.returninfl">Return − inflation</div>
                 </div>
+                <div class="rounded-xl p-2 text-center" style="background:#fef9c3;border:1px solid #fde047;">
+                    <div class="text-[9px] font-black text-yellow-700 uppercase" data-i18n="dd.stat.safeswr">Safe SWR</div>
+                    <div id="dd-swr" class="text-sm font-black text-yellow-800">—</div>
+                    <div class="text-[8px] text-yellow-600" data-i18n="dd.stat.for30yr">for 30yr horizon</div>
+                </div>
+                <div class="rounded-xl p-2 text-center" style="background:#f0fdf4;border:1px solid #86efac;">
+                    <div class="text-[9px] font-black text-emerald-700 uppercase" data-i18n="dd.stat.corpusat85">Corpus at 85</div>
+                    <div id="dd-corpus-at-85" class="text-sm font-black text-emerald-800">—</div>
+                    <div class="text-[8px] text-emerald-600" data-i18n="dd.stat.projbal">projected balance</div>
+                </div>
+                <div class="rounded-xl p-2 text-center" style="background:#fdf4ff;border:1px solid #e9d5ff;">
+                    <div class="text-[9px] font-black text-purple-700 uppercase" data-i18n="dd.stat.swpat75">Net Draw at 75</div>
+                    <div id="dd-swp-75" class="text-sm font-black text-purple-800">—</div>
+                    <div class="text-[8px] text-purple-600" data-i18n="dd.stat.inflationadj">inflation-adjusted</div>
+                </div>
+            </div>
 
-                <!-- RIGHT COLUMN: results + buckets -->
-                <div class="lg:col-span-3 flex flex-col gap-2">
-
-                    <!-- Big depletion card -->
-                    <div class="rounded-2xl px-4 py-3 flex items-center justify-between gap-3 flex-wrap shine-header" style="background:linear-gradient(135deg,#0c2340,#1a4a7a);border:2px solid rgba(245,200,66,0.35);">
-                        <div>
-                            <div class="text-[9px] font-black text-blue-200 uppercase tracking-wider" data-i18n="dd.res.corpuslastage">Corpus Lasts Until Age</div>
-                            <div id="dd-depletion-age" class="text-3xl font-black text-white mt-0.5">—</div>
-                            <div id="dd-depletion-label" class="text-[10px] text-blue-300 mt-0.5">—</div>
+            <!-- 3-BUCKET STRATEGY -->
+            <div class="rounded-2xl border border-slate-100 shadow-sm p-2.5" style="background:#f8fafc;">
+                <div class="text-[9px] font-black text-slate-500 uppercase tracking-wider mb-2" data-i18n="dd.bucket.title">🪣 3-Bucket Strategy</div>
+                <div class="grid grid-cols-3 gap-2">
+                    <div class="rounded-xl p-2" style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1.5px solid #86efac;">
+                        <div class="flex items-center gap-1.5 mb-1">
+                            <div class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black text-white flex-shrink-0" style="background:#16a34a;">1</div>
+                            <div class="text-[9px] font-black text-emerald-800 leading-tight"><span data-i18n="dd.bucket1.name">LIQUID</span><br><span class="font-semibold" data-i18n="dd.bucket1.sub">1 Yr Expenses</span></div>
                         </div>
-                        <div class="text-right">
-                            <div class="text-[9px] font-black text-blue-200 uppercase tracking-wider" data-i18n="dd.res.yearslast">Years it Lasts</div>
-                            <div id="dd-years-last" class="text-3xl font-black text-white mt-0.5">—</div>
-                            <div id="dd-surplus-deficit" class="text-[10px] mt-0.5 font-black">—</div>
-                        </div>
-                        <div class="text-right">
-                            <div class="text-[9px] font-black text-blue-200 uppercase tracking-wider" data-i18n="dd.res.swpatret">SWP at Retirement</div>
-                            <div id="dd-swp-start" class="text-2xl font-black text-white mt-0.5">—</div>
-                            <div class="text-[9px] text-blue-300 mt-0.5" data-i18n="dd.res.firstmonth">first month withdrawal</div>
-                        </div>
+                        <div id="dd-b1-amount" class="text-base font-black text-emerald-700 mb-0.5">—</div>
+                        <div class="text-[8px] text-emerald-700 leading-snug" data-i18n="dd.bucket1.desc">Savings / liquid MF / sweep FD. Zero market risk.</div>
+                        <div class="text-[8px] font-black text-emerald-600 mt-1" data-i18n="dd.bucket1.rate">~6–7% · Negligible risk</div>
+                        <div class="mt-1 text-[8px] bg-emerald-100 rounded p-1 text-emerald-800" data-i18n="dd.bucket1.tip">Refill from Bucket 2 yearly.</div>
                     </div>
-
-                    <!-- Stress Test: Sequence of Returns -->
-                    <button id="dd-stress-toggle" onclick="ddToggleStress()" class="w-full rounded-xl px-3 py-2 text-left flex items-center justify-between gap-2 text-[11px] font-bold transition-all" style="background:linear-gradient(135deg,#431407,#7c2d12);color:#fed7aa;border:1.5px solid rgba(239,68,68,0.4);">
-                        <span data-i18n="rh.stress.title">⚠️ Stress Test: market drops 30% in Year 1 of retirement</span>
-                        <span id="dd-stress-chevron" style="font-size:10px;opacity:0.7;white-space:nowrap;">▼ Show</span>
-                    </button>
-                    <div id="dd-stress-panel" class="hidden flex flex-col gap-1.5">
-                        <div class="grid grid-cols-2 gap-2">
-                            <div class="rounded-xl p-3 text-center" style="background:linear-gradient(135deg,#0c2340,#1a4a7a);border:2px solid rgba(147,197,253,0.3);">
-                                <div class="text-[9px] font-black text-blue-300 uppercase mb-1" data-i18n="rh.stress.basecase">Base Case</div>
-                                <div class="text-[8px] text-blue-400 mb-2" data-i18n="rh.stress.baseflat">Flat return every year</div>
-                                <div class="text-[9px] font-black text-slate-300 uppercase" data-i18n="rh.stress.corpuslasts">Corpus Lasts Until</div>
-                                <div id="dd-base-depletion" class="text-2xl font-black text-white mt-0.5">—</div>
-                                <div id="dd-base-label" class="text-[9px] mt-0.5">—</div>
-                            </div>
-                            <div class="rounded-xl p-3 text-center" style="background:linear-gradient(135deg,#431407,#7c2d12);border:2px solid rgba(239,68,68,0.4);">
-                                <div class="text-[9px] font-black text-orange-300 uppercase mb-1" data-i18n="rh.stress.stresscase">Stress Case</div>
-                                <div class="text-[8px] text-orange-400 mb-2" data-i18n="rh.stress.crash30">−30% crash in Year 1</div>
-                                <div class="text-[9px] font-black text-slate-300 uppercase" data-i18n="rh.stress.corpuslasts">Corpus Lasts Until</div>
-                                <div id="dd-stress-depletion" class="text-2xl font-black text-white mt-0.5">—</div>
-                                <div id="dd-stress-label" class="text-[9px] mt-0.5">—</div>
-                            </div>
+                    <div class="rounded-xl p-2" style="background:linear-gradient(135deg,#eff6ff,#dbeafe);border:1.5px solid #93c5fd;">
+                        <div class="flex items-center gap-1.5 mb-1">
+                            <div class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black text-white flex-shrink-0" style="background:#2563eb;">2</div>
+                            <div class="text-[9px] font-black text-blue-800 leading-tight"><span data-i18n="dd.bucket2.name">STABILITY</span><br><span class="font-semibold" data-i18n="dd.bucket2.sub">2–4 Yr Expenses</span></div>
                         </div>
-                        <div id="dd-stress-insight" class="rounded-xl px-3 py-2 text-[10px] leading-relaxed" style="background:#431407;border:1px solid rgba(239,68,68,0.3);color:#fecaca;"></div>
+                        <div id="dd-b2-amount" class="text-base font-black text-blue-700 mb-0.5">—</div>
+                        <div class="text-[8px] text-blue-700 leading-snug" data-i18n="dd.bucket2.desc">Debt MF, FDs, RBI bonds, SCSS. Low volatility.</div>
+                        <div class="text-[8px] font-black text-blue-600 mt-1" data-i18n="dd.bucket2.rate">~7–8% · Low risk</div>
+                        <div class="mt-1 text-[8px] bg-blue-100 rounded p-1 text-blue-800" data-i18n="dd.bucket2.tip">Replenish from B3 in bull runs.</div>
                     </div>
-
-                    <!-- 4 stat pills -->
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
-                        <div class="rounded-xl p-2 text-center" style="background:#f0f9ff;border:1px solid #bae6fd;">
-                            <div class="text-[9px] font-black text-sky-700 uppercase" data-i18n="dd.stat.realreturn">Real Return</div>
-                            <div id="dd-real-return" class="text-sm font-black text-sky-800">—</div>
-                            <div class="text-[8px] text-sky-500" data-i18n="dd.stat.returninfl">Return − inflation</div>
+                    <div class="rounded-xl p-2" style="background:linear-gradient(135deg,#fdf4ff,#f3e8ff);border:1.5px solid #c4b5fd;">
+                        <div class="flex items-center gap-1.5 mb-1">
+                            <div class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black text-white flex-shrink-0" style="background:#7c3aed;">3</div>
+                            <div class="text-[9px] font-black text-purple-800 leading-tight"><span data-i18n="dd.bucket3.name">GROWTH</span><br><span class="font-semibold" data-i18n="dd.bucket3.sub">Remaining</span></div>
                         </div>
-                        <div class="rounded-xl p-2 text-center" style="background:#fef9c3;border:1px solid #fde047;">
-                            <div class="text-[9px] font-black text-yellow-700 uppercase" data-i18n="dd.stat.safeswr">Safe SWR</div>
-                            <div id="dd-swr" class="text-sm font-black text-yellow-800">—</div>
-                            <div class="text-[8px] text-yellow-600" data-i18n="dd.stat.for30yr">for 30yr horizon</div>
-                        </div>
-                        <div class="rounded-xl p-2 text-center" style="background:#f0fdf4;border:1px solid #86efac;">
-                            <div class="text-[9px] font-black text-emerald-700 uppercase" data-i18n="dd.stat.corpusat85">Corpus at 85</div>
-                            <div id="dd-corpus-at-85" class="text-sm font-black text-emerald-800">—</div>
-                            <div class="text-[8px] text-emerald-600" data-i18n="dd.stat.projbal">projected balance</div>
-                        </div>
-                        <div class="rounded-xl p-2 text-center" style="background:#fdf4ff;border:1px solid #e9d5ff;">
-                            <div class="text-[9px] font-black text-purple-700 uppercase" data-i18n="dd.stat.swpat75">SWP at 75</div>
-                            <div id="dd-swp-75" class="text-sm font-black text-purple-800">—</div>
-                            <div class="text-[8px] text-purple-600" data-i18n="dd.stat.inflationadj">inflation-adjusted</div>
-                        </div>
+                        <div id="dd-b3-amount" class="text-base font-black text-purple-700 mb-0.5">—</div>
+                        <div class="text-[8px] text-purple-700 leading-snug" data-i18n="dd.bucket3.desc">Flexi-cap / BAF equity. Fights inflation long-term.</div>
+                        <div class="text-[8px] font-black text-purple-600 mt-1" data-i18n="dd.bucket3.rate">~10–12% · Mod-high risk</div>
+                        <div class="mt-1 text-[8px] bg-purple-100 rounded p-1 text-purple-800" data-i18n="dd.bucket3.tip">Don't touch for 5+ yrs.</div>
                     </div>
-
-                    <!-- Insight -->
-                    <div id="dd-insight" class="hidden rounded-xl px-3 py-2 text-[11px] leading-relaxed" style="background:#f0f9ff;border:1px solid #bae6fd;color:#0c4a6e;"></div>
-
-                    <!-- 3-BUCKET STRATEGY -->
-                    <div class="rounded-2xl border border-slate-100 shadow-sm p-2.5" style="background:#f8fafc;">
-                        <div class="text-[9px] font-black text-slate-500 uppercase tracking-wider mb-2" data-i18n="dd.bucket.title">🪣 3-Bucket Strategy</div>
-                        <div class="grid grid-cols-3 gap-2">
-                            <div class="rounded-xl p-2" style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1.5px solid #86efac;">
-                                <div class="flex items-center gap-1.5 mb-1">
-                                    <div class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black text-white flex-shrink-0" style="background:#16a34a;">1</div>
-                                    <div class="text-[9px] font-black text-emerald-800 leading-tight"><span data-i18n="dd.bucket1.name">LIQUID</span><br><span class="font-semibold" data-i18n="dd.bucket1.sub">1 Yr Expenses</span></div>
-                                </div>
-                                <div id="dd-b1-amount" class="text-base font-black text-emerald-700 mb-0.5">—</div>
-                                <div class="text-[8px] text-emerald-700 leading-snug" data-i18n="dd.bucket1.desc">Savings / liquid MF / sweep FD. Zero market risk.</div>
-                                <div class="text-[8px] font-black text-emerald-600 mt-1" data-i18n="dd.bucket1.rate">~6–7% · Negligible risk</div>
-                                <div class="mt-1 text-[8px] bg-emerald-100 rounded p-1 text-emerald-800" data-i18n="dd.bucket1.tip">Refill from Bucket 2 yearly.</div>
-                            </div>
-                            <div class="rounded-xl p-2" style="background:linear-gradient(135deg,#eff6ff,#dbeafe);border:1.5px solid #93c5fd;">
-                                <div class="flex items-center gap-1.5 mb-1">
-                                    <div class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black text-white flex-shrink-0" style="background:#2563eb;">2</div>
-                                    <div class="text-[9px] font-black text-blue-800 leading-tight"><span data-i18n="dd.bucket2.name">STABILITY</span><br><span class="font-semibold" data-i18n="dd.bucket2.sub">2–4 Yr Expenses</span></div>
-                                </div>
-                                <div id="dd-b2-amount" class="text-base font-black text-blue-700 mb-0.5">—</div>
-                                <div class="text-[8px] text-blue-700 leading-snug" data-i18n="dd.bucket2.desc">Debt MF, FDs, RBI bonds, SCSS. Low volatility.</div>
-                                <div class="text-[8px] font-black text-blue-600 mt-1" data-i18n="dd.bucket2.rate">~7–8% · Low risk</div>
-                                <div class="mt-1 text-[8px] bg-blue-100 rounded p-1 text-blue-800" data-i18n="dd.bucket2.tip">Replenish from B3 in bull runs.</div>
-                            </div>
-                            <div class="rounded-xl p-2" style="background:linear-gradient(135deg,#fdf4ff,#f3e8ff);border:1.5px solid #c4b5fd;">
-                                <div class="flex items-center gap-1.5 mb-1">
-                                    <div class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black text-white flex-shrink-0" style="background:#7c3aed;">3</div>
-                                    <div class="text-[9px] font-black text-purple-800 leading-tight"><span data-i18n="dd.bucket3.name">GROWTH</span><br><span class="font-semibold" data-i18n="dd.bucket3.sub">Remaining</span></div>
-                                </div>
-                                <div id="dd-b3-amount" class="text-base font-black text-purple-700 mb-0.5">—</div>
-                                <div class="text-[8px] text-purple-700 leading-snug" data-i18n="dd.bucket3.desc">Flexi-cap / BAF equity. Fights inflation long-term.</div>
-                                <div class="text-[8px] font-black text-purple-600 mt-1" data-i18n="dd.bucket3.rate">~10–12% · Mod-high risk</div>
-                                <div class="mt-1 text-[8px] bg-purple-100 rounded p-1 text-purple-800" data-i18n="dd.bucket3.tip">Don't touch for 5+ yrs.</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- WhatsApp share -->
-                    <div><button onclick="waShare('drawdown')" class="wa-share-btn shine-btn"><svg viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5 flex-shrink-0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.557 4.133 1.535 5.876L.057 23.43a.75.75 0 00.918.924l5.688-1.493A11.946 11.946 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.907 0-3.7-.512-5.241-1.403l-.375-.22-3.877 1.018 1.01-3.769-.234-.389A9.953 9.953 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>Share on WhatsApp</button></div>
                 </div>
             </div>
 
