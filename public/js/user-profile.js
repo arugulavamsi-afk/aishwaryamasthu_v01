@@ -556,12 +556,19 @@
         el.classList.remove('text-slate-400');
     }
 
-    // Set a <select> from the profile. Selects (regime/slab/city) are profile-owned
-    // stable preferences, so they are always applied when the profile has a value.
-    // A value with no matching <option> is silently ignored by the browser.
-    function _upSetSel(id, val) {
+    // A <select> the user has changed themselves is tagged data-up-user="1" (see the
+    // global change-listener at the bottom of this file). Programmatic sets never
+    // fire 'change', so auto-fill only tags nothing.
+    function _upUserPicked(el) { return !!(el && el.dataset && el.dataset.upUser === '1'); }
+
+    // Set a <select> from the profile. In auto mode (respectStick) the profile leaves
+    // the dropdown alone once the user has picked a regime/slab/city inside the tool —
+    // that choice sticks and is never auto-overwritten on reopen. Manual "Apply
+    // Profile" always forces it. A value with no matching <option> is ignored.
+    function _upSetSel(id, val, respectStick) {
         var el = document.getElementById(id);
         if (!el || val === '' || val === null || val === undefined) return;
+        if (respectStick && _upUserPicked(el)) return; // user chose this one — leave it
         el.value = val;
         el.classList.remove('text-slate-400');
     }
@@ -589,17 +596,21 @@
 
         // Rebuild a regime-driven slab <select> for the profile's regime, then select
         // the profile slab. Used for tools whose slab options change with the regime.
+        // In auto mode, if the user already chose a non-default regime we leave both
+        // regime and slab untouched (rebuilding would reset their slab).
         function _upRegimeSlab(regId, slabId, rebuild) {
-            _upSetSel(regId, p.regime);
+            var regEl = document.getElementById(regId);
+            if (oe && _upUserPicked(regEl)) return; // user chose the regime — leave regime+slab
+            _upSetSel(regId, p.regime, oe);
             if (rebuild) rebuild();
-            _upSetSel(slabId, slab);
+            _upSetSel(slabId, slab, oe);
         }
 
         if (tool === 'taxguide') {
             if (annInc > 0) _upSet('tg-income', annInc, annInc.toLocaleString('en-IN'), oe);
-            _upSetSel('tg-regime', p.regime);
+            _upSetSel('tg-regime', p.regime, oe);
             if (basic > 0) _upSet('tg-epf-basic', basic, basic.toLocaleString('en-IN'), oe);
-            _upSetSel('ptc-slab', slab);
+            _upSetSel('ptc-slab', slab, oe);
             if (typeof tgCalc === 'function') tgCalc();
         }
 
@@ -698,9 +709,9 @@
         if (tool === 'hracalc') {
             if (basic > 0) _upSet('hra-basic', basic, basic.toLocaleString('en-IN'), oe);
             if (rent > 0)  _upSet('hra-rent', rent, rent.toLocaleString('en-IN'), oe);
-            _upSetSel('hra-city', p.city);
-            _upSetSel('hra-regime', p.regime);
-            _upSetSel('hra-slab', slab);
+            _upSetSel('hra-city', p.city, oe);
+            _upSetSel('hra-regime', p.regime, oe);
+            _upSetSel('hra-slab', slab, oe);
             if (typeof hraCalc === 'function') hraCalc();
         }
 
@@ -708,8 +719,8 @@
             if (annInc > 0) _upSet('ctc-annual', annInc, annInc.toLocaleString('en-IN'), oe);
             if (basic > 0)  _upSet('ctc-basic', basic, basic.toLocaleString('en-IN'), oe);
             if (rent > 0)   _upSet('ctc-rent', rent, rent.toLocaleString('en-IN'), oe);
-            _upSetSel('ctc-regime', p.regime);
-            _upSetSel('ctc-city', p.city);
+            _upSetSel('ctc-regime', p.regime, oe);
+            _upSetSel('ctc-city', p.city, oe);
             if (typeof ctcCalc === 'function') ctcCalc();
         }
 
@@ -722,13 +733,13 @@
 
         if (tool === 'fincal') {
             if (annInc > 0) _upSet('fc-income', annInc, annInc.toLocaleString('en-IN'), oe);
-            _upSetSel('fc-regime', p.regime);
+            _upSetSel('fc-regime', p.regime, oe);
             if (typeof finCalRender === 'function') finCalRender();
         }
 
         if (tool === 'ulipcheck') {
             if (age > 0) _upSet('uc-age', age, undefined, oe);
-            _upSetSel('uc-slab', slab);
+            _upSetSel('uc-slab', slab, oe);
             if (typeof ucCalc === 'function') ucCalc();
         }
 
@@ -738,7 +749,7 @@
         }
 
         if (tool === 'selfempl') {
-            _upSetSel('se-tax-regime', p.regime);
+            _upSetSel('se-tax-regime', p.regime, oe);
             if (typeof seCalcTax === 'function') seCalcTax();
         }
 
@@ -772,5 +783,16 @@
             btn.style.background = '#059669';
             setTimeout(function() { btn.textContent = orig; btn.style.background = ''; }, 1500);
         }
+    }
+
+    // Tag any <select> the user changes so profile auto-fill leaves it alone on reopen
+    // (see _upSetSel / _upRegimeSlab). Programmatic value sets don't fire 'change',
+    // so only genuine user interaction sets the flag. Capture phase covers all panels.
+    if (typeof document !== 'undefined' && !window._upStickBound) {
+        window._upStickBound = true;
+        document.addEventListener('change', function(e) {
+            var t = e.target;
+            if (t && t.tagName === 'SELECT' && t.id) t.dataset.upUser = '1';
+        }, true);
     }
 
