@@ -27,6 +27,19 @@ if ($LASTEXITCODE -ne 0) {
     if (-not (Test-Path $firebase)) { $firebase = 'firebase' }
     & $firebase deploy --only hosting --non-interactive 2>&1 | Add-Content -Path $log -Encoding utf8
     if ($LASTEXITCODE -ne 0) { Log "deploy FAILED (exit $LASTEXITCODE)" } else { Log 'deploy OK' }
+
+    # Commit the refreshed data to git (same pattern as the nightly MF job)
+    & git add public/cc-data.json 2>&1 | Add-Content -Path $log -Encoding utf8
+    & git diff --cached --quiet
+    if ($LASTEXITCODE -ne 0) {
+        $stamp = Get-Date -Format 'yyyy-MM-dd'
+        & git commit -m "chore: nightly Coffee Can data update $stamp" 2>&1 | Add-Content -Path $log -Encoding utf8
+        & git pull --rebase --autostash origin main 2>&1 | Add-Content -Path $log -Encoding utf8
+        & git push origin main 2>&1 | Add-Content -Path $log -Encoding utf8
+        if ($LASTEXITCODE -ne 0) { Log 'git push FAILED - data deployed but not committed' } else { Log 'git push OK' }
+    } else {
+        Log 'no data change - nothing to commit'
+    }
 }
 
 # Trim log to last 2000 lines
