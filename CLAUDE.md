@@ -33,6 +33,7 @@ firebase emulators:start          # Local dev with Firebase emulators
 firebase deploy --only hosting    # Deploy frontend
 firebase deploy --only firestore  # Deploy Firestore rules only
 node scripts/compute-mf-scores.js # Regenerate output/mf-data.json
+node scripts/compute-cc-data.js   # Coffee Can screen: Nifty 500 via NSE+Yahoo → public/cc-data.json (first run ~1h backfill)
 node scripts/test-tax-engine.js   # Test tax slab math (run after ANY tax-guide.js change)
 ```
 Never run `firebase deploy` (full) without explicit user confirmation.

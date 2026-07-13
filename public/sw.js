@@ -1,5 +1,5 @@
 /* AishwaryaMasthu Service Worker */
-var CACHE = 'am-v32';
+var CACHE = 'am-v33';
 
 /* App shell — pre-cached on SW install. Other files are cached on first access. */
 var SHELL = [
@@ -145,10 +145,12 @@ self.addEventListener('fetch', function(e) {
     return; /* let the browser handle it normally */
   }
 
-  /* Network-first for CDN scripts (Chart.js, Firebase SDK, jsPDF, xlsx) */
+  /* Network-first for CDN scripts (Chart.js, Firebase SDK, jsPDF, xlsx)
+     and nightly-regenerated data files (Coffee Can screen) */
   if (url.includes('cdn.jsdelivr') ||
       url.includes('cdnjs.cloudflare') ||
-      url.includes('gstatic.com')) {
+      url.includes('gstatic.com') ||
+      url.includes('/cc-data.json')) {
     e.respondWith(
       fetch(e.request).then(function(res) {
         var clone = res.clone();

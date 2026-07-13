@@ -109,11 +109,11 @@
             tip: 'For equity funds: Sharpe > 1 is a strong signal. For debt funds: expense ratio matters most.'
         },
         coffeecan: {
-            what: 'Screen for quality long-term compounders using ROCE, revenue growth, debt levels, and moat criteria.',
+            what: 'A live screen of the Nifty 500 for quality long-term compounders — revenue growth, ROCE, profit consistency, cash flow and debt, computed from NSE filings.',
             steps: [
-                '1. Set filter thresholds: minimum ROCE%, minimum Revenue CAGR%, maximum Debt/Equity',
-                '2. Browse companies that pass all your filters',
-                '3. Focus on businesses with 10+ year track records — not recent momentum plays'
+                '1. Browse the ranked list — each card shows Rev CAGR, ROCE, profit record and D/E',
+                '2. Use the sector filter and sort buttons to find companies in your preferred space',
+                '3. Tap "Details" on any card to see why it qualifies and its risk flags'
             ],
             tip: 'Named after Robert Kirby\'s 1984 strategy: buy quality businesses, lock them in a coffee can, leave them for 10 years.'
         },

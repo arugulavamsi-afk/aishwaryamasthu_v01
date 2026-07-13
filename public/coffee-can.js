@@ -1,14 +1,18 @@
 /* ═══════════════════════════════════════════════════════════════════
    THE COFFEE CAN — Long-duration quality compounder screener
-   Data: curated from public filings (NSE/BSE annual reports, screener.in)
+   Live data: /cc-data.json — nightly screen of the Nifty 500 universe
+   (NSE annual filings + Yahoo Finance, scripts/compute-cc-data.js).
+   The CC_DATA table below is the OFFLINE FALLBACK only (curated Mar 2025);
+   it renders when cc-data.json is unavailable.
    Methodology: Saurabh Mukherjea / Marcellus Coffee Can framework
-   Last dataset update: Mar 2025
    ═══════════════════════════════════════════════════════════════════ */
 
     var _ccReady = false;
     var _ccSort  = 'score';
     var _ccDir   = -1;
     var _ccSectorFilter = 'All';
+    var _ccLiveRaw  = null;   // parsed cc-data.json (survives language switches)
+    var _ccLiveList = null;   // transformed render model built from _ccLiveRaw
 
     /* ─── SCORING WEIGHTS ─────────────────────────────────────────── */
     // Revenue CAGR 25% | ROCE 25% | Profit Consistency 15%
@@ -461,9 +465,111 @@
     /* ─── HELPERS ──────────────────────────────────────────────────── */
     function _ccFmt(n) { return '₹' + Number(n).toLocaleString('en-IN'); }
     function _ccMcap(cr) {
+        if (cr === null || cr === undefined) return '—';
         if (cr >= 100000) return '₹' + (cr/100000).toFixed(1) + 'L Cr';
         if (cr >= 1000)   return '₹' + Math.round(cr/1000) + ',000 Cr';
         return '₹' + cr.toLocaleString('en-IN') + ' Cr';
+    }
+    /* _t() with {placeholder} substitution */
+    function _ccT(key, params) {
+        var s = (typeof _t === 'function') ? _t(key) : key;
+        if (params) Object.keys(params).forEach(function(k) {
+            s = s.split('{' + k + '}').join(params[k]);
+        });
+        return s;
+    }
+
+    /* ─── LIVE DATA (cc-data.json) ─────────────────────────────────── */
+    function _ccFcfLabel(c) {
+        if (c.isFinancial || !c.fcfYears) return 'N/A';
+        var frac = c.fcfPosYears / c.fcfYears;
+        if (frac === 1 && c.fcfToPat !== null && c.fcfToPat >= 0.9) return 'Very Strong';
+        if (frac === 1) return 'Strong';
+        if (frac >= 0.5) return 'Moderate';
+        return 'Weak';
+    }
+
+    function _ccBuildWhy(c) {
+        var why = [];
+        why.push(_ccT('coffeecan.why.rev', {
+            a: Number(c.revFirstCr).toLocaleString('en-IN'),
+            b: Number(c.revLastCr).toLocaleString('en-IN'),
+            cagr: c.revCagr, n: c.years
+        }));
+        why.push(_ccT(c.isFinancial ? 'coffeecan.why.roe' : 'coffeecan.why.roce', { r: c.avgRet, m: c.retYears }));
+        why.push(_ccT('coffeecan.why.profit', { p: c.profitYrs, n: c.years }));
+        if (c.growthPairs > 0 && c.growthYears / c.growthPairs >= 0.7)
+            why.push(_ccT('coffeecan.why.growth', { g: c.growthYears, p: c.growthPairs }));
+        if (!c.isFinancial && c.fcfYears > 0 && c.fcfPosYears === c.fcfYears)
+            why.push(_ccT('coffeecan.why.fcf', { f: c.fcfPosYears, m: c.fcfYears }));
+        if (!c.isFinancial && c.de !== null && c.de <= 0.3)
+            why.push(_ccT('coffeecan.why.de', { de: c.de.toFixed(2) }));
+        return why;
+    }
+
+    function _ccBuildRisks(c) {
+        var risks = [];
+        if (c.growthPairs > 0 && c.growthYears / c.growthPairs < 0.7)
+            risks.push(_ccT('coffeecan.risk.growth', { g: c.growthYears, p: c.growthPairs }));
+        if (c.profitYrs < c.years)
+            risks.push(_ccT('coffeecan.risk.loss', { l: c.years - c.profitYrs, n: c.years }));
+        if (!c.isFinancial && c.fcfYears > 0 && c.fcfPosYears < c.fcfYears)
+            risks.push(_ccT('coffeecan.risk.fcf', { x: c.fcfYears - c.fcfPosYears, m: c.fcfYears }));
+        if (!c.isFinancial && c.de !== null && c.de > 0.3)
+            risks.push(_ccT('coffeecan.risk.de', { de: c.de.toFixed(2) }));
+        if (c.years < 10)
+            risks.push(_ccT('coffeecan.risk.window', { n: c.years }));
+        risks.push(_ccT('coffeecan.risk.quant'));
+        return risks;
+    }
+
+    function _ccTransformLive(json) {
+        return (json.companies || []).map(function(c) {
+            return {
+                name: c.symbol, fullName: c.name, sector: c.sector,
+                mcap: c.mcap, price: c.price,
+                revCagr: c.revCagr, avgRoce: c.avgRet,
+                profitYrs: c.profitYrs, years: c.years,
+                fcf: _ccFcfLabel(c),
+                de: (c.isFinancial || c.de === null) ? 'N/A' : c.de,
+                score: c.score, isFinancial: c.isFinancial,
+                dataTag: _ccT('coffeecan.datatag', { span: 'FY' + c.fyFirst + '–FY' + c.fyLast, n: c.years }),
+                moat: null,
+                why: _ccBuildWhy(c), risks: _ccBuildRisks(c),
+                note: c.isFinancial ? _ccT('coffeecan.note.financial') : ''
+            };
+        });
+    }
+
+    function _ccApplyLive() {
+        if (!_ccLiveRaw) return;
+        _ccLiveList = _ccTransformLive(_ccLiveRaw);
+        if (_ccSectorFilter !== 'All' && _ccSectors().indexOf(_ccSectorFilter) === -1) _ccSectorFilter = 'All';
+        var badge = document.getElementById('cc-fresh-badge');
+        if (badge) {
+            var d = new Date(_ccLiveRaw.generated);
+            var maxFy = 0;
+            (_ccLiveRaw.companies || []).forEach(function(c) { if (c.fyLast > maxFy) maxFy = c.fyLast; });
+            badge.textContent = '🗓 ' + _ccT('coffeecan.badge.live', {
+                fy: maxFy || '—',
+                date: isNaN(d) ? '—' : d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
+                passed: _ccLiveRaw.passed || _ccLiveList.length,
+                universe: _ccLiveRaw.universe || 500
+            });
+        }
+    }
+
+    function _ccLoadLive() {
+        fetch('/cc-data.json', { signal: AbortSignal.timeout(15000) })
+            .then(function(res) { if (!res.ok) throw new Error('HTTP ' + res.status); return res.json(); })
+            .then(function(json) {
+                if (!json || !Array.isArray(json.companies) || json.companies.length < 5) return;
+                _ccLiveRaw = json;
+                _ccApplyLive();
+                ccRenderControls();
+                ccRenderList();
+            })
+            .catch(function() { /* offline / missing — curated fallback stays */ });
     }
     function _ccDeLabel(v) { return (v === 'N/A' || v === null) ? 'N/A*' : v.toFixed(1); }
     function _ccScoreColor(s) {
@@ -479,14 +585,17 @@
     function _ccFcfColor(f) {
         return f === 'Very Strong' ? '#10b981' : f === 'Strong' ? '#34d399' : f === 'Moderate' ? '#f59e0b' : '#64748b';
     }
+    /* Active dataset: live screen when loaded, curated fallback otherwise */
+    function _ccActive() { return _ccLiveList || CC_DATA; }
+
     function _ccSectors() {
-        var s = new Set(CC_DATA.map(function(c){ return c.sector; }));
+        var s = new Set(_ccActive().map(function(c){ return c.sector; }));
         return ['All'].concat(Array.from(s).sort());
     }
 
     /* ─── SORT + FILTER ────────────────────────────────────────────── */
     function _ccGetData() {
-        var d = CC_DATA.slice();
+        var d = _ccActive().slice();
         if (_ccSectorFilter !== 'All') d = d.filter(function(c){ return c.sector === _ccSectorFilter; });
         d.sort(function(a, b) {
             var av = a[_ccSort], bv = b[_ccSort];
@@ -576,12 +685,13 @@
                 '<div class="grid grid-cols-4 gap-0 px-4 pb-3">' +
                     _ccMetric(typeof _t === 'function' ? _t('coffeecan.sort.revcagr') : 'Rev CAGR', c.revCagr + '%', c.revCagr >= 12 ? '#10b981' : '#f59e0b') +
                     _ccMetric('Avg ROCE', c.avgRoce + '%', c.avgRoce >= 20 ? '#10b981' : '#f59e0b') +
-                    _ccMetric(typeof _t === 'function' ? _t('coffeecan.card.profit') : 'Profit', c.profitYrs + '/10', c.profitYrs >= 9 ? '#10b981' : '#f59e0b') +
+                    _ccMetric(typeof _t === 'function' ? _t('coffeecan.card.profit') : 'Profit', c.profitYrs + '/' + (c.years || 10), c.profitYrs >= (c.years || 10) - 1 ? '#10b981' : '#f59e0b') +
                     _ccMetric('D/E', deStr, (c.de === 'N/A' || c.de === null || c.de <= 0.5) ? '#10b981' : '#f59e0b') +
                 '</div>' +
-                /* Moat tag + expand button */
+                /* Moat tag (curated) or data-span tag (live) + expand button */
                 '<div class="flex items-center gap-2 px-4 pb-3">' +
-                    '<span class="text-[9px] font-semibold flex-1 truncate" style="color:#7c5c0a;">🛡 ' + c.moat + '</span>' +
+                    '<span class="text-[9px] font-semibold flex-1 truncate" style="color:#7c5c0a;">' +
+                        (c.moat ? '🛡 ' + c.moat : '🗓 ' + (c.dataTag || '')) + '</span>' +
                     '<button id="cc-expand-' + i + '" onclick="ccToggleDetail(' + i + ')" class="text-[9px] font-bold px-2.5 py-1 rounded-lg flex-shrink-0 transition-all" style="background:rgba(245,200,66,0.18);border:1px solid rgba(245,200,66,0.35);color:#92400e;">' + (typeof _t === 'function' ? _t('coffeecan.card.details') : '▼ Details') + '</button>' +
                 '</div>' +
                 /* Expandable detail */
@@ -655,11 +765,13 @@
         _ccReady = true;
         ccRenderControls();
         ccRenderList();
+        _ccLoadLive();
         if (typeof injectHowToUse === 'function') injectHowToUse('coffeecan');
     }
 
     /* ─── LANGUAGE CHANGE HOOK ───────────────────────────────────────── */
     window.coffeeCanRender = function() {
+        _ccApplyLive();               /* rebuild generated bullets in the new language */
         ccRenderControls();
         ccRenderList();
         if (typeof injectHowToUse === 'function') injectHowToUse('coffeecan');
