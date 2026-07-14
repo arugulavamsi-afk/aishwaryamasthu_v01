@@ -22,6 +22,28 @@
         </div>
     </div>
 
+    <!-- QUICK ADD EXPENSE -->
+    <div id="bt-qa-card" class="bt-qa-card">
+        <div class="bt-qa-top">
+            <span data-i18n="bt.qa.title" class="bt-qa-title">⚡ Add Expense</span>
+            <span data-i18n="bt.qa.pickcat" class="bt-qa-pick">Tap a category, enter the amount, done</span>
+        </div>
+        <div id="bt-qa-cats" class="bt-qa-cats"></div>
+        <div class="bt-qa-row">
+            <div class="bt-qa-amt-wrap">
+                <span class="bt-qa-rupee">₹</span>
+                <input id="bt-qa-amt" type="text" inputmode="numeric" class="bt-qa-amt" placeholder="0"
+                    oninput="window._btFormatInput(this)" onkeydown="window._btQaKeydown(event)">
+            </div>
+            <input id="bt-qa-date" type="date" class="bt-qa-date">
+            <input id="bt-qa-note" type="text" maxlength="60" class="bt-qa-note"
+                data-i18n-placeholder="bt.qa.note" placeholder="Note (optional) — e.g. Swiggy, petrol"
+                onkeydown="window._btQaKeydown(event)">
+            <button id="bt-qa-btn" data-i18n="bt.qa.add" class="bt-qa-btn" onclick="window._btQuickAdd()">+ Add</button>
+            <button id="bt-qa-cancel" data-i18n="bt.qa.cancel" class="bt-qa-cancel" style="display:none;" onclick="window._btQaCancelEdit()">Cancel</button>
+        </div>
+    </div>
+
     <!-- SUMMARY CARDS -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
         <div class="rounded-xl px-3 py-2.5" style="background:#f0f9ff;border:1px solid #bae6fd;">
@@ -91,9 +113,18 @@
 
     </div>
 
+    <!-- TRANSACTIONS -->
+    <div class="bt-tx-card">
+        <div class="bt-tx-head">
+            <span data-i18n="bt.tx.title" class="bt-tx-title">🧾 Transactions</span>
+            <span id="bt-tx-count" class="bt-tx-countlbl"></span>
+        </div>
+        <div id="bt-tx-list"></div>
+    </div>
+
     <!-- TIP ROW -->
     <div data-i18n-html="bt.howto.tip" style="background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.2);border-radius:12px;padding:10px 14px;font-size:10px;color:#4338ca;line-height:1.6;">
-        💡 <strong>How to use:</strong> Enter your monthly budget per category, then fill in actual spend as the month progresses. Red = over budget. Switch to <strong>Trend</strong> to spot months you overspent, or <strong>Split</strong> to see where your money goes.
+        💡 <strong>How to use:</strong> Set a monthly budget per category, then log each expense with the <strong>⚡ Add Expense</strong> bar as it happens — the Spent column totals up automatically. Red = over budget. Switch to <strong>Trend</strong> to spot months you overspent, or <strong>Split</strong> to see where your money goes.
     </div>
 
     <!-- EMERGENCY FUND SECTION -->

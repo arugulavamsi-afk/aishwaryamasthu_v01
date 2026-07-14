@@ -50,12 +50,60 @@
         return window._btData[window._btMonth];
     }
 
+    // ── Transaction engine ─────────────────────────────────────
+    // Each month object holds a reserved '_tx' array alongside category
+    // entries: { i: id, d: 'YYYY-MM-DD', a: amount, c: catKey, n: note, m: 1 }
+    // (m flags a synthetic tx migrated from the old lump-sum 'a' value).
+    // Category 'a' values are a derived cache so dashboard.js / consult.js
+    // keep reading totals without knowing about transactions.
+    function _btTxOf(data) {
+        if (!Array.isArray(data._tx)) data._tx = [];
+        return data._tx;
+    }
+
+    function _btTxId() {
+        return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    }
+
+    function _btRecalcMonth(data) {
+        Object.keys(data).forEach(function (k) {
+            if (k !== '_tx' && data[k]) data[k].a = 0;
+        });
+        (data._tx || []).forEach(function (t) {
+            if (!data[t.c]) data[t.c] = { b: 0, a: 0 };
+            data[t.c].a = (data[t.c].a || 0) + (t.a || 0);
+        });
+    }
+
+    // One-time migration: months saved before the transaction engine have
+    // lump-sum 'a' values and no '_tx' — convert each into one synthetic tx.
+    function _btMigrate() {
+        Object.keys(window._btData).forEach(function (mk) {
+            var m = window._btData[mk];
+            if (!m || typeof m !== 'object') return;
+            if (Array.isArray(m._tx)) { _btRecalcMonth(m); return; }
+            m._tx = [];
+            Object.keys(m).forEach(function (cat) {
+                if (cat === '_tx') return;
+                var a = (m[cat] || {}).a || 0;
+                if (a > 0) m._tx.push({ i: 'mig-' + mk + '-' + cat, d: mk + '-01', a: a, c: cat, m: 1 });
+            });
+        });
+    }
+
+    function _btTouchAndSave() {
+        window._btLastUpdated = new Date().toISOString();
+        if (typeof saveUserData === 'function') saveUserData();
+        if (typeof _dashUpdateBudgetWidget === 'function') _dashUpdateBudgetWidget();
+    }
+
     function _btFmt(n) { return n ? n.toLocaleString('en-IN') : ''; }
 
     function _btFormatInput(el) {
         var raw = (el.value || '').replace(/[^0-9]/g, '');
         el.value = raw ? parseInt(raw, 10).toLocaleString('en-IN') : '';
     }
+    window._btFormatInput = _btFormatInput;   // used by the quick-add amount input
 
     function _btGetTotals() {
         var data = _btMonthData();
@@ -85,22 +133,23 @@
         _btRenderTable();
         _btRenderSummary();
         _btRenderChart();
-        window._btLastUpdated = new Date().toISOString();
-        if (typeof saveUserData === 'function') saveUserData();
-        if (typeof _dashUpdateBudgetWidget === 'function') _dashUpdateBudgetWidget();
+        _btRenderQaCats();
+        _btTouchAndSave();
     }
     window._btAddCustomCat = _btAddCustomCat;
 
     function _btDeleteCustomCat(key) {
         window._btCustomCats = window._btCustomCats.filter(function (c) { return c.key !== key; });
-        // Also wipe from all months so chart data is clean
-        Object.keys(window._btData).forEach(function (m) { delete window._btData[m][key]; });
-        _btRenderTable();
-        _btRenderSummary();
-        _btRenderChart();
-        window._btLastUpdated = new Date().toISOString();
-        if (typeof saveUserData === 'function') saveUserData();
-        if (typeof _dashUpdateBudgetWidget === 'function') _dashUpdateBudgetWidget();
+        // Also wipe from all months (incl. transactions) so chart data is clean
+        Object.keys(window._btData).forEach(function (m) {
+            delete window._btData[m][key];
+            if (Array.isArray(window._btData[m]._tx)) {
+                window._btData[m]._tx = window._btData[m]._tx.filter(function (t) { return t.c !== key; });
+            }
+        });
+        if (window._btQaCat === key) window._btQaCat = null;
+        _btRefreshAll();
+        _btTouchAndSave();
     }
     window._btDeleteCustomCat = _btDeleteCustomCat;
 
@@ -165,9 +214,7 @@
             }
         });
         _btRefreshAll();
-        window._btLastUpdated = new Date().toISOString();
-        if (typeof saveUserData === 'function') saveUserData();
-        if (typeof _dashUpdateBudgetWidget === 'function') _dashUpdateBudgetWidget();
+        _btTouchAndSave();
     }
     window._btCopyBudgetFromPrev = _btCopyBudgetFromPrev;
 
@@ -237,13 +284,12 @@
                 '</div>' +
             '</td>' +
             '<td style="padding:5px 4px;border-bottom:1px solid #f1f5f9;">' +
-                '<div style="position:relative;">' +
-                    '<span style="position:absolute;left:7px;top:50%;transform:translateY(-50%);font-size:10px;color:#94a3b8;pointer-events:none;font-weight:700;">₹</span>' +
-                    '<input type="text" inputmode="numeric"' +
-                    ' data-cat="' + _btEsc(cat.key) + '" data-field="a"' +
-                    ' value="' + aStr + '" placeholder="' + _btEsc(_btT('bt.input.spent','Spent')) + '"' +
-                    ' class="bt-num-inp' + (aStr ? '' : ' text-slate-400') + '"' +
-                    ' onfocus="window._btInputFocus(this)" oninput="window._btInputChange(this)" onblur="window._btInputBlur(this)">' +
+                '<div class="bt-spent-cell">' +
+                    '<span class="bt-spent-val' + (actual ? '' : ' bt-spent-zero') + '" data-spent-cat="' + _btEsc(cat.key) + '">' +
+                        (actual ? '₹' + aStr : '—') +
+                    '</span>' +
+                    '<button class="bt-row-add" onclick="window._btRowAdd(\'' + _btEsc(String(cat.key).replace(/\\/g, '\\\\').replace(/'/g, "\\'")) + '\')" ' +
+                        'title="' + _btEsc(_btT('bt.row.addtx','Add expense')) + '">+</button>' +
                 '</div>' +
             '</td>' +
             '<td style="padding:5px 8px;text-align:right;border-bottom:1px solid #f1f5f9;">' + _btMakeDiffHtml(budget, actual) + '</td>';
@@ -304,9 +350,7 @@
         _btUpdateRowFromInput(el);
         _btRenderSummary();
         _btRenderChart();
-        window._btLastUpdated = new Date().toISOString();
-        if (typeof saveUserData === 'function') saveUserData();
-        if (typeof _dashUpdateBudgetWidget === 'function') _dashUpdateBudgetWidget();
+        _btTouchAndSave();
     }
 
     function _btInputBlur(el) {
@@ -333,6 +377,238 @@
     window._btInputFocus  = _btInputFocus;
     window._btInputChange = _btInputChange;
     window._btInputBlur   = _btInputBlur;
+
+    // ── Quick-add expense bar ──────────────────────────────────
+    window._btQaCat = window._btQaCat || null;   // selected category chip
+    var _btQaEditId = null;                      // tx id being edited (null = adding)
+
+    function _btPad2(n) { return String(n).padStart(2, '0'); }
+
+    function _btTodayISO() {
+        var d = new Date();
+        return d.getFullYear() + '-' + _btPad2(d.getMonth() + 1) + '-' + _btPad2(d.getDate());
+    }
+
+    // Clamp the date picker to the viewed month; default to today when
+    // viewing the current month, else the 1st of that month.
+    function _btSyncQaDate() {
+        var el = document.getElementById('bt-qa-date');
+        if (!el) return;
+        var parts   = window._btMonth.split('-');
+        var lastDay = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10), 0).getDate();
+        el.min = window._btMonth + '-01';
+        el.max = window._btMonth + '-' + _btPad2(lastDay);
+        if (!el.value || el.value.slice(0, 7) !== window._btMonth) {
+            var today = _btTodayISO();
+            el.value = today.slice(0, 7) === window._btMonth ? today : window._btMonth + '-01';
+        }
+    }
+
+    function _btRenderQaCats() {
+        var wrap = document.getElementById('bt-qa-cats');
+        if (!wrap) return;
+        wrap.innerHTML = '';
+        _btAllCats().forEach(function (cat) {
+            var b = document.createElement('button');
+            b.type = 'button';
+            b.className = 'bt-chip' + (window._btQaCat === cat.key ? ' bt-chip-on' : '');
+            b.textContent = cat.icon + ' ' + (cat.custom ? cat.key : _btCatLabel(cat));
+            b.onclick = function () { _btPickQaCat(cat.key); };
+            wrap.appendChild(b);
+        });
+    }
+
+    function _btPickQaCat(key) {
+        window._btQaCat = key;
+        _btRenderQaCats();
+        var wrap = document.getElementById('bt-qa-cats');
+        if (wrap) wrap.classList.remove('bt-qa-flash');
+    }
+    window._btPickQaCat = _btPickQaCat;
+
+    // Per-row "+" in the category table: pre-select the category and jump
+    // to the quick-add bar for a 1-tap entry.
+    function _btRowAdd(key) {
+        _btPickQaCat(key);
+        var card = document.getElementById('bt-qa-card');
+        if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        var amtEl = document.getElementById('bt-qa-amt');
+        if (amtEl) setTimeout(function () { amtEl.focus(); }, 250);
+    }
+    window._btRowAdd = _btRowAdd;
+
+    function _btQaKeydown(e) {
+        if (e.key === 'Enter') { e.preventDefault(); _btQuickAdd(); }
+    }
+    window._btQaKeydown = _btQaKeydown;
+
+    function _btQaSetEditingUI(editing) {
+        var card   = document.getElementById('bt-qa-card');
+        var btn    = document.getElementById('bt-qa-btn');
+        var cancel = document.getElementById('bt-qa-cancel');
+        if (card)   card.classList.toggle('bt-qa-editing', editing);
+        if (btn)    btn.textContent = editing ? _btT('bt.qa.update', '✓ Update') : _btT('bt.qa.add', '+ Add');
+        if (cancel) cancel.style.display = editing ? '' : 'none';
+    }
+
+    function _btQuickAdd() {
+        var amtEl  = document.getElementById('bt-qa-amt');
+        var noteEl = document.getElementById('bt-qa-note');
+        var dateEl = document.getElementById('bt-qa-date');
+        var amt = parseInt(((amtEl ? amtEl.value : '') || '').replace(/[^0-9]/g, ''), 10) || 0;
+
+        if (!amt) {
+            if (amtEl) { amtEl.classList.add('bt-qa-err'); amtEl.focus(); setTimeout(function () { amtEl.classList.remove('bt-qa-err'); }, 900); }
+            return;
+        }
+        if (!window._btQaCat) {
+            var wrap = document.getElementById('bt-qa-cats');
+            if (wrap) { wrap.classList.add('bt-qa-flash'); setTimeout(function () { wrap.classList.remove('bt-qa-flash'); }, 900); }
+            return;
+        }
+
+        var d = (dateEl && dateEl.value && dateEl.value.slice(0, 7) === window._btMonth)
+            ? dateEl.value
+            : (_btTodayISO().slice(0, 7) === window._btMonth ? _btTodayISO() : window._btMonth + '-01');
+        var note = ((noteEl ? noteEl.value : '') || '').trim();
+
+        var data = _btMonthData();
+        var tx   = _btTxOf(data);
+
+        if (_btQaEditId) {
+            for (var i = 0; i < tx.length; i++) {
+                if (tx[i].i === _btQaEditId) {
+                    tx[i].a = amt; tx[i].c = window._btQaCat; tx[i].d = d;
+                    if (note) tx[i].n = note; else delete tx[i].n;
+                    delete tx[i].m;   // edited by hand — no longer a migrated lump sum
+                    break;
+                }
+            }
+            _btQaEditId = null;
+            _btQaSetEditingUI(false);
+        } else {
+            var t = { i: _btTxId(), d: d, a: amt, c: window._btQaCat };
+            if (note) t.n = note;
+            tx.push(t);
+        }
+
+        _btRecalcMonth(data);
+        if (amtEl)  amtEl.value = '';
+        if (noteEl) noteEl.value = '';
+        _btRenderTable();
+        _btRenderSummary();
+        _btRenderChart();
+        _btRenderTxList();
+        _btTouchAndSave();
+        if (amtEl) amtEl.focus();   // keep the flow going for rapid entry
+    }
+    window._btQuickAdd = _btQuickAdd;
+
+    function _btQaCancelEdit() {
+        _btQaEditId = null;
+        _btQaSetEditingUI(false);
+        var amtEl  = document.getElementById('bt-qa-amt');
+        var noteEl = document.getElementById('bt-qa-note');
+        if (amtEl)  amtEl.value = '';
+        if (noteEl) noteEl.value = '';
+        _btRenderTxList();
+    }
+    window._btQaCancelEdit = _btQaCancelEdit;
+
+    function _btEditTx(id) {
+        var tx = _btTxOf(_btMonthData());
+        var t = null;
+        for (var i = 0; i < tx.length; i++) if (tx[i].i === id) { t = tx[i]; break; }
+        if (!t) return;
+        _btQaEditId = id;
+        window._btQaCat = t.c;
+        var amtEl  = document.getElementById('bt-qa-amt');
+        var noteEl = document.getElementById('bt-qa-note');
+        var dateEl = document.getElementById('bt-qa-date');
+        if (amtEl)  amtEl.value = _btFmt(t.a);
+        if (noteEl) noteEl.value = t.n || '';
+        if (dateEl && t.d && t.d.slice(0, 7) === window._btMonth) dateEl.value = t.d;
+        _btRenderQaCats();
+        _btQaSetEditingUI(true);
+        _btRenderTxList();
+        var card = document.getElementById('bt-qa-card');
+        if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    window._btEditTx = _btEditTx;
+
+    function _btDeleteTx(id) {
+        var data = _btMonthData();
+        data._tx = _btTxOf(data).filter(function (t) { return t.i !== id; });
+        if (_btQaEditId === id) _btQaCancelEdit();
+        _btRecalcMonth(data);
+        _btRenderTable();
+        _btRenderSummary();
+        _btRenderChart();
+        _btRenderTxList();
+        _btTouchAndSave();
+    }
+    window._btDeleteTx = _btDeleteTx;
+
+    // ── Render: transactions list ──────────────────────────────
+    function _btRenderTxList() {
+        var listEl  = document.getElementById('bt-tx-list');
+        var countEl = document.getElementById('bt-tx-count');
+        if (!listEl) return;
+
+        var tx = _btTxOf(_btMonthData());
+        if (countEl) {
+            countEl.textContent = tx.length === 0 ? ''
+                : tx.length === 1 ? _btT('bt.tx.count.one', '1 entry')
+                : _btT('bt.tx.count', '{n} entries').replace('{n}', tx.length);
+        }
+
+        if (tx.length === 0) {
+            listEl.innerHTML = '<div class="bt-tx-empty">' + _btEsc(_btT('bt.tx.empty', 'No expenses logged for this month yet — add your first one above.')) + '</div>';
+            return;
+        }
+
+        // Newest date first; within a date, latest entry first
+        var sorted = tx.map(function (t, i) { return { t: t, i: i }; }).sort(function (x, y) {
+            var c = String(y.t.d || '').localeCompare(String(x.t.d || ''));
+            return c !== 0 ? c : y.i - x.i;
+        });
+
+        var catByKey = {};
+        _btAllCats().forEach(function (c) { catByKey[c.key] = c; });
+
+        var today = _btTodayISO();
+        var yd    = new Date(); yd.setDate(yd.getDate() - 1);
+        var yesterday = yd.getFullYear() + '-' + _btPad2(yd.getMonth() + 1) + '-' + _btPad2(yd.getDate());
+
+        var html = '', lastDate = null;
+        sorted.forEach(function (w) {
+            var t = w.t;
+            if (t.d !== lastDate) {
+                lastDate = t.d;
+                var parts = String(t.d || '').split('-');
+                var label = parts.length === 3 ? parseInt(parts[2], 10) + ' ' + _MONTHS_SHORT[parseInt(parts[1], 10) - 1] : (t.d || '');
+                if (t.d === today)     label += ' · ' + _btT('bt.tx.today', 'Today');
+                if (t.d === yesterday) label += ' · ' + _btT('bt.tx.yesterday', 'Yesterday');
+                html += '<div class="bt-tx-day">' + _btEsc(label) + '</div>';
+            }
+            var cat  = catByKey[t.c] || { key: t.c, icon: '📌' };
+            var name = cat.custom || !cat.tkey ? cat.key : _btCatLabel(cat);
+            var sub  = t.n ? _btEsc(t.n) : (t.m ? '<em>' + _btEsc(_btT('bt.tx.migrated', 'Earlier spends (before itemised tracking)')) + '</em>' : '');
+            var idArg = _btEsc(String(t.i).replace(/\\/g, '\\\\').replace(/'/g, "\\'"));
+            html +=
+                '<div class="bt-tx-row' + (_btQaEditId === t.i ? ' bt-tx-editing' : '') + '">' +
+                    '<span class="bt-tx-icon">' + cat.icon + '</span>' +
+                    '<div class="bt-tx-info">' +
+                        '<div class="bt-tx-cat">' + _btEsc(name) + '</div>' +
+                        (sub ? '<div class="bt-tx-note">' + sub + '</div>' : '') +
+                    '</div>' +
+                    '<span class="bt-tx-amt">₹' + _btFmt(t.a) + '</span>' +
+                    '<button class="bt-tx-btn" onclick="window._btEditTx(\'' + idArg + '\')" title="' + _btEsc(_btT('bt.tx.edit', 'Edit')) + '">✎</button>' +
+                    '<button class="bt-tx-btn bt-tx-del" onclick="window._btDeleteTx(\'' + idArg + '\')" title="' + _btEsc(_btT('bt.tx.delete', 'Delete')) + '">×</button>' +
+                '</div>';
+        });
+        listEl.innerHTML = html;
+    }
 
     // ── Render: summary cards ──────────────────────────────────
     function _btRenderSummary() {
@@ -573,14 +849,18 @@
     // ── Refresh all ────────────────────────────────────────────
     function _btRefreshAll() {
         _btRenderMonthDisplay();
+        _btRenderQaCats();
+        _btSyncQaDate();
         _btRenderTable();
         _btRenderSummary();
+        _btRenderTxList();
         _btSetChartType(window._btChartType || 'bar');
     }
 
     // ── Public init ────────────────────────────────────────────
     function initBudgetTracker() {
         if (!window._btMonth) window._btMonth = _btNow();
+        _btMigrate();
         _btRefreshAll();
     }
     window.initBudgetTracker = initBudgetTracker;
