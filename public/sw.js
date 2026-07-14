@@ -1,5 +1,5 @@
 /* AishwaryaMasthu Service Worker */
-var CACHE = 'am-v33';
+var CACHE = 'am-v34';
 
 /* App shell — pre-cached on SW install. Other files are cached on first access. */
 var SHELL = [
@@ -15,7 +15,6 @@ var SHELL = [
   '/tax-guide.js',
   '/coffee-can.js',
   '/js/user-profile.js',
-  '/js/fin-plan.js',
   '/js/epf.js',
   '/js/ppf-nps.js',
   '/js/step-up-sip.js',
@@ -42,14 +41,10 @@ var SHELL = [
   '/js/ssa-planner.js',
   '/js/health-score.js',
   '/js/financial-path.js',
-  '/js/emergency.js',
-  '/js/fund-picker.js',
-  '/js/mf-kit.js',
   '/js/share.js',
   '/js/i18n.js',
   '/js/nom-track.js',
   '/js/budget-tracker.js',
-  '/js/roadmap.js',
   '/js/mymfs.js',
   '/panels/budget-tracker.html',
   '/panels/cgcalc.html',
@@ -146,11 +141,12 @@ self.addEventListener('fetch', function(e) {
   }
 
   /* Network-first for CDN scripts (Chart.js, Firebase SDK, jsPDF, xlsx)
-     and nightly-regenerated data files (Coffee Can screen) */
+     and nightly-regenerated data files (Coffee Can screen, MF scores) */
   if (url.includes('cdn.jsdelivr') ||
       url.includes('cdnjs.cloudflare') ||
       url.includes('gstatic.com') ||
-      url.includes('/cc-data.json')) {
+      url.includes('/cc-data.json') ||
+      url.includes('/mf-data.json')) {
     e.respondWith(
       fetch(e.request).then(function(res) {
         var clone = res.clone();

@@ -243,6 +243,7 @@
         'mfc.empty':            'Search and add funds above to start comparing',
         'mfc.loading':          'Fetching fund data…',
         'mfc.src.note':         'Data from AMFI via mfapi.in · Alpha/Beta/Sharpe/Sortino use category proxy benchmarks (approximate) · Informational only',
+        'page.ulip.h':          '🔍 ULIP / Endowment Policy Analyzer',
         'page.tg.h':            '🧾 Indian Tax Guide',
         'page.tg.sub':          'Old vs New Regime · MF Capital Gains · Crypto Tax · ELSS · Small Savings — rates kept current',
         'page.hl.h':            '🏠 Home Loan Advisor',
