@@ -1,0 +1,95 @@
+name: Nightly Coffee Can Screen
+
+on:
+  schedule:
+    # 1:30 AM IST = 20:00 UTC — same slot the old local Task Scheduler job used.
+    # Daily (not weekdays-only): NSE annual filings can appear any day.
+    - cron: '0 20 * * *'
+  workflow_dispatch:   # allow manual trigger from GitHub UI anytime
+
+jobs:
+  screen:
+    runs-on: ubuntu-latest
+    # Normal run is a few minutes; weekly NSE recheck across 500 symbols can
+    # take ~20 min throttled. Hard-kill well above that.
+    timeout-minutes: 45
+    permissions:
+      contents: write     # needed for git push back to repo
+    env:
+      FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # full history so pull --rebase before push works
+
+      - name: Setup Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run Coffee Can screen
+        run: node scripts/compute-cc-data.js
+        # Incremental: reads/updates output/cc-history.json (committed to the
+        # repo so runs build on each other). Writes public/cc-data.json.
+        # The script exits 1 and leaves cc-data.json untouched if fewer than
+        # 8 companies screen (bad/partial data) — the live app then keeps
+        # serving the previous data automatically.
+        # NOTE: NSE sometimes 403s datacenter IPs. The script tolerates NSE
+        # failures and screens from accumulated history, so the run still
+        # succeeds; filings depth just stops advancing until NSE lets us in
+        # (or a manual local run tops up the committed history file).
+
+      - name: Verify output is sane and fresh
+        run: |
+          node -e "
+            const d = require('./public/cc-data.json');
+            if (!Array.isArray(d.companies) || d.companies.length < 8)
+              { console.error('ERROR: too few companies:', d.companies && d.companies.length); process.exit(1); }
+            const ageH = (Date.now() - new Date(d.generated)) / 3.6e6;
+            if (!(ageH >= 0 && ageH < 1))
+              { console.error('ERROR: generated stamp not fresh:', d.generated); process.exit(1); }
+            console.log('OK — generated:', d.generated, '| passed:', d.passed, '| shipped:', d.companies.length);
+          "
+
+      - name: Commit and push data files
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/cc-data.json output/cc-history.json
+          # Only commit if something actually changed
+          git diff --staged --quiet || git commit -m "chore: nightly Coffee Can data update $(date -u '+%Y-%m-%d')"
+          # Rebase in case anything else (e.g. a manual push) landed since checkout
+          git pull --rebase origin main
+          git push origin main
+
+      - name: Deploy to Firebase Hosting
+        # Publishes the refreshed public/cc-data.json to the Firebase CDN.
+        # Uses the same FIREBASE_TOKEN secret as the nightly MF workflow.
+        if: env.FIREBASE_TOKEN != ''
+        run: |
+          npm install -g firebase-tools
+          firebase deploy --only hosting --token "$FIREBASE_TOKEN" --non-interactive
+
+      - name: Notify on failure
+        if: failure()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: "❌ Nightly Coffee Can Screen Failed — ${{ github.run_id }}"
+          to: arugula.vamsi@gmail.com
+          from: AishwaryaMasthu Bot <${{ secrets.MAIL_USERNAME }}>
+          body: |
+            The nightly Coffee Can screen failed.
+
+            Run:    ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            Branch: ${{ github.ref_name }}
+            Commit: ${{ github.sha }}
+
+            Check the run log for the failed step. The live app is still
+            serving the previous cc-data.json until the next successful run.
