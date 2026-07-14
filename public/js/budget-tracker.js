@@ -147,6 +147,11 @@
                 window._btData[m]._tx = window._btData[m]._tx.filter(function (t) { return t.c !== key; });
             }
         });
+        // Recurring rules and learned keywords pointing at the category go too
+        window._btRecurring = (window._btRecurring || []).filter(function (r) { return r.c !== key; });
+        Object.keys(window._btKeyMap || {}).forEach(function (w) {
+            if (window._btKeyMap[w] === key) delete window._btKeyMap[w];
+        });
         if (window._btQaCat === key) window._btQaCat = null;
         _btRefreshAll();
         _btTouchAndSave();
@@ -381,6 +386,8 @@
     // ── Quick-add expense bar ──────────────────────────────────
     window._btQaCat = window._btQaCat || null;   // selected category chip
     var _btQaEditId = null;                      // tx id being edited (null = adding)
+    var _btQaCatManual = false;                  // chip tapped by hand since last add
+                                                 // (suggestions never override a manual pick)
 
     function _btPad2(n) { return String(n).padStart(2, '0'); }
 
@@ -420,9 +427,12 @@
 
     function _btPickQaCat(key) {
         window._btQaCat = key;
+        _btQaCatManual = true;
         _btRenderQaCats();
         var wrap = document.getElementById('bt-qa-cats');
         if (wrap) wrap.classList.remove('bt-qa-flash');
+        var sugEl = document.getElementById('bt-qa-sugg');
+        if (sugEl) sugEl.textContent = '';
     }
     window._btPickQaCat = _btPickQaCat;
 
@@ -446,9 +456,11 @@
         var card   = document.getElementById('bt-qa-card');
         var btn    = document.getElementById('bt-qa-btn');
         var cancel = document.getElementById('bt-qa-cancel');
+        var repLbl = document.getElementById('bt-qa-repeat-lbl');
         if (card)   card.classList.toggle('bt-qa-editing', editing);
         if (btn)    btn.textContent = editing ? _btT('bt.qa.update', '✓ Update') : _btT('bt.qa.add', '+ Add');
         if (cancel) cancel.style.display = editing ? '' : 'none';
+        if (repLbl) repLbl.style.display = editing ? 'none' : '';   // rules are created on add only
     }
 
     function _btQuickAdd() {
@@ -489,12 +501,25 @@
         } else {
             var t = { i: _btTxId(), d: d, a: amt, c: window._btQaCat };
             if (note) t.n = note;
+            var repEl = document.getElementById('bt-qa-repeat');
+            if (repEl && repEl.checked) {
+                t.r = 1;
+                var rule = { i: _btTxId(), a: amt, c: window._btQaCat, day: parseInt(d.split('-')[2], 10) || 1, last: window._btMonth };
+                if (note) rule.n = note;
+                window._btRecurring.push(rule);
+                repEl.checked = false;
+                _btRenderRecurring();
+            }
             tx.push(t);
         }
 
+        _btLearn(note, window._btQaCat);
         _btRecalcMonth(data);
         if (amtEl)  amtEl.value = '';
         if (noteEl) noteEl.value = '';
+        _btQaCatManual = false;
+        var sugEl = document.getElementById('bt-qa-sugg');
+        if (sugEl) sugEl.textContent = '';
         _btRenderTable();
         _btRenderSummary();
         _btRenderChart();
@@ -522,6 +547,7 @@
         if (!t) return;
         _btQaEditId = id;
         window._btQaCat = t.c;
+        _btQaCatManual = true;   // don't let note suggestions fight the edit
         var amtEl  = document.getElementById('bt-qa-amt');
         var noteEl = document.getElementById('bt-qa-note');
         var dateEl = document.getElementById('bt-qa-date');
@@ -592,7 +618,7 @@
                 html += '<div class="bt-tx-day">' + _btEsc(label) + '</div>';
             }
             var cat  = catByKey[t.c] || { key: t.c, icon: '📌' };
-            var name = cat.custom || !cat.tkey ? cat.key : _btCatLabel(cat);
+            var name = (cat.custom || !cat.tkey ? cat.key : _btCatLabel(cat)) + (t.r ? ' 🔁' : '');
             var sub  = t.n ? _btEsc(t.n) : (t.m ? '<em>' + _btEsc(_btT('bt.tx.migrated', 'Earlier spends (before itemised tracking)')) + '</em>' : '');
             var idArg = _btEsc(String(t.i).replace(/\\/g, '\\\\').replace(/'/g, "\\'"));
             html +=
@@ -609,6 +635,166 @@
         });
         listEl.innerHTML = html;
     }
+
+    // ── Recurring expenses ─────────────────────────────────────
+    // Rules: { i: id, a: amount, c: catKey, n: note, day: 1-31, last: 'YYYY-MM' }
+    // 'last' is the most recent month the rule was posted into — auto-post
+    // is idempotent and a user-deleted auto-tx is NOT re-posted.
+    window._btRecurring = window._btRecurring || [];
+
+    function _btAutoPostRecurring() {
+        var rules = window._btRecurring || [];
+        if (!rules.length) return;
+        var cur = _btNow();
+        var parts = cur.split('-');
+        var lastDay = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10), 0).getDate();
+        var posted = false;
+        rules.forEach(function (r) {
+            if (r.last === cur) return;
+            if (!window._btData[cur]) window._btData[cur] = {};
+            var tx = _btTxOf(window._btData[cur]);
+            var id = 'rec-' + r.i + '-' + cur;
+            if (!tx.some(function (t) { return t.i === id; })) {
+                var t = { i: id, d: cur + '-' + _btPad2(Math.min(r.day || 1, lastDay)), a: r.a, c: r.c, r: 1 };
+                if (r.n) t.n = r.n;
+                tx.push(t);
+            }
+            r.last = cur;
+            posted = true;
+        });
+        if (posted) {
+            _btRecalcMonth(window._btData[cur]);
+            _btTouchAndSave();
+        }
+    }
+
+    function _btDeleteRecurring(id) {
+        window._btRecurring = (window._btRecurring || []).filter(function (r) { return r.i !== id; });
+        _btRenderRecurring();
+        _btTouchAndSave();
+    }
+    window._btDeleteRecurring = _btDeleteRecurring;
+
+    function _btRenderRecurring() {
+        var card = document.getElementById('bt-rec-card');
+        var list = document.getElementById('bt-rec-list');
+        if (!card || !list) return;
+        var rules = window._btRecurring || [];
+        card.style.display = rules.length ? '' : 'none';
+        list.innerHTML = '';
+        var catByKey = {};
+        _btAllCats().forEach(function (c) { catByKey[c.key] = c; });
+        rules.forEach(function (r) {
+            var cat = catByKey[r.c] || { key: r.c, icon: '📌' };
+            var row = document.createElement('div');
+            row.className = 'bt-rec-row';
+
+            var icon = document.createElement('span');
+            icon.className = 'bt-rec-icon';
+            icon.textContent = cat.icon;
+
+            var info = document.createElement('div');
+            info.className = 'bt-rec-info';
+            var name = document.createElement('div');
+            name.className = 'bt-rec-name';
+            name.textContent = r.n || (cat.custom || !cat.tkey ? cat.key : _btCatLabel(cat));
+            var day = document.createElement('div');
+            day.className = 'bt-rec-daylbl';
+            day.textContent = _btT('bt.rec.day', 'day {d}').replace('{d}', r.day || 1);
+            info.appendChild(name);
+            info.appendChild(day);
+
+            var amt = document.createElement('span');
+            amt.className = 'bt-rec-amt';
+            amt.textContent = '₹' + _btFmt(r.a);
+
+            var del = document.createElement('button');
+            del.className = 'bt-tx-btn bt-tx-del';
+            del.title = _btT('bt.rec.remove', 'Stop recurring');
+            del.textContent = '×';
+            del.onclick = function () { _btDeleteRecurring(r.i); };
+
+            row.appendChild(icon);
+            row.appendChild(info);
+            row.appendChild(amt);
+            row.appendChild(del);
+            list.appendChild(row);
+        });
+    }
+
+    // ── Keyword → category suggestions ─────────────────────────
+    // Learned map (persisted) wins over the built-in merchant map.
+    window._btKeyMap = window._btKeyMap || {};
+
+    var _BT_KEYWORDS = {
+        swiggy:'Food', zomato:'Food', zepto:'Food', blinkit:'Food', bigbasket:'Food',
+        instamart:'Food', grocery:'Food', groceries:'Food', restaurant:'Food', dining:'Food',
+        dominos:'Food', kfc:'Food', lunch:'Food', dinner:'Food', breakfast:'Food',
+        uber:'Transport', ola:'Transport', rapido:'Transport', petrol:'Transport', diesel:'Transport',
+        fuel:'Transport', fastag:'Transport', metro:'Transport', cab:'Transport', bus:'Transport',
+        train:'Transport', irctc:'Transport', parking:'Transport', toll:'Transport',
+        rent:'Housing', maintenance:'Housing', society:'Housing',
+        emi:'EMIs & Loans', loan:'EMIs & Loans',
+        netflix:'Entertainment', hotstar:'Entertainment', spotify:'Entertainment', prime:'Entertainment',
+        bookmyshow:'Entertainment', movie:'Entertainment', cinema:'Entertainment', pvr:'Entertainment',
+        doctor:'Health', medicine:'Health', medicines:'Health', pharmacy:'Health', apollo:'Health',
+        '1mg':'Health', pharmeasy:'Health', gym:'Health', hospital:'Health', dentist:'Health',
+        amazon:'Shopping', flipkart:'Shopping', myntra:'Shopping', ajio:'Shopping', nykaa:'Shopping',
+        electricity:'Utilities', water:'Utilities', wifi:'Utilities', broadband:'Utilities',
+        jio:'Utilities', airtel:'Utilities', recharge:'Utilities', gas:'Utilities', cylinder:'Utilities',
+        internet:'Utilities', mobile:'Utilities', dth:'Utilities',
+        school:'Education', college:'Education', course:'Education', udemy:'Education',
+        books:'Education', tuition:'Education', fees:'Education'
+    };
+
+    var _BT_KEYMAP_MAX = 300;
+
+    function _btTokens(s) {
+        return (s || '').toLowerCase().split(/[^a-z0-9]+/).filter(function (w) { return w.length >= 3; });
+    }
+
+    function _btLookupCat(note) {
+        var known = {};
+        _btAllCats().forEach(function (c) { known[c.key] = 1; });
+        var toks = _btTokens(note), i;
+        for (i = 0; i < toks.length; i++) {
+            var m = window._btKeyMap[toks[i]];
+            if (m && known[m]) return m;
+        }
+        for (i = 0; i < toks.length; i++) {
+            var b = _BT_KEYWORDS[toks[i]];
+            if (b && known[b]) return b;
+        }
+        return null;
+    }
+
+    function _btLearn(note, cat) {
+        if (!note) return;
+        _btTokens(note).slice(0, 4).forEach(function (w) {
+            if (/^\d+$/.test(w)) return;
+            delete window._btKeyMap[w];          // re-insert to refresh recency
+            window._btKeyMap[w] = cat;
+        });
+        var keys = Object.keys(window._btKeyMap);
+        while (keys.length > _BT_KEYMAP_MAX) delete window._btKeyMap[keys.shift()];
+    }
+
+    function _btNoteInput(el) {
+        var sugEl = document.getElementById('bt-qa-sugg');
+        if (_btQaCatManual) { if (sugEl) sugEl.textContent = ''; return; }
+        var cat = _btLookupCat(el.value);
+        if (cat) {
+            if (window._btQaCat !== cat) { window._btQaCat = cat; _btRenderQaCats(); }
+            if (sugEl) {
+                var catByKey = {};
+                _btAllCats().forEach(function (c) { catByKey[c.key] = c; });
+                var co = catByKey[cat];
+                var label = co && co.tkey ? _btCatLabel(co) : cat;
+                sugEl.textContent = _btT('bt.qa.sugg', 'Suggested: {cat} ✨').replace('{cat}', label);
+            }
+        } else if (sugEl) sugEl.textContent = '';
+    }
+    window._btNoteInput = _btNoteInput;
 
     // ── Render: summary cards ──────────────────────────────────
     function _btRenderSummary() {
@@ -851,6 +1037,7 @@
         _btRenderMonthDisplay();
         _btRenderQaCats();
         _btSyncQaDate();
+        _btRenderRecurring();
         _btRenderTable();
         _btRenderSummary();
         _btRenderTxList();
@@ -861,6 +1048,7 @@
     function initBudgetTracker() {
         if (!window._btMonth) window._btMonth = _btNow();
         _btMigrate();
+        _btAutoPostRecurring();
         _btRefreshAll();
     }
     window.initBudgetTracker = initBudgetTracker;

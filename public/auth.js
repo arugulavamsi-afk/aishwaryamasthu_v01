@@ -780,6 +780,8 @@
                     chartType:   window._btChartType    || 'bar',
                     data:        window._btData         ? JSON.stringify(window._btData)       : '{}',
                     customCats:  window._btCustomCats   ? JSON.stringify(window._btCustomCats) : '[]',
+                    recurring:   window._btRecurring    ? JSON.stringify(window._btRecurring)  : '[]',
+                    keyMap:      window._btKeyMap       ? JSON.stringify(window._btKeyMap)     : '{}',
                     lastUpdated: window._btLastUpdated  || ''
                 };
             });
@@ -1812,6 +1814,12 @@
                 }
                 if (_btRestore.customCats) {
                     try { window._btCustomCats = JSON.parse(_btRestore.customCats); } catch(e2) {}
+                }
+                if (_btRestore.recurring) {
+                    try { window._btRecurring = JSON.parse(_btRestore.recurring); } catch(e2) {}
+                }
+                if (_btRestore.keyMap) {
+                    try { window._btKeyMap = JSON.parse(_btRestore.keyMap); } catch(e2) {}
                 }
                 if (_btRestore.lastUpdated) window._btLastUpdated = _btRestore.lastUpdated;
                 if (typeof _dashUpdateBudgetWidget === 'function') _dashUpdateBudgetWidget();

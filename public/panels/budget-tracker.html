@@ -26,6 +26,7 @@
     <div id="bt-qa-card" class="bt-qa-card">
         <div class="bt-qa-top">
             <span data-i18n="bt.qa.title" class="bt-qa-title">⚡ Add Expense</span>
+            <span id="bt-qa-sugg" class="bt-qa-sugg"></span>
             <span data-i18n="bt.qa.pickcat" class="bt-qa-pick">Tap a category, enter the amount, done</span>
         </div>
         <div id="bt-qa-cats" class="bt-qa-cats"></div>
@@ -38,10 +39,23 @@
             <input id="bt-qa-date" type="date" class="bt-qa-date">
             <input id="bt-qa-note" type="text" maxlength="60" class="bt-qa-note"
                 data-i18n-placeholder="bt.qa.note" placeholder="Note (optional) — e.g. Swiggy, petrol"
-                onkeydown="window._btQaKeydown(event)">
+                oninput="window._btNoteInput(this)" onkeydown="window._btQaKeydown(event)">
+            <label id="bt-qa-repeat-lbl" class="bt-qa-repeat">
+                <input id="bt-qa-repeat" type="checkbox">
+                <span data-i18n="bt.qa.repeat">🔁 Monthly</span>
+            </label>
             <button id="bt-qa-btn" data-i18n="bt.qa.add" class="bt-qa-btn" onclick="window._btQuickAdd()">+ Add</button>
             <button id="bt-qa-cancel" data-i18n="bt.qa.cancel" class="bt-qa-cancel" style="display:none;" onclick="window._btQaCancelEdit()">Cancel</button>
         </div>
+    </div>
+
+    <!-- RECURRING RULES (hidden until a rule exists) -->
+    <div id="bt-rec-card" class="bt-rec-card" style="display:none;">
+        <div class="bt-rec-head">
+            <span data-i18n="bt.rec.title" class="bt-rec-title">🔁 Recurring</span>
+            <span data-i18n="bt.rec.hint" class="bt-rec-hint">Added automatically at the start of each month</span>
+        </div>
+        <div id="bt-rec-list" class="bt-rec-list"></div>
     </div>
 
     <!-- SUMMARY CARDS -->
