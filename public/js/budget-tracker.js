@@ -427,10 +427,19 @@
         if (!wrap) return;
         wrap.innerHTML = '';
         _btAllCats().forEach(function (cat) {
+            var label = cat.custom ? cat.key : _btCatLabel(cat);
             var b = document.createElement('button');
             b.type = 'button';
-            b.className = 'bt-chip' + (window._btQaCat === cat.key ? ' bt-chip-on' : '');
-            b.textContent = cat.icon + ' ' + (cat.custom ? cat.key : _btCatLabel(cat));
+            b.className = 'bt-tile' + (window._btQaCat === cat.key ? ' bt-tile-on' : '');
+            b.title = label;   // full name for tiles whose label ellipsizes
+            var ic = document.createElement('span');
+            ic.className = 'bt-tile-icon';
+            ic.textContent = cat.icon;
+            var lb = document.createElement('span');
+            lb.className = 'bt-tile-lbl';
+            lb.textContent = label;
+            b.appendChild(ic);
+            b.appendChild(lb);
             b.onclick = function () { _btPickQaCat(cat.key); };
             wrap.appendChild(b);
         });
