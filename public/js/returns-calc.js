@@ -53,49 +53,82 @@ function rcTypeChange() {
     rcCalc();
 }
 
-function _rcUpdateInstHint(type, invested, years) {
+function rcUnitChange() {
+    var input = document.getElementById('rc-years');
+    if (input) input.max = document.getElementById('rc-unit')?.value === 'months' ? 720 : 60;
+    rcCalc();
+}
+
+// Reads the time-period input + unit selector → total months
+function _rcGetMonths() {
+    var v = parseInt(document.getElementById('rc-years')?.value) || 0;
+    var unit = document.getElementById('rc-unit')?.value || 'years';
+    return unit === 'months' ? v : v * 12;
+}
+
+// "5 yrs" / "30 months" — in the unit the user chose
+function _rcDurStr() {
+    var T = function(key, fb) { return (typeof _t === 'function') ? _t(key) : fb; };
+    var v = parseInt(document.getElementById('rc-years')?.value) || 0;
+    var unit = document.getElementById('rc-unit')?.value || 'years';
+    return unit === 'months'
+        ? T('rc.dur.months', '{n} months').replace('{n}', v)
+        : T('rc.dur.yrs', '{n} yrs').replace('{n}', v);
+}
+
+function _rcUpdateInstHint(type, invested, months) {
     var T = function(key, fb) { return (typeof _t === 'function') ? _t(key) : fb; };
     var el = document.getElementById('rc-inst-hint');
     if (!el) return;
-    if (!invested || !years || type === 'lumpsum') { el.style.display = 'none'; return; }
+    if (!invested || !months || type === 'lumpsum') { el.style.display = 'none'; return; }
     el.style.display = 'block';
     if (type === 'sip') {
-        var perMonth = invested / (years * 12);
-        el.textContent = T('rc.hint.sip', '≈ {amt} per month for {yrs} yrs — we assume equal monthly installments')
-            .replace('{amt}', _rcInrFull(perMonth)).replace('{yrs}', years);
+        var perMonth = invested / months;
+        el.textContent = T('rc.hint.sip', '≈ {amt} per month for {dur} — we assume equal monthly installments')
+            .replace('{amt}', _rcInrFull(perMonth)).replace('{dur}', _rcDurStr());
     } else {
-        var perYear = invested / years;
-        el.textContent = T('rc.hint.annual', '≈ {amt} per year for {yrs} yrs — we assume equal yearly installments')
-            .replace('{amt}', _rcInrFull(perYear)).replace('{yrs}', years);
+        var perYear = invested / (months / 12);
+        el.textContent = T('rc.hint.annual', '≈ {amt} per year for {dur} — we assume equal yearly installments')
+            .replace('{amt}', _rcInrFull(perYear)).replace('{dur}', _rcDurStr());
     }
 }
 
-function _rcRenderChart(type, invested, years, annRate) {
+function _rcRenderChart(type, invested, months, annRate) {
     var canvas = document.getElementById('rc-chart');
     if (!canvas || typeof Chart === 'undefined') return;
     var T = function(key, fb) { return (typeof _t === 'function') ? _t(key) : fb; };
 
+    // Sample points in months: monthly granularity for short periods,
+    // yearly beyond that, always ending exactly at the entered period.
+    var pts = [];
+    if (months <= 60) {
+        for (var p = 0; p <= months; p++) pts.push(p);
+    } else {
+        for (var y = 0; y * 12 < months; y++) pts.push(y * 12);
+        pts.push(months);
+    }
+
     var labels = [], dataValue = [], dataInvested = [];
-    var r = annRate;             // annual rate (decimal)
-    var mRate = Math.pow(1 + r, 1 / 12) - 1;
-    var perMonth = invested / (years * 12);
-    var perYear  = invested / years;
-    for (var i = 0; i <= years; i++) {
-        labels.push('Yr ' + i);
-        var val = 0, prin = 0;
+    var r = annRate;                              // effective annual rate
+    var mRate = Math.pow(1 + r, 1 / 12) - 1;      // equivalent monthly rate
+    var perMonth = invested / months;
+    var perYear  = invested / (months / 12);
+    pts.forEach(function(mi) {
+        labels.push(mi % 12 === 0 ? 'Yr ' + (mi / 12) : 'Mo ' + mi);
+        var t = mi / 12, val = 0, prin = 0;
         if (type === 'sip') {
-            prin = perMonth * i * 12;
-            val  = i === 0 ? 0 : _rcAnnuityFV(perMonth, mRate, i * 12);
+            prin = perMonth * mi;
+            val  = mi === 0 ? 0 : _rcAnnuityFV(perMonth, mRate, mi);
         } else if (type === 'annually') {
-            prin = perYear * i;
-            val  = i === 0 ? 0 : _rcAnnuityFV(perYear, r, i);
+            prin = invested * (mi / months);
+            val  = mi === 0 ? 0 : _rcAnnuityFV(perYear, r, t);
         } else {
             prin = invested;
-            val  = invested * Math.pow(1 + r, i);
+            val  = invested * Math.pow(1 + r, t);
         }
         dataValue.push(val);
         dataInvested.push(prin);
-    }
+    });
 
     if (_rcChart) _rcChart.destroy();
     _rcChart = new Chart(canvas.getContext('2d'), {
@@ -117,7 +150,7 @@ function _rcRenderChart(type, invested, years, annRate) {
                     callbacks: { label: function(c) { return (c.dataset.label || '') + ': ' + _rcInrFull(c.raw); } }
                 }
             },
-            scales: { y: { ticks: { callback: function(val) { return '₹' + (val >= 10000000 ? (val/10000000).toFixed(1)+'Cr' : val >= 100000 ? (val/100000).toFixed(1)+'L' : (val/1000).toFixed(0)+'k'); }, font: { size: 10 } } }, x: { grid: { display: false }, ticks: { font: { size: 10 } } } }
+            scales: { y: { ticks: { callback: function(val) { return '₹' + (val >= 10000000 ? (val/10000000).toFixed(1)+'Cr' : val >= 100000 ? (val/100000).toFixed(1)+'L' : (val/1000).toFixed(0)+'k'); }, font: { size: 10 } } }, x: { grid: { display: false }, ticks: { font: { size: 10 }, maxTicksLimit: 13, maxRotation: 0 } } }
         }
     });
 }
@@ -128,44 +161,44 @@ function rcCalc() {
     var type     = document.getElementById('rc-type')?.value || 'sip';
     var invested = rcNum('rc-invested');
     var value    = rcNum('rc-value');
-    var years    = parseInt(document.getElementById('rc-years')?.value) || 0;
+    var months   = _rcGetMonths();
 
-    _rcUpdateInstHint(type, invested, years);
+    _rcUpdateInstHint(type, invested, months);
 
     var resEl   = document.getElementById('rc-result');
     var chartEl = document.getElementById('rc-chart-card');
     if (!resEl) return;
 
-    if (!invested || !value || !years) {
+    if (!invested || !value || !months) {
         resEl.innerHTML = '<p class="text-[11px] text-slate-400 text-center py-6 font-semibold">' + T('rc.placeholder', 'Fill in all fields to see your actual annualized return') + '</p>';
         if (chartEl) chartEl.style.display = 'none';
         return;
     }
-    if (years < 1 || years > 60) {
-        resEl.innerHTML = '<p class="text-[11px] text-red-500 text-center py-4 font-semibold">' + T('rc.err.years', 'Time Period must be between 1 and 60 years.') + '</p>';
+    if (months < 1 || months > 720) {
+        resEl.innerHTML = '<p class="text-[11px] text-red-500 text-center py-4 font-semibold">' + T('rc.err.years', 'Time Period must be between 1 month and 60 years.') + '</p>';
         if (chartEl) chartEl.style.display = 'none';
         return;
     }
 
     // ── Solve the annualized return ──────────────────────────────────
+    var t = months / 12;    // period in (possibly fractional) years
     var annRate, metricLabel, assumeNote = '';
     if (type === 'lumpsum') {
-        annRate = Math.pow(value / invested, 1 / years) - 1;
+        annRate = Math.pow(value / invested, 1 / t) - 1;
         metricLabel = T('rc.res.cagr', 'CAGR — Annualized Return');
     } else if (type === 'sip') {
-        var n = years * 12;
-        var perMonth = invested / n;
-        var mRate = _rcSolveRate(perMonth, n, value);
+        var perMonth = invested / months;
+        var mRate = _rcSolveRate(perMonth, months, value);
         annRate = Math.pow(1 + mRate, 12) - 1;
         metricLabel = T('rc.res.xirr', 'Annualized Return (XIRR-equivalent)');
-        assumeNote = T('rc.hint.sip', '≈ {amt} per month for {yrs} yrs — we assume equal monthly installments')
-            .replace('{amt}', _rcInrFull(perMonth)).replace('{yrs}', years);
+        assumeNote = T('rc.hint.sip', '≈ {amt} per month for {dur} — we assume equal monthly installments')
+            .replace('{amt}', _rcInrFull(perMonth)).replace('{dur}', _rcDurStr());
     } else {
-        var perYear = invested / years;
-        annRate = _rcSolveRate(perYear, years, value);
+        var perYear = invested / t;
+        annRate = _rcSolveRate(perYear, t, value);
         metricLabel = T('rc.res.xirr', 'Annualized Return (XIRR-equivalent)');
-        assumeNote = T('rc.hint.annual', '≈ {amt} per year for {yrs} yrs — we assume equal yearly installments')
-            .replace('{amt}', _rcInrFull(perYear)).replace('{yrs}', years);
+        assumeNote = T('rc.hint.annual', '≈ {amt} per year for {dur} — we assume equal yearly installments')
+            .replace('{amt}', _rcInrFull(perYear)).replace('{dur}', _rcDurStr());
     }
     annRate = Math.max(-0.99, annRate);
     var annPct = annRate * 100;
@@ -252,7 +285,7 @@ function rcCalc() {
     resEl.innerHTML = h;
 
     if (chartEl) chartEl.style.display = '';
-    _rcRenderChart(type, invested, years, annRate);
+    _rcRenderChart(type, invested, months, annRate);
 
     if (typeof saveUserData === 'function') saveUserData();
 }
@@ -266,17 +299,19 @@ function initReturnsCalc() {
         else if (el.value === defs[id]) { el.classList.add('text-slate-400'); }
         else { el.classList.remove('text-slate-400'); }
     });
-    rcCalc();
+    rcUnitChange();
 }
 
 function resetReturnsCalc() {
     var typeEl = document.getElementById('rc-type');
     if (typeEl) typeEl.value = 'sip';
+    var unitEl = document.getElementById('rc-unit');
+    if (unitEl) unitEl.value = 'years';
     var defs = { 'rc-invested': '6,00,000', 'rc-value': '9,00,000', 'rc-years': '5' };
     Object.keys(defs).forEach(function(id) {
         var el = document.getElementById(id);
         if (el) { el.value = defs[id]; el.classList.add('text-slate-400'); }
     });
-    rcCalc();
+    rcUnitChange();
     if (typeof saveUserData === 'function') saveUserData();
 }

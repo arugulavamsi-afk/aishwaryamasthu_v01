@@ -770,6 +770,7 @@
                     obj[id] = document.getElementById(id)?.value || '';
                 });
                 obj['rc-type'] = document.getElementById('rc-type')?.value || 'sip';
+                obj['rc-unit'] = document.getElementById('rc-unit')?.value || 'years';
                 return obj;
             });
             const hraCalc = _panelData('hra-basic', function() {
@@ -1780,7 +1781,8 @@
                             if (val === (rcDefs[id] || '')) el.classList.add('text-slate-400');
                             else el.classList.remove('text-slate-400');
                         });
-                        if (typeof rcCalc === 'function') rcCalc();
+                        if (typeof rcUnitChange === 'function') rcUnitChange();
+                        else if (typeof rcCalc === 'function') rcCalc();
                     } catch(e) { console.warn('loadUserData returnsCalc:', e); }
                 });
             }

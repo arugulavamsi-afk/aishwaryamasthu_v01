@@ -53,13 +53,19 @@
                 </div>
             </div>
 
-            <!-- Years -->
+            <!-- Time Period (value + unit) -->
             <div>
-                <label class="epf-label" data-i18n="lbl.rc.years">Time Period (Years)</label>
-                <input id="rc-years" type="number" inputmode="numeric" value="5" min="1" max="60" step="1" class="epf-input text-slate-400" style="padding-left:0.75rem;"
-                    oninput="rcCalc();this.classList.remove('text-slate-400');"
-                    onfocus="if(this.value==='5'){this.classList.remove('text-slate-400');}"
-                    onblur="if(!this.value){this.value='5';this.classList.add('text-slate-400');rcCalc();}">
+                <label class="epf-label" data-i18n="lbl.rc.years">Time Period</label>
+                <div class="flex gap-1.5">
+                    <input id="rc-years" type="number" inputmode="numeric" value="5" min="1" max="60" step="1" class="epf-input text-slate-400 flex-1 min-w-0" style="padding-left:0.75rem;"
+                        oninput="rcCalc();this.classList.remove('text-slate-400');"
+                        onfocus="if(this.value==='5'){this.classList.remove('text-slate-400');}"
+                        onblur="if(!this.value){this.value='5';this.classList.add('text-slate-400');rcCalc();}">
+                    <select id="rc-unit" onchange="rcUnitChange()" class="epf-input flex-shrink-0" style="padding-left:0.6rem;width:auto;">
+                        <option value="years" data-i18n="rc.unit.years">Years</option>
+                        <option value="months" data-i18n="rc.unit.months">Months</option>
+                    </select>
+                </div>
             </div>
 
             <!-- Where to find these numbers -->
