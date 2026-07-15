@@ -47,9 +47,36 @@
     <div id="splash">
         <div class="grid-bg"></div>
 
+        <!-- Breathing sunrise glow behind the title -->
+        <div class="splash-glow" aria-hidden="true"></div>
 
-        <!-- ₹ watermark -->
-        <!-- Coin particles (JS generated) -->
+        <!-- Chart line that draws itself across the lower background -->
+        <svg class="splash-chart" viewBox="0 0 1000 600" preserveAspectRatio="none" aria-hidden="true">
+            <defs>
+                <linearGradient id="splashLineGrad" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0" stop-color="#10b981"/>
+                    <stop offset="0.7" stop-color="#34d399"/>
+                    <stop offset="1" stop-color="#f5c842"/>
+                </linearGradient>
+                <linearGradient id="splashAreaGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="rgba(16,185,129,0.10)"/>
+                    <stop offset="1" stop-color="rgba(16,185,129,0)"/>
+                </linearGradient>
+            </defs>
+            <path class="chart-fill" d="M0,560 L120,530 L240,545 L360,480 L480,500 L600,420 L720,440 L840,330 L1000,290 L1000,600 L0,600 Z"/>
+            <path class="chart-line" d="M0,560 L120,530 L240,545 L360,480 L480,500 L600,420 L720,440 L840,330 L1000,290"/>
+            <circle class="chart-dot" cx="360" cy="480" r="5"/>
+            <circle class="chart-dot" cx="600" cy="420" r="5"/>
+            <circle class="chart-dot" cx="840" cy="330" r="6"/>
+        </svg>
+
+        <!-- Faint ₹ glyphs drifting upward -->
+        <span class="splash-rupee" aria-hidden="true">₹</span>
+        <span class="splash-rupee" aria-hidden="true">₹</span>
+        <span class="splash-rupee" aria-hidden="true">₹</span>
+        <span class="splash-rupee" aria-hidden="true">₹</span>
+        <span class="splash-rupee" aria-hidden="true">₹</span>
+        <span class="splash-rupee" aria-hidden="true">₹</span>
 
         <!-- Language toggle — outside splash-inner so it never overlaps the title -->
         <div id="splash-lang-bar" style="position:absolute;top:14px;right:14px;display:flex;align-items:center;gap:6px;z-index:10;">
@@ -63,7 +90,7 @@
         <div id="splash-inner">
 
         <!-- Main content -->
-        <h1 class="splash-title">Aishwaryamasthu</h1>
+        <h1 class="splash-title" aria-label="Aishwaryamasthu"><span aria-hidden="true"><span class="lt" style="--i:0">A</span><span class="lt" style="--i:1">i</span><span class="lt" style="--i:2">s</span><span class="lt" style="--i:3">h</span><span class="lt" style="--i:4">w</span><span class="lt" style="--i:5">a</span><span class="lt" style="--i:6">r</span><span class="lt" style="--i:7">y</span><span class="lt" style="--i:8">a</span><span class="lt" style="--i:9">m</span><span class="lt" style="--i:10">a</span><span class="lt" style="--i:11">s</span><span class="lt" style="--i:12">t</span><span class="lt" style="--i:13">h</span><span class="lt" style="--i:14">u</span></span></h1>
         <div class="splash-divider"></div>
         <p class="splash-tagline" data-i18n="splash.tagline">Indian Wealth Generation Calculator</p>
 

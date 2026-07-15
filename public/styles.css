@@ -332,7 +332,9 @@
 
 
 
-        /* Splash title */
+        /* Splash title — letters carry the gold gradient individually so they
+           can reveal one by one and run the shimmer sweep (per-letter delay
+           comes from the --i custom property set in the markup) */
         .splash-title {
             font-family: 'Cinzel Decorative', serif;
             font-weight: 700;
@@ -340,20 +342,136 @@
             line-height: 1.1;
             letter-spacing: 0.04em;
             text-align: center;
-            background: linear-gradient(130deg, #e8d5a3 0%, #f5c842 35%, #e8a44a 60%, #c97f3a 80%, #e8d5a3 100%);
-            background-size: 200% 200%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: titleReveal 0.5s ease-out both;
-            will-change: opacity;
             position: relative;
             z-index: 2;
             filter: drop-shadow(0 0 28px rgba(245,200,66,0.3));
         }
-        @keyframes titleReveal {
-            from { opacity: 0; }
-            to   { opacity: 1; }
+        .splash-title .lt {
+            display: inline-block;
+            background: linear-gradient(130deg, #e8d5a3 0%, #f5c842 35%, #e8a44a 60%, #c97f3a 80%, #e8d5a3 100%);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            opacity: 0;
+            animation:
+                letterIn 0.5s cubic-bezier(0.22,1,0.36,1) both,
+                shimmerSweep 5s ease-in-out infinite;
+            animation-delay: calc(var(--i, 0) * 45ms), calc(1.2s + var(--i, 0) * 45ms);
+        }
+        @keyframes letterIn {
+            from { opacity: 0; transform: translateY(14px) scale(0.96); filter: blur(3px); }
+            to   { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+        }
+        @keyframes shimmerSweep {
+            0%, 100% { background-position: 0% 50%; }
+            50%      { background-position: 100% 50%; }
+        }
+
+        /* Breathing sunrise glow behind the title */
+        .splash-glow {
+            position: absolute;
+            z-index: 1;
+            pointer-events: none;
+            width: min(720px, 95vw);
+            height: min(720px, 95vw);
+            left: 50%;
+            top: 28%;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle,
+                rgba(245,200,66,0.14) 0%,
+                rgba(232,164,74,0.07) 32%,
+                transparent 65%);
+            animation: glowBreathe 6s ease-in-out infinite alternate;
+        }
+        @media (min-width: 900px) {
+            /* centre on the left hero panel of the split layout */
+            .splash-glow { left: 28%; top: 50%; }
+        }
+        @keyframes glowBreathe {
+            from { opacity: 0.6; transform: translate(-50%, -50%) scale(0.92); }
+            to   { opacity: 1;   transform: translate(-50%, -50%) scale(1.08); }
+        }
+
+        /* Chart line that draws itself across the lower background */
+        .splash-chart {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0.45;
+        }
+        .splash-chart .chart-line {
+            fill: none;
+            stroke: url(#splashLineGrad);
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-dasharray: 2400;
+            stroke-dashoffset: 2400;
+            animation: chartDraw 2.6s cubic-bezier(0.45,0,0.25,1) 0.4s forwards;
+            filter: drop-shadow(0 0 8px rgba(16,185,129,0.5));
+        }
+        .splash-chart .chart-fill {
+            fill: url(#splashAreaGrad);
+            opacity: 0;
+            animation: chartFadeIn 1.2s ease-out 2.2s forwards;
+        }
+        @keyframes chartDraw { to { stroke-dashoffset: 0; } }
+        @keyframes chartFadeIn { to { opacity: 1; } }
+        .splash-chart .chart-dot {
+            fill: #f5c842;
+            opacity: 0;
+            animation: dotPop 0.4s ease-out forwards, dotPulse 2.4s ease-in-out infinite;
+            transform-box: fill-box;
+            transform-origin: center;
+        }
+        .splash-chart .chart-dot:nth-of-type(1) { animation-delay: 1.1s, 1.6s; }
+        .splash-chart .chart-dot:nth-of-type(2) { animation-delay: 1.8s, 2.3s; }
+        .splash-chart .chart-dot:nth-of-type(3) { animation-delay: 2.6s, 3.1s; }
+        @keyframes dotPop {
+            from { opacity: 0; transform: scale(0); }
+            to   { opacity: 1; transform: scale(1); }
+        }
+        @keyframes dotPulse {
+            0%, 100% { filter: drop-shadow(0 0 2px rgba(245,200,66,0.8)); }
+            50%      { filter: drop-shadow(0 0 10px rgba(245,200,66,1)); }
+        }
+
+        /* Faint ₹ glyphs drifting upward (deterministic per-glyph values) */
+        .splash-rupee {
+            position: absolute;
+            bottom: -60px;
+            z-index: 1;
+            pointer-events: none;
+            font-weight: 700;
+            color: rgba(245,200,66,0.10);
+            text-shadow: 0 0 12px rgba(245,200,66,0.25);
+            animation: rupeeFloat linear infinite;
+        }
+        .splash-rupee:nth-of-type(1) { left: 8%;  font-size: 18px; animation-duration: 22s; animation-delay: -3s; }
+        .splash-rupee:nth-of-type(2) { left: 22%; font-size: 30px; animation-duration: 27s; animation-delay: -12s; }
+        .splash-rupee:nth-of-type(3) { left: 38%; font-size: 15px; animation-duration: 19s; animation-delay: -8s; }
+        .splash-rupee:nth-of-type(4) { left: 55%; font-size: 24px; animation-duration: 25s; animation-delay: -18s; }
+        .splash-rupee:nth-of-type(5) { left: 72%; font-size: 34px; animation-duration: 30s; animation-delay: -6s; }
+        .splash-rupee:nth-of-type(6) { left: 88%; font-size: 20px; animation-duration: 23s; animation-delay: -15s; }
+        @keyframes rupeeFloat {
+            0%   { transform: translateY(0) rotate(-6deg); opacity: 0; }
+            8%   { opacity: 1; }
+            88%  { opacity: 1; }
+            100% { transform: translateY(-110vh) rotate(8deg); opacity: 0; }
+        }
+
+        /* Reduced motion: show everything in its settled state, no loops */
+        @media (prefers-reduced-motion: reduce) {
+            .splash-title .lt { animation: none; opacity: 1; }
+            .splash-glow,
+            .splash-rupee { display: none; }
+            .splash-chart .chart-line { animation: none; stroke-dashoffset: 0; }
+            .splash-chart .chart-fill { animation: none; opacity: 1; }
+            .splash-chart .chart-dot { animation: none; opacity: 1; }
         }
 
         /* Ticker line */
