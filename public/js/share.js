@@ -381,6 +381,17 @@
                   '\nCalculate yours 👇';
         }
 
+        else if (page === 'returnscalc') {
+            var rcPct = _waFmt(document.getElementById('rc-main-pct'));
+            var rcInv = _waFmt(document.getElementById('rc-share-inv'));
+            var rcVal = _waFmt(document.getElementById('rc-share-val'));
+            msg = '🔍 I found my *actual investment return* on Aishwaryamasthu!\n' +
+                  'Invested: *' + rcInv + '* → Now worth: *' + rcVal + '*\n' +
+                  'Annualized return: *' + rcPct + '* per year\n' +
+                  'Do you know what YOUR money really earned?\n' +
+                  '\nFind your real return 👇';
+        }
+
         else if (page === 'nomtrack') {
             var ntScore = _waFmt(document.getElementById('nt-score-val'));
             var ntBadge = _waFmt(document.getElementById('nt-score-badge'));

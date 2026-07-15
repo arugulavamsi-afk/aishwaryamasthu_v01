@@ -13,7 +13,7 @@
         },
         {
             id: 'calculators', emoji: '⚡', title: 'Calculators', titleKey: 'ug.sec.calc',
-            tools: ['growth','goal','homeloan','stepupsip','retirementhub','epfcalc','ppfnps','insure','hracalc']
+            tools: ['growth','goal','returnscalc','homeloan','stepupsip','retirementhub','epfcalc','ppfnps','insure','hracalc']
         },
         {
             id: 'mutual-funds', emoji: '📊', title: 'Mutual Funds & Coffee Can', titleKey: 'ug.sec.mf',
@@ -31,6 +31,7 @@
     var _meta = {
         growth:        { emoji:'📈', title:'Growth Calculator',                 titleKey:'card.growth.title' },
         goal:          { emoji:'🎯', title:'Goal Planner',                      titleKey:'card.goal.title' },
+        returnscalc:   { emoji:'🔍', title:'Returns Calculator',                titleKey:'card.returnscalc.title' },
         homeloan:      { emoji:'🏠', title:'Home Loan Advisor',                 titleKey:'card.hl.title' },
         stepupsip:     { emoji:'🪜', title:'Step-Up SIP Calculator',            titleKey:'card.su.title' },
         retirementhub: { emoji:'🏖️', title:'Retirement Hub',                   titleKey:'card.rethub.title' },

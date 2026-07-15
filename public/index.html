@@ -327,9 +327,12 @@
             <div id="howto-goal-slot" style="display:none;"></div>
 
             <!-- Growth Calculator Header -->
-            <div id="growth-panel-header" class="rounded-2xl px-4 py-3 text-white shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:2px solid rgba(245,200,66,0.4);box-shadow:0 4px 18px rgba(0,0,0,0.25);">
-                <h2 class="text-base font-black flex items-center gap-2" data-i18n="page.growth.h">📈 Growth Calculator</h2>
-                <p class="text-blue-200 text-[11px] mt-0.5" data-i18n="page.growth.sub">Project how your money grows over time with compound interest.</p>
+            <div id="growth-panel-header" class="rounded-2xl px-4 py-3 text-white shine-header flex items-center justify-between gap-3 flex-wrap" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:2px solid rgba(245,200,66,0.4);box-shadow:0 4px 18px rgba(0,0,0,0.25);">
+                <div>
+                    <h2 class="text-base font-black flex items-center gap-2" data-i18n="page.growth.h">📈 Growth Calculator</h2>
+                    <p class="text-blue-200 text-[11px] mt-0.5" data-i18n="page.growth.sub">Project how your money grows over time with compound interest.</p>
+                </div>
+                <button onclick="switchMode('returnscalc')" class="flex items-center gap-1 px-3 py-1.5 rounded-xl text-[11px] font-bold" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);" data-i18n="btn.gr.torc">🔍 What return did I get? →</button>
             </div>
 
             <!-- Goal Planner Header (hidden by default) -->
@@ -704,6 +707,7 @@
 
         <!-- =================== CAPITAL GAINS CALCULATOR PANEL ======================== -->
         <div id="cgcalc-panel" class="hidden w-full flex flex-col gap-3" data-panel-src="panels/cgcalc.html"></div>
+        <div id="returnscalc-panel" class="hidden w-full flex flex-col gap-3" data-panel-src="panels/returnscalc.html"></div>
         <!-- =================== END CAPITAL GAINS CALCULATOR PANEL ======================== -->
 
         <!-- =================== HRA CALCULATOR PANEL ======================== -->
@@ -743,6 +747,7 @@
             <div class="dash-grid">
                 <button onclick="switchMode('growth')" class="dash-card group" data-color="#10b981"><div class="dash-card-icon">📈</div><div class="dash-card-title" data-i18n="card.growth.title">Growth Calculator</div><div class="dash-card-desc" data-i18n="card.growth.desc">Compound interest · Lumpsum · SIP · Inflation adjust</div><div class="dash-card-arrow">→</div></button>
                 <button onclick="switchMode('goal')" class="dash-card group" data-color="#6366f1"><div class="dash-card-icon">🎯</div><div class="dash-card-title" data-i18n="card.goal.title">Goal Planner</div><div class="dash-card-desc" data-i18n="card.goal.desc">Education · Marriage · Retirement · Category inflation presets</div><div class="dash-card-arrow">→</div></button>
+                <button onclick="switchMode('returnscalc')" class="dash-card group" data-color="#0d9488"><div class="dash-card-icon">🔍</div><div class="dash-card-title" data-i18n="card.returnscalc.title">Returns Calculator</div><div class="dash-card-desc" data-i18n="card.returnscalc.desc">Invested ₹X, now worth ₹Y? · Your actual annual return · CAGR / XIRR-style</div><div class="dash-card-arrow">→</div></button>
 <button onclick="switchMode('homeloan')" class="dash-card group" data-color="#3b82f6"><div class="dash-card-icon">🏠</div><div class="dash-card-title" data-i18n="card.hl.title">Home Loan Advisor</div><div class="dash-card-desc" data-i18n="card.hl.desc">EMI · Prepayment benefit · Rent vs Buy · Sec 24(b) tax saving</div><div class="dash-card-arrow">→</div></button>
                 <button onclick="switchMode('stepupsip')" class="dash-card group" data-color="#f59e0b"><div class="dash-card-icon">📈</div><div class="dash-card-title" data-i18n="card.su.title">Step-Up SIP Calculator</div><div class="dash-card-desc" data-i18n="card.su.desc">Flat SIP vs 10% annual step-up · See the staggering corpus gap</div><div class="dash-card-arrow">→</div></button>
                 <button onclick="switchMode('retirementhub')" class="dash-card group" data-color="#7c3aed"><div class="dash-card-icon">🏖️</div><div class="dash-card-title" data-i18n="card.rethub.title">Retirement Hub ✨</div><div class="dash-card-desc" data-i18n="card.rethub.desc">EPF + PPF + NPS + SIP → corpus · income · surplus — plus Drawdown Planner: SWP strategy, 3-bucket allocation, depletion timeline</div><div class="dash-card-arrow">→</div></button>
@@ -2557,6 +2562,7 @@
     <script src="js/net-worth.js"></script>
     <script src="js/cg-calc.js"></script>
     <script src="js/hra-calc.js"></script>
+    <script src="js/returns-calc.js"></script>
     <script src="js/health-score.js"></script>
     <script src="js/financial-path.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha384-JcnsjUPPylna1s1fvi1u12X5qjY5OL56iySh75FdtrwhO/SWXgMjoVqcKyIIWOLk" crossorigin="anonymous"></script>

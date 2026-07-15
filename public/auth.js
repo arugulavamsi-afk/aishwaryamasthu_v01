@@ -764,6 +764,14 @@
                 obj['cg-regime'] = document.getElementById('cg-regime')?.value || 'new';
                 return obj;
             });
+            const returnsCalc = _panelData('rc-invested', function() {
+                var obj = {};
+                ['rc-invested','rc-value','rc-years'].forEach(function(id){
+                    obj[id] = document.getElementById(id)?.value || '';
+                });
+                obj['rc-type'] = document.getElementById('rc-type')?.value || 'sip';
+                return obj;
+            });
             const hraCalc = _panelData('hra-basic', function() {
                 var obj = {};
                 ['hra-basic','hra-received','hra-rent'].forEach(function(id){
@@ -849,6 +857,7 @@
                 ...(ulipCheck    ? { ulipCheck }    : {}),
                 ...(netWorth     ? { netWorth }     : {}),
                 ...(cgCalc       ? { cgCalc }       : {}),
+                ...(returnsCalc  ? { returnsCalc }  : {}),
                 ...(hraCalc      ? { hraCalc }      : {}),
                 ...(nomTrack      ? { nomTrack }      : {}),
                 ...(budgetTracker ? { budgetTracker } : {}),
@@ -1753,6 +1762,26 @@
                         if (typeof cgSetRegime === 'function') cgSetRegime(_cgData['cg-regime'] || 'new');
                         if (typeof cgCalc === 'function') cgCalc();
                     } catch(e) { console.warn('loadUserData cgCalc:', e); }
+                });
+            }
+
+            // Returns Calculator restore
+            if (data.returnsCalc) {
+                var _rcData = data.returnsCalc;
+                _applyWhenReady('rc-invested', function() {
+                    try {
+                        var rcDefs = {'rc-invested':'6,00,000','rc-value':'9,00,000','rc-years':'5'};
+                        Object.entries(_rcData).forEach(function(entry) {
+                            var id = entry[0], val = entry[1];
+                            var el = document.getElementById(id);
+                            if (!el || val === null || val === undefined || val === '') return;
+                            el.value = val;
+                            if (el.tagName === 'SELECT') return;
+                            if (val === (rcDefs[id] || '')) el.classList.add('text-slate-400');
+                            else el.classList.remove('text-slate-400');
+                        });
+                        if (typeof rcCalc === 'function') rcCalc();
+                    } catch(e) { console.warn('loadUserData returnsCalc:', e); }
                 });
             }
 

@@ -283,6 +283,15 @@
             ],
             tip: 'Equity LTCG (held > 1 year) is taxed at 12.5% above ₹1.25L — time your exits to stay within the annual limit.'
         },
+        returnscalc: {
+            what: 'Reverse of the Growth Calculator: enter what you invested and what it is worth today — get the annual return you actually earned.',
+            steps: [
+                '1. Pick how you invested — one-time lumpsum, monthly SIP, or once a year',
+                '2. Enter total amount invested, its current/maturity value, and the time period',
+                '3. Read your annualized return (CAGR / XIRR-style) and see how it compares to inflation, FD, and Nifty'
+            ],
+            tip: 'Check your MF statement: "Total Invested" and "Current Value" are exactly the two numbers this tool needs.'
+        },
         hracalc: {
             what: 'Calculate your HRA exemption under Section 10(13A) and find out the annual tax you save on rent.',
             steps: [

@@ -1,5 +1,5 @@
 /* AishwaryaMasthu Service Worker */
-var CACHE = 'am-v40';
+var CACHE = 'am-v41';
 
 /* App shell — pre-cached on SW install. Other files are cached on first access. */
 var SHELL = [
@@ -38,6 +38,7 @@ var SHELL = [
   '/js/net-worth.js',
   '/js/cg-calc.js',
   '/js/hra-calc.js',
+  '/js/returns-calc.js',
   '/js/ssa-planner.js',
   '/js/health-score.js',
   '/js/financial-path.js',
@@ -76,6 +77,7 @@ var SHELL = [
   '/panels/nomtrack.html',
   '/panels/ppfnps.html',
   '/panels/retirementhub.html',
+  '/panels/returnscalc.html',
   '/panels/selfempl.html',
   '/panels/ssaplanner.html',
   '/panels/stepupsip.html',

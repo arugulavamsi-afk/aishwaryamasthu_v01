@@ -1,0 +1,97 @@
+<div id="returnscalc-panel" class="hidden w-full flex flex-col gap-3">
+
+    <!-- HEADER -->
+    <div class="rounded-2xl px-4 py-3 text-white flex items-center justify-between gap-3 flex-wrap shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:2px solid rgba(245,200,66,0.4);box-shadow:0 4px 18px rgba(0,0,0,0.25);">
+        <div>
+            <h2 class="text-base font-black flex items-center gap-2" data-i18n="page.returnscalc.h">🔍 Returns Calculator</h2>
+            <p class="text-blue-200 text-[11px] mt-0.5" data-i18n="returnscalc.subtitle">You know what you invested and what it became — find the return you actually earned</p>
+        </div>
+        <div class="flex items-center gap-2">
+            <button onclick="switchMode('growth')" class="flex items-center gap-1 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);" data-i18n="btn.rc.togrowth">📈 Growth Calculator →</button>
+            <button onclick="resetReturnsCalc()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h5M20 20v-5h-5M4 9a9 9 0 0115-3M20 15a9 9 0 01-15 3"/></svg><span data-i18n="common.reset">Reset</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN GRID -->
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-3">
+
+        <!-- INPUTS -->
+        <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm p-3 flex flex-col gap-2.5 lg:self-start">
+
+            <!-- Investment Type -->
+            <div>
+                <label class="epf-label" data-i18n="lbl.rc.type">How did you invest?</label>
+                <select id="rc-type" onchange="rcTypeChange()" class="epf-input" style="padding-left:0.75rem;">
+                    <option value="lumpsum" data-i18n="inv.type.lumpsum">Lumpsum (One-time)</option>
+                    <option value="sip" selected data-i18n="inv.type.sip">SIP (Monthly)</option>
+                    <option value="annually" data-i18n="inv.type.annually">Annually Once</option>
+                </select>
+            </div>
+
+            <!-- Total Invested -->
+            <div>
+                <label class="epf-label" data-i18n="lbl.rc.invested">Total Amount Invested (₹)</label>
+                <div class="relative"><span class="epf-prefix">₹</span>
+                <input id="rc-invested" type="text" inputmode="numeric" value="6,00,000" maxlength="15" class="epf-input pl-7 text-slate-400"
+                    oninput="rcFmt(this);rcCalc();this.classList.remove('text-slate-400');"
+                    onfocus="if(this.value==='6,00,000'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                    onblur="if(!this.value){this.value='6,00,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                </div>
+                <div id="rc-inst-hint" class="text-[9px] text-slate-400 mt-0.5" style="display:none;"></div>
+            </div>
+
+            <!-- Current / Maturity Value -->
+            <div>
+                <label class="epf-label" data-i18n="lbl.rc.value">Current / Maturity Value (₹)</label>
+                <div class="relative"><span class="epf-prefix">₹</span>
+                <input id="rc-value" type="text" inputmode="numeric" value="9,00,000" maxlength="15" class="epf-input pl-7 text-slate-400"
+                    oninput="rcFmt(this);rcCalc();this.classList.remove('text-slate-400');"
+                    onfocus="if(this.value==='9,00,000'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
+                    onblur="if(!this.value){this.value='9,00,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                </div>
+            </div>
+
+            <!-- Years -->
+            <div>
+                <label class="epf-label" data-i18n="lbl.rc.years">Time Period (Years)</label>
+                <input id="rc-years" type="number" inputmode="numeric" value="5" min="1" max="60" step="1" class="epf-input text-slate-400" style="padding-left:0.75rem;"
+                    oninput="rcCalc();this.classList.remove('text-slate-400');"
+                    onfocus="if(this.value==='5'){this.classList.remove('text-slate-400');}"
+                    onblur="if(!this.value){this.value='5';this.classList.add('text-slate-400');rcCalc();}">
+            </div>
+
+            <!-- Where to find these numbers -->
+            <div class="rounded-xl px-3 py-2 text-[10px] leading-relaxed" style="background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;">
+                💡 <span data-i18n="rc.tipbox">Open your mutual fund app or statement — "Total Invested" and "Current Value" are exactly the two numbers this tool needs.</span>
+            </div>
+        </div>
+
+        <!-- RESULTS -->
+        <div class="lg:col-span-3 flex flex-col gap-2">
+
+            <!-- Result area — rendered by rcCalc() -->
+            <div id="rc-result" class="bg-white rounded-2xl border border-slate-100 shadow-sm p-3">
+                <p class="text-[11px] text-slate-400 text-center py-6 font-semibold" data-i18n="rc.placeholder">Fill in all fields to see your actual annualized return</p>
+            </div>
+
+            <!-- Chart Card -->
+            <div id="rc-chart-card" class="bg-white p-3 sm:p-4 rounded-2xl shadow-sm border border-slate-100" style="display:none;">
+                <h3 class="text-sm font-bold text-slate-800 mb-2" data-i18n="rc.chart.title">📈 Your Money's Journey</h3>
+                <div class="relative w-full" style="height: 210px;">
+                    <canvas id="rc-chart"></canvas>
+                </div>
+            </div>
+
+            <!-- Disclaimer -->
+            <div class="rounded-xl px-3 py-2 text-[9px] leading-relaxed text-slate-400" style="background:rgba(248,250,252,0.9);border:1px solid #e2e8f0;" data-i18n-html="rc.disclaimer">
+                ⚠ <strong>Note:</strong> SIP / annual results assume equal, regular installments — the true XIRR from your fund statement may differ slightly if your amounts or dates varied. Benchmark figures (inflation ~6%, FD ~7%, Nifty 50 ~12%) are long-term historical averages, not guarantees. For educational purposes only.
+            </div>
+
+            <!-- WhatsApp -->
+            <div><button onclick="waShare('returnscalc')" class="wa-share-btn shine-btn"><svg viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5 flex-shrink-0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.557 4.133 1.535 5.876L.057 23.43a.75.75 0 00.918.924l5.688-1.493A11.946 11.946 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.907 0-3.7-.512-5.241-1.403l-.375-.22-3.877 1.018 1.01-3.769-.234-.389A9.953 9.953 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>Share on WhatsApp</button></div>
+        </div>
+    </div>
+
+</div>
