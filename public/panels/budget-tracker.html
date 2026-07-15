@@ -1,23 +1,19 @@
 <div id="budgettrack-panel" class="hidden w-full flex flex-col gap-3">
 
     <!-- HEADER -->
-    <div class="rounded-2xl px-4 py-3 text-white shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:2px solid rgba(245,200,66,0.4);box-shadow:0 4px 18px rgba(0,0,0,0.25);">
+    <div class="rounded-2xl px-4 py-3 text-white shine-header bt-header">
         <div class="flex items-center justify-between gap-3 flex-wrap">
             <div>
                 <h2 data-i18n="page.budgettrack.h" class="text-base font-black flex items-center gap-2">📊 Budget &amp; Expense Tracker</h2>
                 <p data-i18n="budgettrack.subtitle" class="text-blue-200 text-[11px] mt-0.5">Track monthly spend vs budget · Catch outliers · View 12-month trend · Donut breakdown</p>
             </div>
             <div class="flex items-center gap-1.5 flex-wrap">
-                <button onclick="switchMode('myprofile')" style="padding:4px 10px;border-radius:10px;font-size:11px;font-weight:700;background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);cursor:pointer;">← My Profile</button>
-                <button onclick="_btNavMonth(-1)"
-                    style="padding:5px 10px;border-radius:10px;font-weight:900;font-size:14px;background:rgba(255,255,255,0.1);color:#e2e8f0;border:1px solid rgba(255,255,255,0.2);cursor:pointer;line-height:1;">‹</button>
-                <span id="bt-month-disp"
-                    style="font-size:13px;font-weight:800;color:#f8fafc;min-width:70px;text-align:center;">Apr 2026</span>
-                <button onclick="_btNavMonth(1)"
-                    style="padding:5px 10px;border-radius:10px;font-weight:900;font-size:14px;background:rgba(255,255,255,0.1);color:#e2e8f0;border:1px solid rgba(255,255,255,0.2);cursor:pointer;line-height:1;">›</button>
-                <button id="bt-today-btn" data-i18n="bt.btn.today" onclick="_btGoToToday()" style="display:none;padding:4px 10px;border-radius:10px;font-size:10px;font-weight:700;background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);cursor:pointer;">Today</button>
-                <button id="bt-copy-prev-btn" onclick="_btCopyBudgetFromPrev()" style="display:none;padding:4px 10px;border-radius:10px;font-size:10px;font-weight:700;background:rgba(34,197,94,0.15);color:#4ade80;border:1px solid rgba(34,197,94,0.3);cursor:pointer;white-space:nowrap;"
-                    onmouseover="this.style.background='rgba(34,197,94,0.25)'" onmouseout="this.style.background='rgba(34,197,94,0.15)'">Copy budget</button>
+                <button class="bt-hdr-chip bt-hdr-gold" onclick="switchMode('myprofile')">← My Profile</button>
+                <button class="bt-nav-btn" onclick="_btNavMonth(-1)">‹</button>
+                <span id="bt-month-disp" class="bt-month-disp">Apr 2026</span>
+                <button class="bt-nav-btn" onclick="_btNavMonth(1)">›</button>
+                <button id="bt-today-btn" data-i18n="bt.btn.today" class="bt-hdr-chip bt-hdr-gold bt-hdr-sm" style="display:none;" onclick="_btGoToToday()">Today</button>
+                <button id="bt-copy-prev-btn" class="bt-hdr-chip bt-hdr-green bt-hdr-sm" style="display:none;" onclick="_btCopyBudgetFromPrev()">Copy budget</button>
             </div>
         </div>
     </div>
@@ -60,42 +56,47 @@
 
     <!-- SUMMARY CARDS -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-        <div class="rounded-xl px-3 py-2.5" style="background:#f0f9ff;border:1px solid #bae6fd;">
-            <div data-i18n="bt.sum.budget" style="font-size:9px;font-weight:900;color:#0369a1;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;">Total Budget</div>
-            <div id="bt-sum-budget" style="font-size:15px;font-weight:900;color:#0c4a6e;">—</div>
+        <div class="rounded-xl px-3 py-2.5 bt-sum-card bt-sum-blue">
+            <div data-i18n="bt.sum.budget" class="bt-sum-lbl">Total Budget</div>
+            <div id="bt-sum-budget" class="bt-sum-val">—</div>
         </div>
-        <div class="rounded-xl px-3 py-2.5" style="background:#f0fdf4;border:1px solid #86efac;">
-            <div data-i18n="bt.sum.spent" style="font-size:9px;font-weight:900;color:#15803d;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;">Total Spent</div>
-            <div id="bt-sum-actual" style="font-size:15px;font-weight:900;color:#166534;">—</div>
+        <div class="rounded-xl px-3 py-2.5 bt-sum-card bt-sum-green">
+            <div data-i18n="bt.sum.spent" class="bt-sum-lbl">Total Spent</div>
+            <div id="bt-sum-actual" class="bt-sum-val">—</div>
         </div>
-        <div class="rounded-xl px-3 py-2.5" style="background:#fef9c3;border:1px solid #fde047;">
-            <div data-i18n="bt.sum.saved" style="font-size:9px;font-weight:900;color:#92400e;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;">Saved / Over</div>
-            <div id="bt-sum-diff" style="font-size:15px;font-weight:900;color:#78350f;">—</div>
+        <div class="rounded-xl px-3 py-2.5 bt-sum-card bt-sum-yellow">
+            <div data-i18n="bt.sum.saved" class="bt-sum-lbl">Saved / Over</div>
+            <div id="bt-sum-diff" class="bt-sum-val">—</div>
         </div>
-        <div class="rounded-xl px-3 py-2.5 col-span-2 sm:col-span-1" style="background:#fdf4ff;border:1px solid #e9d5ff;">
-            <div data-i18n="bt.sum.outliers" style="font-size:9px;font-weight:900;color:#7c3aed;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;">Outliers</div>
-            <div id="bt-sum-outliers" style="font-size:10px;font-weight:700;color:#6b21a8;line-height:1.3;">—</div>
+        <div class="rounded-xl px-3 py-2.5 col-span-2 sm:col-span-1 bt-sum-card bt-sum-purple">
+            <div data-i18n="bt.sum.outliers" class="bt-sum-lbl">Outliers</div>
+            <div id="bt-sum-outliers" class="bt-sum-val bt-sum-val-sm">—</div>
         </div>
     </div>
 
-    <!-- PROGRESS BAR -->
-    <div style="background:#f1f5f9;border-radius:8px;overflow:hidden;height:8px;position:relative;">
-        <div id="bt-bar-fill" style="height:100%;width:0%;background:#22c55e;border-radius:8px;transition:width .4s,background .4s;"></div>
+    <!-- PROGRESS BAR + PACE -->
+    <div class="bt-bar-track">
+        <div id="bt-bar-fill" class="bt-bar-fill bt-fill-green"></div>
+        <div id="bt-bar-today" class="bt-bar-today" style="display:none;" title="Today"></div>
     </div>
-    <div id="bt-bar-pct" style="font-size:9px;color:#64748b;text-align:right;margin-top:-4px;font-weight:600;"></div>
+    <div id="bt-bar-pct" class="bt-bar-pct"></div>
+    <div id="bt-pace-card" class="bt-pace-card" style="display:none;">
+        <span id="bt-pace-day" class="bt-pace-day"></span>
+        <span id="bt-pace-verdict" class="bt-pace-verdict"></span>
+    </div>
 
     <!-- MAIN: TABLE + CHART -->
     <div class="grid grid-cols-1 lg:grid-cols-5 gap-3">
 
         <!-- CATEGORY TABLE -->
         <div class="lg:col-span-3 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-x-auto">
-            <table style="width:100%;border-collapse:collapse;">
+            <table class="bt-table">
                 <thead>
-                    <tr style="background:#f8fafc;">
-                        <th data-i18n="bt.col.cat" style="padding:6px 8px;text-align:left;font-size:9px;font-weight:900;color:#64748b;text-transform:uppercase;letter-spacing:.05em;border-bottom:2px solid #e2e8f0;">Category</th>
-                        <th data-i18n="bt.col.budget" style="padding:6px 4px;text-align:left;font-size:9px;font-weight:900;color:#64748b;text-transform:uppercase;letter-spacing:.05em;border-bottom:2px solid #e2e8f0;min-width:90px;">Budget (₹)</th>
-                        <th data-i18n="bt.col.spent" style="padding:6px 4px;text-align:left;font-size:9px;font-weight:900;color:#64748b;text-transform:uppercase;letter-spacing:.05em;border-bottom:2px solid #e2e8f0;min-width:90px;">Spent (₹)</th>
-                        <th data-i18n="bt.col.status" style="padding:6px 8px;text-align:right;font-size:9px;font-weight:900;color:#64748b;text-transform:uppercase;letter-spacing:.05em;border-bottom:2px solid #e2e8f0;">Status</th>
+                    <tr>
+                        <th data-i18n="bt.col.cat" class="bt-th">Category</th>
+                        <th data-i18n="bt.col.budget" class="bt-th bt-th-inp">Budget (₹)</th>
+                        <th data-i18n="bt.col.spent" class="bt-th bt-th-inp">Spent (₹)</th>
+                        <th data-i18n="bt.col.status" class="bt-th bt-th-right">Status</th>
                     </tr>
                 </thead>
                 <tbody id="bt-tbody">
@@ -105,23 +106,20 @@
         </div>
 
         <!-- CHART PANEL -->
-        <div class="lg:col-span-2 rounded-2xl p-3 flex flex-col gap-2" style="background:#0f172a;border:1px solid rgba(255,255,255,0.08);">
+        <div class="lg:col-span-2 rounded-2xl p-3 flex flex-col gap-2 bt-chart-card">
             <!-- Chart type selector -->
-            <div style="display:flex;gap:4px;">
-                <button id="bt-tab-bar"   data-i18n="bt.tab.bar" onclick="window._btSetChartType('bar')"
-                    style="flex:1;padding:5px 4px;border-radius:8px;font-size:9px;font-weight:700;border:1px solid rgba(255,255,255,0.12);cursor:pointer;color:rgba(255,255,255,0.45);background:transparent;transition:all .15s;">📊 Bar</button>
-                <button id="bt-tab-line"  data-i18n="bt.tab.trend" onclick="window._btSetChartType('line')"
-                    style="flex:1;padding:5px 4px;border-radius:8px;font-size:9px;font-weight:700;border:1px solid rgba(255,255,255,0.12);cursor:pointer;color:rgba(255,255,255,0.45);background:transparent;transition:all .15s;">📈 Trend</button>
-                <button id="bt-tab-donut" data-i18n="bt.tab.split" onclick="window._btSetChartType('donut')"
-                    style="flex:1;padding:5px 4px;border-radius:8px;font-size:9px;font-weight:700;border:1px solid rgba(255,255,255,0.12);cursor:pointer;color:rgba(255,255,255,0.45);background:transparent;transition:all .15s;">🍩 Split</button>
+            <div class="bt-chart-tabs">
+                <button id="bt-tab-bar"   data-i18n="bt.tab.bar"   class="bt-chart-tab" onclick="window._btSetChartType('bar')">📊 Bar</button>
+                <button id="bt-tab-line"  data-i18n="bt.tab.trend" class="bt-chart-tab" onclick="window._btSetChartType('line')">📈 Trend</button>
+                <button id="bt-tab-donut" data-i18n="bt.tab.split" class="bt-chart-tab" onclick="window._btSetChartType('donut')">🍩 Split</button>
             </div>
             <!-- Chart description -->
-            <div style="font-size:9px;color:rgba(255,255,255,0.3);text-align:center;margin-top:-2px;">
+            <div class="bt-chart-desc">
                 <span id="bt-chart-desc">Budget vs Actual spend per category this month</span>
             </div>
             <!-- Canvas -->
-            <div style="position:relative;flex:1;min-height:260px;">
-                <canvas id="bt-chart-canvas" style="position:absolute;inset:0;width:100%!important;height:100%!important;"></canvas>
+            <div class="bt-chart-wrap">
+                <canvas id="bt-chart-canvas" class="bt-chart-canvas"></canvas>
             </div>
         </div>
 
@@ -137,69 +135,45 @@
     </div>
 
     <!-- TIP ROW -->
-    <div data-i18n-html="bt.howto.tip" style="background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.2);border-radius:12px;padding:10px 14px;font-size:10px;color:#4338ca;line-height:1.6;">
+    <div data-i18n-html="bt.howto.tip" class="bt-tip">
         💡 <strong>How to use:</strong> Set a monthly budget per category, then log each expense with the <strong>⚡ Add Expense</strong> bar as it happens — the Spent column totals up automatically. Red = over budget. Switch to <strong>Trend</strong> to spot months you overspent, or <strong>Split</strong> to see where your money goes.
     </div>
 
     <!-- EMERGENCY FUND SECTION -->
-    <div id="bt-ef-section" style="background:linear-gradient(135deg,#fffbeb 0%,#fef3c7 100%);border:1.5px solid #fbbf24;border-radius:16px;padding:14px 16px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+    <div id="bt-ef-section" class="bt-ef-card">
+        <div class="bt-ef-head">
             <div>
-                <div data-i18n="bt.ef.title" style="font-size:13px;font-weight:900;color:#92400e;display:flex;align-items:center;gap:6px;">🛡️ Emergency Fund Needed</div>
-                <div id="bt-ef-basis" data-i18n="bt.ef.basis.default" style="font-size:10px;color:#b45309;margin-top:1px;">Based on your monthly expenses</div>
+                <div data-i18n="bt.ef.title" class="bt-ef-title">🛡️ Emergency Fund Needed</div>
+                <div id="bt-ef-basis" data-i18n="bt.ef.basis.default" class="bt-ef-basis">Based on your monthly expenses</div>
             </div>
             <!-- Coverage selector -->
-            <div style="display:flex;gap:5px;">
-                <button id="bt-ef-btn-3"  onclick="window._btSetEFMonths(3)"  style="padding:5px 12px;border-radius:9px;font-size:11px;font-weight:700;border:1.5px solid #fbbf24;cursor:pointer;transition:all .15s;background:#fbbf24;color:#78350f;">3M</button>
-                <button id="bt-ef-btn-6"  onclick="window._btSetEFMonths(6)"  style="padding:5px 12px;border-radius:9px;font-size:11px;font-weight:700;border:1.5px solid #e2e8f0;cursor:pointer;transition:all .15s;background:transparent;color:#92400e;">6M</button>
-                <button id="bt-ef-btn-12" onclick="window._btSetEFMonths(12)" style="padding:5px 12px;border-radius:9px;font-size:11px;font-weight:700;border:1.5px solid #e2e8f0;cursor:pointer;transition:all .15s;background:transparent;color:#92400e;">12M</button>
+            <div class="bt-ef-btns">
+                <button id="bt-ef-btn-3"  class="bt-ef-btn on" onclick="window._btSetEFMonths(3)">3M</button>
+                <button id="bt-ef-btn-6"  class="bt-ef-btn"    onclick="window._btSetEFMonths(6)">6M</button>
+                <button id="bt-ef-btn-12" class="bt-ef-btn"    onclick="window._btSetEFMonths(12)">12M</button>
             </div>
         </div>
         <!-- Main result -->
-        <div id="bt-ef-result" style="font-size:26px;font-weight:900;color:#78350f;letter-spacing:-0.5px;">—</div>
-        <div id="bt-ef-result-label" data-i18n="bt.ef.empty" style="font-size:10px;color:#b45309;margin-bottom:10px;">Fill in your monthly expenses above to see your target</div>
+        <div id="bt-ef-result" class="bt-ef-result">—</div>
+        <div id="bt-ef-result-label" data-i18n="bt.ef.empty" class="bt-ef-result-lbl">Fill in your monthly expenses above to see your target</div>
         <!-- 3 targets row -->
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px;">
-            <div style="background:rgba(255,255,255,0.6);border-radius:10px;padding:8px;text-align:center;">
-                <div data-i18n="bt.ef.3m" style="font-size:9px;font-weight:800;color:#b45309;text-transform:uppercase;margin-bottom:3px;">3 Months</div>
-                <div id="bt-ef-3m" style="font-size:12px;font-weight:900;color:#92400e;">—</div>
+        <div class="bt-ef-grid">
+            <div class="bt-ef-cell">
+                <div data-i18n="bt.ef.3m" class="bt-ef-cell-lbl">3 Months</div>
+                <div id="bt-ef-3m" class="bt-ef-cell-val">—</div>
             </div>
-            <div style="background:rgba(255,255,255,0.6);border-radius:10px;padding:8px;text-align:center;border:1.5px solid #fbbf24;">
-                <div data-i18n="bt.ef.6m" style="font-size:9px;font-weight:800;color:#b45309;text-transform:uppercase;margin-bottom:3px;">6 Months ✓</div>
-                <div id="bt-ef-6m" style="font-size:12px;font-weight:900;color:#92400e;">—</div>
+            <div class="bt-ef-cell bt-ef-cell-hl">
+                <div data-i18n="bt.ef.6m" class="bt-ef-cell-lbl">6 Months ✓</div>
+                <div id="bt-ef-6m" class="bt-ef-cell-val">—</div>
             </div>
-            <div style="background:rgba(255,255,255,0.6);border-radius:10px;padding:8px;text-align:center;">
-                <div data-i18n="bt.ef.12m" style="font-size:9px;font-weight:800;color:#b45309;text-transform:uppercase;margin-bottom:3px;">12 Months</div>
-                <div id="bt-ef-12m" style="font-size:12px;font-weight:900;color:#92400e;">—</div>
+            <div class="bt-ef-cell">
+                <div data-i18n="bt.ef.12m" class="bt-ef-cell-lbl">12 Months</div>
+                <div id="bt-ef-12m" class="bt-ef-cell-val">—</div>
             </div>
         </div>
-        <div data-i18n-html="bt.ef.tip" style="font-size:9px;color:#b45309;margin-top:8px;line-height:1.5;">
+        <div data-i18n-html="bt.ef.tip" class="bt-ef-tip">
             💡 Park your emergency corpus in a <strong>Liquid Mutual Fund</strong> or <strong>Sweep-in FD</strong> — instant access, better return than savings account. Never use it for planned expenses.
         </div>
     </div>
-
-    <style>
-        .bt-num-inp {
-            width: 100%;
-            padding: 5px 6px 5px 18px;
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 7px;
-            font-size: 11px;
-            font-weight: 600;
-            color: #1e293b;
-            outline: none;
-            transition: border-color .15s, box-shadow .15s;
-            box-sizing: border-box;
-        }
-        .bt-num-inp:focus {
-            border-color: #6366f1;
-            box-shadow: 0 0 0 2px rgba(99,102,241,0.15);
-        }
-        .bt-num-inp.text-slate-400 {
-            color: #94a3b8 !important;
-        }
-        .bt-num-inp::placeholder { color: #cbd5e1; }
-    </style>
 
 </div>

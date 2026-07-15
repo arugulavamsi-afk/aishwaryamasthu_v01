@@ -121,15 +121,15 @@
     function _btAddCustomCat() {
         var nameEl = document.getElementById('bt-new-cat-name');
         var name = (nameEl ? nameEl.value : '').trim();
-        if (!name) { if (nameEl) { nameEl.focus(); nameEl.style.borderColor = '#ef4444'; } return; }
+        if (!name) { if (nameEl) { nameEl.focus(); nameEl.classList.add('bt-inp-err'); } return; }
         // Dedup check (case-insensitive)
         var allKeys = _btAllCats().map(function (c) { return c.key.toLowerCase(); });
         if (allKeys.indexOf(name.toLowerCase()) !== -1) {
-            if (nameEl) { nameEl.style.borderColor = '#f59e0b'; nameEl.placeholder = _btT('bt.cat.exists','Already exists!'); }
+            if (nameEl) { nameEl.classList.add('bt-inp-warn'); nameEl.placeholder = _btT('bt.cat.exists','Already exists!'); }
             return;
         }
         window._btCustomCats.push({ key: name, icon: '📌' });
-        if (nameEl) { nameEl.value = ''; nameEl.style.borderColor = ''; nameEl.placeholder = _btT('bt.cat.placeholder','Category name…'); }
+        if (nameEl) { nameEl.value = ''; nameEl.classList.remove('bt-inp-err', 'bt-inp-warn'); nameEl.placeholder = _btT('bt.cat.placeholder','Category name…'); }
         _btRenderTable();
         _btRenderSummary();
         _btRenderChart();
@@ -162,7 +162,7 @@
     function _btNewCatKeydown(e) {
         if (e.key === 'Enter') { e.preventDefault(); _btAddCustomCat(); }
         var nameEl = document.getElementById('bt-new-cat-name');
-        if (nameEl) nameEl.style.borderColor = '';
+        if (nameEl) nameEl.classList.remove('bt-inp-err', 'bt-inp-warn');
     }
     window._btNewCatKeydown = _btNewCatKeydown;
 
@@ -224,13 +224,20 @@
     window._btCopyBudgetFromPrev = _btCopyBudgetFromPrev;
 
     // ── Render: category table ─────────────────────────────────
-    function _btMakeDiffHtml(budget, actual) {
+    function _btMakeDiffHtml(budget, actual, catKey) {
         var over = budget > 0 && actual > budget;
         var diff = budget - actual;
-        if (budget === 0 && actual === 0) return '<span style="color:#94a3b8;font-size:10px;">—</span>';
-        if (over) return '<span style="color:#ef4444;font-weight:700;font-size:10px;">⚠ +₹' + _btFmt(Math.abs(diff)) + '</span>';
-        if (budget > 0) return '<span style="color:#16a34a;font-size:10px;">✓ ₹' + (diff === 0 ? '0' : _btFmt(diff)) + ' ' + _btT('bt.status.left','left') + '</span>';
-        return '<span style="color:#94a3b8;font-size:10px;">' + _btT('bt.status.nobudget','no budget') + '</span>';
+        if (budget === 0 && actual === 0) return '<span class="bt-diff-none">—</span>';
+        if (over) return '<span class="bt-diff-over">⚠ +₹' + _btFmt(Math.abs(diff)) + '</span>';
+        if (budget > 0) {
+            // Within budget so far — but is the run-rate on course to blow it?
+            var pace = _btPaceData();
+            if (pace && pace.day >= _BT_PACE_MIN_DAY && catKey && (pace.proj[catKey] || 0) > budget) {
+                return '<span class="bt-diff-pace">⏱ ' + _btT('bt.status.pace', 'pace ~{amt}').replace('{amt}', '₹' + _btFmt(pace.proj[catKey])) + '</span>';
+            }
+            return '<span class="bt-diff-ok">✓ ₹' + (diff === 0 ? '0' : _btFmt(diff)) + ' ' + _btT('bt.status.left','left') + '</span>';
+        }
+        return '<span class="bt-diff-none">' + _btT('bt.status.nobudget','no budget') + '</span>';
     }
 
     function _btMakeRow(cat, data) {
@@ -245,42 +252,39 @@
         if (cat.custom) {
             // Custom row: show delete button
             catCell =
-                '<td style="padding:5px 8px;border-bottom:1px solid #f1f5f9;">' +
-                    '<div style="display:flex;align-items:center;gap:5px;">' +
-                        '<span style="font-size:14px;flex-shrink:0;">' + cat.icon + '</span>' +
-                        '<div style="flex:1;min-width:0;">' +
-                            '<div style="font-size:11px;font-weight:700;color:#1e293b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + _btEsc(cat.key) + '</div>' +
-                            '<div style="font-size:9px;color:#94a3b8;">' + _btT('bt.cat.custom','Custom') + '</div>' +
+                '<td class="bt-td bt-td-cat">' +
+                    '<div class="bt-cat-wrap">' +
+                        '<span class="bt-cat-icon">' + cat.icon + '</span>' +
+                        '<div class="bt-cat-txt">' +
+                            '<div class="bt-cat-name bt-cat-name-custom">' + _btEsc(cat.key) + '</div>' +
+                            '<div class="bt-cat-hint">' + _btT('bt.cat.custom','Custom') + '</div>' +
                         '</div>' +
                         // key goes into an onclick JS string inside an HTML attribute:
                         // JS-escape first, then HTML-escape the result
-                        '<button onclick="window._btDeleteCustomCat(\'' + _btEsc(String(cat.key).replace(/\\/g, '\\\\').replace(/'/g, "\\'")) + '\')" title="' + _btEsc(_btT('bt.cat.remove','Remove category')) + '" ' +
-                            'style="flex-shrink:0;padding:2px 5px;border-radius:5px;font-size:10px;font-weight:900;color:#94a3b8;background:transparent;border:1px solid #e2e8f0;cursor:pointer;line-height:1;" ' +
-                            'onmouseover="this.style.color=\'#ef4444\';this.style.borderColor=\'#fca5a5\';" ' +
-                            'onmouseout="this.style.color=\'#94a3b8\';this.style.borderColor=\'#e2e8f0\';">×</button>' +
+                        '<button class="bt-cat-del" onclick="window._btDeleteCustomCat(\'' + _btEsc(String(cat.key).replace(/\\/g, '\\\\').replace(/'/g, "\\'")) + '\')" title="' + _btEsc(_btT('bt.cat.remove','Remove category')) + '">×</button>' +
                     '</div>' +
                 '</td>';
         } else {
             catCell =
-                '<td style="padding:5px 8px;white-space:nowrap;border-bottom:1px solid #f1f5f9;">' +
-                    '<div style="display:flex;align-items:center;gap:5px;">' +
-                        '<span style="font-size:14px;flex-shrink:0;">' + cat.icon + '</span>' +
+                '<td class="bt-td bt-td-cat bt-td-nowrap">' +
+                    '<div class="bt-cat-wrap">' +
+                        '<span class="bt-cat-icon">' + cat.icon + '</span>' +
                         '<div>' +
-                            '<div style="font-size:11px;font-weight:700;color:#1e293b;">' + _btCatLabel(cat) + '</div>' +
-                            '<div style="font-size:9px;color:#94a3b8;line-height:1.2;">' + _btCatHint(cat) + '</div>' +
+                            '<div class="bt-cat-name">' + _btCatLabel(cat) + '</div>' +
+                            '<div class="bt-cat-hint">' + _btCatHint(cat) + '</div>' +
                         '</div>' +
                     '</div>' +
                 '</td>';
         }
 
         var tr = document.createElement('tr');
-        tr.style.cssText = over ? 'background:#fef2f2;' : '';
+        if (over) tr.className = 'bt-row-over';
         tr.setAttribute('data-cat-row', cat.key);
         tr.innerHTML =
             catCell +
-            '<td style="padding:5px 4px;border-bottom:1px solid #f1f5f9;">' +
-                '<div style="position:relative;">' +
-                    '<span style="position:absolute;left:7px;top:50%;transform:translateY(-50%);font-size:10px;color:#94a3b8;pointer-events:none;font-weight:700;">₹</span>' +
+            '<td class="bt-td bt-td-inp">' +
+                '<div class="bt-inp-wrap">' +
+                    '<span class="bt-inp-rupee">₹</span>' +
                     '<input type="text" inputmode="numeric"' +
                     ' data-cat="' + _btEsc(cat.key) + '" data-field="b"' +
                     ' value="' + bStr + '" placeholder="' + _btEsc(_btT('bt.input.budget','Budget')) + '"' +
@@ -288,7 +292,7 @@
                     ' onfocus="window._btInputFocus(this)" oninput="window._btInputChange(this)" onblur="window._btInputBlur(this)">' +
                 '</div>' +
             '</td>' +
-            '<td style="padding:5px 4px;border-bottom:1px solid #f1f5f9;">' +
+            '<td class="bt-td bt-td-inp">' +
                 '<div class="bt-spent-cell">' +
                     '<span class="bt-spent-val' + (actual ? '' : ' bt-spent-zero') + '" data-spent-cat="' + _btEsc(cat.key) + '">' +
                         (actual ? '₹' + aStr : '—') +
@@ -297,7 +301,7 @@
                         'title="' + _btEsc(_btT('bt.row.addtx','Add expense')) + '">+</button>' +
                 '</div>' +
             '</td>' +
-            '<td style="padding:5px 8px;text-align:right;border-bottom:1px solid #f1f5f9;">' + _btMakeDiffHtml(budget, actual) + '</td>';
+            '<td class="bt-td bt-td-status">' + _btMakeDiffHtml(budget, actual, cat.key) + '</td>';
         return tr;
     }
 
@@ -318,19 +322,14 @@
         // ── Add-category row ──────────────────────────────────
         var addTr = document.createElement('tr');
         addTr.innerHTML =
-            '<td colspan="4" style="padding:6px 8px;border-top:2px dashed #e2e8f0;">' +
-                '<div style="display:flex;align-items:center;gap:6px;">' +
-                    '<span style="font-size:14px;">📌</span>' +
-                    '<input id="bt-new-cat-name" type="text" maxlength="30" placeholder="' + _btEsc(_btT('bt.cat.placeholder','Category name…')) + '" ' +
-                        'style="flex:1;padding:5px 8px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:7px;font-size:11px;font-weight:600;color:#1e293b;outline:none;" ' +
-                        'onkeydown="window._btNewCatKeydown(event)" ' +
-                        'onfocus="this.style.borderColor=\'#6366f1\';" ' +
-                        'onblur="this.style.borderColor=\'#e2e8f0\';">' +
-                    '<button onclick="window._btAddCustomCat()" ' +
-                        'style="padding:5px 12px;border-radius:7px;font-size:11px;font-weight:700;background:#6366f1;color:#fff;border:none;cursor:pointer;white-space:nowrap;flex-shrink:0;" ' +
-                        'onmouseover="this.style.background=\'#4f46e5\';" onmouseout="this.style.background=\'#6366f1\';">' + _btT('bt.cat.add','+ Add') + '</button>' +
+            '<td colspan="4" class="bt-addrow-td">' +
+                '<div class="bt-addrow-wrap">' +
+                    '<span class="bt-cat-icon">📌</span>' +
+                    '<input id="bt-new-cat-name" type="text" maxlength="30" class="bt-addrow-inp" placeholder="' + _btEsc(_btT('bt.cat.placeholder','Category name…')) + '" ' +
+                        'onkeydown="window._btNewCatKeydown(event)">' +
+                    '<button class="bt-addrow-btn" onclick="window._btAddCustomCat()">' + _btT('bt.cat.add','+ Add') + '</button>' +
                 '</div>' +
-                '<div style="font-size:9px;color:#94a3b8;margin-top:3px;margin-left:22px;">' + _btT('bt.cat.hint','Type your category name and press Enter or click Add') + '</div>' +
+                '<div class="bt-addrow-hint">' + _btT('bt.cat.hint','Type your category name and press Enter or click Add') + '</div>' +
             '</td>';
         tbody.appendChild(addTr);
     }
@@ -372,11 +371,11 @@
         var actual = entry.a || 0;
         var over   = budget > 0 && actual > budget;
 
-        row.style.background = over ? '#fef2f2' : '';
+        row.classList.toggle('bt-row-over', over);
 
         var tds    = row.querySelectorAll('td');
         var diffTd = tds[tds.length - 1];
-        if (diffTd) diffTd.innerHTML = _btMakeDiffHtml(budget, actual);
+        if (diffTd) diffTd.innerHTML = _btMakeDiffHtml(budget, actual, cat);
     }
 
     window._btInputFocus  = _btInputFocus;
@@ -796,7 +795,80 @@
     }
     window._btNoteInput = _btNoteInput;
 
+    // ── Pace projection ────────────────────────────────────────
+    // Month-end projection for the CURRENT month only. Recurring (r:1) and
+    // migrated (m:1) txs are one-shot amounts, not a daily run-rate — so
+    // projection = fixed + variable/dayOfMonth × daysInMonth. Otherwise rent
+    // posted on the 1st would "project" to 31 rents.
+    var _BT_PACE_MIN_DAY = 5;   // projections are noise before this
+
+    function _btPaceData() {
+        if (window._btMonth !== _btNow()) return null;
+        var m = window._btData[window._btMonth];
+        var now    = new Date();
+        var day    = now.getDate();
+        var daysIn = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+        var fixed = {}, vari = {};
+        ((m && m._tx) || []).forEach(function (t) {
+            var bucket = (t.r || t.m) ? fixed : vari;
+            bucket[t.c] = (bucket[t.c] || 0) + (t.a || 0);
+        });
+        var proj = {}, totalProj = 0;
+        _btAllCats().forEach(function (c) {
+            var p = Math.round((fixed[c.key] || 0) + (vari[c.key] || 0) / day * daysIn);
+            proj[c.key] = p;
+            totalProj += p;
+        });
+        return { day: day, daysIn: daysIn, proj: proj, totalProj: totalProj };
+    }
+
+    function _btRenderPace() {
+        var card = document.getElementById('bt-pace-card');
+        var mark = document.getElementById('bt-bar-today');
+        if (!card) return;
+        var t    = _btGetTotals();
+        var pace = _btPaceData();
+        if (!pace || t.budget <= 0) {
+            card.style.display = 'none';
+            if (mark) mark.style.display = 'none';
+            return;
+        }
+        card.style.display = '';
+        if (mark) {
+            mark.style.display = '';
+            mark.style.left = (pace.day / pace.daysIn * 100).toFixed(1) + '%';
+        }
+
+        var dayEl = document.getElementById('bt-pace-day');
+        if (dayEl) dayEl.textContent = _btT('bt.pace.day', 'Day {d} of {n}').replace('{d}', pace.day).replace('{n}', pace.daysIn);
+
+        var vEl = document.getElementById('bt-pace-verdict');
+        if (!vEl) return;
+        vEl.classList.remove('bt-pos', 'bt-neg', 'bt-mut');
+        var inr = function (v) { return '₹' + v.toLocaleString('en-IN'); };
+        if (t.actual === 0) {
+            vEl.textContent = _btT('bt.pace.nospend', 'No spends logged yet this month');
+            vEl.classList.add('bt-mut');
+        } else if (pace.day < _BT_PACE_MIN_DAY) {
+            vEl.textContent = _btT('bt.pace.early', 'Early days — projections firm up after day 5');
+            vEl.classList.add('bt-mut');
+        } else if (pace.totalProj <= t.budget) {
+            vEl.textContent = _btT('bt.pace.ontrack', 'On track — projected {proj} of {bud} budget')
+                .replace('{proj}', inr(pace.totalProj)).replace('{bud}', inr(t.budget));
+            vEl.classList.add('bt-pos');
+        } else {
+            vEl.textContent = _btT('bt.pace.over', 'Overspending — projected {proj}, {over} over budget')
+                .replace('{proj}', inr(pace.totalProj)).replace('{over}', inr(pace.totalProj - t.budget));
+            vEl.classList.add('bt-neg');
+        }
+    }
+
     // ── Render: summary cards ──────────────────────────────────
+    function _btSetTone(el, tone) {   // tone: 'pos' | 'neg' | 'mut' | null
+        el.classList.remove('bt-pos', 'bt-neg', 'bt-mut');
+        if (tone) el.classList.add('bt-' + tone);
+    }
+
     function _btRenderSummary() {
         var t   = _btGetTotals();
         var pct = t.budget > 0 ? Math.round(t.actual / t.budget * 100) : 0;
@@ -807,18 +879,18 @@
         var aEl = document.getElementById('bt-sum-actual');
         if (aEl) {
             aEl.textContent = t.actual ? '₹' + _btFmt(t.actual) : '—';
-            aEl.style.color = (t.budget > 0 && t.actual > t.budget) ? '#dc2626' : '#16a34a';
+            _btSetTone(aEl, (t.budget > 0 && t.actual > t.budget) ? 'neg' : 'pos');
         }
 
         var diff = t.budget - t.actual;
         var dEl  = document.getElementById('bt-sum-diff');
         if (dEl) {
             if (t.budget === 0) {
-                dEl.textContent = '—'; dEl.style.color = '#94a3b8';
+                dEl.textContent = '—'; _btSetTone(dEl, 'mut');
             } else if (diff >= 0) {
-                dEl.textContent = '₹' + _btFmt(diff) + ' ' + _btT('bt.sum.diff.saved','saved'); dEl.style.color = '#16a34a';
+                dEl.textContent = '₹' + _btFmt(diff) + ' ' + _btT('bt.sum.diff.saved','saved'); _btSetTone(dEl, 'pos');
             } else {
-                dEl.textContent = '₹' + _btFmt(Math.abs(diff)) + ' ' + _btT('bt.sum.diff.over','over'); dEl.style.color = '#dc2626';
+                dEl.textContent = '₹' + _btFmt(Math.abs(diff)) + ' ' + _btT('bt.sum.diff.over','over'); _btSetTone(dEl, 'neg');
             }
         }
 
@@ -827,17 +899,19 @@
             oEl.textContent = t.over > 0
                 ? t.over + (t.over === 1 ? _btT('bt.status.over.single',' category over budget') : _btT('bt.status.over.plural',' categories over budget'))
                 : t.budget > 0 ? _btT('bt.sum.allok','All categories within budget ✓') : _btT('bt.sum.empty','Set budgets to track spending');
-            oEl.style.color = t.over > 0 ? '#dc2626' : t.budget > 0 ? '#16a34a' : '#94a3b8';
+            _btSetTone(oEl, t.over > 0 ? 'neg' : t.budget > 0 ? 'pos' : 'mut');
         }
 
         var barEl = document.getElementById('bt-bar-fill');
         if (barEl) {
-            barEl.style.width      = Math.min(pct, 100) + '%';
-            barEl.style.background = pct > 100 ? '#ef4444' : pct > 80 ? '#f59e0b' : '#22c55e';
+            barEl.style.width = Math.min(pct, 100) + '%';
+            barEl.classList.remove('bt-fill-green', 'bt-fill-amber', 'bt-fill-red');
+            barEl.classList.add(pct > 100 ? 'bt-fill-red' : pct > 80 ? 'bt-fill-amber' : 'bt-fill-green');
         }
         var pctEl = document.getElementById('bt-bar-pct');
         if (pctEl) pctEl.textContent = t.budget > 0 ? pct + _btT('bt.pct.used','% of budget used') : '';
 
+        _btRenderPace();
         _btRenderEF();
     }
 
@@ -846,12 +920,7 @@
         window._btChartType = type;
         ['bar', 'line', 'donut'].forEach(function (t) {
             var btn = document.getElementById('bt-tab-' + t);
-            if (!btn) return;
-            var active = t === type;
-            btn.style.background  = active ? 'rgba(99,102,241,0.2)' : 'transparent';
-            btn.style.borderColor = active ? 'rgba(99,102,241,0.6)' : 'rgba(255,255,255,0.12)';
-            btn.style.color       = active ? '#c7d2fe'              : 'rgba(255,255,255,0.45)';
-            btn.style.fontWeight  = active ? '700' : '500';
+            if (btn) btn.classList.toggle('on', t === type);
         });
         var _btChartDescs = {
             bar:   _btT('bt.chart.bar',   'Budget vs Actual spend per category this month'),
@@ -982,11 +1051,7 @@
         _btEFMonths = m;
         [3, 6, 12].forEach(function (n) {
             var btn = document.getElementById('bt-ef-btn-' + n);
-            if (!btn) return;
-            var active = n === m;
-            btn.style.background   = active ? '#fbbf24' : 'transparent';
-            btn.style.borderColor  = active ? '#fbbf24' : '#e2e8f0';
-            btn.style.color        = '#78350f';
+            if (btn) btn.classList.toggle('on', n === m);
         });
         _btRenderEF();
     }

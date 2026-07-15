@@ -1135,3 +1135,329 @@
         }
         .bt-rec-daylbl { font-size: 9px; font-weight: 700; color: #b45309; flex-shrink: 0; }
         .bt-rec-amt { font-size: 11px; font-weight: 800; color: #78350f; white-space: nowrap; }
+
+        /* ── Budget Tracker: header ── */
+        .bt-header {
+            background: linear-gradient(135deg, #0c2340 0%, #1a4a7a 45%, #0e5c3a 100%);
+            border: 2px solid rgba(245,200,66,0.4);
+            box-shadow: 0 4px 18px rgba(0,0,0,0.25);
+        }
+        .bt-hdr-chip {
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .bt-hdr-sm { font-size: 10px; }
+        .bt-hdr-gold {
+            background: rgba(245,200,66,0.15);
+            color: #f5c842;
+            border: 1px solid rgba(245,200,66,0.3);
+        }
+        .bt-hdr-gold:hover { background: rgba(245,200,66,0.25); }
+        .bt-hdr-green {
+            background: rgba(34,197,94,0.15);
+            color: #4ade80;
+            border: 1px solid rgba(34,197,94,0.3);
+        }
+        .bt-hdr-green:hover { background: rgba(34,197,94,0.25); }
+        .bt-nav-btn {
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-weight: 900;
+            font-size: 14px;
+            background: rgba(255,255,255,0.1);
+            color: #e2e8f0;
+            border: 1px solid rgba(255,255,255,0.2);
+            cursor: pointer;
+            line-height: 1;
+        }
+        .bt-month-disp {
+            font-size: 13px;
+            font-weight: 800;
+            color: #f8fafc;
+            min-width: 70px;
+            text-align: center;
+        }
+
+        /* ── Budget Tracker: summary cards ── */
+        .bt-sum-blue   { background: #f0f9ff; border: 1px solid #bae6fd; }
+        .bt-sum-green  { background: #f0fdf4; border: 1px solid #86efac; }
+        .bt-sum-yellow { background: #fef9c3; border: 1px solid #fde047; }
+        .bt-sum-purple { background: #fdf4ff; border: 1px solid #e9d5ff; }
+        .bt-sum-lbl {
+            font-size: 9px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            margin-bottom: 2px;
+        }
+        .bt-sum-blue   .bt-sum-lbl { color: #0369a1; }
+        .bt-sum-green  .bt-sum-lbl { color: #15803d; }
+        .bt-sum-yellow .bt-sum-lbl { color: #92400e; }
+        .bt-sum-purple .bt-sum-lbl { color: #7c3aed; }
+        .bt-sum-val { font-size: 15px; font-weight: 900; }
+        .bt-sum-blue   .bt-sum-val { color: #0c4a6e; }
+        .bt-sum-green  .bt-sum-val { color: #166534; }
+        .bt-sum-yellow .bt-sum-val { color: #78350f; }
+        .bt-sum-purple .bt-sum-val { color: #6b21a8; }
+        .bt-sum-val-sm { font-size: 10px; font-weight: 700; line-height: 1.3; }
+
+        /* ── Budget Tracker: progress bar + pace ── */
+        .bt-bar-track {
+            background: #f1f5f9;
+            border-radius: 8px;
+            overflow: hidden;
+            height: 8px;
+            position: relative;
+        }
+        .bt-bar-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 8px;
+            transition: width .4s, background .4s;
+        }
+        .bt-fill-green { background: #22c55e; }
+        .bt-fill-amber { background: #f59e0b; }
+        .bt-fill-red   { background: #ef4444; }
+        .bt-bar-today {
+            position: absolute;
+            top: -1px;
+            bottom: -1px;
+            width: 2px;
+            background: #334155;
+            border-radius: 2px;
+        }
+        .bt-bar-pct {
+            font-size: 9px;
+            color: #64748b;
+            text-align: right;
+            margin-top: -4px;
+            font-weight: 600;
+        }
+        .bt-pace-card {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            flex-wrap: wrap;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 6px 12px;
+        }
+        .bt-pace-day {
+            font-size: 10px;
+            font-weight: 900;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            white-space: nowrap;
+        }
+        .bt-pace-verdict { font-size: 11px; font-weight: 700; }
+
+        /* ── Budget Tracker: category table ── */
+        .bt-table { width: 100%; border-collapse: collapse; }
+        .bt-table thead tr { background: #f8fafc; }
+        .bt-th {
+            padding: 6px 8px;
+            text-align: left;
+            font-size: 9px;
+            font-weight: 900;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .bt-th-inp   { padding: 6px 4px; min-width: 90px; }
+        .bt-th-right { text-align: right; }
+        .bt-td { padding: 5px 8px; border-bottom: 1px solid #f1f5f9; }
+        .bt-td-inp { padding: 5px 4px; }
+        .bt-td-status { text-align: right; }
+        .bt-td-nowrap { white-space: nowrap; }
+        .bt-row-over { background: #fef2f2; }
+        .bt-cat-wrap { display: flex; align-items: center; gap: 5px; }
+        .bt-cat-icon { font-size: 14px; flex-shrink: 0; }
+        .bt-cat-txt  { flex: 1; min-width: 0; }
+        .bt-cat-name { font-size: 11px; font-weight: 700; color: #1e293b; }
+        .bt-cat-name-custom { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .bt-cat-hint { font-size: 9px; color: #94a3b8; line-height: 1.2; }
+        .bt-cat-del {
+            flex-shrink: 0;
+            padding: 2px 5px;
+            border-radius: 5px;
+            font-size: 10px;
+            font-weight: 900;
+            color: #94a3b8;
+            background: transparent;
+            border: 1px solid #e2e8f0;
+            cursor: pointer;
+            line-height: 1;
+        }
+        .bt-cat-del:hover { color: #ef4444; border-color: #fca5a5; }
+        .bt-inp-wrap { position: relative; }
+        .bt-inp-rupee {
+            position: absolute;
+            left: 7px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 10px;
+            color: #94a3b8;
+            pointer-events: none;
+            font-weight: 700;
+        }
+        .bt-num-inp {
+            width: 100%;
+            padding: 5px 6px 5px 18px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 7px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #1e293b;
+            outline: none;
+            transition: border-color .15s, box-shadow .15s;
+            box-sizing: border-box;
+        }
+        .bt-num-inp:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 2px rgba(99,102,241,0.15);
+        }
+        .bt-num-inp.text-slate-400 { color: #94a3b8 !important; }
+        .bt-num-inp::placeholder { color: #cbd5e1; }
+        .bt-diff-none { color: #94a3b8; font-size: 10px; }
+        .bt-diff-over { color: #ef4444; font-weight: 700; font-size: 10px; }
+        .bt-diff-ok   { color: #16a34a; font-size: 10px; }
+        .bt-diff-pace { color: #d97706; font-weight: 700; font-size: 10px; }
+        .bt-addrow-td { padding: 6px 8px; border-top: 2px dashed #e2e8f0; }
+        .bt-addrow-wrap { display: flex; align-items: center; gap: 6px; }
+        .bt-addrow-inp {
+            flex: 1;
+            padding: 5px 8px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 7px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #1e293b;
+            outline: none;
+        }
+        .bt-addrow-inp:focus { border-color: #6366f1; }
+        .bt-addrow-btn {
+            padding: 5px 12px;
+            border-radius: 7px;
+            font-size: 11px;
+            font-weight: 700;
+            background: #6366f1;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .bt-addrow-btn:hover { background: #4f46e5; }
+        .bt-addrow-hint { font-size: 9px; color: #94a3b8; margin-top: 3px; margin-left: 22px; }
+        .bt-inp-err  { border-color: #ef4444 !important; }
+        .bt-inp-warn { border-color: #f59e0b !important; }
+
+        /* ── Budget Tracker: chart panel ── */
+        .bt-chart-card { background: #0f172a; border: 1px solid rgba(255,255,255,0.08); }
+        .bt-chart-tabs { display: flex; gap: 4px; }
+        .bt-chart-tab {
+            flex: 1;
+            padding: 5px 4px;
+            border-radius: 8px;
+            font-size: 9px;
+            font-weight: 500;
+            border: 1px solid rgba(255,255,255,0.12);
+            cursor: pointer;
+            color: rgba(255,255,255,0.45);
+            background: transparent;
+            transition: all .15s;
+        }
+        .bt-chart-tab.on {
+            background: rgba(99,102,241,0.2);
+            border-color: rgba(99,102,241,0.6);
+            color: #c7d2fe;
+            font-weight: 700;
+        }
+        .bt-chart-desc { font-size: 9px; color: rgba(255,255,255,0.3); text-align: center; margin-top: -2px; }
+        .bt-chart-wrap { position: relative; flex: 1; min-height: 260px; }
+        .bt-chart-canvas { position: absolute; inset: 0; width: 100% !important; height: 100% !important; }
+
+        /* ── Budget Tracker: tip + emergency fund ── */
+        .bt-tip {
+            background: rgba(99,102,241,0.07);
+            border: 1px solid rgba(99,102,241,0.2);
+            border-radius: 12px;
+            padding: 10px 14px;
+            font-size: 10px;
+            color: #4338ca;
+            line-height: 1.6;
+        }
+        .bt-ef-card {
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+            border: 1.5px solid #fbbf24;
+            border-radius: 16px;
+            padding: 14px 16px;
+        }
+        .bt-ef-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+        .bt-ef-title {
+            font-size: 13px;
+            font-weight: 900;
+            color: #92400e;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .bt-ef-basis { font-size: 10px; color: #b45309; margin-top: 1px; }
+        .bt-ef-btns { display: flex; gap: 5px; }
+        .bt-ef-btn {
+            padding: 5px 12px;
+            border-radius: 9px;
+            font-size: 11px;
+            font-weight: 700;
+            border: 1.5px solid #e2e8f0;
+            cursor: pointer;
+            transition: all .15s;
+            background: transparent;
+            color: #92400e;
+        }
+        .bt-ef-btn.on { background: #fbbf24; border-color: #fbbf24; color: #78350f; }
+        .bt-ef-result { font-size: 26px; font-weight: 900; color: #78350f; letter-spacing: -0.5px; }
+        .bt-ef-result-lbl { font-size: 10px; color: #b45309; margin-bottom: 10px; }
+        .bt-ef-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            margin-top: 6px;
+        }
+        .bt-ef-cell {
+            background: rgba(255,255,255,0.6);
+            border-radius: 10px;
+            padding: 8px;
+            text-align: center;
+        }
+        .bt-ef-cell-hl { border: 1.5px solid #fbbf24; }
+        .bt-ef-cell-lbl {
+            font-size: 9px;
+            font-weight: 800;
+            color: #b45309;
+            text-transform: uppercase;
+            margin-bottom: 3px;
+        }
+        .bt-ef-cell-val { font-size: 12px; font-weight: 900; color: #92400e; }
+        .bt-ef-tip { font-size: 9px; color: #b45309; margin-top: 8px; line-height: 1.5; }
+
+        /* ── Budget Tracker: tone utilities (keep last — must win over base colors) ── */
+        .bt-pos { color: #16a34a !important; }
+        .bt-neg { color: #dc2626 !important; }
+        .bt-mut { color: #94a3b8 !important; }
