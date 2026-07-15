@@ -117,6 +117,18 @@
         return { budget: budget, actual: actual, over: overCount };
     }
 
+    // Totals for an arbitrary month key (not the viewed month)
+    function _btMonthTotals(mk) {
+        var data = window._btData[mk] || {};
+        var budget = 0, actual = 0;
+        _btAllCats().forEach(function (cat) {
+            var e = data[cat.key] || {};
+            budget += (e.b || 0);
+            actual += (e.a || 0);
+        });
+        return { budget: budget, actual: actual };
+    }
+
     // ── Custom category management ─────────────────────────────
     function _btAddCustomCat() {
         var nameEl = document.getElementById('bt-new-cat-name');
@@ -802,9 +814,10 @@
     // posted on the 1st would "project" to 31 rents.
     var _BT_PACE_MIN_DAY = 5;   // projections are noise before this
 
-    function _btPaceData() {
-        if (window._btMonth !== _btNow()) return null;
-        var m = window._btData[window._btMonth];
+    // Projection for the current CALENDAR month — independent of which month
+    // the panel is viewing (the EF basis needs it even from a past month).
+    function _btProjectCurrentMonth() {
+        var m = window._btData[_btNow()];
         var now    = new Date();
         var day    = now.getDate();
         var daysIn = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
@@ -820,6 +833,12 @@
             totalProj += p;
         });
         return { day: day, daysIn: daysIn, proj: proj, totalProj: totalProj };
+    }
+
+    // Pace UI data — only when the panel is viewing the current month.
+    function _btPaceData() {
+        if (window._btMonth !== _btNow()) return null;
+        return _btProjectCurrentMonth();
     }
 
     function _btRenderPace() {
@@ -1057,9 +1076,44 @@
     }
     window._btSetEFMonths = _btSetEFMonths;
 
+    // Full-month expense estimate for the EF target — anchored to the
+    // calendar, never to the viewed month. Mid-month "actual so far" is NOT a
+    // month's expenses, so the basis prefers, in order:
+    //   1. average of the last ≤3 completed months with spends (≤6 months old)
+    //   2. current month's pace projection (fixed + variable run-rate), day ≥5
+    //   3. current month's budget
+    //   4. current month's actual so far (floor, better than nothing)
+    function _btEFBasis() {
+        var cur = _btNow();
+        var cd = new Date();
+        cd.setMonth(cd.getMonth() - 6);
+        var cutoff = cd.getFullYear() + '-' + _btPad2(cd.getMonth() + 1);
+
+        var months = Object.keys(window._btData)
+            .filter(function (k) { return /^\d{4}-\d{2}$/.test(k) && k < cur && k >= cutoff; })
+            .sort()
+            .reverse();
+        var sums = [];
+        for (var i = 0; i < months.length && sums.length < 3; i++) {
+            var tot = _btMonthTotals(months[i]).actual;
+            if (tot > 0) sums.push(tot);
+        }
+        if (sums.length) {
+            var avg = Math.round(sums.reduce(function (a, b) { return a + b; }, 0) / sums.length);
+            return { monthly: avg, kind: 'avg', n: sums.length };
+        }
+
+        var curTot = _btMonthTotals(cur);
+        var p = _btProjectCurrentMonth();
+        if (curTot.actual > 0 && p.day >= _BT_PACE_MIN_DAY) return { monthly: p.totalProj, kind: 'proj' };
+        if (curTot.budget > 0) return { monthly: curTot.budget, kind: 'budget' };
+        if (curTot.actual > 0) return { monthly: curTot.actual, kind: 'actual' };
+        return { monthly: 0 };
+    }
+
     function _btRenderEF() {
-        var t = _btGetTotals();
-        var monthly = t.actual > 0 ? t.actual : t.budget;
+        var basis   = _btEFBasis();
+        var monthly = basis.monthly;
         var fmt = function (v) {
             return '₹' + v.toLocaleString('en-IN');
         };
@@ -1082,9 +1136,21 @@
             return;
         }
 
-        var basisKey = t.actual > 0 ? 'bt.ef.basis.actual' : 'bt.ef.basis.budgeted';
-        var basisFb  = t.actual > 0 ? 'Based on actual spend of {amount} / month' : 'Based on budgeted amount of {amount} / month';
-        if (basisEl) basisEl.textContent = _btT(basisKey, basisFb).replace('{amount}', fmt(monthly));
+        if (basisEl) {
+            var basisTxt;
+            if (basis.kind === 'avg') {
+                basisTxt = basis.n === 1
+                    ? _btT('bt.ef.basis.avg1', "Based on last month's spend of {amount}")
+                    : _btT('bt.ef.basis.avg', 'Based on your average spend of {amount}/month over the last {n} months').replace('{n}', basis.n);
+            } else if (basis.kind === 'proj') {
+                basisTxt = _btT('bt.ef.basis.proj', "Based on this month's projected spend of {amount}");
+            } else if (basis.kind === 'budget') {
+                basisTxt = _btT('bt.ef.basis.budgeted', 'Based on budgeted amount of {amount} / month');
+            } else {
+                basisTxt = _btT('bt.ef.basis.actual', 'Based on actual spend of {amount} / month');
+            }
+            basisEl.textContent = basisTxt.replace('{amount}', fmt(monthly));
+        }
 
         var target = monthly * _btEFMonths;
         resEl.textContent = fmt(target);
