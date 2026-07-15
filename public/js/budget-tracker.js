@@ -194,6 +194,38 @@
     window._btNavMonth  = _btNavMonth;
     window._btGoToToday = _btGoToToday;
 
+    // ── Clear month (two-tap confirm) ──────────────────────────
+    // Wipes the VIEWED month's budgets + transactions. Recurring rules are
+    // global and survive; a cleared current month is not re-posted because
+    // each rule's `last` already points at it.
+    var _btClearArmed = null;
+
+    function _btResetClearBtn() {
+        var btn = document.getElementById('bt-clear-btn');
+        if (_btClearArmed) { clearTimeout(_btClearArmed); _btClearArmed = null; }
+        if (btn) {
+            btn.textContent = _btT('bt.btn.clear', '🗑 Clear month');
+            btn.classList.remove('bt-hdr-armed');
+        }
+    }
+
+    function _btClearMonth() {
+        var btn = document.getElementById('bt-clear-btn');
+        if (!_btClearArmed) {
+            if (btn) {
+                btn.textContent = _btT('bt.btn.clear.confirm', 'Sure? Tap again');
+                btn.classList.add('bt-hdr-armed');
+            }
+            _btClearArmed = setTimeout(_btResetClearBtn, 4000);
+            return;
+        }
+        delete window._btData[window._btMonth];
+        _btResetClearBtn();
+        _btRefreshAll();
+        _btTouchAndSave();
+    }
+    window._btClearMonth = _btClearMonth;
+
     // ── Render: month display ──────────────────────────────────
     function _btRenderMonthDisplay() {
         var parts = window._btMonth.split('-');
@@ -213,6 +245,24 @@
             copyBtn.textContent = _btT('bt.copy.prev', 'Copy {mon} budgets').replace('{mon}', prevLabel);
             copyBtn.style.display = hasPrevBudget ? '' : 'none';
         }
+
+        _btUpdateClearBtn();
+    }
+
+    // Visibility tracks whether the viewed month has anything to clear;
+    // any re-render disarms a pending confirm (stale "Sure?" is worse than
+    // asking twice).
+    function _btUpdateClearBtn() {
+        var clearBtn = document.getElementById('bt-clear-btn');
+        if (!clearBtn) return;
+        var md = window._btData[window._btMonth] || {};
+        var hasData = Object.keys(md).some(function (k) {
+            if (k === '_tx') return Array.isArray(md._tx) && md._tx.length > 0;
+            var e = md[k] || {};
+            return (e.b || 0) > 0 || (e.a || 0) > 0;
+        });
+        clearBtn.style.display = hasData ? '' : 'none';
+        _btResetClearBtn();
     }
 
     // ── Copy budget from previous month ───────────────────────
@@ -939,6 +989,7 @@
         var pctEl = document.getElementById('bt-bar-pct');
         if (pctEl) pctEl.textContent = t.budget > 0 ? pct + _btT('bt.pct.used','% of budget used') : '';
 
+        _btUpdateClearBtn();
         _btRenderPace();
         _btRenderEF();
     }

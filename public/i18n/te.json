@@ -3551,6 +3551,8 @@
   "bt.pct.used": "% బడ్జెట్ వాడుకోవడం",
   "bt.copy.prev": "{mon} బడ్జెట్ కాపీ చేయండి",
   "bt.btn.today": "ఈరోజు",
+  "bt.btn.clear": "🗑 నెల డేటా తొలగించు",
+  "bt.btn.clear.confirm": "ఖచ్చితమా? మళ్లీ నొక్కండి",
   "bt.status.over.single": " వర్గం బడ్జెట్ మించింది",
   "bt.status.over.plural": " వర్గాలు బడ్జెట్ మించాయి",
   "bt.cat.Housing": "గృహావసరాలు",

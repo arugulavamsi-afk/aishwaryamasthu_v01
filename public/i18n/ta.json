@@ -3551,6 +3551,8 @@
   "bt.pct.used": "% பட்ஜெட் பயன்படுத்தப்பட்டது",
   "bt.copy.prev": "{mon} பட்ஜெட்டை நகலெடுக்கவும்",
   "bt.btn.today": "இன்று",
+  "bt.btn.clear": "🗑 மாத தரவை அழி",
+  "bt.btn.clear.confirm": "உறுதியா? மீண்டும் தட்டவும்",
   "bt.status.over.single": " வகை பட்ஜெட்டை மீறியது",
   "bt.status.over.plural": " வகைகள் பட்ஜெட்டை மீறியது",
   "bt.cat.Housing": "வீடு",

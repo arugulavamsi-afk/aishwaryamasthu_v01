@@ -3551,6 +3551,8 @@
   "bt.pct.used": "% बजट उपयोग",
   "bt.copy.prev": "{mon} बजट कॉपी करें",
   "bt.btn.today": "आज",
+  "bt.btn.clear": "🗑 महीना साफ़ करें",
+  "bt.btn.clear.confirm": "पक्का? फिर टैप करें",
   "bt.status.over.single": " श्रेणी बजट से अधिक",
   "bt.status.over.plural": " श्रेणियां बजट से अधिक",
   "bt.cat.Housing": "आवास",

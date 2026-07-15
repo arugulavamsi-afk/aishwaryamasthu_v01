@@ -3677,6 +3677,8 @@
         'bt.pct.used':                 '% of budget used',
         'bt.copy.prev':                'Copy {mon} budgets',
         'bt.btn.today':                'Today',
+        'bt.btn.clear':                '🗑 Clear month',
+        'bt.btn.clear.confirm':        'Sure? Tap again',
         'bt.status.over.single':       ' category over budget',
         'bt.status.over.plural':       ' categories over budget',
         'bt.cat.Housing':              'Housing',
