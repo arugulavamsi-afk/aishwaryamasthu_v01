@@ -140,6 +140,29 @@
         💡 <strong>How to use:</strong> Set a monthly budget per category, then log each expense with the <strong>⚡ Add Expense</strong> bar as it happens — the Spent column totals up automatically. Red = over budget. Switch to <strong>Trend</strong> to spot months you overspent, or <strong>Split</strong> to see where your money goes.
     </div>
 
+    <!-- NEXT 3 MONTHS OUTLOOK (hidden until there is data to forecast from) -->
+    <div id="bt-fc-card" class="bt-fc-card" style="display:none;">
+        <div class="bt-fc-head">
+            <div>
+                <div data-i18n="bt.fc.title" class="bt-fc-title">🔮 Next 3 Months Outlook</div>
+                <div id="bt-fc-basis" class="bt-fc-basis"></div>
+            </div>
+            <span id="bt-fc-trend" class="bt-fc-trend" style="display:none;"></span>
+        </div>
+        <div id="bt-fc-grid" class="bt-fc-grid"></div>
+        <div class="bt-fc-row">
+            <span id="bt-fc-split" class="bt-fc-split"></span>
+            <span id="bt-fc-total" class="bt-fc-total"></span>
+        </div>
+        <div id="bt-fc-catwrap">
+            <div data-i18n="bt.fc.cats" class="bt-fc-cats-lbl">A typical month, by category</div>
+            <div id="bt-fc-cats" class="bt-fc-cats"></div>
+        </div>
+        <div data-i18n-html="bt.fc.tip" class="bt-fc-tip">
+            💡 One-offs — insurance premiums, school fees, festivals, travel — are <strong>not</strong> included unless they repeat monthly. Keep a buffer for festival months.
+        </div>
+    </div>
+
     <!-- EMERGENCY FUND SECTION -->
     <div id="bt-ef-section" class="bt-ef-card">
         <div class="bt-ef-head">

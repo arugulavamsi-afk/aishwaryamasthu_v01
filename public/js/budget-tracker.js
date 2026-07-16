@@ -741,6 +741,7 @@
     function _btDeleteRecurring(id) {
         window._btRecurring = (window._btRecurring || []).filter(function (r) { return r.i !== id; });
         _btRenderRecurring();
+        _btRenderForecast();   // rule amounts feed the 3-month outlook
         _btTouchAndSave();
     }
     window._btDeleteRecurring = _btDeleteRecurring;
@@ -885,13 +886,15 @@
             var bucket = (t.r || t.m) ? fixed : vari;
             bucket[t.c] = (bucket[t.c] || 0) + (t.a || 0);
         });
-        var proj = {}, totalProj = 0;
+        var proj = {}, projVar = {}, totalProj = 0, totalProjVar = 0;
         _btAllCats().forEach(function (c) {
-            var p = Math.round((fixed[c.key] || 0) + (vari[c.key] || 0) / day * daysIn);
-            proj[c.key] = p;
-            totalProj += p;
+            var pv = Math.round((vari[c.key] || 0) / day * daysIn);
+            var p  = (fixed[c.key] || 0) + pv;
+            proj[c.key] = p;       totalProj    += p;
+            projVar[c.key] = pv;   totalProjVar += pv;
         });
-        return { day: day, daysIn: daysIn, proj: proj, totalProj: totalProj };
+        return { day: day, daysIn: daysIn, proj: proj, totalProj: totalProj,
+                 projVar: projVar, totalProjVar: totalProjVar };
     }
 
     // Pace UI data — only when the panel is viewing the current month.
@@ -938,6 +941,184 @@
             vEl.textContent = _btT('bt.pace.over', 'Overspending — projected {proj}, {over} over budget')
                 .replace('{proj}', inr(pace.totalProj)).replace('{over}', inr(pace.totalProj - t.budget));
             vEl.classList.add('bt-neg');
+        }
+    }
+
+    // ── 3-month outlook ────────────────────────────────────────
+    // Forecast for the next 3 calendar months: recurring rules are
+    // deterministic fixed spend; variable spend is the average of the
+    // last ≤3 completed months (≤6 months old), tilted by a clamped
+    // linear trend. Calendar-anchored like the EF basis — never the
+    // viewed month. One-offs (festivals, annual fees) are NOT covered.
+    function _btForecastData() {
+        var recCat = {}, recTotal = 0;
+        (window._btRecurring || []).forEach(function (r) {
+            recCat[r.c] = (recCat[r.c] || 0) + (r.a || 0);
+            recTotal += (r.a || 0);
+        });
+
+        var cur = _btNow();
+        var cd = new Date();
+        cd.setMonth(cd.getMonth() - 6);
+        var cutoff = cd.getFullYear() + '-' + _btPad2(cd.getMonth() + 1);
+        var months = Object.keys(window._btData)
+            .filter(function (k) { return /^\d{4}-\d{2}$/.test(k) && k < cur && k >= cutoff; })
+            .sort()
+            .reverse();
+
+        // Variable-spend history: txs that are neither recurring (r) nor
+        // migrated lump-sums (m) — a month qualifies only if it has any,
+        // so pre-transaction-engine months never skew the average to zero.
+        var hist = [], histCats = [];
+        for (var i = 0; i < months.length && hist.length < 3; i++) {
+            var tx = (window._btData[months[i]] || {})._tx || [];
+            var tot = 0, cats = {};
+            tx.forEach(function (t) {
+                if (t.r || t.m) return;
+                tot += (t.a || 0);
+                cats[t.c] = (cats[t.c] || 0) + (t.a || 0);
+            });
+            if (tot > 0) { hist.push(tot); histCats.push(cats); }
+        }
+        hist.reverse(); histCats.reverse();          // oldest → newest
+
+        var kind = null, varAvg = 0, varCat = {}, slope = 0, n = hist.length;
+        if (n) {
+            kind = 'avg';
+            varAvg = hist.reduce(function (a, b) { return a + b; }, 0) / n;
+            histCats.forEach(function (cats) {
+                Object.keys(cats).forEach(function (c) { varCat[c] = (varCat[c] || 0) + cats[c] / n; });
+            });
+            if (n >= 2) {
+                // Least-squares slope, clamped to ±20% of the average so a
+                // couple of noisy months can't run the forecast away.
+                var tBar = (n - 1) / 2, num = 0, den = 0;
+                hist.forEach(function (v, t) { num += (t - tBar) * (v - varAvg); den += (t - tBar) * (t - tBar); });
+                slope = den ? num / den : 0;
+                var cap = varAvg * 0.2;
+                slope = Math.max(-cap, Math.min(cap, slope));
+            }
+        } else {
+            var curTot = _btMonthTotals(cur);
+            var p = _btProjectCurrentMonth();
+            if (curTot.actual > 0 && p.day >= _BT_PACE_MIN_DAY && p.totalProjVar > 0) {
+                kind = 'proj'; varAvg = p.totalProjVar; varCat = p.projVar;
+            } else if (curTot.budget > 0) {
+                kind = 'budget';
+                var mData = window._btData[cur] || {};
+                _btAllCats().forEach(function (c) {
+                    var v = Math.max(0, ((mData[c.key] || {}).b || 0) - (recCat[c.key] || 0));
+                    if (v > 0) varCat[c.key] = v;
+                    varAvg += v;
+                });
+            } else if (recTotal > 0) {
+                kind = 'rec';
+            } else {
+                return null;                          // nothing to go on yet
+            }
+        }
+
+        var out = [], grand = 0, nowD = new Date();
+        for (var k = 1; k <= 3; k++) {
+            var d = new Date(nowD.getFullYear(), nowD.getMonth() + k, 1);
+            var total = Math.round(recTotal + Math.max(0, varAvg + slope * k));
+            grand += total;
+            out.push({ label: _MONTHS_SHORT[d.getMonth()] + ' ' + d.getFullYear(), total: total });
+        }
+        return {
+            kind: kind, n: n, months: out, grand: grand,
+            recTotal: Math.round(recTotal), varAvg: Math.round(varAvg),
+            slope: Math.round(slope), recCat: recCat, varCat: varCat
+        };
+    }
+
+    function _btRenderForecast() {
+        var card = document.getElementById('bt-fc-card');
+        if (!card) return;
+        var fc = _btForecastData();
+        if (!fc) { card.style.display = 'none'; return; }
+        card.style.display = '';
+        var inr = function (v) { return '₹' + v.toLocaleString('en-IN'); };
+
+        var basisEl = document.getElementById('bt-fc-basis');
+        if (basisEl) {
+            var bt;
+            if (fc.kind === 'avg') {
+                bt = fc.n === 1
+                    ? _btT('bt.fc.basis.avg1', "Recurring expenses + last month's variable spend")
+                    : _btT('bt.fc.basis.avg', 'Recurring expenses + average variable spend over the last {n} months').replace('{n}', fc.n);
+            } else if (fc.kind === 'proj') {
+                bt = _btT('bt.fc.basis.proj', "Recurring expenses + this month's spending pace");
+            } else if (fc.kind === 'budget') {
+                bt = _btT('bt.fc.basis.budget', "Recurring expenses + this month's budget");
+            } else {
+                bt = _btT('bt.fc.basis.rec', 'Your recurring expenses only — log daily spends to sharpen this');
+            }
+            basisEl.textContent = bt;
+        }
+
+        // Trend badge — rising variable spend is a warning, falling is good
+        var trendEl = document.getElementById('bt-fc-trend');
+        if (trendEl) {
+            var minSlope = Math.max(500, fc.varAvg * 0.05);
+            if (fc.kind === 'avg' && Math.abs(fc.slope) >= minSlope) {
+                trendEl.style.display = '';
+                trendEl.textContent = (fc.slope > 0
+                    ? _btT('bt.fc.trend.up', '▲ Variable spend rising ~{amt}/month')
+                    : _btT('bt.fc.trend.down', '▼ Variable spend falling ~{amt}/month'))
+                    .replace('{amt}', inr(Math.abs(fc.slope)));
+                trendEl.classList.toggle('bt-fc-trend-up', fc.slope > 0);
+            } else trendEl.style.display = 'none';
+        }
+
+        var grid = document.getElementById('bt-fc-grid');
+        if (grid) {
+            grid.innerHTML = '';
+            fc.months.forEach(function (m) {
+                var cell = document.createElement('div');
+                cell.className = 'bt-fc-cell';
+                var lbl = document.createElement('div');
+                lbl.className = 'bt-fc-cell-lbl';
+                lbl.textContent = m.label;
+                var val = document.createElement('div');
+                val.className = 'bt-fc-cell-val';
+                val.textContent = inr(m.total);
+                cell.appendChild(lbl);
+                cell.appendChild(val);
+                grid.appendChild(cell);
+            });
+        }
+
+        var splitEl = document.getElementById('bt-fc-split');
+        if (splitEl) splitEl.textContent = _btT('bt.fc.split', '🔁 Fixed {fixed} + variable {vari} / month')
+            .replace('{fixed}', inr(fc.recTotal)).replace('{vari}', inr(fc.varAvg));
+        var totEl = document.getElementById('bt-fc-total');
+        if (totEl) totEl.textContent = _btT('bt.fc.total', '3-month total: {amount}').replace('{amount}', inr(fc.grand));
+
+        // Top-5 categories of a typical forecast month (recurring + variable)
+        var catsEl = document.getElementById('bt-fc-cats');
+        if (catsEl) {
+            var typ = {};
+            Object.keys(fc.recCat).forEach(function (c) { typ[c] = (typ[c] || 0) + fc.recCat[c]; });
+            Object.keys(fc.varCat).forEach(function (c) { typ[c] = (typ[c] || 0) + fc.varCat[c]; });
+            var catByKey = {};
+            _btAllCats().forEach(function (c) { catByKey[c.key] = c; });
+            var top = Object.keys(typ)
+                .map(function (c) { return { key: c, amt: Math.round(typ[c]) }; })
+                .filter(function (e) { return e.amt > 0; })
+                .sort(function (a, b) { return b.amt - a.amt; })
+                .slice(0, 5);
+            catsEl.innerHTML = '';
+            top.forEach(function (e) {
+                var co = catByKey[e.key] || { key: e.key, icon: '📌' };
+                var chip = document.createElement('span');
+                chip.className = 'bt-fc-chip';
+                var name = (co.custom || !co.tkey) ? co.key : _btCatLabel(co);
+                chip.textContent = co.icon + ' ' + name + ' ' + inr(e.amt);
+                catsEl.appendChild(chip);
+            });
+            var wrap = document.getElementById('bt-fc-catwrap');
+            if (wrap) wrap.style.display = top.length ? '' : 'none';
         }
     }
 
@@ -992,6 +1173,7 @@
         _btUpdateClearBtn();
         _btRenderPace();
         _btRenderEF();
+        _btRenderForecast();
     }
 
     // ── Render: chart ──────────────────────────────────────────

@@ -1594,6 +1594,87 @@
         .bt-ef-cell-val { font-size: 12px; font-weight: 900; color: #92400e; }
         .bt-ef-tip { font-size: 9px; color: #b45309; margin-top: 8px; line-height: 1.5; }
 
+        /* ── Budget Tracker: 3-month outlook card ── */
+        .bt-fc-card {
+            background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+            border: 1.5px solid #a78bfa;
+            border-radius: 16px;
+            padding: 14px 16px;
+        }
+        .bt-fc-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+        .bt-fc-title {
+            font-size: 13px;
+            font-weight: 900;
+            color: #5b21b6;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .bt-fc-basis { font-size: 10px; color: #7c3aed; margin-top: 1px; }
+        .bt-fc-trend {
+            font-size: 10px;
+            font-weight: 800;
+            color: #16a34a;
+            background: rgba(255,255,255,0.7);
+            border-radius: 8px;
+            padding: 4px 9px;
+        }
+        .bt-fc-trend-up { color: #dc2626; }
+        .bt-fc-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+        }
+        .bt-fc-cell {
+            background: rgba(255,255,255,0.6);
+            border-radius: 10px;
+            padding: 8px;
+            text-align: center;
+        }
+        .bt-fc-cell-lbl {
+            font-size: 9px;
+            font-weight: 800;
+            color: #7c3aed;
+            text-transform: uppercase;
+            margin-bottom: 3px;
+        }
+        .bt-fc-cell-val { font-size: 14px; font-weight: 900; color: #5b21b6; }
+        .bt-fc-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+            font-size: 10px;
+            color: #7c3aed;
+        }
+        .bt-fc-total { font-weight: 800; color: #5b21b6; }
+        .bt-fc-cats-lbl {
+            font-size: 9px;
+            font-weight: 800;
+            color: #7c3aed;
+            text-transform: uppercase;
+            margin: 8px 0 5px;
+        }
+        .bt-fc-cats { display: flex; flex-wrap: wrap; gap: 5px; }
+        .bt-fc-chip {
+            font-size: 10px;
+            font-weight: 700;
+            color: #5b21b6;
+            background: rgba(255,255,255,0.7);
+            border: 1px solid #ddd6fe;
+            border-radius: 999px;
+            padding: 3px 9px;
+        }
+        .bt-fc-tip { font-size: 9px; color: #7c3aed; margin-top: 8px; line-height: 1.5; }
+
         /* ── Budget Tracker: tone utilities (keep last — must win over base colors) ── */
         .bt-pos { color: #16a34a !important; }
         .bt-neg { color: #dc2626 !important; }
