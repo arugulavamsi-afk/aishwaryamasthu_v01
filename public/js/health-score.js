@@ -602,6 +602,12 @@
             });
             window._hsLastResult = { score: totalScore, grade: grade, emoji: emoji, arcColor: arcColor, topActions: _topActions, ts: Date.now() };
             if (typeof _dashUpdateScoreWidget === 'function') _dashUpdateScoreWidget();
+            // Publish to tool summaries — My Profile's score card and the Consult
+            // snapshot read _toolSummaries.healthScore (score/grade/label).
+            var _prevHsSum = (window._toolSummaries || {}).healthScore;
+            if (typeof saveToolSummary === 'function' &&
+                !(_prevHsSum && _prevHsSum.score === totalScore && _prevHsSum.grade === grade))
+                saveToolSummary('healthScore', { score: totalScore, grade: grade, label: grade, emoji: emoji });
 
             if (typeof saveUserData === 'function') saveUserData();
         }

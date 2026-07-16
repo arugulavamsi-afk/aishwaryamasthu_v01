@@ -552,6 +552,11 @@
                 taxGuide['tg-epf-basic']    = document.getElementById('tg-epf-basic')?.value    || '';
                 taxGuide['tg-slab']         = document.getElementById('tg-slab')?.value         || '';
                 taxGuide['tg-regime']       = document.getElementById('tg-regime')?.value       || '';
+                taxGuide['tg-category']     = document.getElementById('tg-category')?.value     || '';
+                // Post-Tax Return mini-calculator inputs
+                taxGuide['ptc-return']      = document.getElementById('ptc-return')?.value      || '';
+                taxGuide['ptc-type']        = document.getElementById('ptc-type')?.value        || '';
+                taxGuide['ptc-slab']        = document.getElementById('ptc-slab')?.value        || '';
                 // Keep _tgPendingData in sync so the fallback branch always has fresh data
                 window._tgPendingData = Object.assign({}, taxGuide);
             } else if (window._tgPendingData) {
@@ -567,7 +572,7 @@
                 ['hl-amount','hl-rate','hl-tenure','hl-start-month','hl-start-year',
                  'pp-amount','pp-rate','pp-tenure','pp-lump','pp-after',
                  'rvb-price','rvb-down','rvb-rate','rvb-tenure','rvb-apprec','rvb-maint','rvb-society','rvb-stamp','rvb-gst','rvb-modt','rvb-rent','rvb-rent-incr','rvb-inv-return','rvb-years',
-                 'tx-amount','tx-rate','tx-tenure','tx-slab','tx-type'].forEach(function(id) {
+                 'tx-amount','tx-rate','tx-tenure','tx-slab','tx-type','tx-regime'].forEach(function(id) {
                     obj[id] = document.getElementById(id)?.value || '';
                 });
                 return obj;
@@ -622,7 +627,7 @@
                 var obj = {};
                 ['ins-income','ins-age','ins-dependents','ins-loans','ins-term-current',
                  'ins-health-current','ins-monthly-exp','ins-family',
-                 'ins-assets','ins-ci-current','ins-disability-current',
+                 'ins-assets','ins-illiquid-assets','ins-ci-current','ins-disability-current',
                  'ins-parents-cover','ins-parents-age1','ins-parents-age2'].forEach(function(id){
                     obj[id] = document.getElementById(id)?.value || '';
                 });
@@ -632,6 +637,7 @@
                 var obj = {};
                 ['fi-fd-principal','fi-fd-rate','fi-fd-tenure','fi-fd-type',
                  'fi-fd-regime','fi-fd-slab',
+                 'fi-rd-deposit','fi-rd-rate','fi-rd-tenure','fi-rd-regime','fi-rd-slab',
                  'fi-scss-principal','fi-scss-regime','fi-scss-slab',
                  'fi-pomis-principal','fi-pomis-regime','fi-pomis-slab',
                  'fi-nsc-principal','fi-nsc-regime','fi-nsc-slab',
@@ -645,9 +651,10 @@
             const retirementHub = _panelData('rh-age', function() {
                 var obj = {};
                 ['rh-age','rh-ret-age','rh-life-exp','rh-inflation','rh-ret-return','rh-expenses',
+                 'rh-medical-expenses','rh-medical-inflation',
                  'rh-epf-balance','rh-epf-basic',
                  'rh-ppf-balance','rh-ppf-annual','rh-ppf-years-done',
-                 'rh-nps-balance','rh-nps-monthly','rh-nps-return','rh-nps-annuity',
+                 'rh-nps-balance','rh-nps-monthly','rh-nps-return','rh-nps-annuity','rh-nps-lumpsum-pct',
                  'rh-sip-monthly','rh-sip-return',
                  'rh-other-corpus','rh-other-return'].forEach(function(id){
                     obj[id] = document.getElementById(id)?.value || '';
@@ -1194,6 +1201,10 @@
                         const el = document.getElementById(id);
                         if (el && fp[id]) el.value = fp[id];
                     });
+                    // Custom "other investment" label — synced to state via oninput,
+                    // so the visible input must be refilled from state on restore.
+                    var fpCustEl = document.getElementById('fp-existing-custom-text');
+                    if (fpCustEl && fp.existingCustom) fpCustEl.value = fp.existingCustom;
                     if (fp.epfMode) window._fpState.epfMode = fp.epfMode;
                     if (typeof fpGoStep === 'function') fpGoStep(1);
                     // Restore tile visual state after DOM is ready
@@ -1277,6 +1288,7 @@
                             _restoring = false;
                         }
                         if (typeof tgCalc === 'function') tgCalc();
+                        if (typeof ptcCalc === 'function') ptcCalc();
                     }
 
                     if (document.getElementById('tg-income') !== null) {
@@ -1462,7 +1474,7 @@
                         var insDefs = {'ins-income':'12,00,000','ins-age':'30','ins-dependents':'2',
                                        'ins-loans':'0','ins-term-current':'0','ins-health-current':'0',
                                        'ins-monthly-exp':'50,000','ins-family':'2',
-                                       'ins-assets':'0','ins-ci-current':'0','ins-disability-current':'0',
+                                       'ins-assets':'0','ins-illiquid-assets':'0','ins-ci-current':'0','ins-disability-current':'0',
                                        'ins-parents-cover':'0','ins-parents-age1':'55','ins-parents-age2':'52'};
                         Object.entries(_insData).forEach(function([id, val]) {
                             var el = document.getElementById(id);
@@ -1484,6 +1496,8 @@
                         var fiDefs = {
                             'fi-fd-principal':'1,00,000','fi-fd-rate':'7.0','fi-fd-tenure':'12',
                             'fi-fd-type':'cumulative','fi-fd-regime':'new','fi-fd-slab':'30',
+                            'fi-rd-deposit':'5,000','fi-rd-rate':'6.5','fi-rd-tenure':'12',
+                            'fi-rd-regime':'new','fi-rd-slab':'30',
                             'fi-scss-principal':'10,00,000','fi-scss-regime':'new','fi-scss-slab':'30',
                             'fi-pomis-principal':'5,00,000','fi-pomis-regime':'new','fi-pomis-slab':'30',
                             'fi-nsc-principal':'1,00,000','fi-nsc-regime':'new','fi-nsc-slab':'30',
@@ -1511,9 +1525,10 @@
                         var rhDefs2 = {
                             'rh-age':'30','rh-ret-age':'60','rh-life-exp':'90',
                             'rh-inflation':'6','rh-ret-return':'7','rh-expenses':'60,000',
+                            'rh-medical-expenses':'5,000','rh-medical-inflation':'12',
                             'rh-epf-balance':'2,00,000','rh-epf-basic':'50,000',
                             'rh-ppf-balance':'0','rh-ppf-annual':'1,50,000','rh-ppf-years-done':'0',
-                            'rh-nps-balance':'0','rh-nps-monthly':'5,000','rh-nps-return':'10','rh-nps-annuity':'6',
+                            'rh-nps-balance':'0','rh-nps-monthly':'5,000','rh-nps-return':'10','rh-nps-annuity':'6','rh-nps-lumpsum-pct':'60',
                             'rh-sip-monthly':'10,000','rh-sip-return':'12',
                             'rh-other-corpus':'0','rh-other-return':'7'
                         };
