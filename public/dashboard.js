@@ -1,40 +1,40 @@
     var _DASH_FAV_KEY = 'aw_dash_favs';
     var _dashFavDefaults = ['healthscore'];
     var _dashAllTools = {
-        growth:       { icon:'📈', title:'Growth Calculator',            color:'#10b981' },
-        goal:         { icon:'🎯', title:'Goal Planner',                 color:'#6366f1' },
-        homeloan:     { icon:'🏠', title:'Home Loan Advisor',             color:'#3b82f6' },
-        stepupsip:    { icon:'📈', title:'Step-Up SIP Calculator',        color:'#f59e0b' },
-        epfcalc:      { icon:'🏦', title:'EPF Corpus Projector',          color:'#0891b2' },
-        ppfnps:       { icon:'🏛️', title:'PPF & NPS Calculator',          color:'#059669' },
-        insure:       { icon:'🛡️', title:'Insurance Adequacy',            color:'#dc2626' },
-        mfexplorer:   { icon:'🔭', title:'MF Explorer',                   color:'#0891b2' },
-        mfkit:        { icon:'💼', title:'MF Kit',                        color:'#7c3aed' },
-        fundpicker:   { icon:'🔬', title:'Fund Picker Guide',             color:'#059669' },
-        coffeecan:    { icon:'☕', title:'The Coffee Can',                color:'#7c4a00' },
-        finplan:      { icon:'📋', title:'Financial Plan',                color:'#dc2626' },
-        finpath:      { icon:'🧭', title:'Your Financial Path',           color:'#4f46e5' },
-        taxguide:     { icon:'🧾', title:'Tax Guide',                     color:'#b45309' },
-        healthscore:  { icon:'💗', title:'Financial Health Score',        color:'#e11d48' },
-        ssaplanner:   { icon:'👧', title:'SSA + Child Education Planner', color:'#ec4899' },
-        ctcoptimizer: { icon:'💰', title:'CTC & Salary Optimizer',        color:'#7c3aed' },
-        gratuity:     { icon:'🏅', title:'Gratuity Calculator',           color:'#b45309' },
-        debtplan:     { icon:'⚡', title:'Loan Prepayment Planner',       color:'#dc2626' },
-        jointplan:    { icon:'👨‍👩‍👧', title:'Joint Family Planner',          color:'#0891b2' },
-        cibil:        { icon:'🏦', title:'CIBIL Score Tracker',           color:'#7c3aed' },
-        fincal:       { icon:'📅', title:'Financial Calendar',            color:'#0891b2' },
-        selfempl:     { icon:'🧾', title:'Self-Employed & Business',      color:'#059669' },
-        goldcomp:     { icon:'🥇', title:'Gold Comparator',              color:'#b45309' },
-        networth:     { icon:'⚖️', title:'Net Worth Tracker',            color:'#059669' },
-        ulipcheck:    { icon:'🔍', title:'ULIP / Policy Analyzer',       color:'#dc2626' },
-        fixedincome:    { icon:'🏦', title:'Fixed Income Tools',           color:'#0369a1' },
-        retirementhub:  { icon:'🏖️', title:'Retirement Hub + Drawdown',    color:'#7c3aed' },
-        cgcalc:       { icon:'💹', title:'Capital Gains Calculator',     color:'#7c3aed' },
-        returnscalc:  { icon:'🔍', title:'Returns Calculator',           color:'#0d9488' },
-        hracalc:      { icon:'🏠', title:'HRA Calculator',              color:'#0891b2' },
-        nomtrack:     { icon:'📜', title:'Nomination Tracker & Will',   color:'#7c3aed' },
-        budgettrack:  { icon:'📊', title:'Budget & Expense Tracker',    color:'#0891b2' },
-        mymfs:        { icon:'★',  title:'My Mutual Funds',             color:'#f5c842' },
+        growth:       { icon:'📈', ic:'i-trend', title:'Growth Calculator',            color:'#10b981' },
+        goal:         { icon:'🎯', ic:'i-target', title:'Goal Planner',                 color:'#6366f1' },
+        homeloan:     { icon:'🏠', ic:'i-home', title:'Home Loan Advisor',             color:'#3b82f6' },
+        stepupsip:    { icon:'📈', ic:'i-stairs', title:'Step-Up SIP Calculator',        color:'#f59e0b' },
+        epfcalc:      { icon:'🏦', ic:'i-bank', title:'EPF Corpus Projector',          color:'#0891b2' },
+        ppfnps:       { icon:'🏛️', ic:'i-vault', title:'PPF & NPS Calculator',          color:'#059669' },
+        insure:       { icon:'🛡️', ic:'i-shield', title:'Insurance Adequacy',            color:'#dc2626' },
+        mfexplorer:   { icon:'🔭', ic:'i-searchbars', title:'MF Explorer',                   color:'#0891b2' },
+        mfkit:        { icon:'💼', ic:'i-package', title:'MF Kit',                        color:'#7c3aed' },
+        fundpicker:   { icon:'🔬', ic:'i-flask', title:'Fund Picker Guide',             color:'#059669' },
+        coffeecan:    { icon:'☕', ic:'i-cup', title:'The Coffee Can',                color:'#7c4a00' },
+        finplan:      { icon:'📋', ic:'i-clipboard', title:'Financial Plan',                color:'#dc2626' },
+        finpath:      { icon:'🧭', ic:'i-compass', title:'Your Financial Path',           color:'#4f46e5' },
+        taxguide:     { icon:'🧾', ic:'i-receipt', title:'Tax Guide',                     color:'#b45309' },
+        healthscore:  { icon:'💗', ic:'i-heartpulse', title:'Financial Health Score',        color:'#e11d48' },
+        ssaplanner:   { icon:'👧', ic:'i-grad', title:'SSA + Child Education Planner', color:'#ec4899' },
+        ctcoptimizer: { icon:'💰', ic:'i-rupee', title:'CTC & Salary Optimizer',        color:'#7c3aed' },
+        gratuity:     { icon:'🏅', ic:'i-medal', title:'Gratuity Calculator',           color:'#b45309' },
+        debtplan:     { icon:'⚡', ic:'i-zap', title:'Loan Prepayment Planner',       color:'#dc2626' },
+        jointplan:    { icon:'👨‍👩‍👧', ic:'i-users', title:'Joint Family Planner',          color:'#0891b2' },
+        cibil:        { icon:'🏦', ic:'i-speedo', title:'CIBIL Score Tracker',           color:'#7c3aed' },
+        fincal:       { icon:'📅', ic:'i-calendar', title:'Financial Calendar',            color:'#0891b2' },
+        selfempl:     { icon:'🧾', ic:'i-briefcase', title:'Self-Employed & Business',      color:'#059669' },
+        goldcomp:     { icon:'🥇', ic:'i-gem', title:'Gold Comparator',              color:'#b45309' },
+        networth:     { icon:'⚖️', ic:'i-scale', title:'Net Worth Tracker',            color:'#059669' },
+        ulipcheck:    { icon:'🔍', ic:'i-search', title:'ULIP / Policy Analyzer',       color:'#dc2626' },
+        fixedincome:    { icon:'🏦', ic:'i-coins', title:'Fixed Income Tools',           color:'#0369a1' },
+        retirementhub:  { icon:'🏖️', ic:'i-umbrella', title:'Retirement Hub + Drawdown',    color:'#7c3aed' },
+        cgcalc:       { icon:'💹', ic:'i-candles', title:'Capital Gains Calculator',     color:'#7c3aed' },
+        returnscalc:  { icon:'🔍', ic:'i-percent', title:'Returns Calculator',           color:'#0d9488' },
+        hracalc:      { icon:'🏠', ic:'i-building', title:'HRA Calculator',              color:'#0891b2' },
+        nomtrack:     { icon:'📜', ic:'i-filecheck', title:'Nomination Tracker & Will',   color:'#7c3aed' },
+        budgettrack:  { icon:'📊', ic:'i-wallet', title:'Budget & Expense Tracker',    color:'#0891b2' },
+        mymfs:        { icon:'★', ic:'i-star',  title:'My Mutual Funds',             color:'#f5c842' },
     };
 
     function _dashGetFavs() {
@@ -67,7 +67,7 @@
             btn.className = 'dash-card group';
             btn.setAttribute('data-color', t.color);
             btn.innerHTML =
-                '<div class="dash-card-icon">' + t.icon + '</div>' +
+                '<div class="dash-card-icon">' + (t.ic ? '<svg><use href="#' + t.ic + '"/></svg>' : t.icon) + '</div>' +
                 '<div class="dash-card-title">' + t.title + '</div>' +
                 '<div class="dash-card-unpin">' +
                     '<span onclick="event.stopPropagation();dashToggleFav(\'' + k + '\',this);initDashFav();" ' +

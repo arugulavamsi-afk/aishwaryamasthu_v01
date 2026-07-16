@@ -1598,3 +1598,95 @@
         .bt-pos { color: #16a34a !important; }
         .bt-neg { color: #dc2626 !important; }
         .bt-mut { color: #94a3b8 !important; }
+
+        /* ══════════════════════════════════════════════════════════
+           NIGHTGLASS THEME (Direction B) — dark indigo-ink ground,
+           glass surfaces, mint accent, violet partner.
+           This layer remaps the Tailwind utilities used across all
+           panels so JS-generated markup inherits the theme without
+           per-file edits. Swept per-panel refinements come later.
+        ══════════════════════════════════════════════════════════ */
+        body {
+            background: radial-gradient(120% 90% at 50% 0%, #101636 0%, #0a0e22 55%, #070a18 100%);
+            background-attachment: fixed;
+        }
+        body::before {
+            background-image:
+                linear-gradient(rgba(124,140,248,0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(124,140,248,0.05) 1px, transparent 1px);
+        }
+
+        /* ── Surfaces: white cards become glass ── */
+        .bg-white   { background-color: rgba(255,255,255,0.055) !important; }
+        .bg-slate-50, .bg-gray-50 { background-color: rgba(255,255,255,0.035) !important; }
+        .bg-slate-100 { background-color: rgba(255,255,255,0.08) !important; }
+        .bg-slate-200 { background-color: rgba(255,255,255,0.12) !important; }
+        .bg-indigo-50 { background-color: rgba(147,165,255,0.12) !important; }
+
+        /* ── Ink: slate ramp flipped for dark ground ── */
+        .text-slate-900, .text-slate-800 { color: #EDF0FA !important; }
+        .text-slate-700 { color: #D9DEF0 !important; }
+        .text-slate-600 { color: #BEC6DE !important; }
+        .text-slate-500 { color: #98A1BF !important; }
+        .text-slate-400 { color: #737D9E !important; }
+        .text-slate-300 { color: #565F7D !important; }
+        .text-slate-200 { color: #454D68 !important; }
+
+        /* ── Hairlines ── */
+        .border-slate-50  { border-color: rgba(255,255,255,0.06) !important; }
+        .border-slate-100 { border-color: rgba(255,255,255,0.09) !important; }
+        .border-slate-200 { border-color: rgba(255,255,255,0.13) !important; }
+        .border-slate-300 { border-color: rgba(255,255,255,0.18) !important; }
+        .fp-goal-card     { border-color: rgba(255,255,255,0.09) !important; }
+
+        /* ── Semantic text: lift dark shades to dark-ground-legible variants ── */
+        .text-emerald-600, .text-emerald-700 { color: #34D399 !important; }
+        .text-green-600,   .text-green-700   { color: #4ADE80 !important; }
+        .text-red-600,     .text-red-700     { color: #F87171 !important; }
+        .text-rose-600,    .text-rose-700    { color: #FB7185 !important; }
+        .text-amber-600,   .text-amber-700   { color: #FBBF24 !important; }
+        .text-orange-600,  .text-orange-700  { color: #FB923C !important; }
+        .text-blue-600,    .text-blue-700    { color: #60A5FA !important; }
+        .text-sky-600,     .text-sky-700     { color: #38BDF8 !important; }
+        .text-purple-600,  .text-purple-700  { color: #C084FC !important; }
+        .text-violet-600   { color: #A78BFA !important; }
+        .text-teal-600,    .text-teal-700    { color: #2DD4BF !important; }
+        .text-pink-600     { color: #F472B6 !important; }
+        .text-cyan-600     { color: #22D3EE !important; }
+        .text-indigo-600, .text-indigo-700 { color: #93A5FF !important; }
+        .text-indigo-500   { color: #A5B4FF !important; }
+
+        /* ── Tinted chips/badges: pastel-50/100 become translucent tints ── */
+        .bg-emerald-50  { background-color: rgba(52,211,153,0.10) !important; }
+        .bg-emerald-100 { background-color: rgba(52,211,153,0.16) !important; }
+        .bg-green-50    { background-color: rgba(74,222,128,0.10) !important; }
+        .bg-amber-50    { background-color: rgba(251,191,36,0.10) !important; }
+        .bg-amber-100   { background-color: rgba(251,191,36,0.16) !important; }
+        .bg-orange-100  { background-color: rgba(251,146,60,0.16) !important; }
+        .bg-rose-50     { background-color: rgba(251,113,133,0.10) !important; }
+        .bg-rose-100    { background-color: rgba(251,113,133,0.16) !important; }
+        .bg-red-50      { background-color: rgba(248,113,113,0.10) !important; }
+        .bg-blue-50     { background-color: rgba(96,165,250,0.10) !important; }
+        .border-emerald-100 { border-color: rgba(52,211,153,0.25) !important; }
+        .border-emerald-200 { border-color: rgba(52,211,153,0.35) !important; }
+        .border-amber-100   { border-color: rgba(251,191,36,0.25) !important; }
+        .border-amber-200   { border-color: rgba(251,191,36,0.35) !important; }
+        .border-blue-100    { border-color: rgba(96,165,250,0.25) !important; }
+        .border-red-100     { border-color: rgba(248,113,113,0.25) !important; }
+        .border-rose-200    { border-color: rgba(251,113,133,0.35) !important; }
+        .border-indigo-100  { border-color: rgba(147,165,255,0.25) !important; }
+
+        /* ── Inline-styled ink from JS-generated markup (pre-sweep patch) ── */
+        [style*="color:#1e293b"] { color: #EDF0FA !important; }
+        [style*="color:#334155"] { color: #D9DEF0 !important; }
+        [style*="color:#475569"] { color: #BEC6DE !important; }
+        [style*="color:#64748b"] { color: #98A1BF !important; }
+
+        /* ── Controls ── */
+        input:focus, select:focus, textarea:focus {
+            box-shadow: 0 0 0 3px rgba(70,224,163,0.22) !important;
+            border-color: rgba(70,224,163,0.55) !important;
+        }
+        input::placeholder, textarea::placeholder { color: #566080; }
+        ::selection { background: rgba(70,224,163,0.35); }
+        ::-webkit-scrollbar-thumb { background: rgba(124,140,248,0.35); }
