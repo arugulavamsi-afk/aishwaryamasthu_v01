@@ -2,14 +2,6 @@
         let currentMode = 'dashboard';
         let goalCalculateClicked = false;
 
-        // Nightglass chart defaults — every Chart.js instance inherits dark-legible
-        // ink and hairlines unless it overrides them explicitly (per-panel sweeps refine).
-        if (typeof Chart !== 'undefined') {
-            Chart.defaults.color = '#98A1BF';
-            Chart.defaults.borderColor = 'rgba(255,255,255,0.07)';
-            Chart.defaults.font.family = "'Inter', sans-serif";
-        }
-
         // Per-tab state to preserve values when switching tabs
         const tabState = {
             growth: { invType: 'lumpsum', amount: '', rate: '', years: '', inflationEnabled: false, infRate: '', ltcgEnabled: false },
