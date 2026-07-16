@@ -2546,17 +2546,20 @@
             pointer-events: none;
         }
         .dash-card:hover::after { animation-play-state: paused; }
-        /* Stagger shine so cards don't all sweep at once */
-        #dashboard-panel .dash-card:nth-child(1)::after  { animation-delay: 0s; }
-        #dashboard-panel .dash-card:nth-child(2)::after  { animation-delay: 0.4s; }
-        #dashboard-panel .dash-card:nth-child(3)::after  { animation-delay: 0.8s; }
-        #dashboard-panel .dash-card:nth-child(4)::after  { animation-delay: 1.2s; }
-        #dashboard-panel .dash-card:nth-child(5)::after  { animation-delay: 1.6s; }
-        #dashboard-panel .dash-card:nth-child(6)::after  { animation-delay: 2.0s; }
-        #dashboard-panel .dash-card:nth-child(7)::after  { animation-delay: 2.4s; }
-        #dashboard-panel .dash-card:nth-child(8)::after  { animation-delay: 2.8s; }
-        #dashboard-panel .dash-card:nth-child(9)::after  { animation-delay: 3.2s; }
-        #dashboard-panel .dash-card:nth-child(10)::after { animation-delay: 0.2s; }
+        /* Stagger shine so cards don't all sweep at once — cyclic (10n+k) so it
+           applies to EVERY dash-card grid (dashboard categories, dashcat tool
+           pages, favourites) no matter how many tiles it holds. First 10 tiles
+           keep the exact same delays the dashboard always had. */
+        .dash-card:nth-child(10n+1)::after { animation-delay: 0s; }
+        .dash-card:nth-child(10n+2)::after { animation-delay: 0.4s; }
+        .dash-card:nth-child(10n+3)::after { animation-delay: 0.8s; }
+        .dash-card:nth-child(10n+4)::after { animation-delay: 1.2s; }
+        .dash-card:nth-child(10n+5)::after { animation-delay: 1.6s; }
+        .dash-card:nth-child(10n+6)::after { animation-delay: 2.0s; }
+        .dash-card:nth-child(10n+7)::after { animation-delay: 2.4s; }
+        .dash-card:nth-child(10n+8)::after { animation-delay: 2.8s; }
+        .dash-card:nth-child(10n+9)::after { animation-delay: 3.2s; }
+        .dash-card:nth-child(10n)::after   { animation-delay: 0.2s; }
         @keyframes dashCardShine {
             0%   { left: -75%; opacity: 0; }
             10%  { opacity: 1; }
