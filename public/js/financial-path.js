@@ -121,6 +121,11 @@ var PATH_LIFE_EXPECTANCY = 85;
 var PATH_POST_RET_RETURN = 0.07;
 var PATH_INFLATION       = 0.06;
 var PATH_REPLACEMENT     = 0.70;
+// Goal types whose target is SPENT at the goal year (cash leaves the portfolio).
+// "Keep" goals stay invested: retirement spending is already modelled by the
+// drawdown phase (subtracting its target too would double-count), and
+// wealth / emergency corpora remain part of net worth.
+var PATH_SPEND_TYPES = { home: 1, education: 1, marriage: 1, travel: 1, business: 1, custom: 1 };
 
 function pathProjectSeries(plan) {
     var startYear = new Date().getFullYear();
@@ -147,37 +152,41 @@ function pathProjectSeries(plan) {
         ? annualIncomeNow * PATH_REPLACEMENT * Math.pow(1 + PATH_INFLATION, yearsToRetire)
         : 0;
 
-    var outflowByYear = {};
+    // Milestones mark every goal's target year; outflows only deduct the
+    // spend-type goals (see PATH_SPEND_TYPES above).
+    var goalsByYear = {}, outflowByYear = {};
     goals.forEach(function (g) {
         var y = parseInt(g.years) || 0;
-        outflowByYear[y] = (outflowByYear[y] || 0) + (g.target || 0);
+        (goalsByYear[y] = goalsByYear[y] || []).push(g);
+        if (PATH_SPEND_TYPES[g.type || 'custom']) outflowByYear[y] = (outflowByYear[y] || 0) + (g.target || 0);
     });
 
     var series = [], milestones = [], depletionYear = null;
     for (var y = 0; y <= horizon; y++) {
         var curAge = age + y;
         if (y > 0) {
+            // A negative balance is a shortfall, not a portfolio — it must not
+            // compound at the investment return (that would model growing debt).
+            var grown = balance > 0 ? balance * (1 + (curAge <= retireAge ? r : PATH_POST_RET_RETURN)) : balance;
             if (curAge <= retireAge) {
                 // Accumulation — grow at blended return, add the year's SIP.
-                balance = balance * (1 + r) + annualSIP;
+                balance = grown + annualSIP;
             } else {
                 // Drawdown — conservative return minus an inflation-growing expense.
                 var yearsIntoRet = curAge - retireAge; // 1, 2, 3 …
                 var expense = retExpenseAtRet * Math.pow(1 + PATH_INFLATION, yearsIntoRet - 1);
-                balance = balance * (1 + PATH_POST_RET_RETURN) - expense;
+                balance = grown - expense;
             }
         }
-        if (outflowByYear[y]) {
-            goals.forEach(function (g) {
-                if ((parseInt(g.years) || 0) === y) {
-                    milestones.push({
-                        idx: y, year: startYear + y, label: g.label, emoji: g.emoji,
-                        target: g.target, onTrack: g.onTrack, balanceBefore: balance
-                    });
-                }
+        if (goalsByYear[y]) {
+            goalsByYear[y].forEach(function (g) {
+                milestones.push({
+                    idx: y, year: startYear + y, label: g.label, emoji: g.emoji,
+                    target: g.target, onTrack: g.onTrack, balanceBefore: balance
+                });
             });
-            balance -= outflowByYear[y];
         }
+        if (outflowByYear[y]) balance -= outflowByYear[y];
         // First year the corpus runs out during retirement (money outlives you = bad).
         if (depletionYear === null && curAge > retireAge && balance < 0) depletionYear = startYear + y;
         // Plot the true running balance — it may go negative (shortfall / depletion)

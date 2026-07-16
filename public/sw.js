@@ -1,5 +1,5 @@
 /* AishwaryaMasthu Service Worker */
-var CACHE = 'am-v43';
+var CACHE = 'am-v44';
 
 /* App shell — pre-cached on SW install. Other files are cached on first access. */
 var SHELL = [
