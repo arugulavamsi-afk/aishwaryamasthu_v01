@@ -426,6 +426,12 @@
             // Goal Tracker is now merged into Your Financial Path
             if (mode === 'goaltracker') mode = 'finpath';
 
+            // Royal Dark nav pills — highlight the current section
+            ['dashboard', 'dashcat-calc', 'dashcat-mf', 'dashcat-tax', 'dashcat-fav'].forEach(function(m) {
+                var el = document.getElementById('np-' + m);
+                if (el) el.classList.toggle('nav-pill-active', m === mode);
+            });
+
             // Track category context for breadcrumb back-navigation.
             // Must happen BEFORE the lazy-load early-return so the first visit to a
             // lazy panel captures the originating category panel correctly.

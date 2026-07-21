@@ -1,5 +1,5 @@
 /* AishwaryaMasthu Service Worker */
-var CACHE = 'am-v49';
+var CACHE = 'am-v50';
 
 /* App shell — pre-cached on SW install. Other files are cached on first access. */
 var SHELL = [
@@ -14,6 +14,7 @@ var SHELL = [
   '/home-loan.js',
   '/tax-guide.js',
   '/coffee-can.js',
+  '/js/icons.js',
   '/js/user-profile.js',
   '/js/epf.js',
   '/js/ppf-nps.js',

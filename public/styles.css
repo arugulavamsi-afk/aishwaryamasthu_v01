@@ -91,6 +91,87 @@
         .tabs-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
         .tabs-scroll::-webkit-scrollbar { display: none; }
 
+        /* ── ROYAL DARK glass cards (dashboard widgets) ── */
+        .royal-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(245,200,66,0.18);
+            box-shadow: 0 8px 28px rgba(0,0,0,0.25);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .royal-card:hover {
+            border-color: rgba(245,200,66,0.40);
+        }
+
+        /* ── ROYAL DARK slim nav (brand · pills · account) ── */
+        .nav-row { display: flex; align-items: center; gap: 14px; width: 100%; max-width: 1240px; margin: 0 auto; padding: 2px 4px; }
+        .nav-brand { display: flex; align-items: center; gap: 10px; cursor: pointer; flex-shrink: 0; }
+        .nav-logo { height: 38px; width: 38px; }
+        .nav-brand-name { font-size: 1.02rem; white-space: nowrap; }
+        .nav-pills {
+            display: flex; gap: 4px; flex: 1; justify-content: center;
+            overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; min-width: 0;
+        }
+        .nav-pills::-webkit-scrollbar { display: none; }
+        .nav-pill {
+            font-family: 'Inter', sans-serif; font-size: 12.5px; font-weight: 600;
+            color: #9db3ad; background: none; border: none; border-radius: 999px;
+            padding: 8px 15px; cursor: pointer; white-space: nowrap; transition: color .15s, background .15s;
+        }
+        .nav-pill:hover { color: #fff; background: rgba(255,255,255,0.07); }
+        .nav-pill-active {
+            color: #fff; font-weight: 700;
+            background: linear-gradient(135deg, #0d9488, #10b981);
+            box-shadow: 0 4px 14px rgba(16,185,129,0.40), inset 0 1px 0 rgba(255,255,255,0.2);
+        }
+        .nav-pill-active:hover { color: #fff; background: linear-gradient(135deg, #0d9488, #10b981); }
+        #user-bar { margin-left: auto; flex-shrink: 0; }
+        #user-bar .ub-greeting { display: none; }
+        @media (max-width: 860px) {
+            .nav-brand-name { display: none; }
+            .nav-pill { padding: 7px 11px; font-size: 11.5px; }
+            .nav-row { gap: 8px; }
+        }
+
+        /* ── ROYAL DARK dashboard layout (header, stat row, chart + ring) ── */
+        .rd-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 22px; padding-top: 10px; }
+        .rd-date { font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: #f5c842; font-weight: 700; margin-bottom: 8px; }
+        .rd-title { font-size: clamp(1.6rem, 3.2vw, 2.4rem); font-weight: 800; color: #f2f5f0; letter-spacing: -.02em; line-height: 1.12; }
+        .rd-cta {
+            font-family: 'Inter', sans-serif; font-weight: 800; font-size: 14px; color: #162a10;
+            background: linear-gradient(130deg, #e8d5a3 0%, #f5c842 40%, #e8a44a 100%);
+            padding: 13px 26px; border-radius: 999px; border: none; cursor: pointer;
+            box-shadow: 0 8px 24px rgba(245,200,66,0.28); transition: transform .15s, box-shadow .15s; white-space: nowrap;
+        }
+        .rd-cta:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(245,200,66,0.38); }
+        .rd-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 14px; }
+        @media (max-width: 760px) { .rd-stats { grid-template-columns: repeat(2, 1fr); } }
+        .rd-stat { border-radius: 20px; padding: 20px 22px; cursor: pointer; }
+        .rd-stat:hover { transform: translateY(-3px); }
+        .rd-lbl { font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: rgba(255,255,255,0.4); font-weight: 700; }
+        .rd-big { font-size: 28px; font-weight: 800; color: #f2f5f0; margin-top: 10px; letter-spacing: -.02em; line-height: 1.1; }
+        .rd-big small { font-size: 15px; color: rgba(255,255,255,0.35); font-weight: 700; }
+        .rd-chip { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 700; padding: 4px 11px; border-radius: 999px; margin-top: 10px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .rd-chip-e { background: rgba(16,185,129,0.14); color: #34d399; }
+        .rd-chip-g { background: rgba(245,200,66,0.13); color: #f5c842; }
+        .rd-chip-r { background: rgba(248,113,113,0.13); color: #f87171; }
+        .rd-wide { display: grid; grid-template-columns: 2fr 1fr; gap: 14px; margin-bottom: 14px; }
+        @media (max-width: 760px) { .rd-wide { grid-template-columns: 1fr; } }
+        .rd-panel { border-radius: 20px; padding: 22px; cursor: pointer; }
+        .rd-panel:hover { transform: translateY(-3px); }
+        .rd-panel-h { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+        .rd-panel-h .go { font-size: 14px; color: rgba(245,200,66,0.45); font-weight: 700; }
+        .rd-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-height: 160px; text-align: center; }
+        .rd-empty .e-ic { font-size: 30px; }
+        .rd-empty .e-tx { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.45); line-height: 1.55; max-width: 34ch; }
+        .rd-empty .e-tap { font-size: 11px; font-weight: 700; color: rgba(245,200,66,0.55); }
+        .rd-ring-wrap { display: flex; gap: 20px; align-items: center; min-height: 160px; }
+        .rd-ring-facts { font-size: 12.5px; color: rgba(255,255,255,0.55); line-height: 2.1; min-width: 0; flex: 1; }
+        .rd-ring-facts b { color: rgba(255,255,255,0.85); font-weight: 700; }
+        .rd-ring-facts .fr { display: flex; justify-content: space-between; gap: 8px; }
+        .rd-ring-facts .fr .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
         /* Mobile dropdown item hover */
         .mob-dd-item:hover { background: rgba(245,200,66,0.13) !important; color: #f5c842 !important; }
         .mob-dd-item.mob-active { background: linear-gradient(135deg,#0d9488,#10b981) !important; color: #fff !important; }

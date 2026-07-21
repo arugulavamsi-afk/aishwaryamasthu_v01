@@ -67,7 +67,7 @@
             btn.className = 'dash-card group';
             btn.setAttribute('data-color', t.color);
             btn.innerHTML =
-                '<div class="dash-card-icon">' + t.icon + '</div>' +
+                '<div class="dash-card-icon">' + (window._svgIcon ? _svgIcon(k, t.icon) : t.icon) + '</div>' +
                 '<div class="dash-card-title">' + t.title + '</div>' +
                 '<div class="dash-card-unpin">' +
                     '<span onclick="event.stopPropagation();dashToggleFav(\'' + k + '\',this);initDashFav();" ' +
@@ -203,11 +203,11 @@
 
         var chipsHtml = _situations.map(function(s, i) {
             return '<button onclick="dashOpenSituation(' + i + ')" ' +
-                'style="display:flex;align-items:center;gap:9px;padding:10px 12px;border-radius:13px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);cursor:pointer;text-align:left;transition:all .15s;width:100%;" ' +
+                'style="display:flex;align-items:center;gap:10px;padding:13px 15px;border-radius:14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);cursor:pointer;text-align:left;transition:all .15s;width:100%;" ' +
                 'onmouseover="this.style.background=\'rgba(255,255,255,0.1)\';this.style.borderColor=\'rgba(245,200,66,0.3)\'" ' +
                 'onmouseout="this.style.background=\'rgba(255,255,255,0.05)\';this.style.borderColor=\'rgba(255,255,255,0.09)\'">' +
                     '<span style="font-size:20px;flex-shrink:0;">' + s.emoji + '</span>' +
-                    '<span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.8);line-height:1.35;">' + _t(s.key + '.label') + '</span>' +
+                    '<span style="font-size:12.5px;font-weight:700;color:rgba(255,255,255,0.8);line-height:1.35;">' + _t(s.key + '.label') + '</span>' +
                 '</button>';
         }).join('');
 
@@ -217,7 +217,7 @@
                 '<input id="dash-search-input" type="text" autocomplete="off" ' +
                     'placeholder="' + _t('dash.search.placeholder').replace(/"/g, '&quot;') + '" ' +
                     'oninput="dashHandleSearch(this.value)" ' +
-                    'style="width:100%;padding:10px 12px 10px 34px;border-radius:12px;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);color:#fff;font-size:12px;font-weight:600;font-family:\'Inter\',sans-serif;outline:none;box-sizing:border-box;" ' +
+                    'style="width:100%;padding:12px 14px 12px 36px;border-radius:13px;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);color:#fff;font-size:13.5px;font-weight:600;font-family:\'Inter\',sans-serif;outline:none;box-sizing:border-box;" ' +
                     'onfocus="this.style.borderColor=\'rgba(245,200,66,0.5)\'" ' +
                     'onblur="this.style.borderColor=\'rgba(255,255,255,0.12)\'" />' +
             '</div>' +
@@ -263,7 +263,7 @@
                 '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">' +
                 matches.map(function(t) {
                     return '<button onclick="switchMode(\'' + t.mode + '\')" class="dash-card group">' +
-                        '<div class="dash-card-icon">' + t.emoji + '</div>' +
+                        '<div class="dash-card-icon">' + (window._svgIcon ? _svgIcon(t.mode, t.emoji) : t.emoji) + '</div>' +
                         '<div class="dash-card-title">' + t.title + '</div>' +
                         '<div class="dash-card-desc">' + t.desc + '</div>' +
                         '<div class="dash-card-arrow">→</div>' +
@@ -282,8 +282,8 @@
         var tools = _allTools.filter(function(t) { return s.modes.indexOf(t.mode) >= 0; });
         tools.sort(function(a, b) { return s.modes.indexOf(a.mode) - s.modes.indexOf(b.mode); });
         panel.innerHTML =
-            '<div style="max-width:820px;margin:0 auto;">' +
-                '<div class="rounded-2xl px-4 py-3 mb-4 text-white flex items-center justify-between gap-3 flex-wrap shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:2px solid rgba(245,200,66,0.4);box-shadow:0 4px 18px rgba(0,0,0,0.25);">' +
+            '<div style="max-width:1140px;margin:0 auto;">' +
+                '<div class="rounded-2xl px-4 py-3 mb-4 text-white flex items-center justify-between gap-3 flex-wrap shine-header royal-card">' +
                     '<div>' +
                         '<h2 class="text-base font-black">' + s.emoji + ' ' + _t(s.key + '.label') + '</h2>' +
                         '<p class="text-blue-200 text-[11px] mt-0.5">' + _t(s.key + '.intro') + '</p>' +
@@ -293,7 +293,7 @@
                 '<div class="dash-grid">' +
                 tools.map(function(t) {
                     return '<button onclick="switchMode(\'' + t.mode + '\')" class="dash-card group">' +
-                        '<div class="dash-card-icon">' + t.emoji + '</div>' +
+                        '<div class="dash-card-icon">' + (window._svgIcon ? _svgIcon(t.mode, t.emoji) : t.emoji) + '</div>' +
                         '<div class="dash-card-title">' + t.title + '</div>' +
                         '<div class="dash-card-desc">' + t.desc + '</div>' +
                         '<div class="dash-card-arrow">→</div>' +
@@ -345,7 +345,7 @@
             ? '<span style="color:rgba(245,200,66,0.95);font-weight:900;">Hi ' + name + '!</span> '
             : '';
 
-        var _CARD = 'class="rounded-2xl px-3 py-2 text-white shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:1.5px solid rgba(245,200,66,0.35);box-shadow:0 4px 24px rgba(0,0,0,0.3);"';
+        var _CARD = 'class="rounded-2xl px-3 py-2 text-white shine-header royal-card"';
         var _HDR  = 'style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;"';
         var _LBL  = 'style="font-size:12px;font-weight:800;color:rgba(255,255,255,0.7);"';
         var _ACTBTN = 'style="font-size:10px;font-weight:700;color:rgba(245,200,66,0.8);background:rgba(245,200,66,0.08);border:1px solid rgba(245,200,66,0.25);padding:4px 10px;border-radius:8px;cursor:pointer;white-space:nowrap;" onmouseover="this.style.background=\'rgba(245,200,66,0.15)\'" onmouseout="this.style.background=\'rgba(245,200,66,0.08)\'"';
@@ -443,7 +443,7 @@
         var nw = window._toolSummaries && window._toolSummaries.netWorth;
         var hasData = nw && (nw.totalAssets || nw.totalLiab);
 
-        var _NW_CARD = 'class="rounded-2xl px-3 py-2 text-white shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:1.5px solid rgba(245,200,66,0.35);box-shadow:0 4px 24px rgba(0,0,0,0.3);"';
+        var _NW_CARD = 'class="rounded-2xl px-3 py-2 text-white shine-header royal-card"';
         var _NW_ACTBTN = 'style="font-size:10px;font-weight:700;color:rgba(245,200,66,0.8);background:rgba(245,200,66,0.08);border:1px solid rgba(245,200,66,0.25);padding:4px 10px;border-radius:8px;cursor:pointer;" onmouseover="this.style.background=\'rgba(245,200,66,0.15)\'" onmouseout="this.style.background=\'rgba(245,200,66,0.08)\'"';
 
         if (!hasData) {
@@ -521,7 +521,7 @@
         if (!container) return;
         var goals = window._savedGoals || [];
 
-        var _GT_CARD = 'class="rounded-2xl px-3 py-2 text-white shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:1.5px solid rgba(245,200,66,0.35);box-shadow:0 4px 24px rgba(0,0,0,0.3);"';
+        var _GT_CARD = 'class="rounded-2xl px-3 py-2 text-white shine-header royal-card"';
         var _GT_ACTBTN = 'style="font-size:10px;font-weight:700;color:rgba(245,200,66,0.8);background:rgba(245,200,66,0.08);border:1px solid rgba(245,200,66,0.25);padding:4px 10px;border-radius:8px;cursor:pointer;" onmouseover="this.style.background=\'rgba(245,200,66,0.15)\'" onmouseout="this.style.background=\'rgba(245,200,66,0.08)\'"';
 
         if (goals.length === 0) {
@@ -586,7 +586,7 @@
         var container = document.getElementById('dash-budget-widget');
         if (!container) return;
 
-        var CARD   = 'class="rounded-2xl px-3 py-2 text-white shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:1.5px solid rgba(245,200,66,0.35);box-shadow:0 4px 24px rgba(0,0,0,0.3);"';
+        var CARD   = 'class="rounded-2xl px-3 py-2 text-white shine-header royal-card"';
         var ACTBTN = 'style="font-size:10px;font-weight:700;color:rgba(245,200,66,0.8);background:rgba(245,200,66,0.08);border:1px solid rgba(245,200,66,0.25);padding:4px 10px;border-radius:8px;cursor:pointer;white-space:nowrap;" onmouseover="this.style.background=\'rgba(245,200,66,0.15)\'" onmouseout="this.style.background=\'rgba(245,200,66,0.08)\'"';
 
         var _CAT_ICONS = {
@@ -690,7 +690,7 @@
         var container = document.getElementById('dash-unified-widget');
         if (!container) return;
 
-        var CS  = 'background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 50%,#0e5c3a 100%);border:1.5px solid rgba(245,200,66,0.3);box-shadow:0 3px 16px rgba(0,0,0,0.28);border-radius:14px;padding:12px;display:flex;flex-direction:column;cursor:pointer;transition:border-color .18s,box-shadow .18s;';
+        var CS  = 'background:rgba(255,255,255,0.05);border:1px solid rgba(245,200,66,0.18);box-shadow:0 8px 28px rgba(0,0,0,0.25);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:14px;padding:12px;display:flex;flex-direction:column;cursor:pointer;transition:border-color .18s,box-shadow .18s;';
         var LBL = 'style="font-size:10.5px;font-weight:800;color:rgba(245,200,66,0.9);letter-spacing:.05em;text-transform:uppercase;"';
         var TS  = 'style="font-size:8.5px;color:rgba(255,255,255,0.28);font-weight:600;margin-top:6px;padding-top:7px;border-top:1px solid rgba(255,255,255,0.07);"';
 
@@ -866,27 +866,180 @@
             budgetTs = _tsLine(window._btLastUpdated);
         }
 
-        // ── Assemble ───────────────────────────────────────────
-        function _card(mode, icon, label, content, ts) {
-            return '<div onclick="switchMode(\'' + mode + '\')" style="' + CS + '" ' +
-                   'onmouseover="this.style.borderColor=\'rgba(245,200,66,0.65)\';this.style.boxShadow=\'0 6px 24px rgba(0,0,0,0.4)\'" ' +
-                   'onmouseout="this.style.borderColor=\'rgba(245,200,66,0.3)\';this.style.boxShadow=\'0 3px 16px rgba(0,0,0,0.28)\'">' +
-                '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">' +
-                    '<span ' + LBL + '>' + icon + ' ' + label + '</span>' +
-                    '<span style="font-size:12px;color:rgba(245,200,66,0.45);font-weight:700;">→</span>' +
+        // ── Assemble: ROYAL DARK layout (header · stat row · chart + ring) ──
+
+        // Header: localized date + greeting + gold "New goal" CTA
+        var _rdLang = 'en';
+        try { _rdLang = localStorage.getItem('aw_lang') || 'en'; } catch(e) {}
+        var _rdLoc  = { en:'en-IN', hi:'hi-IN', te:'te-IN', ta:'ta-IN' }[_rdLang] || 'en-IN';
+        var _rdDate = new Date().toLocaleDateString(_rdLoc, { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+        var _rdName = _dashGetUserName();
+        var _rdTitle = _rdName ? _t('dash.greeting').replace('{n}', _rdName) : _t('dash.welcome.h');
+        var headHtml =
+            '<div class="rd-head">' +
+                '<div>' +
+                    '<div class="rd-date">' + _rdDate + '</div>' +
+                    '<div class="rd-title">' + _rdTitle + '</div>' +
                 '</div>' +
-                content +
-                '<div ' + TS + '>' + ts + '</div>' +
+                '<button class="rd-cta" onclick="switchMode(\'goal\')">' + _t('dash.head.newgoal') + '</button>' +
+            '</div>';
+
+        // Stat cards
+        function _stat(mode, label, bigHtml, chipHtml) {
+            return '<div class="royal-card rd-stat" onclick="switchMode(\'' + mode + '\')">' +
+                '<div class="rd-lbl">' + label + '</div>' +
+                '<div class="rd-big">' + bigHtml + '</div>' +
+                (chipHtml || '') +
             '</div>';
         }
 
-        container.innerHTML =
-            '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">' +
-                _card('healthscore', '💗', _t('dash.card.hs'), healthContent, healthTs) +
-                _card('networth',    '⚖️', _t('dash.card.nw'), nwContent, nwTs) +
-                _card('finpath', '🎯', _t('dash.card.goals'), goalsContent, goalsTs) +
-                _card('budgettrack', '📊', _t('dash.card.budget'), budgetContent, budgetTs) +
+        var nwBig, nwChip;
+        if (hasNw) {
+            nwBig  = '<span style="color:' + (nw.netWorth >= 0 ? '#f2f5f0' : '#f87171') + '">' + _dashFmtNW(nw.netWorth || 0) + '</span>';
+            var _dr = (nw.totalAssets || 0) > 0 ? Math.round((nw.totalLiab || 0) / nw.totalAssets * 100) : 0;
+            nwChip = '<span class="rd-chip ' + (_dr <= 30 ? 'rd-chip-e' : _dr <= 50 ? 'rd-chip-g' : 'rd-chip-r') + '">' + _t('dash.nw.debtratio') + ' ' + _dr + '%</span>';
+        } else {
+            nwBig  = '<span style="font-size:12px;color:rgba(255,255,255,0.5);">' + _t('dash.empty.nw') + '</span>';
+            nwChip = '<span class="rd-chip rd-chip-g">' + _t('dash.tap') + '</span>';
+        }
+
+        var hsBig, hsChip;
+        if (hs) {
+            hsBig = hs.score + '<small>/100</small>';
+            var _hsPrev  = window._hsPrevScore;
+            var _hsDelta = (_hsPrev && _hsPrev.score !== undefined && _hsPrev.score !== hs.score) ? hs.score - _hsPrev.score : null;
+            hsChip = _hsDelta !== null
+                ? '<span class="rd-chip ' + (_hsDelta > 0 ? 'rd-chip-e' : 'rd-chip-r') + '">' + (_hsDelta > 0 ? '▲ +' : '▼ ') + Math.abs(_hsDelta) + '</span>'
+                : '<span class="rd-chip rd-chip-e">' + hs.grade + '</span>';
+        } else {
+            hsBig  = '<span style="font-size:12px;color:rgba(255,255,255,0.5);">' + _t('dash.empty.hs') + '</span>';
+            hsChip = '<span class="rd-chip rd-chip-g">' + _t('dash.tap') + '</span>';
+        }
+
+        var totTarget = 0, totSaved = 0;
+        goals.forEach(function(g) { totTarget += (g.targetAmt || 0); totSaved += (g.savedAmt || 0); });
+        var goalPct = totTarget > 0 ? Math.min(100, Math.round(totSaved / totTarget * 100)) : 0;
+        var glBig, glChip;
+        if (goals.length) {
+            glBig  = goalPct + '<small>%</small>';
+            glChip = '<span class="rd-chip rd-chip-g">' + _t('dash.stat.goalsn').replace('{n}', goals.length) + '</span>';
+        } else {
+            glBig  = '<span style="font-size:12px;color:rgba(255,255,255,0.5);">' + _t('dash.empty.goals') + '</span>';
+            glChip = '<span class="rd-chip rd-chip-g">' + _t('dash.tap') + '</span>';
+        }
+
+        var btBig, btChip;
+        if (hasBt) {
+            btBig  = _dashFmtNW(ta);
+            btChip = tb > 0
+                ? '<span class="rd-chip ' + (pctB <= 75 ? 'rd-chip-e' : pctB <= 100 ? 'rd-chip-g' : 'rd-chip-r') + '">' + pctB + '% · ' + monLabel + '</span>'
+                : '<span class="rd-chip rd-chip-g">' + monLabel + '</span>';
+        } else {
+            btBig  = '<span style="font-size:12px;color:rgba(255,255,255,0.5);">' + _t('dash.empty.budget') + '</span>';
+            btChip = '<span class="rd-chip rd-chip-g">' + _t('dash.tap') + '</span>';
+        }
+
+        var statsHtml =
+            '<div class="rd-stats">' +
+                _stat('networth',    _t('dash.nw.val'),       nwBig, nwChip) +
+                _stat('healthscore', _t('dash.card.hs'),      hsBig, hsChip) +
+                _stat('finpath',     _t('dash.card.goals'),   glBig, glChip) +
+                _stat('budgettrack', _t('dash.card.budget'),  btBig, btChip) +
             '</div>';
+
+        // Savings trajectory chart — cumulative saved amount across all goal check-ins
+        var _evts = [];
+        goals.forEach(function(g, gi) {
+            (g.checkIns || []).forEach(function(ci) {
+                var t = Date.parse(ci.ts || ci.date || '');
+                if (t && (ci.amt || 0) >= 0) _evts.push({ t: t, gi: gi, amt: ci.amt || 0 });
+            });
+        });
+        _evts.sort(function(a, b) { return a.t - b.t; });
+        var _latest = {}, _pts = [];
+        _evts.forEach(function(e) {
+            _latest[e.gi] = e.amt;
+            var tot = 0;
+            Object.keys(_latest).forEach(function(k) { tot += _latest[k]; });
+            _pts.push({ t: e.t, v: tot });
+        });
+
+        var chartInner;
+        if (_pts.length >= 2) {
+            var W = 600, H = 200, PAD = 8;
+            var t0 = _pts[0].t, t1 = _pts[_pts.length - 1].t;
+            var vMax = Math.max(totTarget, _pts[_pts.length - 1].v) * 1.05 || 1;
+            function _x(t) { return t1 === t0 ? W / 2 : PAD + (t - t0) / (t1 - t0) * (W - 2 * PAD); }
+            function _y(v) { return H - PAD - (v / vMax) * (H - 2 * PAD); }
+            var lineP = _pts.map(function(p, i) { return (i ? 'L' : 'M') + _x(p.t).toFixed(1) + ',' + _y(p.v).toFixed(1); }).join(' ');
+            var areaP = lineP + ' L' + _x(t1).toFixed(1) + ',' + (H - PAD) + ' L' + _x(t0).toFixed(1) + ',' + (H - PAD) + ' Z';
+            var lastX = _x(t1).toFixed(1), lastY = _y(_pts[_pts.length - 1].v).toFixed(1);
+            var targetLine = totTarget > 0
+                ? '<line x1="' + PAD + '" y1="' + _y(totTarget).toFixed(1) + '" x2="' + (W - PAD) + '" y2="' + _y(totTarget).toFixed(1) + '" stroke="#f5c842" stroke-width="1.5" stroke-dasharray="6 7" opacity="0.45"/>'
+                : '';
+            chartInner =
+                '<svg width="100%" height="200" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" aria-hidden="true">' +
+                    '<defs>' +
+                        '<linearGradient id="rdChartArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgba(16,185,129,0.30)"/><stop offset="1" stop-color="rgba(16,185,129,0)"/></linearGradient>' +
+                        '<linearGradient id="rdChartLine" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#10b981"/><stop offset="0.7" stop-color="#34d399"/><stop offset="1" stop-color="#f5c842"/></linearGradient>' +
+                    '</defs>' +
+                    '<path d="' + areaP + '" fill="url(#rdChartArea)"/>' +
+                    '<path d="' + lineP + '" fill="none" stroke="url(#rdChartLine)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>' +
+                    targetLine +
+                    '<circle cx="' + lastX + '" cy="' + lastY + '" r="5" fill="#f5c842" stroke="#071e22" stroke-width="2"/>' +
+                '</svg>';
+        } else {
+            chartInner =
+                '<div class="rd-empty">' +
+                    '<span class="e-ic">📈</span>' +
+                    '<div class="e-tx">' + _t('dash.chart.empty') + '</div>' +
+                    '<div class="e-tap">' + _t('dash.tap') + '</div>' +
+                '</div>';
+        }
+        var chartHtml =
+            '<div class="royal-card rd-panel" onclick="switchMode(\'finpath\')">' +
+                '<div class="rd-panel-h"><span class="rd-lbl">' + _t('dash.chart.h') + '</span><span class="go">→</span></div>' +
+                chartInner +
+            '</div>';
+
+        // Goal progress ring + per-goal facts
+        var ringInner;
+        if (goals.length) {
+            var _c = 2 * Math.PI * 44;
+            var _off = (_c * (1 - goalPct / 100)).toFixed(1);
+            var facts = goals.slice(0, 4).map(function(g) {
+                var p = Math.min(100, Math.round(((g.savedAmt || 0) / (g.targetAmt || 1)) * 100));
+                return '<div class="fr"><span class="nm"><b>' + (g.emoji || '') + ' ' + (g.label || '') + '</b></span><span>' + p + '%</span></div>';
+            }).join('');
+            ringInner =
+                '<div class="rd-ring-wrap">' +
+                    '<svg viewBox="0 0 110 110" style="width:120px;height:120px;flex-shrink:0;" aria-hidden="true">' +
+                        '<defs><linearGradient id="rdRingGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#10b981"/><stop offset="1" stop-color="#f5c842"/></linearGradient></defs>' +
+                        '<circle cx="55" cy="55" r="44" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="10"/>' +
+                        '<circle cx="55" cy="55" r="44" fill="none" stroke="url(#rdRingGrad)" stroke-width="10" stroke-linecap="round" stroke-dasharray="' + _c.toFixed(1) + '" stroke-dashoffset="' + _off + '" transform="rotate(-90 55 55)"/>' +
+                        '<text x="55" y="62" text-anchor="middle" font-family="Inter" font-size="22" font-weight="800" fill="#f2f5f0">' + goalPct + '%</text>' +
+                    '</svg>' +
+                    '<div class="rd-ring-facts">' + facts + '</div>' +
+                '</div>' +
+                '<div style="font-size:11px;color:rgba(255,255,255,0.3);font-weight:600;margin-top:10px;">' + _t('dash.ring.sub') + '</div>';
+        } else {
+            ringInner =
+                '<div class="rd-empty">' +
+                    '<span class="e-ic">🎯</span>' +
+                    '<div class="e-tx">' + _t('dash.empty.goals') + '</div>' +
+                    '<div class="e-tap">' + _t('dash.tap') + '</div>' +
+                '</div>';
+        }
+        var ringHtml =
+            '<div class="royal-card rd-panel" onclick="switchMode(\'finpath\')">' +
+                '<div class="rd-panel-h"><span class="rd-lbl">' + _t('dash.ring.h') + '</span><span class="go">→</span></div>' +
+                ringInner +
+            '</div>';
+
+        container.innerHTML =
+            headHtml +
+            statsHtml +
+            '<div class="rd-wide">' + chartHtml + ringHtml + '</div>';
     }
 
     // Fallback timer — only fires if auth state never resolves (e.g. offline).
