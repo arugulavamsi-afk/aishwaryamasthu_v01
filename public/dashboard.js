@@ -223,10 +223,46 @@
             '</div>' +
             '<div id="dash-search-results" style="display:none;"></div>' +
             '<div id="dash-chips-view">' +
-                '<div style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;">' + _t('dash.search.header') + '</div>' +
-                '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">' + chipsHtml + '</div>' +
+                '<div id="dash-situation-dropdown" style="position:relative;">' +
+                    '<button id="dash-situation-toggle" onclick="dashToggleSituationMenu()" ' +
+                        'style="display:flex;align-items:center;justify-content:space-between;width:100%;padding:11px 14px;border-radius:13px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.12);cursor:pointer;transition:border-color .15s;" ' +
+                        'onmouseover="this.style.borderColor=\'rgba(245,200,66,0.35)\'" ' +
+                        'onmouseout="this.style.borderColor=\'rgba(255,255,255,0.12)\'">' +
+                        '<span style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:.08em;">' + _t('dash.search.header') + '</span>' +
+                        '<svg id="dash-situation-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ' +
+                            'style="width:16px;height:16px;color:rgba(255,255,255,0.5);flex-shrink:0;transition:transform .2s ease;"><polyline points="6 9 12 15 18 9"/></svg>' +
+                    '</button>' +
+                    '<div id="dash-situation-menu" class="hidden" style="margin-top:8px;">' +
+                        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">' + chipsHtml + '</div>' +
+                    '</div>' +
+                '</div>' +
             '</div>';
     }
+
+    window.dashToggleSituationMenu = function() {
+        var menu    = document.getElementById('dash-situation-menu');
+        var chevron = document.getElementById('dash-situation-chevron');
+        if (!menu) return;
+        var isOpen = !menu.classList.contains('hidden');
+        if (isOpen) {
+            window.dashCloseSituationMenu();
+        } else {
+            menu.classList.remove('hidden');
+            if (chevron) chevron.style.transform = 'rotate(180deg)';
+        }
+    };
+
+    window.dashCloseSituationMenu = function() {
+        var menu    = document.getElementById('dash-situation-menu');
+        var chevron = document.getElementById('dash-situation-chevron');
+        if (menu) menu.classList.add('hidden');
+        if (chevron) chevron.style.transform = 'rotate(0deg)';
+    };
+
+    document.addEventListener('click', function(e) {
+        var dd = document.getElementById('dash-situation-dropdown');
+        if (dd && !dd.contains(e.target)) window.dashCloseSituationMenu();
+    });
 
     window.dashRefreshHome = function() {
         _dashRenderUnifiedWidget();
@@ -277,6 +313,7 @@
     window.dashOpenSituation = function(idx) {
         var s = _situations[idx];
         if (!s) return;
+        if (typeof window.dashCloseSituationMenu === 'function') window.dashCloseSituationMenu();
         var panel = document.getElementById('dashcat-situation-panel');
         if (!panel) return;
         var tools = _allTools.filter(function(t) { return s.modes.indexOf(t.mode) >= 0; });
