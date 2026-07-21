@@ -207,7 +207,7 @@
                 'onmouseover="this.style.background=\'rgba(255,255,255,0.1)\';this.style.borderColor=\'rgba(245,200,66,0.3)\'" ' +
                 'onmouseout="this.style.background=\'rgba(255,255,255,0.05)\';this.style.borderColor=\'rgba(255,255,255,0.09)\'">' +
                     '<span class="dash-chip-icon">' + (window._svgIcon ? _svgIcon(s.key, s.emoji) : s.emoji) + '</span>' +
-                    '<span style="font-size:12.5px;font-weight:700;color:rgba(255,255,255,0.8);line-height:1.35;">' + _t(s.key + '.label') + '</span>' +
+                    '<span style="font-size:12.5px;font-weight:700;color:rgba(255,255,255,0.8);line-height:1.35;text-transform:uppercase;letter-spacing:.16em;">' + _t(s.key + '.label') + '</span>' +
                 '</button>';
         }).join('');
 
@@ -228,7 +228,7 @@
                         'style="display:flex;align-items:center;justify-content:space-between;width:100%;padding:11px 14px;border-radius:13px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.12);cursor:pointer;transition:border-color .15s;" ' +
                         'onmouseover="this.style.borderColor=\'rgba(245,200,66,0.35)\'" ' +
                         'onmouseout="this.style.borderColor=\'rgba(255,255,255,0.12)\'">' +
-                        '<span style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:.08em;">' + _t('dash.search.header') + '</span>' +
+                        '<span style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:.16em;">' + _t('dash.search.header') + '</span>' +
                         '<svg id="dash-situation-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ' +
                             'style="width:16px;height:16px;color:rgba(255,255,255,0.5);flex-shrink:0;transition:transform .2s ease;"><polyline points="6 9 12 15 18 9"/></svg>' +
                     '</button>' +
