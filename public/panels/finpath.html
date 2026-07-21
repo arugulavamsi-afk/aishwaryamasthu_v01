@@ -32,7 +32,8 @@
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-4">
                     <h3 class="text-xs font-black text-slate-400 uppercase tracking-wider mb-2" data-i18n="finpath.chart.title">📈 Net Worth Trajectory</h3>
                     <div style="position:relative;height:220px;"><canvas id="path-chart"></canvas></div>
-                    <p class="text-[10px] text-slate-400 mt-2 leading-relaxed" data-i18n="finpath.chart.note">Directional projection — net worth grows with your SIP &amp; blended return and dips as each goal is funded. From retirement (amber dot) SIPs stop and an inflation-linked income is withdrawn, so the corpus draws down. Green = on track, red = shortfall; below the red zero line your money has run out.</p>
+                    <!-- Explainer (how the trajectory grows/depletes + assumptions) rendered by pathRenderExplainer() -->
+                    <div id="path-explain"></div>
                     <div id="path-milestones" class="mt-2"></div>
                 </div>
 

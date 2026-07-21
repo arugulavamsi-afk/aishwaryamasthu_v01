@@ -173,22 +173,20 @@ function pathProjectSeries(plan) {
     });
 
     var balance = existingPool + sipPool;
-    var series = [], milestones = [], depletionYear = null;
+    var series = [], milestones = [], depletionYear = null, shortfallYear = null;
     for (var y = 0; y <= horizon; y++) {
         var curAge = age + y;
         if (y > 0) {
             if (curAge <= retireAge) {
                 // Accumulation — existing corpus and new SIP money compound at
-                // their own rates (a negative pool is a shortfall, not a
-                // portfolio, so it must not compound — that would model growing
-                // debt), then the year's SIP lands in the SIP pool.
+                // their own rates, then the year's SIP lands in the SIP pool.
                 existingPool = existingPool > 0 ? existingPool * (1 + existingRate) : existingPool;
                 sipPool = (sipPool > 0 ? sipPool * (1 + r) : sipPool) + annualSIP;
                 balance = existingPool + sipPool;
             } else {
                 // Drawdown — pools merge (no more SIP, one conservative return
                 // applies to whatever corpus remains) minus an inflation-growing expense.
-                var grown = balance > 0 ? balance * (1 + PATH_POST_RET_RETURN) : balance;
+                var grown = balance > 0 ? balance * (1 + PATH_POST_RET_RETURN) : 0;
                 var yearsIntoRet = curAge - retireAge; // 1, 2, 3 …
                 var expense = retExpenseAtRet * Math.pow(1 + PATH_INFLATION, yearsIntoRet - 1);
                 balance = grown - expense;
@@ -214,16 +212,22 @@ function pathProjectSeries(plan) {
                 existingPool -= (outflow - fromSip);
             }
         }
-        // First year the corpus runs out during retirement (money outlives you = bad).
-        if (depletionYear === null && curAge > retireAge && balance < 0) depletionYear = startYear + y;
-        // Plot the true running balance — it may go negative (shortfall / depletion)
-        // so the downside is visible below zero rather than hidden.
+        // Net worth can never plot below ₹0 — a depleted corpus is empty, not a
+        // debt, and you can't withdraw money you don't have. Record the first
+        // year the money runs out (depletion in retirement, shortfall during
+        // accumulation), then floor the balance AND the pools at zero so the
+        // line flattens along the axis instead of diving into deep negatives.
+        if (balance < 0) {
+            if (curAge > retireAge) { if (depletionYear === null) depletionYear = startYear + y; }
+            else if (shortfallYear === null) { shortfallYear = startYear + y; }
+            balance = 0; existingPool = 0; sipPool = 0;
+        }
         series.push({ year: startYear + y, value: Math.round(balance) });
     }
     return {
         series: series, milestones: milestones, startYear: startYear, horizon: horizon,
         retireIndex: (retireAge - age), retireYear: startYear + (retireAge - age),
-        depletionYear: depletionYear
+        depletionYear: depletionYear, shortfallYear: shortfallYear
     };
 }
 window.pathProjectSeries = pathProjectSeries;
@@ -279,11 +283,62 @@ function pathRender() {
 
     var proj = pathProjectSeries(plan);
     pathRenderChart(proj, plan);
+    pathRenderExplainer(proj, plan);
     pathRenderMilestones(proj.milestones);
     pathRenderCards(plan);
     pathRenderArchive(st.archive || []);
 }
 window.pathRender = pathRender;
+
+// ── Explainer under the chart ─────────────────────────────────────
+// Spells out, in plain language and with this plan's own numbers, how the
+// trajectory grows and depletes and which assumptions drive it — so the curve
+// isn't a black box. Adapts when income is missing (no drawdown modelled).
+function pathRenderExplainer(proj, plan) {
+    var el = document.getElementById('path-explain');
+    if (!el) return;
+
+    var hasExisting  = (plan.existingCorpus || 0) > 0;
+    var existingAmt  = hasExisting ? plan.existingCorpus : (plan.netWorthToday > 0 ? plan.netWorthToday : 0);
+    var existingRate = hasExisting ? (plan.existingReturn || 8) : 8;
+    var income       = plan.monthlyIncome || 0;
+    var modelsDrawdown = income > 0;
+
+    function fnum(n) { return (n % 1) ? n.toFixed(1) : String(Math.round(n)); }
+    function row(label, val) {
+        return '<div class="flex items-center justify-between py-0.5 gap-3">' +
+            '<span class="text-[10px] text-slate-500 min-w-0 truncate">' + label + '</span>' +
+            '<span class="text-[10px] font-black text-slate-700 flex-shrink-0">' + val + '</span></div>';
+    }
+
+    // Assumptions grid — directly answers "what factors were considered".
+    var factors = '';
+    if (existingAmt > 0) factors += row(_pt('finpath.explain.f.er', 'Existing corpus return'), fnum(existingRate) + '%');
+    factors += row(_pt('finpath.explain.f.br', 'New SIP (blended) return'), (plan.blendedReturn || 10) + '%');
+    if (modelsDrawdown) {
+        factors += row(_pt('finpath.explain.f.pr', 'Post-retirement return'), Math.round(PATH_POST_RET_RETURN * 100) + '%');
+        factors += row(_pt('finpath.explain.f.infl', 'Inflation'), Math.round(PATH_INFLATION * 100) + '%');
+        factors += row(_pt('finpath.explain.f.rep', 'Income replaced in retirement'), Math.round(PATH_REPLACEMENT * 100) + '%');
+        factors += row(_pt('finpath.explain.f.life', 'Plan runs until age'), PATH_LIFE_EXPECTANCY);
+    }
+
+    var drawText = modelsDrawdown
+        ? _pt('finpath.explain.draw.t', 'At retirement (amber dot) SIPs stop and your living costs are withdrawn every year, rising with inflation, so the corpus gradually depletes. Net worth is floored at ₹0 — it never shows as negative; if the money runs out that year is marked in red.')
+        : _pt('finpath.explain.draw.noinc', 'No income was entered, so post-retirement spending isn’t modelled here — add your income and re-save the plan to see the drawdown.');
+
+    el.innerHTML =
+        '<div class="mt-3 pt-3 border-t border-slate-100">' +
+            '<div class="text-[11px] font-black text-slate-600 mb-1.5">' + _pt('finpath.explain.h', 'How this trajectory is calculated') + '</div>' +
+            '<div class="text-[10px] text-slate-500 leading-relaxed mb-1"><span class="font-bold text-slate-600">' + _pt('finpath.explain.grow.h', 'Until retirement — growth') + ':</span> ' +
+                _pt('finpath.explain.grow.t', 'Your existing corpus and monthly SIP each compound every year at their own rate (below). When you reach a spend-goal, its target is withdrawn from the corpus — that’s each dip in the line.') + '</div>' +
+            '<div class="text-[10px] text-slate-500 leading-relaxed mb-2"><span class="font-bold text-slate-600">' + _pt('finpath.explain.draw.h', 'After retirement — drawdown') + ':</span> ' + drawText + '</div>' +
+            '<div class="rounded-lg bg-slate-50 px-3 py-2">' +
+                '<div class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1">' + _pt('finpath.explain.factors.h', 'Assumptions used') + '</div>' +
+                factors +
+            '</div>' +
+        '</div>';
+}
+window.pathRenderExplainer = pathRenderExplainer;
 
 function pathRenderChart(proj, plan) {
     var canvas = document.getElementById('path-chart');
@@ -294,15 +349,19 @@ function pathRenderChart(proj, plan) {
     var milestoneYears = {};
     proj.milestones.forEach(function (m) { milestoneYears[m.year] = m; });
 
-    // The retirement year gets its own amber marker — drawdown starts here.
+    // The retirement year gets an amber marker (drawdown starts here); the year
+    // the corpus runs dry, if any, gets a red marker.
+    var depYear = proj.depletionYear;
     var pointRadius = series.map(function (p) {
         if (milestoneYears[p.year]) return 5;
+        if (p.year === depYear) return 5;
         if (p.year === proj.retireYear) return 5;
         return 0;
     });
     var pointColors = series.map(function (p) {
         var m = milestoneYears[p.year];
         if (m) return m.onTrack ? '#10b981' : '#ef4444';
+        if (p.year === depYear) return '#ef4444';       // corpus-depleted marker
         if (p.year === proj.retireYear) return '#f59e0b'; // retirement marker
         return 'rgba(0,0,0,0)';
     });
@@ -320,9 +379,7 @@ function pathRenderChart(proj, plan) {
                 pointHoverRadius: 6,
                 pointBackgroundColor: pointColors,
                 pointBorderColor: pointColors,
-                // Fill relative to the zero line: indigo above, red "underwater"
-                // below — so a shortfall reads instantly.
-                fill: { target: 'origin', above: 'rgba(99,102,241,0.10)', below: 'rgba(239,68,68,0.16)' },
+                fill: { target: 'origin', above: 'rgba(99,102,241,0.10)' },
                 tension: 0.3
             }]
         },
@@ -349,6 +406,7 @@ function pathRenderChart(proj, plan) {
                             var m = milestoneYears[yr];
                             if (m) lines.push((m.onTrack ? '✅ ' : '🔴 ') + _pt('finpath.chart.mstip', '{label} — target {t}', { label: m.label, t: pathFmt(m.target) }));
                             if (yr === proj.retireYear) lines.push(_pt('finpath.chart.retire', '🏖️ Retirement — drawdown begins'));
+                            if (yr === proj.depletionYear) lines.push(_pt('finpath.chart.deplete', '⚠️ Corpus runs out here'));
                             return lines.join('\n');
                         }
                     }
@@ -357,11 +415,12 @@ function pathRenderChart(proj, plan) {
             scales: {
                 x: { ticks: { font: { size: 9 }, maxTicksLimit: 12 }, grid: { display: false } },
                 y: {
+                    // Net worth is floored at ₹0, so the axis starts there — the
+                    // trajectory flattens along the baseline if the corpus depletes.
+                    beginAtZero: true,
                     ticks: { font: { size: 9 }, callback: function (v) { return pathFmt(v); } },
                     grid: {
-                        // Draw a stronger red baseline at ₹0 so a dip below it — the
-                        // "underwater" zone — is obvious.
-                        color: function (ctx) { return ctx.tick.value === 0 ? 'rgba(239,68,68,0.45)' : 'rgba(0,0,0,0.04)'; },
+                        color: function (ctx) { return ctx.tick.value === 0 ? 'rgba(0,0,0,0.15)' : 'rgba(0,0,0,0.04)'; },
                         lineWidth: function (ctx) { return ctx.tick.value === 0 ? 1.5 : 1; }
                     }
                 }
