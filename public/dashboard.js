@@ -67,18 +67,16 @@
             btn.className = 'dash-card group';
             btn.setAttribute('data-color', t.color);
             btn.innerHTML =
+                '<span class="dash-card-star is-pinned" title="' + _t('pin.active') + '" ' +
+                    'onclick="event.stopPropagation();dashToggleFav(\'' + k + '\',this);initDashFav();">★</span>' +
                 '<div class="dash-card-icon">' + (window._svgIcon ? _svgIcon(k, t.icon) : t.icon) + '</div>' +
-                '<div class="dash-card-title">' + t.title + '</div>' +
-                '<div class="dash-card-unpin">' +
-                    '<span onclick="event.stopPropagation();dashToggleFav(\'' + k + '\',this);initDashFav();" ' +
-                    'style="cursor:pointer;">' + _t('pin.active.tap') + '</span>' +
-                '</div>';
+                '<div class="dash-card-title">' + t.title + '</div>';
             btn.onclick = function() { switchMode(k); };
             grid.appendChild(btn);
         });
     }
 
-    // Inject ☆ Pin / ★ Pinned buttons into category sub-panel cards
+    // Inject a ☆/★ pin star into the top-right corner of category sub-panel cards
     function _dashInjectPinBtns(panelId) {
         var panel = document.getElementById(panelId);
         if (!panel) return;
@@ -87,20 +85,19 @@
             var oc = card.getAttribute('onclick') || '';
             var m  = (oc.match(/switchMode\('([^']+)'\)/) || [])[1];
             if (!m || m.indexOf('dashcat') === 0 || m === 'dashboard') return;
-            var old = card.querySelector('.dash-pin-btn');
+            var old = card.querySelector('.dash-card-star');
             if (old) old.remove();
             var isPinned = favs.indexOf(m) !== -1;
             var span = document.createElement('span');
-            span.className = 'dash-pin-btn';
-            span.style.cssText = 'display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:800;cursor:pointer;margin-top:auto;padding:3px 8px;border-radius:8px;transition:all 0.2s;' + (isPinned ? 'color:#f5c842;background:rgba(245,200,66,0.18);border:1px solid rgba(245,200,66,0.4);' : 'color:rgba(255,255,255,0.6);background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);');
-            span.textContent = isPinned ? _t('pin.active') : _t('pin.inactive');
+            span.className = 'dash-card-star' + (isPinned ? ' is-pinned' : '');
+            span.title = isPinned ? _t('pin.active') : _t('pin.inactive');
+            span.textContent = isPinned ? '★' : '☆';
             span.onclick = function(e) {
                 e.stopPropagation();
                 dashToggleFav(m, null);
                 _dashInjectPinBtns(panelId);
             };
-            var arrow = card.querySelector('.dash-card-arrow');
-            if (arrow) card.insertBefore(span, arrow); else card.appendChild(span);
+            card.appendChild(span);
         });
     }
     function _consultProfileComplete() {
@@ -207,7 +204,7 @@
                 'onmouseover="this.style.background=\'rgba(255,255,255,0.1)\';this.style.borderColor=\'rgba(245,200,66,0.3)\'" ' +
                 'onmouseout="this.style.background=\'rgba(255,255,255,0.05)\';this.style.borderColor=\'rgba(255,255,255,0.09)\'">' +
                     '<span class="dash-chip-icon">' + (window._svgIcon ? _svgIcon(s.key, s.emoji) : s.emoji) + '</span>' +
-                    '<span style="font-size:12.5px;font-weight:700;color:rgba(255,255,255,0.8);line-height:1.35;text-transform:uppercase;letter-spacing:.16em;">' + _t(s.key + '.label') + '</span>' +
+                    '<span style="font-size:12.5px;font-weight:700;color:rgba(255,255,255,0.8);line-height:1.35;">' + _t(s.key + '.label') + '</span>' +
                 '</button>';
         }).join('');
 

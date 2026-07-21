@@ -858,8 +858,8 @@
                 <!-- Rendered by JS -->
             </div>
             <div class="mt-4 rounded-2xl px-4 py-3 text-[11px] leading-relaxed" style="background:rgba(255,255,255,0.04);border:1px solid rgba(245,200,66,0.2);color:rgba(255,255,255,0.5);">
-                💡 To add a tool here: open any category, find the tool, and click the <strong style="color:rgba(245,200,66,0.8);">☆ Pin</strong> button on it.
-                To remove: click <strong style="color:#f87171;">★ Unpin</strong> on the tile below.
+                💡 To add a tool here: open any category, find the tool, and tap the <strong style="color:rgba(245,200,66,0.8);">☆</strong> star in its top-right corner.
+                To remove: tap the <strong style="color:#f5c842;">★</strong> star on the tile below.
             </div>
             </div>
         </div>
@@ -2512,7 +2512,7 @@
         .dash-card-title {
             font-size: 11.5px;
             font-weight: 700;
-            color: #f2f5f0;
+            color: rgba(242,245,240,0.72);
             line-height: 1.3;
             word-break: break-word;
             text-transform: uppercase;
@@ -2520,12 +2520,22 @@
         }
         .dash-card-desc { display: none; }
         .dash-card-arrow { display: none; }
-        .dash-card-unpin {
-            font-size: 9px;
-            font-weight: 800;
-            color: #f5c842;
-            margin-top: 5px;
+        /* Pin/favourite star — top-right corner of every tile */
+        .dash-card-star {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            font-size: 15px;
+            line-height: 1;
+            padding: 4px;
+            cursor: pointer;
+            color: rgba(255,255,255,0.25);
+            transition: color 0.15s, transform 0.15s;
+            z-index: 2;
         }
+        .dash-card-star:hover { transform: scale(1.18); color: rgba(245,200,66,0.7); }
+        .dash-card-star.is-pinned { color: #f5c842; }
+        .dash-card-star.is-pinned:hover { color: #f5c842; }
         .dash-card::before {
             content: '';
             position: absolute;
