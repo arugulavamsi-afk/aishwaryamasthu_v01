@@ -413,6 +413,11 @@
         'splash.lname':         'Last Name',
         'splash.enterdash':     'Enter the Dashboard →',
         'splash.createaccount': 'Create My Account →',
+        'splash.motto':         '“May prosperity be upon you”',
+        'splash.p.tools':       'Tools',
+        'splash.p.langs':       'Languages',
+        'splash.p.india':       'India First',
+        'splash.p.free':        'Free Forever',
         'mf.returns':'Returns','mf.horizon':'Horizon','mf.details':'Details',
         /* Tax Guide dynamic */
         'tg.win.new':        'New Regime saves you more',

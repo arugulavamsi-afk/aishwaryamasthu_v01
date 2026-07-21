@@ -1,5 +1,5 @@
 /* AishwaryaMasthu Service Worker */
-var CACHE = 'am-v52';
+var CACHE = 'am-v55';
 
 /* App shell — pre-cached on SW install. Other files are cached on first access. */
 var SHELL = [
@@ -85,7 +85,10 @@ var SHELL = [
   '/panels/taxguide.html',
   '/panels/ulipcheck.html',
   '/manifest.json',
-  '/icons/GoldenEle_Logov02.png'
+  '/icons/GoldenEle_Logov02.png',
+  '/fonts/cormorant-garamond-roman.woff2',
+  '/fonts/cormorant-garamond-roman-ext.woff2',
+  '/fonts/cormorant-garamond-italic.woff2'
 ];
 
 /* ── Skip-waiting message (sent by update toast in index.html) ── */
