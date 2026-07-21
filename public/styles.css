@@ -104,6 +104,14 @@
             border-color: rgba(245,200,66,0.40);
         }
 
+        /* ── Situation chip icon ("What's on your mind?") ── */
+        .dash-chip-icon {
+            display: flex; align-items: center; justify-content: center;
+            width: 34px; height: 34px; border-radius: 10px; flex-shrink: 0;
+            background: rgba(245,200,66,0.10); border: 1px solid rgba(245,200,66,0.18);
+        }
+        .dash-chip-icon svg { width: 19px; height: 19px; color: #f5c842; display: block; }
+
         /* ── ROYAL DARK slim nav (brand · pills · account) ── */
         .nav-row { display: flex; align-items: center; gap: 14px; width: 100%; max-width: 1240px; margin: 0 auto; padding: 2px 4px; }
         .nav-brand { display: flex; align-items: center; gap: 10px; cursor: pointer; flex-shrink: 0; }

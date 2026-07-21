@@ -1,7 +1,8 @@
 /* ══════════════════════════════════════════════════════════
    ROYAL DARK ICON SET
    Consistent 24×24 line icons (1.8 stroke, round caps) for
-   dashboard/category tiles — replaces emoji tile icons.
+   dashboard/category tiles and situation chips — replaces
+   emoji icons app-wide.
    - window._svgIcon(mode, fallback) → svg string (or fallback)
    - Static .dash-card tiles are upgraded automatically on load.
    ══════════════════════════════════════════════════════════ */
@@ -79,6 +80,17 @@
         nomtrack:     '<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9l-6-6z"/><path d="M14 3v6h6"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="14" y2="17"/>',
         /* budget tracker — pie */
         budgettrack:  '<path d="M12 3a9 9 0 1 0 9 9h-9V3z"/><path d="M15 3.5A9 9 0 0 1 20.5 9H15V3.5z"/>',
+        /* situation chips — "What's on your mind?" */
+        'sit.job':      '<rect x="3" y="8" width="18" height="12" rx="2"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/><path d="M3 13h18"/>',
+        'sit.house':    '<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/>',
+        'sit.grow':     '<polyline points="3 17 9 11 13 15 21 7"/><polyline points="15 7 21 7 21 13"/>',
+        'sit.goals':    '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/>',
+        'sit.retire':   '<circle cx="12" cy="10" r="4"/><line x1="12" y1="3" x2="12" y2="4.5"/><line x1="5.5" y1="10" x2="7" y2="10"/><line x1="17" y1="10" x2="18.5" y2="10"/><line x1="6.8" y1="4.8" x2="7.8" y2="5.8"/><line x1="16.2" y1="4.8" x2="17.2" y2="5.8"/><line x1="3" y1="20" x2="21" y2="20"/>',
+        'sit.loans':    '<rect x="3" y="6" width="18" height="13" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="6" y1="15" x2="10" y2="15"/>',
+        'sit.tax':      '<path d="M6 3h12v18l-2-1.5L14 21l-2-1.5L10 21l-2-1.5L6 21V3z"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="9" y1="12" x2="15" y2="12"/>',
+        'sit.protect':  '<path d="M12 3l8 3v6c0 4.5-3.4 7.8-8 9-4.6-1.2-8-4.5-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/>',
+        'sit.track':    '<line x1="4" y1="20" x2="20" y2="20"/><rect x="5" y="12" width="3" height="6"/><rect x="10.5" y="7" width="3" height="11"/><rect x="16" y="10" width="3" height="8"/>',
+        'sit.business': '<path d="M5 4h14l2 5H3l2-5z"/><path d="M4 9v11h16V9"/><path d="M9.5 20v-5.5h5V20"/>',
         /* categories */
         'dashcat-calc': '<rect x="5" y="3" width="14" height="18" rx="2"/><line x1="8.5" y1="7.5" x2="15.5" y2="7.5"/><circle cx="9" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="9" cy="16" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="16" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="16" r="1" fill="currentColor" stroke="none"/>',
         'dashcat-mf':   '<path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M3 13l9 5 9-5"/><path d="M3 17l9 5 9-5"/>',

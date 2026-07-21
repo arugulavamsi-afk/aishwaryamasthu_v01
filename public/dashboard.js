@@ -206,7 +206,7 @@
                 'style="display:flex;align-items:center;gap:10px;padding:13px 15px;border-radius:14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);cursor:pointer;text-align:left;transition:all .15s;width:100%;" ' +
                 'onmouseover="this.style.background=\'rgba(255,255,255,0.1)\';this.style.borderColor=\'rgba(245,200,66,0.3)\'" ' +
                 'onmouseout="this.style.background=\'rgba(255,255,255,0.05)\';this.style.borderColor=\'rgba(255,255,255,0.09)\'">' +
-                    '<span style="font-size:20px;flex-shrink:0;">' + s.emoji + '</span>' +
+                    '<span class="dash-chip-icon">' + (window._svgIcon ? _svgIcon(s.key, s.emoji) : s.emoji) + '</span>' +
                     '<span style="font-size:12.5px;font-weight:700;color:rgba(255,255,255,0.8);line-height:1.35;">' + _t(s.key + '.label') + '</span>' +
                 '</button>';
         }).join('');
