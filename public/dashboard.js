@@ -464,6 +464,36 @@
         return s + '₹' + Math.round(a).toLocaleString('en-IN');
     }
 
+    // FIRE age — first age at which the corpus can sustain withdrawals under
+    // the 4% rule (corpus ≥ 25 × that year's living expense). Assumptions match
+    // the Financial Path projection: accumulation at the plan's blended return
+    // plus yearly SIP, 6% inflation, living expense = 70% of current income.
+    // Existing corpus and new SIP money grow at their own rates — same
+    // two-pool split as pathProjectSeries (js/financial-path.js) — rather than
+    // compounding netWorthToday (home equity, gold, EPF, minus loans) at the
+    // equity-heavy blendedReturn, which overstated growth.
+    // Returns null when there is no plan or the plan has no income captured.
+    function _dashFireAge(plan) {
+        if (!plan) return null;
+        var annualExpenseNow = (plan.monthlyIncome || 0) * 12 * 0.70;
+        if (annualExpenseNow <= 0) return null;
+        var age = plan.age || 30;
+        var hasExistingCorpus = (plan.existingCorpus || 0) > 0;
+        var existingPool = hasExistingCorpus ? plan.existingCorpus : (plan.netWorthToday > 0 ? plan.netWorthToday : 0);
+        var existingRate = hasExistingCorpus ? (plan.existingReturn || 8) / 100 : 0.08;
+        var sipPool   = 0;
+        var annualSIP = (plan.monthlyInvest || 0) * 12;
+        var r         = (plan.blendedReturn || 10) / 100;
+        var INFL      = 0.06;
+        for (var y = 0; y <= 60; y++) {
+            var expense = annualExpenseNow * Math.pow(1 + INFL, y);
+            if ((existingPool + sipPool) >= expense * 25) return age + y;
+            existingPool = existingPool > 0 ? existingPool * (1 + existingRate) : existingPool;
+            sipPool = (sipPool > 0 ? sipPool * (1 + r) : sipPool) + annualSIP;
+        }
+        return null; // not reachable within 60 years — treat as "no data" rather than alarm
+    }
+
     function _dashFmtTs(iso) {
         if (!iso) return '';
         var d = new Date(iso);
@@ -953,13 +983,20 @@
         var totTarget = 0, totSaved = 0;
         goals.forEach(function(g) { totTarget += (g.targetAmt || 0); totSaved += (g.savedAmt || 0); });
         var goalPct = totTarget > 0 ? Math.min(100, Math.round(totSaved / totTarget * 100)) : 0;
-        var glBig, glChip;
-        if (goals.length) {
-            glBig  = goalPct + '<small>%</small>';
-            glChip = '<span class="rd-chip rd-chip-g">' + _t('dash.stat.goalsn').replace('{n}', goals.length) + '</span>';
+
+        // ── FIRE Age tile — from the active Financial Path plan ──
+        var _fPlan   = window._pathState && window._pathState.active;
+        var _fireAge = _dashFireAge(_fPlan);
+        var fireBig, fireChip;
+        if (_fireAge !== null) {
+            var _fireIn = _fireAge - (_fPlan.age || 30);
+            fireBig = _fireAge + '<small> ' + _t('dash.fire.yrs') + '</small>';
+            fireChip = _fireIn <= 0
+                ? '<span class="rd-chip rd-chip-e">' + _t('dash.fire.now') + '</span>'
+                : '<span class="rd-chip ' + (_fireAge <= (_fPlan.retireAge || 60) ? 'rd-chip-e' : 'rd-chip-g') + '">' + _t('dash.fire.in').replace('{n}', _fireIn) + '</span>';
         } else {
-            glBig  = '<span style="font-size:12px;color:rgba(255,255,255,0.5);">' + _t('dash.empty.goals') + '</span>';
-            glChip = '<span class="rd-chip rd-chip-g">' + _t('dash.tap') + '</span>';
+            fireBig  = '<span style="font-size:12px;color:rgba(255,255,255,0.5);">' + _t('dash.empty.fire') + '</span>';
+            fireChip = '<span class="rd-chip rd-chip-g">' + _t('dash.tap') + '</span>';
         }
 
         var btBig, btChip;
@@ -977,51 +1014,30 @@
             '<div class="rd-stats">' +
                 _stat('networth',    _t('dash.nw.val'),       nwBig, nwChip) +
                 _stat('healthscore', _t('dash.card.hs'),      hsBig, hsChip) +
-                _stat('finpath',     _t('dash.card.goals'),   glBig, glChip) +
+                _stat('finpath',     _t('dash.card.fire'),    fireBig, fireChip) +
                 _stat('budgettrack', _t('dash.card.budget'),  btBig, btChip) +
             '</div>';
 
-        // Savings trajectory chart — cumulative saved amount across all goal check-ins
-        var _evts = [];
-        goals.forEach(function(g, gi) {
-            (g.checkIns || []).forEach(function(ci) {
-                var t = Date.parse(ci.ts || ci.date || '');
-                if (t && (ci.amt || 0) >= 0) _evts.push({ t: t, gi: gi, amt: ci.amt || 0 });
-            });
-        });
-        _evts.sort(function(a, b) { return a.t - b.t; });
-        var _latest = {}, _pts = [];
-        _evts.forEach(function(e) {
-            _latest[e.gi] = e.amt;
-            var tot = 0;
-            Object.keys(_latest).forEach(function(k) { tot += _latest[k]; });
-            _pts.push({ t: e.t, v: tot });
-        });
+        // Net worth trajectory — projected from the active Financial Path plan.
+        // window._pathState is restored at login (auth.js) without the panel being
+        // open, and pathProjectSeries (js/financial-path.js) is always loaded.
+        // Values are floored at ₹0: a depleted corpus is empty, not negative —
+        // the raw shortfall view lives in the Financial Path tool; here the
+        // depletion year is flagged with a chip + red dot instead.
+        var _plan = window._pathState && window._pathState.active;
+        var _proj = (_plan && typeof window.pathProjectSeries === 'function')
+            ? window.pathProjectSeries(_plan) : null;
+        var _pts = (_proj && _proj.series && _proj.series.length >= 2)
+            ? _proj.series.map(function(s) { return { t: s.year, v: Math.max(0, s.value) }; })
+            : [];
 
-        var chartInner;
+        var chartInner, _depChip = '';
         if (_pts.length >= 2) {
-            var W = 600, H = 200, PAD = 8;
-            var t0 = _pts[0].t, t1 = _pts[_pts.length - 1].t;
-            var vMax = Math.max(totTarget, _pts[_pts.length - 1].v) * 1.05 || 1;
-            function _x(t) { return t1 === t0 ? W / 2 : PAD + (t - t0) / (t1 - t0) * (W - 2 * PAD); }
-            function _y(v) { return H - PAD - (v / vMax) * (H - 2 * PAD); }
-            var lineP = _pts.map(function(p, i) { return (i ? 'L' : 'M') + _x(p.t).toFixed(1) + ',' + _y(p.v).toFixed(1); }).join(' ');
-            var areaP = lineP + ' L' + _x(t1).toFixed(1) + ',' + (H - PAD) + ' L' + _x(t0).toFixed(1) + ',' + (H - PAD) + ' Z';
-            var lastX = _x(t1).toFixed(1), lastY = _y(_pts[_pts.length - 1].v).toFixed(1);
-            var targetLine = totTarget > 0
-                ? '<line x1="' + PAD + '" y1="' + _y(totTarget).toFixed(1) + '" x2="' + (W - PAD) + '" y2="' + _y(totTarget).toFixed(1) + '" stroke="#f5c842" stroke-width="1.5" stroke-dasharray="6 7" opacity="0.45"/>'
-                : '';
-            chartInner =
-                '<svg width="100%" height="200" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" aria-hidden="true">' +
-                    '<defs>' +
-                        '<linearGradient id="rdChartArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgba(16,185,129,0.30)"/><stop offset="1" stop-color="rgba(16,185,129,0)"/></linearGradient>' +
-                        '<linearGradient id="rdChartLine" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#10b981"/><stop offset="0.7" stop-color="#34d399"/><stop offset="1" stop-color="#f5c842"/></linearGradient>' +
-                    '</defs>' +
-                    '<path d="' + areaP + '" fill="url(#rdChartArea)"/>' +
-                    '<path d="' + lineP + '" fill="none" stroke="url(#rdChartLine)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>' +
-                    targetLine +
-                    '<circle cx="' + lastX + '" cy="' + lastY + '" r="5" fill="#f5c842" stroke="#071e22" stroke-width="2"/>' +
-                '</svg>';
+            chartInner = '<div style="position:relative;height:200px;"><canvas id="rd-traj-canvas"></canvas></div>';
+            if (_proj.depletionYear) {
+                _depChip = ' <span class="rd-chip rd-chip-r">' +
+                    _t('dash.chart.deplete').replace('{y}', _proj.depletionYear) + '</span>';
+            }
         } else {
             chartInner =
                 '<div class="rd-empty">' +
@@ -1030,11 +1046,18 @@
                     '<div class="e-tap">' + _t('dash.tap') + '</div>' +
                 '</div>';
         }
-        var chartHtml =
-            '<div class="royal-card rd-panel" onclick="switchMode(\'finpath\')">' +
-                '<div class="rd-panel-h"><span class="rd-lbl">' + _t('dash.chart.h') + '</span><span class="go">→</span></div>' +
-                chartInner +
-            '</div>';
+        // Interactive chart: only the header navigates, so hovering the canvas
+        // shows tooltips instead of jumping to the tool. Empty state: whole card.
+        var chartHtml = _pts.length >= 2
+            ? '<div class="royal-card rd-panel">' +
+                  '<div class="rd-panel-h" onclick="switchMode(\'finpath\')" style="cursor:pointer;">' +
+                      '<span class="rd-lbl">' + _t('dash.chart.h') + _depChip + '</span><span class="go">→</span></div>' +
+                  chartInner +
+              '</div>'
+            : '<div class="royal-card rd-panel" onclick="switchMode(\'finpath\')">' +
+                  '<div class="rd-panel-h"><span class="rd-lbl">' + _t('dash.chart.h') + '</span><span class="go">→</span></div>' +
+                  chartInner +
+              '</div>';
 
         // Goal progress ring + per-goal facts
         var ringInner;
@@ -1074,6 +1097,97 @@
             headHtml +
             statsHtml +
             '<div class="rd-wide">' + chartHtml + ringHtml + '</div>';
+
+        if (_pts.length >= 2) _rdDrawTrajChart(_pts, _proj);
+    }
+
+    // ── Interactive Net Worth Trajectory (Chart.js) ────────────────────
+    var _rdTrajChart = null;
+    function _rdDrawTrajChart(pts, proj, tries) {
+        var cv = document.getElementById('rd-traj-canvas');
+        if (!cv) return;
+        // Chart.js loads at the bottom of <body> — retry briefly if not ready yet
+        if (typeof Chart === 'undefined') {
+            if ((tries || 0) < 20) setTimeout(function() { _rdDrawTrajChart(pts, proj, (tries || 0) + 1); }, 250);
+            return;
+        }
+        if (_rdTrajChart) { _rdTrajChart.destroy(); _rdTrajChart = null; }
+        var ctx  = cv.getContext('2d');
+        var grad = ctx.createLinearGradient(0, 0, 0, 200);
+        grad.addColorStop(0, 'rgba(16,185,129,0.28)');
+        grad.addColorStop(1, 'rgba(16,185,129,0)');
+        var lastIdx = pts.length - 1;
+        var retIdx  = proj && proj.retireYear    ? pts.findIndex(function(p) { return p.t === proj.retireYear;    }) : -1;
+        var depIdx  = proj && proj.depletionYear ? pts.findIndex(function(p) { return p.t === proj.depletionYear; }) : -1;
+        // Gold dashed vertical marker at retirement year (no plugin dependency)
+        var retLinePlugin = {
+            id: 'rdRetLine',
+            afterDatasetsDraw: function(chart) {
+                if (retIdx < 0) return;
+                var x = chart.scales.x.getPixelForValue(retIdx);
+                var y = chart.scales.y, c = chart.ctx;
+                c.save();
+                c.strokeStyle = 'rgba(245,200,66,0.5)';
+                c.setLineDash([6, 7]);
+                c.lineWidth = 1.5;
+                c.beginPath(); c.moveTo(x, y.top); c.lineTo(x, y.bottom); c.stroke();
+                c.restore();
+            }
+        };
+        _rdTrajChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: pts.map(function(p) { return p.t; }),
+                datasets: [{
+                    data: pts.map(function(p) { return p.v; }),
+                    borderColor: '#10b981',
+                    backgroundColor: grad,
+                    fill: true,
+                    borderWidth: 2.5,
+                    tension: 0.3,
+                    pointRadius: pts.map(function(p, i) { return (i === lastIdx || i === depIdx || i === retIdx) ? 4 : 0; }),
+                    pointBackgroundColor: pts.map(function(p, i) { return i === depIdx ? '#f87171' : '#f5c842'; }),
+                    pointBorderColor: 'rgba(7,30,34,0.6)',
+                    pointBorderWidth: 1.5,
+                    pointHitRadius: 14,
+                    pointHoverRadius: 5,
+                    pointHoverBackgroundColor: '#f5c842'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        displayColors: false,
+                        callbacks: {
+                            title: function(items) {
+                                var y = items[0].label;
+                                if (proj && String(proj.retireYear)    === String(y)) return y + ' · ' + _t('dash.chart.tt.retire');
+                                if (proj && String(proj.depletionYear) === String(y)) return y + ' · ' + _t('dash.chart.tt.deplete');
+                                return y;
+                            },
+                            label: function(c) { return ' ' + _dashFmtNW(c.parsed.y); }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: { color: 'rgba(255,255,255,0.4)', font: { size: 9 }, maxTicksLimit: 8 },
+                        grid: { display: false }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: { color: 'rgba(255,255,255,0.4)', font: { size: 9 }, maxTicksLimit: 5,
+                                 callback: function(v) { return _dashFmtNW(v); } },
+                        grid: { color: 'rgba(255,255,255,0.06)' }
+                    }
+                }
+            },
+            plugins: [retLinePlugin]
+        });
     }
 
     // Fallback timer — only fires if auth state never resolves (e.g. offline).

@@ -141,7 +141,18 @@ function pathProjectSeries(plan) {
         PATH_LIFE_EXPECTANCY - age,
         1
     );
-    var balance = plan.netWorthToday > 0 ? plan.netWorthToday : (plan.existingCorpus || 0);
+    // Existing corpus and new SIP money grow at different rates — mixing them
+    // (or growing either at the wrong rate) is what made the chart inaccurate.
+    // Prefer plan.existingCorpus (the Financial Plan's own tracked investments,
+    // paired with its asset-weighted existingReturn — same number the plan's
+    // gap calc already uses) over netWorthToday, which nets in home equity,
+    // gold, EPF and loan liabilities that don't compound at an equity SIP rate.
+    // Fall back to netWorthToday only when no existing-investment buckets were
+    // picked, using a conservative rate since the asset mix is then unknown.
+    var hasExistingCorpus = (plan.existingCorpus || 0) > 0;
+    var existingPool = hasExistingCorpus ? plan.existingCorpus : (plan.netWorthToday > 0 ? plan.netWorthToday : 0);
+    var existingRate = hasExistingCorpus ? (plan.existingReturn || 8) / 100 : 0.08;
+    var sipPool = 0;
     var annualSIP = (plan.monthlyInvest || 0) * 12;
     var r = (plan.blendedReturn || 10) / 100;
 
@@ -161,18 +172,23 @@ function pathProjectSeries(plan) {
         if (PATH_SPEND_TYPES[g.type || 'custom']) outflowByYear[y] = (outflowByYear[y] || 0) + (g.target || 0);
     });
 
+    var balance = existingPool + sipPool;
     var series = [], milestones = [], depletionYear = null;
     for (var y = 0; y <= horizon; y++) {
         var curAge = age + y;
         if (y > 0) {
-            // A negative balance is a shortfall, not a portfolio — it must not
-            // compound at the investment return (that would model growing debt).
-            var grown = balance > 0 ? balance * (1 + (curAge <= retireAge ? r : PATH_POST_RET_RETURN)) : balance;
             if (curAge <= retireAge) {
-                // Accumulation — grow at blended return, add the year's SIP.
-                balance = grown + annualSIP;
+                // Accumulation — existing corpus and new SIP money compound at
+                // their own rates (a negative pool is a shortfall, not a
+                // portfolio, so it must not compound — that would model growing
+                // debt), then the year's SIP lands in the SIP pool.
+                existingPool = existingPool > 0 ? existingPool * (1 + existingRate) : existingPool;
+                sipPool = (sipPool > 0 ? sipPool * (1 + r) : sipPool) + annualSIP;
+                balance = existingPool + sipPool;
             } else {
-                // Drawdown — conservative return minus an inflation-growing expense.
+                // Drawdown — pools merge (no more SIP, one conservative return
+                // applies to whatever corpus remains) minus an inflation-growing expense.
+                var grown = balance > 0 ? balance * (1 + PATH_POST_RET_RETURN) : balance;
                 var yearsIntoRet = curAge - retireAge; // 1, 2, 3 …
                 var expense = retExpenseAtRet * Math.pow(1 + PATH_INFLATION, yearsIntoRet - 1);
                 balance = grown - expense;
@@ -186,7 +202,18 @@ function pathProjectSeries(plan) {
                 });
             });
         }
-        if (outflowByYear[y]) balance -= outflowByYear[y];
+        if (outflowByYear[y]) {
+            var outflow = outflowByYear[y];
+            balance -= outflow;
+            if (curAge <= retireAge) {
+                // Spend the newer, more liquid SIP pool first, then dip into the
+                // existing corpus — keeps the two pools in sync with `balance`
+                // so next year's differential compounding stays correct.
+                var fromSip = Math.min(sipPool, outflow);
+                sipPool -= fromSip;
+                existingPool -= (outflow - fromSip);
+            }
+        }
         // First year the corpus runs out during retirement (money outlives you = bad).
         if (depletionYear === null && curAge > retireAge && balance < 0) depletionYear = startYear + y;
         // Plot the true running balance — it may go negative (shortfall / depletion)
