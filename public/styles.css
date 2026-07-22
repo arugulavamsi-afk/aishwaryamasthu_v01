@@ -182,13 +182,16 @@
         /* Deterministic fallback for engines without `safe` alignment: below 560px
            the pill strip always overflows, so left-align it unconditionally. */
         @media (max-width: 560px) { .nav-pills { justify-content: flex-start; } }
-        /* Phones: drop the language + account controls onto their own row. Row one
-           becomes brand + pills, so the strip gets back the ~150px the user-bar was
-           taking and fewer sections sit behind the chevron. Matches the 600px
-           breakpoint the .ub-* rules in index.html already use. */
+        /* Phones: drop the section pills entirely. They are reachable from the
+           dashboard's four category tiles, every category panel carries an
+           "⬅ Dashboard" button, and the brand logo returns home from anywhere —
+           so the strip was duplicating navigation that already exists below the
+           fold, at the cost of the most valuable row on the screen.
+           With them gone the brand, language and account controls fit one row
+           again, so the user-bar does NOT wrap here. Matches the 600px breakpoint
+           the .ub-* rules in index.html already use. */
         @media (max-width: 600px) {
-            .nav-row { flex-wrap: wrap; row-gap: 8px; }
-            #user-bar { flex-basis: 100%; margin-left: 0; }
+            .nav-pills-wrap { display: none; }
         }
 
         /* ── ROYAL DARK dashboard layout (header, stat row, chart + ring) ── */
