@@ -199,7 +199,7 @@
                .brand-name overrides in index.html, which are tuned for the much
                larger splash title and would otherwise force 1.15rem here. */
             .nav-brand .nav-brand-name {
-                display: inline; font-size: 1.35rem !important;
+                display: inline; font-size: 1.15rem !important;
                 overflow: hidden; text-overflow: ellipsis; min-width: 0;
             }
             /* Let the brand yield rather than push the row wider than the viewport;
@@ -209,25 +209,17 @@
                this it squashes to an oval while the height stays put. */
             .nav-brand { flex-shrink: 1; min-width: 0; }
             .nav-brand .logo-shine-wrapper { flex-shrink: 0; }
-            /* Collapse the language strip to the active language alone. Four buttons
-               cost 108px — as much as the title itself — for a setting most people
-               change once. Tapping the visible one expands the rest (see
-               navLangToggleInit in app.js); picking a language collapses it again.
-               Keyed off .lang-btn-active, which setLang keeps in sync. */
-            .ub-lang .lang-btn { padding: 3px 8px; display: none; }
-            .ub-lang .lang-btn-active,
-            .ub-lang.lang-open .lang-btn { display: inline-flex; }
-            .ub-lang.lang-open { gap: 4px; }
-            /* While the strip is open it needs the title's width. Hiding the title
-               outright reads as deliberate; letting it ellipsis mid-tap reads as a
-               bug. The class is mirrored onto .nav-row by navLangToggleInit so this
-               needs no :has() support. */
-            .nav-row.lang-open .nav-brand-name { display: none; }
+            /* All four languages stay visible and one tap away — hiding three of
+               them behind a tap traded away more than the extra title size was
+               worth. Tightened padding only, which buys ~32px back from the strip
+               without costing a tap. */
+            .ub-lang .lang-btn { padding: 3px 6px; }
         }
-        /* Small phones can't seat 1.35rem — it lands ~7px over and ellipsises the
-           last letters. One step down fits the whole word. */
+        /* Narrow phones (360/375) can't seat 1.15rem beside all four language
+           buttons — it ellipsises. Step down so the whole word survives there
+           rather than shrinking every phone to the narrowest one's budget. */
         @media (max-width: 380px) {
-            .nav-brand .nav-brand-name { font-size: 1.25rem !important; }
+            .nav-brand .nav-brand-name { font-size: 0.95rem !important; }
         }
 
         /* ── ROYAL DARK dashboard layout (header, stat row, chart + ring) ── */

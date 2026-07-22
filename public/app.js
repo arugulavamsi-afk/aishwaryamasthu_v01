@@ -5018,44 +5018,6 @@
         }
         window.navRevealActivePill = navRevealActivePill;
 
-        /* ── Collapsed language switcher (phones) ────────────────────────────
-           Below 600px only the active language shows, to leave the brand title
-           room to breathe. The first tap expands the strip instead of re-picking
-           the language already in use; the second tap picks one and collapses. */
-        (function navLangToggleInit() {
-            var bar = document.getElementById('lang-bar');
-            if (!bar) return;
-            var row = document.querySelector('.nav-row');
-            var collapses = function() {
-                return window.matchMedia('(max-width: 600px)').matches;
-            };
-            // Mirrored onto .nav-row so CSS can hide the brand title while open
-            var setOpen = function(on) {
-                bar.classList.toggle('lang-open', on);
-                if (row) row.classList.toggle('lang-open', on);
-            };
-            // Capture phase: runs before the buttons' own inline onclick, so a tap
-            // on the sole visible (active) button can expand without calling setLang.
-            bar.addEventListener('click', function(e) {
-                var btn = e.target.closest && e.target.closest('.lang-btn');
-                if (!btn || !collapses()) return;
-                if (!bar.classList.contains('lang-open')) {
-                    e.stopPropagation();   // suppress the inline setLang for this tap
-                    e.preventDefault();
-                    setOpen(true);
-                } else {
-                    setOpen(false);   // let setLang run, then collapse
-                }
-            }, true);
-            document.addEventListener('click', function(e) {
-                if (!bar.contains(e.target)) setOpen(false);
-            });
-            // A resize past the breakpoint would otherwise strand it open
-            window.addEventListener('resize', function() {
-                if (!collapses()) setOpen(false);
-            });
-        })();
-
         (function navPillAffordanceInit() {
             var strip = document.getElementById('nav-pills');
             if (!strip) return;
