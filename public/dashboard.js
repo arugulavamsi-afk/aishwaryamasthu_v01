@@ -988,23 +988,25 @@
             '</div>';
 
         // Stat cards
-        // ringHtml (optional) puts a progress ring left of the value, matching the
-        // Goal Progress ring's look. The value stays the hero so the tile still
-        // reads like its siblings.
+        // ringHtml (optional) puts a progress ring left of the tile's body. When the
+        // ring already carries the value (see _scoreRing), bigHtml is empty and only
+        // the chip sits beside it — so nothing is stated twice.
         function _stat(mode, label, bigHtml, chipHtml, ringHtml) {
-            var body = '<div class="rd-big">' + bigHtml + '</div>' + (chipHtml || '');
+            var body = (bigHtml ? '<div class="rd-big">' + bigHtml + '</div>' : '') + (chipHtml || '');
             return '<div class="royal-card rd-stat' + (ringHtml ? ' rd-ring-side' : '') + '" onclick="switchMode(\'' + mode + '\')">' +
                 '<div class="rd-lbl">' + label + '</div>' +
                 (ringHtml ? '<div class="rd-ring-i">' + ringHtml + '<div>' + body + '</div></div>' : body) +
             '</div>';
         }
 
-        // Decorative gauge — the figure it tracks is rendered as text beside it,
-        // so the SVG itself is hidden from assistive tech.
+        // Score ring: the value reads from inside the arc, the way the Goal Progress
+        // ring shows its percentage. Carries the figure itself, so it is labelled for
+        // assistive tech rather than hidden.
         function _scoreRing(pct) {
-            var p = Math.max(0, Math.min(100, pct || 0));
+            var p = Math.max(0, Math.min(100, Math.round(pct || 0)));
             var c = 2 * Math.PI * 44;
-            return '<svg class="rd-ring-xs" viewBox="0 0 110 110" aria-hidden="true">' +
+            return '<svg class="rd-ring-sc" viewBox="0 0 110 110" role="img" ' +
+                    'aria-label="' + p + ' out of 100">' +
                 '<defs><linearGradient id="rdHsGrad" x1="0" y1="0" x2="1" y2="1">' +
                     '<stop offset="0" stop-color="#10b981"/><stop offset="1" stop-color="#f5c842"/>' +
                 '</linearGradient></defs>' +
@@ -1012,6 +1014,10 @@
                 '<circle cx="55" cy="55" r="44" fill="none" stroke="url(#rdHsGrad)" stroke-width="10" ' +
                     'stroke-linecap="round" stroke-dasharray="' + c.toFixed(1) + '" ' +
                     'stroke-dashoffset="' + (c * (1 - p / 100)).toFixed(1) + '" transform="rotate(-90 55 55)"/>' +
+                '<text x="55" y="58" text-anchor="middle" font-family="Inter" font-size="32" ' +
+                    'font-weight="800" fill="#f2f5f0">' + p + '</text>' +
+                '<text x="55" y="74" text-anchor="middle" font-family="Inter" font-size="13" ' +
+                    'font-weight="700" fill="rgba(255,255,255,0.35)">/100</text>' +
             '</svg>';
         }
 
@@ -1027,7 +1033,8 @@
 
         var hsBig, hsChip, hsRing = '';
         if (hs) {
-            hsBig = hs.score + '<small>/100</small>';
+            // Score and its /100 live inside the ring, so the tile body is just the chip
+            hsBig  = '';
             hsRing = _scoreRing(hs.score);   // omitted in the empty state — a 0% ring would read as a real score
             var _hsPrev  = window._hsPrevScore;
             var _hsDelta = (_hsPrev && _hsPrev.score !== undefined && _hsPrev.score !== hs.score) ? hs.score - _hsPrev.score : null;
