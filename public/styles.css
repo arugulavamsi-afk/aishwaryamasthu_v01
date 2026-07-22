@@ -190,6 +190,12 @@
         .rd-empty .e-ic { font-size: 30px; }
         .rd-empty .e-tx { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.45); line-height: 1.55; max-width: 34ch; }
         .rd-empty .e-tap { font-size: 11px; font-weight: 700; color: rgba(245,200,66,0.55); }
+        /* Compact progress ring inside a stat tile (FinHealth score) — same visual
+           language as the Goal Progress ring, sized to leave the tile height alone. */
+        .rd-ring-i { display: flex; align-items: center; gap: 14px; margin-top: 8px; }
+        .rd-ring-xs { width: 68px; height: 68px; flex-shrink: 0; }
+        .rd-ring-side .rd-big { margin-top: 0; }
+        @media (max-width: 420px) { .rd-ring-xs { width: 56px; height: 56px; } .rd-ring-i { gap: 10px; } }
         .rd-ring-wrap { display: flex; gap: 20px; align-items: center; min-height: 160px; }
         .rd-ring-facts { font-size: 12.5px; color: rgba(255,255,255,0.55); line-height: 2.1; min-width: 0; flex: 1; }
         .rd-ring-facts b { color: rgba(255,255,255,0.85); font-weight: 700; }

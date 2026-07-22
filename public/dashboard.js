@@ -988,12 +988,31 @@
             '</div>';
 
         // Stat cards
-        function _stat(mode, label, bigHtml, chipHtml) {
-            return '<div class="royal-card rd-stat" onclick="switchMode(\'' + mode + '\')">' +
+        // ringHtml (optional) puts a progress ring left of the value, matching the
+        // Goal Progress ring's look. The value stays the hero so the tile still
+        // reads like its siblings.
+        function _stat(mode, label, bigHtml, chipHtml, ringHtml) {
+            var body = '<div class="rd-big">' + bigHtml + '</div>' + (chipHtml || '');
+            return '<div class="royal-card rd-stat' + (ringHtml ? ' rd-ring-side' : '') + '" onclick="switchMode(\'' + mode + '\')">' +
                 '<div class="rd-lbl">' + label + '</div>' +
-                '<div class="rd-big">' + bigHtml + '</div>' +
-                (chipHtml || '') +
+                (ringHtml ? '<div class="rd-ring-i">' + ringHtml + '<div>' + body + '</div></div>' : body) +
             '</div>';
+        }
+
+        // Decorative gauge — the figure it tracks is rendered as text beside it,
+        // so the SVG itself is hidden from assistive tech.
+        function _scoreRing(pct) {
+            var p = Math.max(0, Math.min(100, pct || 0));
+            var c = 2 * Math.PI * 44;
+            return '<svg class="rd-ring-xs" viewBox="0 0 110 110" aria-hidden="true">' +
+                '<defs><linearGradient id="rdHsGrad" x1="0" y1="0" x2="1" y2="1">' +
+                    '<stop offset="0" stop-color="#10b981"/><stop offset="1" stop-color="#f5c842"/>' +
+                '</linearGradient></defs>' +
+                '<circle cx="55" cy="55" r="44" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="10"/>' +
+                '<circle cx="55" cy="55" r="44" fill="none" stroke="url(#rdHsGrad)" stroke-width="10" ' +
+                    'stroke-linecap="round" stroke-dasharray="' + c.toFixed(1) + '" ' +
+                    'stroke-dashoffset="' + (c * (1 - p / 100)).toFixed(1) + '" transform="rotate(-90 55 55)"/>' +
+            '</svg>';
         }
 
         var nwBig, nwChip;
@@ -1006,9 +1025,10 @@
             nwChip = '<span class="rd-chip rd-chip-g">' + _t('dash.tap') + '</span>';
         }
 
-        var hsBig, hsChip;
+        var hsBig, hsChip, hsRing = '';
         if (hs) {
             hsBig = hs.score + '<small>/100</small>';
+            hsRing = _scoreRing(hs.score);   // omitted in the empty state — a 0% ring would read as a real score
             var _hsPrev  = window._hsPrevScore;
             var _hsDelta = (_hsPrev && _hsPrev.score !== undefined && _hsPrev.score !== hs.score) ? hs.score - _hsPrev.score : null;
             hsChip = _hsDelta !== null
@@ -1065,7 +1085,7 @@
         var statsHtml =
             '<div class="rd-stats">' +
                 _stat('networth',    _t('dash.nw.val'),       nwBig, nwChip) +
-                _stat('healthscore', _t('dash.card.hs'),      hsBig, hsChip) +
+                _stat('healthscore', _t('dash.card.hs'),      hsBig, hsChip, hsRing) +
                 _stat('finpath',     _t('dash.card.fire'),    fireBig, fireChip) +
                 _stat('budgettrack', _t('dash.card.budget'),  btBig, btChip) +
             '</div>';
