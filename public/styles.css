@@ -222,6 +222,18 @@
             .nav-brand .nav-brand-name { font-size: 0.95rem !important; }
         }
 
+        /* ── Dashboard category tiles (Calculators / Mutual Funds / …) ──
+           Four across needs ~600px: below that "Planning & Tax" wraps to two
+           lines, every tile stretches to the tallest, and they end up tall and
+           narrow — 65×144 (0.45 aspect) at 320px against 181×111 (1.63) on
+           desktop. Two columns give each label a single line and restore a
+           sane aspect. 599 rather than 600 because 600 is the last width where
+           four across still fits on one line. */
+        .dash-cat-row { display: flex; gap: 12px; max-width: 760px; margin: 0 auto; width: 100%; }
+        @media (max-width: 599px) {
+            .dash-cat-row { display: grid; grid-template-columns: 1fr 1fr; }
+        }
+
         /* ── ROYAL DARK dashboard layout (header, stat row, chart + ring) ── */
         .rd-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 22px; padding-top: 10px; }
         .rd-date { font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: #f5c842; font-weight: 700; margin-bottom: 8px; }

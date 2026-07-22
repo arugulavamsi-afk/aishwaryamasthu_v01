@@ -306,8 +306,8 @@
             <!-- Smart discovery: search + situation chips — rendered by _dashRenderSmartSection() in dashboard.js -->
             <div id="dash-smart-section" class="mb-5" style="max-width:760px;margin-left:auto;margin-right:auto;width:100%;"></div>
 
-            <!-- 4 Category tiles — 4×1 row -->
-            <div style="display:flex;gap:12px;max-width:760px;margin:0 auto;width:100%;">
+            <!-- 4 Category tiles — 4×1 row, 2×2 below 600px (see .dash-cat-row) -->
+            <div class="dash-cat-row">
                 <button onclick="switchMode('dashcat-calc')" class="dash-card group" style="flex:1;min-width:0;">
                     <div class="dash-card-icon" style="font-size:1.7rem;width:48px;height:48px;border-radius:14px;">⚡</div>
                     <div class="dash-card-title" style="font-size:12.5px;margin-top:8px;" data-i18n="nav.calc">Calculators</div>
