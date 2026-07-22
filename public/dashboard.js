@@ -457,6 +457,9 @@
             '</div>';
     }
 
+    // window.esc lands from auth.js; guard so render order can never throw.
+    function _dashEsc(s) { return (typeof window.esc === 'function') ? window.esc(s || '') : (s || ''); }
+
     function _dashFmtNW(n) {
         var a = Math.abs(n), s = n < 0 ? '-' : '';
         if (a >= 1e7) return s + '₹' + (a/1e7).toFixed(2) + ' Cr';
@@ -465,33 +468,69 @@
     }
 
     // FIRE age — first age at which the corpus can sustain withdrawals under
-    // the 4% rule (corpus ≥ 25 × that year's living expense). Assumptions match
-    // the Financial Path projection: accumulation at the plan's blended return
-    // plus yearly SIP, 6% inflation, living expense = 70% of current income.
-    // Existing corpus and new SIP money grow at their own rates — same
-    // two-pool split as pathProjectSeries (js/financial-path.js) — rather than
-    // compounding netWorthToday (home equity, gold, EPF, minus loans) at the
+    // the 4% rule (corpus ≥ 25 × that year's living expense).
+    //
+    // Every rate is the user's own number, never a stand-in:
+    //   · existing corpus compounds at plan.existingReturn — the asset-weighted
+    //     average of their actual holdings (fpGetWeightedExistingReturn, app.js)
+    //   · new SIP money compounds at plan.blendedReturn — their risk-profile
+    //     portfolio's return
+    //   · inflation comes from My Profile (up-inflation)
+    //   · living expense is My Profile's tracked monthly spend
+    // The two pools grow separately — the same split as pathProjectSeries
+    // (js/financial-path.js) — rather than compounding everything at the
     // equity-heavy blendedReturn, which overstated growth.
-    // Returns null when there is no plan or the plan has no income captured.
+    //
+    // netWorthToday is deliberately NOT seeded as a starting pool: it bundles
+    // home equity, gold and EPF, and no rate the user has given us honestly
+    // describes growth for that mix. Only tracked investments compound here.
+    //
+    // The 6% inflation / 70%-of-income expense assumptions apply only when the
+    // profile carries neither; `assumed` is then set so the tile can mark the
+    // figure as an estimate instead of passing our numbers off as theirs.
+    //
+    // Returns null when there is no plan, no way to size the living expense, or
+    // no portfolio return to project a SIP with. Returns beyond:true when the
+    // corpus never reaches 25× inside the 60-year horizon — a real result, so
+    // the tile shows it rather than falling back to the empty state.
     function _dashFireAge(plan) {
         if (!plan) return null;
-        var annualExpenseNow = (plan.monthlyIncome || 0) * 12 * 0.70;
+        var prof    = window._userProfile || {};
+        var assumed = false;
+
+        // Living expense — real tracked spend beats a replacement ratio.
+        var monthlyExpense   = parseFloat((prof.expenses || '').replace(/,/g, '')) || 0;
+        var annualExpenseNow = monthlyExpense * 12;
+        if (annualExpenseNow <= 0) {
+            annualExpenseNow = (plan.monthlyIncome || 0) * 12 * 0.70;
+            assumed = true;
+        }
         if (annualExpenseNow <= 0) return null;
-        var age = plan.age || 30;
-        var hasExistingCorpus = (plan.existingCorpus || 0) > 0;
-        var existingPool = hasExistingCorpus ? plan.existingCorpus : (plan.netWorthToday > 0 ? plan.netWorthToday : 0);
-        var existingRate = hasExistingCorpus ? (plan.existingReturn || 8) / 100 : 0.08;
-        var sipPool   = 0;
+
+        var inflPct = parseFloat(prof.inflation || '') || 0;
+        if (inflPct <= 0) { inflPct = 6; assumed = true; }
+        var INFL = inflPct / 100;
+
+        // A corpus whose rate never got captured still counts at face value, but
+        // it must not compound at a number we invented.
+        var existingPool = (plan.existingCorpus || 0) > 0 ? plan.existingCorpus : 0;
+        var existingRate = (plan.existingReturn  || 0) > 0 ? plan.existingReturn / 100 : 0;
+        if (existingPool > 0 && existingRate === 0) assumed = true;
+
         var annualSIP = (plan.monthlyInvest || 0) * 12;
-        var r         = (plan.blendedReturn || 10) / 100;
-        var INFL      = 0.06;
+        var r         = (plan.blendedReturn || 0) > 0 ? plan.blendedReturn / 100 : 0;
+        if (annualSIP > 0 && r === 0) return null; // nothing honest to grow it at
+
+        var sipPool = 0;
+        var age     = plan.age || 30;
         for (var y = 0; y <= 60; y++) {
             var expense = annualExpenseNow * Math.pow(1 + INFL, y);
-            if ((existingPool + sipPool) >= expense * 25) return age + y;
-            existingPool = existingPool > 0 ? existingPool * (1 + existingRate) : existingPool;
-            sipPool = (sipPool > 0 ? sipPool * (1 + r) : sipPool) + annualSIP;
+            if ((existingPool + sipPool) >= expense * 25)
+                return { age: age + y, beyond: false, assumed: assumed };
+            existingPool = existingPool * (1 + existingRate);
+            sipPool      = sipPool * (1 + r) + annualSIP;
         }
-        return null; // not reachable within 60 years — treat as "no data" rather than alarm
+        return { age: null, beyond: true, assumed: assumed };
     }
 
     function _dashFmtTs(iso) {
@@ -985,15 +1024,28 @@
         var goalPct = totTarget > 0 ? Math.min(100, Math.round(totSaved / totTarget * 100)) : 0;
 
         // ── FIRE Age tile — from the active Financial Path plan ──
-        var _fPlan   = window._pathState && window._pathState.active;
-        var _fireAge = _dashFireAge(_fPlan);
+        var _fPlan = window._pathState && window._pathState.active;
+        var _fire  = _dashFireAge(_fPlan);
         var fireBig, fireChip;
-        if (_fireAge !== null) {
-            var _fireIn = _fireAge - (_fPlan.age || 30);
-            fireBig = _fireAge + '<small> ' + _t('dash.fire.yrs') + '</small>';
-            fireChip = _fireIn <= 0
-                ? '<span class="rd-chip rd-chip-e">' + _t('dash.fire.now') + '</span>'
-                : '<span class="rd-chip ' + (_fireAge <= (_fPlan.retireAge || 60) ? 'rd-chip-e' : 'rd-chip-g') + '">' + _t('dash.fire.in').replace('{n}', _fireIn) + '</span>';
+        if (_fire) {
+            // Marks a figure that leans on a default expense/inflation assumption
+            // because My Profile has none — the number is ours, not the user's.
+            var _est = _fire.assumed
+                ? '<span class="rd-est" title="' + _dashEsc(_t('dash.fire.esttip')) + '">' + _t('dash.fire.est') + '</span>'
+                : '';
+            if (_fire.beyond) {
+                // Never reaches 25× expenses inside the horizon. This is a computed
+                // answer, so it gets a number and a red chip — not the empty state,
+                // which would misread as "you haven't saved a plan".
+                fireBig  = '60+<small> ' + _t('dash.fire.yrs') + '</small>' + _est;
+                fireChip = '<span class="rd-chip rd-chip-r">' + _t('dash.fire.beyond') + '</span>';
+            } else {
+                var _fireIn = _fire.age - (_fPlan.age || 30);
+                fireBig = _fire.age + '<small> ' + _t('dash.fire.yrs') + '</small>' + _est;
+                fireChip = _fireIn <= 0
+                    ? '<span class="rd-chip rd-chip-e">' + _t('dash.fire.now') + '</span>'
+                    : '<span class="rd-chip ' + (_fire.age <= (_fPlan.retireAge || 60) ? 'rd-chip-e' : 'rd-chip-g') + '">' + _t('dash.fire.in').replace('{n}', _fireIn) + '</span>';
+            }
         } else {
             fireBig  = '<span style="font-size:12px;color:rgba(255,255,255,0.5);">' + _t('dash.empty.fire') + '</span>';
             fireChip = '<span class="rd-chip rd-chip-g">' + _t('dash.tap') + '</span>';
