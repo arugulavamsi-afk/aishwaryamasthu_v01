@@ -1190,6 +1190,7 @@
         'nav.tax':              'Planning & Tax',
         'nav.tax.desc':         'Financial Plan · Tax Guide · CIBIL · Gold',
         'nav.fav':              'Favourites',
+        'nav.more':             'More sections',
         'nav.fav.desc':         'Your pinned tools · Quick access favourites',
         /* ── Tool Cards (missing) ── */
         'card.dd.title':        'Retirement Drawdown',
@@ -4267,6 +4268,13 @@
             var key = el.getAttribute('data-i18n-placeholder');
             var val = _t(key);
             if (val && val !== key) el.placeholder = val;
+        });
+
+        /* 1d. Translate aria-label attributes (icon-only controls) */
+        document.querySelectorAll('[data-i18n-aria]').forEach(function(el) {
+            var key = el.getAttribute('data-i18n-aria');
+            var val = _t(key);
+            if (val && val !== key) el.setAttribute('aria-label', val);
         });
 
         /* Reset MF Kit and Fund Picker so they re-render with new language */

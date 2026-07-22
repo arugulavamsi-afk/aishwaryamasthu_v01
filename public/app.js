@@ -431,6 +431,8 @@
                 var el = document.getElementById('np-' + m);
                 if (el) el.classList.toggle('nav-pill-active', m === mode);
             });
+            // On narrow screens the active pill may sit outside the visible strip
+            if (typeof navRevealActivePill === 'function') navRevealActivePill();
 
             // Track category context for breadcrumb back-navigation.
             // Must happen BEFORE the lazy-load early-return so the first visit to a
@@ -4976,3 +4978,53 @@
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') document.getElementById('invest-modal').classList.add('hidden');
         });
+
+        /* ── Nav pill scroll affordance ──────────────────────────────────────
+           The pill strip scrolls horizontally on narrow screens, where the
+           sections past the right edge are otherwise undiscoverable. Show a
+           chevron (and fade the strip under it) only while there is more to
+           reach, and hide it once the end is in view. */
+        function navSyncPillOverflow() {
+            var strip = document.getElementById('nav-pills');
+            var wrap  = document.getElementById('nav-pills-wrap');
+            var btn   = document.getElementById('nav-more');
+            if (!strip || !wrap || !btn) return;
+            // 2px slack absorbs sub-pixel rounding at fractional zoom levels
+            var more = strip.scrollWidth - strip.clientWidth - strip.scrollLeft > 2;
+            wrap.classList.toggle('has-more', more);
+            btn.classList.toggle('hidden', !more);
+        }
+        window.navSyncPillOverflow = navSyncPillOverflow;
+
+        function navScrollPills() {
+            var strip = document.getElementById('nav-pills');
+            if (!strip) return;
+            strip.scrollBy({ left: Math.round(strip.clientWidth * 0.7), behavior: 'smooth' });
+        }
+        window.navScrollPills = navScrollPills;
+
+        // Keep the current section in view — it can sit off-screen after a scroll,
+        // or when a deep link opens a category that isn't the leftmost pill.
+        function navRevealActivePill() {
+            var strip = document.getElementById('nav-pills');
+            if (!strip) return;
+            var active = strip.querySelector('.nav-pill-active');
+            if (active && strip.scrollWidth > strip.clientWidth) {
+                var l = active.offsetLeft, r = l + active.offsetWidth;
+                if (l < strip.scrollLeft || r > strip.scrollLeft + strip.clientWidth)
+                    strip.scrollTo({ left: Math.max(0, l - 12), behavior: 'smooth' });
+            }
+            navSyncPillOverflow();
+        }
+        window.navRevealActivePill = navRevealActivePill;
+
+        (function navPillAffordanceInit() {
+            var strip = document.getElementById('nav-pills');
+            if (!strip) return;
+            strip.addEventListener('scroll', navSyncPillOverflow, { passive: true });
+            window.addEventListener('resize', navSyncPillOverflow);
+            // Label widths settle after the i18n pass and webfont load
+            navSyncPillOverflow();
+            window.addEventListener('load', navSyncPillOverflow);
+            if (document.fonts && document.fonts.ready) document.fonts.ready.then(navSyncPillOverflow);
+        })();

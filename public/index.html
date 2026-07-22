@@ -213,12 +213,17 @@
                 <div class="logo-shine-wrapper ring-2 ring-amber-400/60"><img src="icons/GoldenEle_Logov03_header.png" alt="Aishwaryamasthu Logo" class="nav-logo flex-shrink-0 rounded-full object-cover"></div>
                 <span class="brand-name nav-brand-name">Aishwaryamasthu</span>
             </div>
-            <div class="nav-pills" id="nav-pills">
-                <button id="np-dashboard"    class="nav-pill nav-pill-active" onclick="switchMode('dashboard')"    data-i18n="nav.dash">Dashboard</button>
-                <button id="np-dashcat-calc" class="nav-pill" onclick="switchMode('dashcat-calc')" data-i18n="nav.calc">Calculators</button>
-                <button id="np-dashcat-mf"   class="nav-pill" onclick="switchMode('dashcat-mf')"   data-i18n="nav.mf">Mutual Funds</button>
-                <button id="np-dashcat-tax"  class="nav-pill" onclick="switchMode('dashcat-tax')"  data-i18n="nav.tax">Planning &amp; Tax</button>
-                <button id="np-dashcat-fav"  class="nav-pill" onclick="switchMode('dashcat-fav')"  data-i18n="nav.fav">Favourites</button>
+            <div class="nav-pills-wrap" id="nav-pills-wrap">
+                <div class="nav-pills" id="nav-pills">
+                    <button id="np-dashboard"    class="nav-pill nav-pill-active" onclick="switchMode('dashboard')"    data-i18n="nav.dash">Dashboard</button>
+                    <button id="np-dashcat-calc" class="nav-pill" onclick="switchMode('dashcat-calc')" data-i18n="nav.calc">Calculators</button>
+                    <button id="np-dashcat-mf"   class="nav-pill" onclick="switchMode('dashcat-mf')"   data-i18n="nav.mf">Mutual Funds</button>
+                    <button id="np-dashcat-tax"  class="nav-pill" onclick="switchMode('dashcat-tax')"  data-i18n="nav.tax">Planning &amp; Tax</button>
+                    <button id="np-dashcat-fav"  class="nav-pill" onclick="switchMode('dashcat-fav')"  data-i18n="nav.fav">Favourites</button>
+                </div>
+                <!-- Scroll affordance: shown only while more sections sit off-screen -->
+                <button type="button" id="nav-more" class="nav-more hidden" onclick="navScrollPills()"
+                        aria-controls="nav-pills" data-i18n-aria="nav.more" aria-label="More sections">&rsaquo;</button>
             </div>
 
         <div id="user-bar" class="hidden">
