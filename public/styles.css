@@ -192,6 +192,27 @@
            the .ub-* rules in index.html already use. */
         @media (max-width: 600px) {
             .nav-pills-wrap { display: none; }
+            /* The 860px rule hides the brand name to make room for the pills. Below
+               600px there are no pills, so the name comes back — the header would
+               otherwise be an unlabelled logo.
+               Two-selector specificity + !important is needed to beat the
+               .brand-name overrides in index.html, which are tuned for the much
+               larger splash title and would otherwise force 1.15rem here. */
+            .nav-brand .nav-brand-name {
+                display: inline; font-size: 0.95rem !important;
+                overflow: hidden; text-overflow: ellipsis; min-width: 0;
+            }
+            /* Let the brand yield rather than push the row wider than the viewport;
+               below ~340px the name ellipsises instead of forcing a scrollbar.
+               The logo wrapper must be pinned — the <img> carries flex-shrink-0 but
+               its .logo-shine-wrapper parent is the actual flex child, and without
+               this it squashes to an oval while the height stays put. */
+            .nav-brand { flex-shrink: 1; min-width: 0; }
+            .nav-brand .logo-shine-wrapper { flex-shrink: 0; }
+            /* Reclaim ~32px from the language strip — four buttons at 10px side
+               padding cost 140px, more than the entire account control, and that
+               was the space the title needed. */
+            .ub-lang .lang-btn { padding: 3px 6px; }
         }
 
         /* ── ROYAL DARK dashboard layout (header, stat row, chart + ring) ── */
