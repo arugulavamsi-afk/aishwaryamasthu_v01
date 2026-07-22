@@ -182,6 +182,14 @@
         /* Deterministic fallback for engines without `safe` alignment: below 560px
            the pill strip always overflows, so left-align it unconditionally. */
         @media (max-width: 560px) { .nav-pills { justify-content: flex-start; } }
+        /* Phones: drop the language + account controls onto their own row. Row one
+           becomes brand + pills, so the strip gets back the ~150px the user-bar was
+           taking and fewer sections sit behind the chevron. Matches the 600px
+           breakpoint the .ub-* rules in index.html already use. */
+        @media (max-width: 600px) {
+            .nav-row { flex-wrap: wrap; row-gap: 8px; }
+            #user-bar { flex-basis: 100%; margin-left: 0; }
+        }
 
         /* ── ROYAL DARK dashboard layout (header, stat row, chart + ring) ── */
         .rd-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 22px; padding-top: 10px; }
