@@ -2464,12 +2464,22 @@
     <script src="home-loan.js"></script>
     <!-- ===== DASHBOARD CSS ===== -->
     <style>
+        /* Column counts are bounded by tile width, not by how many will fit.
+           Titles like "Step-Up SIP Calculator" need ~100px to wrap at word
+           boundaries; below that .dash-card-title's word-break:break-word kicks in
+           and splits them mid-word ("CALCULA/TOR"). Four across on a phone gave
+           68px tiles and five-line titles. This ladder keeps every tile >=93px:
+             <480  3 cols   93px @320  ->  147px @479
+             480+  4 cols  108px @480  ->  155px @679
+             680+  6 cols  103px @680  ->  138px @900
+           The old 480px step went 4->5, which made tiles NARROWER on a WIDER
+           screen (92px at 414 down to 85px at 480). */
         .dash-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 8px;
         }
-        @media (min-width: 480px) { .dash-grid { grid-template-columns: repeat(5, 1fr); } }
+        @media (min-width: 480px) { .dash-grid { grid-template-columns: repeat(4, 1fr); } }
         @media (min-width: 680px) { .dash-grid { grid-template-columns: repeat(6, 1fr); } }
         .dash-card {
             display: flex;
