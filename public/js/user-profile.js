@@ -79,6 +79,7 @@
             npsBalance:     _upDomVal('up-nps-balance', existing.npsBalance  || ''),
             rent:           _upDomVal('up-rent',        existing.rent        || ''),
             inflation:      _upDomVal('up-inflation',   existing.inflation   || ''),
+            lifeExpectancy: _upDomVal('up-life-exp',    existing.lifeExpectancy || ''),
             assetsBank:     _upDomVal('up-assets-bank',    existing.assetsBank    || '0'),
             assetsMf:       _upDomVal('up-assets-mf',      existing.assetsMf      || '0'),
             assetsStocks:   _upDomVal('up-assets-stocks',  existing.assetsStocks  || '0'),
@@ -129,6 +130,9 @@
         // Retirement Age
         var raEl = document.getElementById('up-retire-age');
         if (raEl && p.retireAge) raEl.value = p.retireAge;
+        // Plan-until age (drives the retirement drawdown horizon everywhere)
+        var leEl = document.getElementById('up-life-exp');
+        if (leEl && p.lifeExpectancy) leEl.value = p.lifeExpectancy;
         // EPF / PPF / NPS Balances
         [['up-epf-balance', p.epfBalance], ['up-ppf-balance', p.ppfBalance], ['up-nps-balance', p.npsBalance]].forEach(function(pair) {
             var el = document.getElementById(pair[0]);
@@ -593,6 +597,7 @@
         var ppfBal  = parseFloat((p.ppfBalance || '').replace(/,/g,'')) || 0;
         var npsBal  = parseFloat((p.npsBalance || '').replace(/,/g,'')) || 0;
         var infl    = parseFloat((p.inflation  || '')) || 0;
+        var lifeExp = parseInt(p.lifeExpectancy, 10) || 0;
 
         // Rebuild a regime-driven slab <select> for the profile's regime, then select
         // the profile slab. Used for tools whose slab options change with the regime.
@@ -660,6 +665,7 @@
             if (ppfBal > 0) _upSet('rh-ppf-balance', ppfBal, ppfBal.toLocaleString('en-IN'), oe);
             if (npsBal > 0) _upSet('rh-nps-balance', npsBal, npsBal.toLocaleString('en-IN'), oe);
             if (infl > 0)   _upSet('rh-inflation', infl, undefined, oe);
+            if (lifeExp > 0) _upSet('rh-life-exp', lifeExp, undefined, oe);
             if (typeof retHubCalc === 'function') retHubCalc();
             // Retirement Drawdown shares this panel
             if (age > 0)    _upSet('dd-current-age', age, undefined, oe);

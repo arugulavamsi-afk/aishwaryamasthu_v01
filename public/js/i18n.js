@@ -1789,7 +1789,7 @@
         'fp.result.disc.title': 'This is a starting point, not a prescription.',
         'fp.result.disc.body':  'A SEBI-Registered Investment Adviser (RIA) will adjust this based on factors this tool cannot assess — your exact tax bracket, existing insurance gaps, estate planning needs, concentrated stock positions, and your own behavioral response to drawdowns. <strong>Do not invest based on this output alone.</strong>',
         'fp.verdict.head.on':      "You're on track — all {t} goals fully funded 🎉",
-        'fp.verdict.head.retshort':"All {t} targets met — but your retirement target won't cover your living costs to 85",
+        'fp.verdict.head.retshort':"All {t} targets met — but your retirement target won't cover your living costs to {a}",
         'fp.verdict.head.partial': '{n} of {t} goals on track — small tweaks close the rest',
         'fp.verdict.head.off':     "Let's get you there — {n} of {t} goals funded so far",
         'fp.verdict.head.plain':   'Your personalised plan is ready 👇',

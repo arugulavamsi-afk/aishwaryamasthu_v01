@@ -142,11 +142,16 @@ var PATH_SPEND_TYPES = { home: 1, education: 1, marriage: 1, travel: 1, business
 function pathRetAssumptions(plan) {
     var expMonthly = plan.monthlyExpenses || 0;
     var incMonthly = plan.monthlyIncome || 0;
+    var retAge     = plan.retireAge || 60;
+    // Clamp above retirement age so a stray entry can't yield a zero-length or
+    // negative drawdown (which would report a required corpus of 0).
+    var life = plan.lifeExpectancyAge > 0 ? Math.round(plan.lifeExpectancyAge) : PATH_LIFE_EXPECTANCY;
     return {
         inflation: plan.inflationPct     > 0 ? plan.inflationPct     / 100 : PATH_INFLATION,
         retReturn: plan.postRetReturnPct > 0 ? plan.postRetReturnPct / 100 : PATH_POST_RET_RETURN,
         annualExpenseToday: expMonthly > 0 ? expMonthly * 12 : incMonthly * 12 * PATH_REPLACEMENT,
-        basis: expMonthly > 0 ? 'expenses' : (incMonthly > 0 ? 'proxy' : 'none')
+        basis: expMonthly > 0 ? 'expenses' : (incMonthly > 0 ? 'proxy' : 'none'),
+        lifeExp: Math.max(life, retAge + 1)
     };
 }
 window.pathRetAssumptions = pathRetAssumptions;
@@ -161,7 +166,7 @@ window.pathRetAssumptions = pathRetAssumptions;
 //   PV = E × (1 − v^n) / (r − g),  v = (1+g)/(1+r),  E = first-year expense
 // where g = inflation, r = post-retirement return. r == g is the limiting case.
 function pathRequiredRetCorpus(assume, yearsToRetire, retireAge) {
-    var n = Math.max(PATH_LIFE_EXPECTANCY - retireAge, 0);
+    var n = Math.max(assume.lifeExp - retireAge, 0);
     if (n <= 0 || !(assume.annualExpenseToday > 0)) return 0;
     var E = assume.annualExpenseToday * Math.pow(1 + assume.inflation, yearsToRetire);
     var g = assume.inflation, r = assume.retReturn;
@@ -178,11 +183,12 @@ function pathProjectSeries(plan) {
     var goals = plan.goalSIPs || [];
     var goalYears = goals.map(function (g) { return parseInt(g.years) || 0; });
     var yearsToRetire = Math.max(retireAge - age, 1);
-    // Extend past retirement to life expectancy so drawdown depletion is visible.
+    var assume = pathRetAssumptions(plan);
+    // Extend past retirement to the plan-until age so drawdown depletion is visible.
     var horizon = Math.max(
         yearsToRetire,
         goalYears.length ? Math.max.apply(null, goalYears) : 0,
-        PATH_LIFE_EXPECTANCY - age,
+        assume.lifeExp - age,
         1
     );
     // Existing corpus and new SIP money grow at different rates — mixing them
@@ -202,7 +208,6 @@ function pathProjectSeries(plan) {
 
     // Annual living expense at the moment of retirement (0 when neither expenses
     // nor income are known — then no drawdown is modelled and the corpus just grows).
-    var assume = pathRetAssumptions(plan);
     var retExpenseAtRet = assume.annualExpenseToday > 0
         ? assume.annualExpenseToday * Math.pow(1 + assume.inflation, yearsToRetire)
         : 0;
@@ -319,7 +324,7 @@ function pathRender() {
     if (typeof window.fpLiveRetAssumptions === 'function') {
         var live = window.fpLiveRetAssumptions();
         plan = Object.assign({}, plan);
-        ['monthlyExpenses', 'inflationPct', 'postRetReturnPct'].forEach(function (k) {
+        ['monthlyExpenses', 'inflationPct', 'postRetReturnPct', 'lifeExpectancyAge'].forEach(function (k) {
             if (live[k] > 0) plan[k] = live[k];
         });
     }
@@ -384,7 +389,7 @@ function pathRenderExplainer(proj, plan) {
             factors += row(_pt('finpath.explain.f.rep', 'Income replaced in retirement'), Math.round(PATH_REPLACEMENT * 100) + '%');
         factors += row(_pt('finpath.explain.f.pr', 'Post-retirement return'), fnum(assume.retReturn * 100) + '%');
         factors += row(_pt('finpath.explain.f.infl', 'Inflation'), fnum(assume.inflation * 100) + '%');
-        factors += row(_pt('finpath.explain.f.life', 'Plan runs until age'), PATH_LIFE_EXPECTANCY);
+        factors += row(_pt('finpath.explain.f.life', 'Plan runs until age'), assume.lifeExp);
     }
 
     // Reconcile with the Financial Plan: show the corpus this drawdown actually

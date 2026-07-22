@@ -4082,7 +4082,21 @@
             return s > 0 ? s : 7;   // Retirement Hub's own default
         }
 
-        // Current values of the three drawdown assumptions, for Financial Path to
+        // Age the retirement corpus must last to. My Profile first, then whatever
+        // the Retirement Hub is set to, then 85. Clamped above retirement age so a
+        // nonsense entry can't produce a zero-length (or negative) drawdown.
+        function fpLifeExpectancy(retireAge) {
+            var v = fpNumFrom((window._userProfile || {}).lifeExpectancy);
+            if (!(v > 0)) {
+                var el = document.getElementById('rh-life-exp');
+                v = (el ? fpNumFrom(el.value) : 0) ||
+                    fpNumFrom(((window._toolSummaries || {}).retirement || {}).lifeExpAge);
+            }
+            if (!(v > 0)) v = 85;
+            return Math.max(Math.round(v), (retireAge || 60) + 1);
+        }
+
+        // Current values of the drawdown assumptions, for Financial Path to
         // overlay on its ACTIVE path at render time. Returns only what is actually
         // known — a 0 means "no user value, keep whatever the plan froze". Change
         // your Retirement Hub return or My Profile expenses and the live path
@@ -4091,13 +4105,17 @@
             var prof = window._userProfile || {};
             var rh   = (window._toolSummaries || {}).retirement || {};
             var el   = document.getElementById('rh-ret-return');
+            var le   = document.getElementById('rh-life-exp');
             return {
                 monthlyExpenses:  fpProfileExpenses(),
-                // Only report a rate the user actually supplied — fpProfileInflation()
-                // and fpPostRetReturn() fall back to 6/7, which would overwrite a
-                // plan's frozen value with a default and defeat the point.
+                // Only report a value the user actually supplied — the fpProfile*/
+                // fpPostRetReturn/fpLifeExpectancy helpers fall back to 6/7/85, which
+                // would overwrite a plan's frozen value with a default and defeat the
+                // point. 0 here means "no user value, keep what the plan froze".
                 inflationPct:     fpNumFrom(prof.inflation) || fpNumFrom(rh.inflationPct),
-                postRetReturnPct: (el ? fpNumFrom(el.value) : 0) || fpNumFrom(rh.retReturnPct)
+                postRetReturnPct: (el ? fpNumFrom(el.value) : 0) || fpNumFrom(rh.retReturnPct),
+                lifeExpectancyAge: fpNumFrom(prof.lifeExpectancy) ||
+                                   (le ? fpNumFrom(le.value) : 0) || fpNumFrom(rh.lifeExpAge)
             };
         };
 
@@ -4213,6 +4231,7 @@
                 monthlyExpenses: fpProfileExpenses(),
                 inflationPct: fpProfileInflation(),
                 postRetReturnPct: fpPostRetReturn(),
+                lifeExpectancyAge: fpLifeExpectancy(retireAge),
                 profileKey: profileKey, profileLabel: profile.label, profileSub: profile.sub,
                 profileGradient: profile.gradient, profileBarColor: profile.barColor,
                 totalScore: totalScore, blendedReturn: profile.blendedReturn,
@@ -4535,10 +4554,11 @@
             // showed the corpus depleting. Measure the two against each other using
             // the trajectory's own formula, and qualify the verdict below instead of
             // letting the plan show an unqualified pass.
-            var retNeedAtRet = 0;
+            var retNeedAtRet = 0, retPlanToAge = fpLifeExpectancy(retireAge);
             if (typeof window.pathRequiredRetCorpus === 'function' && window._fpPathSnapshot) {
-                retNeedAtRet = window.pathRequiredRetCorpus(
-                    window.pathRetAssumptions(window._fpPathSnapshot), yearsToRetire, retireAge);
+                var _retAssume = window.pathRetAssumptions(window._fpPathSnapshot);
+                retNeedAtRet = window.pathRequiredRetCorpus(_retAssume, yearsToRetire, retireAge);
+                retPlanToAge = _retAssume.lifeExp;
             }
 
             // ---- Goal Corpus Projections ----
@@ -4578,7 +4598,8 @@
                     var gainPct       = totalInvested > 0 ? Math.round((gainAmt/totalInvested)*100) : 0;
 
                     // Retirement only: does this corpus actually sustain the user's
-                    // expenses to age 85, or does it merely clear a target they typed?
+                    // expenses to their plan-until age, or does it merely clear a
+                    // target they typed?
                     // Hitting the target is necessary but not sufficient — this is the
                     // check that reconciles the plan with the Path's drawdown curve.
                     var retNote = '';
@@ -4593,8 +4614,8 @@
                             '<div class="rounded-xl px-3 py-2 text-[11px] font-semibold mt-2" style="background:' +
                                 (retOk ? '#10b981' : '#f59e0b') + '0f;color:' + (retOk ? '#10b981' : '#b45309') + '">' +
                                 (retOk
-                                    ? '🏖️ Sustains your living costs to age 85 (needs ₹' + fmt(retNeedAtRet) + ').'
-                                    : '🏖️ Covers ' + retCoverPct + '% of your living costs to age 85. Sustaining them needs ₹' +
+                                    ? '🏖️ Sustains your living costs to age ' + retPlanToAge + ' (needs ₹' + fmt(retNeedAtRet) + ').'
+                                    : '🏖️ Covers ' + retCoverPct + '% of your living costs to age ' + retPlanToAge + '. Sustaining them needs ₹' +
                                       fmt(retNeedAtRet) + ' — about ₹' + fmt(retMoreSIP) + '/mo more.') +
                             '</div>';
                     }
@@ -4662,7 +4683,8 @@
                 // Every target met but retirement doesn't sustain actual spending —
                 // don't claim an unqualified win the trajectory would contradict.
                 if (vTargets > 0 && vOnTrack === vTargets && vRetShort) {
-                    vTone = 'partial'; vHead = _t('fp.verdict.head.retshort').replace('{t}', vTargets);
+                    vTone = 'partial'; vHead = _t('fp.verdict.head.retshort')
+                        .replace('{t}', vTargets).replace('{a}', retPlanToAge);
                 } else if (vTargets > 0 && vOnTrack === vTargets) {
                     vTone = 'on';      vHead = _t('fp.verdict.head.on').replace('{t}', vTargets);
                 } else if (vTargets > 0 && vOnTrack > 0) {

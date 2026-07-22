@@ -326,7 +326,8 @@
                     // Stored as percentages (rhReadInputs keeps them as fractions) so
                     // Financial Path can reuse the rates the user actually set here
                     // instead of hardcoding its own. See fpPostRetReturn() in app.js.
-                    retReturnPct: inp.retReturn * 100, inflationPct: inp.inflation * 100
+                    retReturnPct: inp.retReturn * 100, inflationPct: inp.inflation * 100,
+                    lifeExpAge: inp.lifeExp
                 });
         }
 
