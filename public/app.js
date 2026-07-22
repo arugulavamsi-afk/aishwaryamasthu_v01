@@ -4082,6 +4082,25 @@
             return s > 0 ? s : 7;   // Retirement Hub's own default
         }
 
+        // Current values of the three drawdown assumptions, for Financial Path to
+        // overlay on its ACTIVE path at render time. Returns only what is actually
+        // known — a 0 means "no user value, keep whatever the plan froze". Change
+        // your Retirement Hub return or My Profile expenses and the live path
+        // follows; archived paths keep the numbers they were generated with.
+        window.fpLiveRetAssumptions = function() {
+            var prof = window._userProfile || {};
+            var rh   = (window._toolSummaries || {}).retirement || {};
+            var el   = document.getElementById('rh-ret-return');
+            return {
+                monthlyExpenses:  fpProfileExpenses(),
+                // Only report a rate the user actually supplied — fpProfileInflation()
+                // and fpPostRetReturn() fall back to 6/7, which would overwrite a
+                // plan's frozen value with a default and defeat the point.
+                inflationPct:     fpNumFrom(prof.inflation) || fpNumFrom(rh.inflationPct),
+                postRetReturnPct: (el ? fpNumFrom(el.value) : 0) || fpNumFrom(rh.retReturnPct)
+            };
+        };
+
         // ---- Generate Plan ----
         function fpCalculatePlan() {
             // Goals come solely from the Goal Planner — ensure the plan's working list

@@ -310,6 +310,20 @@ function pathRender() {
         return;
     }
 
+    // The ACTIVE path tracks the user's current assumptions. Change the Retirement
+    // Hub's post-retirement return or My Profile's expenses/inflation and this
+    // curve follows, instead of showing whatever happened to be frozen when the
+    // plan was last saved. Only the three drawdown assumptions are refreshed — the
+    // plan itself (goals, SIP, age, allocation) stays exactly as saved. Archived
+    // paths are historical records and keep their originals.
+    if (typeof window.fpLiveRetAssumptions === 'function') {
+        var live = window.fpLiveRetAssumptions();
+        plan = Object.assign({}, plan);
+        ['monthlyExpenses', 'inflationPct', 'postRetReturnPct'].forEach(function (k) {
+            if (live[k] > 0) plan[k] = live[k];
+        });
+    }
+
     // Header
     var hd = document.getElementById('path-header');
     if (hd) {
