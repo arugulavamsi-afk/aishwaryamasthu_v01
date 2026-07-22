@@ -72,6 +72,22 @@
         }
         _fbAuth = firebase.auth();
         _fbDb   = firebase.firestore();
+        // Durable offline persistence (IndexedDB). Without this, a Firestore write
+        // is only an in-memory async request until the server ACKs it, so a save
+        // that is still in flight when the page unloads (e.g. the user fills out
+        // My Profile and immediately refreshes, before the 800 ms debounce or the
+        // beforeunload flush can complete its network round-trip) is lost. With
+        // persistence, commit() queues the mutation to IndexedDB synchronously; it
+        // survives the reload, replays on next load, and is visible to get() via the
+        // local view — so no in-flight save is dropped by a refresh.
+        // Must run before any other Firestore call (no reads/writes happen until
+        // onAuthStateChanged fires, which is async). synchronizeTabs keeps multiple
+        // open tabs working; failures (unsupported browser, private mode, another
+        // tab already holding the lock) degrade gracefully to the previous behaviour.
+        try {
+            _fbDb.enablePersistence({ synchronizeTabs: true })
+                .catch(function(err) { console.warn('[auth] Firestore persistence unavailable:', err && err.code); });
+        } catch (e) { console.warn('[auth] enablePersistence threw:', e); }
         // Expose to window so app.js / dashboard.js can do direct Firestore writes
         // (e.g. fpSaveRiskScore, upRiskSubmit fallback — both reference window._fbAuth/_fbDb)
         window._fbAuth = _fbAuth;
