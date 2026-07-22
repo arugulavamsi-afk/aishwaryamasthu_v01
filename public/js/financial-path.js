@@ -112,20 +112,64 @@ window.pathDeleteArchived = pathDeleteArchived;
 // Two phases:
 //  • Accumulation (until retirement): balance compounds at the blended return
 //    and adds the annual SIP; each goal's target is drawn down in its year.
-//  • Drawdown (retirement → life expectancy): SIP stops, the corpus earns a
-//    conservative 7% and an inflation-growing living expense is withdrawn, so
-//    the corpus depletes. Expense = 70% of current income, inflated to
-//    retirement (a replacement-rate proxy — finpath has no explicit expenses).
-//    Assumptions match the Retirement Hub: 6% inflation, 7% post-retirement return.
+//  • Drawdown (retirement → life expectancy): SIP stops, the corpus earns the
+//    post-retirement return and an inflation-growing living expense is withdrawn,
+//    so the corpus depletes.
+//
+// The drawdown's assumptions come from the user's own inputs, frozen into the
+// snapshot when the plan was generated (see fpCalculatePlan in app.js): My
+// Profile's monthly expenses and inflation rate, and the Retirement Hub's
+// post-retirement return. The constants below are fallbacks only, for snapshots
+// saved before those fields were captured.
 var PATH_LIFE_EXPECTANCY = 85;
-var PATH_POST_RET_RETURN = 0.07;
-var PATH_INFLATION       = 0.06;
+var PATH_POST_RET_RETURN = 0.07;   // fallback — Retirement Hub's default
+var PATH_INFLATION       = 0.06;   // fallback — My Profile / Retirement Hub default
+// Last-resort proxy when no expense figure is available at all: 70% of income.
+// This only holds for someone saving ~30% of take-home — it overstates the
+// retirement need for anyone saving more, so it is used only as a fallback.
 var PATH_REPLACEMENT     = 0.70;
 // Goal types whose target is SPENT at the goal year (cash leaves the portfolio).
 // "Keep" goals stay invested: retirement spending is already modelled by the
 // drawdown phase (subtracting its target too would double-count), and
 // wealth / emergency corpora remain part of net worth.
 var PATH_SPEND_TYPES = { home: 1, education: 1, marriage: 1, travel: 1, business: 1, custom: 1 };
+
+// Resolve the drawdown assumptions for a plan: prefer what the user actually
+// entered (frozen into the snapshot at generation time), fall back to the
+// constants above for older snapshots. `basis` tells the explainer which source
+// the living-expense figure came from, so the chart never presents the
+// replacement-rate proxy as though it were a considered figure.
+function pathRetAssumptions(plan) {
+    var expMonthly = plan.monthlyExpenses || 0;
+    var incMonthly = plan.monthlyIncome || 0;
+    return {
+        inflation: plan.inflationPct     > 0 ? plan.inflationPct     / 100 : PATH_INFLATION,
+        retReturn: plan.postRetReturnPct > 0 ? plan.postRetReturnPct / 100 : PATH_POST_RET_RETURN,
+        annualExpenseToday: expMonthly > 0 ? expMonthly * 12 : incMonthly * 12 * PATH_REPLACEMENT,
+        basis: expMonthly > 0 ? 'expenses' : (incMonthly > 0 ? 'proxy' : 'none')
+    };
+}
+window.pathRetAssumptions = pathRetAssumptions;
+
+// Corpus needed AT RETIREMENT to fund the drawdown all the way to life
+// expectancy — exactly the withdrawals pathProjectSeries applies, solved as a
+// present value instead of simulated. The Financial Plan measures its
+// retirement goal against this, so a target that is "met" but too small to
+// sustain the user's own expenses is flagged instead of passing unqualified.
+//
+// Withdrawals land at year end (ordinary annuity), matching the projection loop:
+//   PV = E × (1 − v^n) / (r − g),  v = (1+g)/(1+r),  E = first-year expense
+// where g = inflation, r = post-retirement return. r == g is the limiting case.
+function pathRequiredRetCorpus(assume, yearsToRetire, retireAge) {
+    var n = Math.max(PATH_LIFE_EXPECTANCY - retireAge, 0);
+    if (n <= 0 || !(assume.annualExpenseToday > 0)) return 0;
+    var E = assume.annualExpenseToday * Math.pow(1 + assume.inflation, yearsToRetire);
+    var g = assume.inflation, r = assume.retReturn;
+    if (Math.abs(r - g) < 1e-9) return E * n / (1 + r);
+    var v = (1 + g) / (1 + r);
+    return E * (1 - Math.pow(v, n)) / (r - g);
+}
+window.pathRequiredRetCorpus = pathRequiredRetCorpus;
 
 function pathProjectSeries(plan) {
     var startYear = new Date().getFullYear();
@@ -156,11 +200,11 @@ function pathProjectSeries(plan) {
     var annualSIP = (plan.monthlyInvest || 0) * 12;
     var r = (plan.blendedReturn || 10) / 100;
 
-    // Annual living expense at the moment of retirement (0 if income unknown —
-    // e.g. a plan saved before income was captured; then the corpus just grows).
-    var annualIncomeNow = (plan.monthlyIncome || 0) * 12;
-    var retExpenseAtRet = annualIncomeNow > 0
-        ? annualIncomeNow * PATH_REPLACEMENT * Math.pow(1 + PATH_INFLATION, yearsToRetire)
+    // Annual living expense at the moment of retirement (0 when neither expenses
+    // nor income are known — then no drawdown is modelled and the corpus just grows).
+    var assume = pathRetAssumptions(plan);
+    var retExpenseAtRet = assume.annualExpenseToday > 0
+        ? assume.annualExpenseToday * Math.pow(1 + assume.inflation, yearsToRetire)
         : 0;
 
     // Milestones mark every goal's target year; outflows only deduct the
@@ -186,9 +230,9 @@ function pathProjectSeries(plan) {
             } else {
                 // Drawdown — pools merge (no more SIP, one conservative return
                 // applies to whatever corpus remains) minus an inflation-growing expense.
-                var grown = balance > 0 ? balance * (1 + PATH_POST_RET_RETURN) : 0;
+                var grown = balance > 0 ? balance * (1 + assume.retReturn) : 0;
                 var yearsIntoRet = curAge - retireAge; // 1, 2, 3 …
-                var expense = retExpenseAtRet * Math.pow(1 + PATH_INFLATION, yearsIntoRet - 1);
+                var expense = retExpenseAtRet * Math.pow(1 + assume.inflation, yearsIntoRet - 1);
                 balance = grown - expense;
             }
         }
@@ -301,10 +345,12 @@ function pathRenderExplainer(proj, plan) {
     var hasExisting  = (plan.existingCorpus || 0) > 0;
     var existingAmt  = hasExisting ? plan.existingCorpus : (plan.netWorthToday > 0 ? plan.netWorthToday : 0);
     var existingRate = hasExisting ? (plan.existingReturn || 8) : 8;
-    var income       = plan.monthlyIncome || 0;
-    var modelsDrawdown = income > 0;
+    var assume       = pathRetAssumptions(plan);
+    var modelsDrawdown = assume.basis !== 'none';
 
-    function fnum(n) { return (n % 1) ? n.toFixed(1) : String(Math.round(n)); }
+    // Round to 1dp first: rates arrive as fractions (0.07 × 100 = 7.000000000000001),
+    // which would otherwise render as "7.0%" instead of "7%".
+    function fnum(n) { n = Math.round(n * 10) / 10; return (n % 1) ? n.toFixed(1) : String(Math.round(n)); }
     function row(label, val) {
         return '<div class="flex items-center justify-between py-0.5 gap-3">' +
             '<span class="text-[10px] text-slate-500 min-w-0 truncate">' + label + '</span>' +
@@ -316,15 +362,42 @@ function pathRenderExplainer(proj, plan) {
     if (existingAmt > 0) factors += row(_pt('finpath.explain.f.er', 'Existing corpus return'), fnum(existingRate) + '%');
     factors += row(_pt('finpath.explain.f.br', 'New SIP (blended) return'), (plan.blendedReturn || 10) + '%');
     if (modelsDrawdown) {
-        factors += row(_pt('finpath.explain.f.pr', 'Post-retirement return'), Math.round(PATH_POST_RET_RETURN * 100) + '%');
-        factors += row(_pt('finpath.explain.f.infl', 'Inflation'), Math.round(PATH_INFLATION * 100) + '%');
-        factors += row(_pt('finpath.explain.f.rep', 'Income replaced in retirement'), Math.round(PATH_REPLACEMENT * 100) + '%');
+        // Name the living-expense source explicitly — a real expense figure and a
+        // 70%-of-income guess are very different inputs and shouldn't look alike.
+        if (assume.basis === 'expenses')
+            factors += row(_pt('finpath.explain.f.exp', 'Monthly expenses today (My Profile)'), pathFmt(assume.annualExpenseToday / 12));
+        else
+            factors += row(_pt('finpath.explain.f.rep', 'Income replaced in retirement'), Math.round(PATH_REPLACEMENT * 100) + '%');
+        factors += row(_pt('finpath.explain.f.pr', 'Post-retirement return'), fnum(assume.retReturn * 100) + '%');
+        factors += row(_pt('finpath.explain.f.infl', 'Inflation'), fnum(assume.inflation * 100) + '%');
         factors += row(_pt('finpath.explain.f.life', 'Plan runs until age'), PATH_LIFE_EXPECTANCY);
+    }
+
+    // Reconcile with the Financial Plan: show the corpus this drawdown actually
+    // needs beside what the plan projects, using the same helper the plan's
+    // retirement card uses. Without this the dip has no stated cause.
+    var retShortText = '';
+    if (modelsDrawdown && proj.retireIndex >= 0) {
+        var ytr  = Math.max((plan.retireAge || 60) - (plan.age || 30), 1);
+        var need = pathRequiredRetCorpus(assume, ytr, plan.retireAge || 60);
+        var have = (proj.series[proj.retireIndex] || {}).value || 0;
+        if (need > 0) {
+            factors += row(_pt('finpath.explain.f.need', 'Corpus needed at retirement'), pathFmt(need));
+            factors += row(_pt('finpath.explain.f.have', 'Projected at retirement'),     pathFmt(have));
+            if (have < need)
+                retShortText = ' ' + _pt('finpath.explain.draw.short',
+                    'Your projected corpus at retirement ({have}) is below the {need} this spending needs — that gap is why the line runs down to ₹0.',
+                    { have: pathFmt(have), need: pathFmt(need) });
+        }
     }
 
     var drawText = modelsDrawdown
         ? _pt('finpath.explain.draw.t', 'At retirement (amber dot) SIPs stop and your living costs are withdrawn every year, rising with inflation, so the corpus gradually depletes. Net worth is floored at ₹0 — it never shows as negative; if the money runs out that year is marked in red.')
-        : _pt('finpath.explain.draw.noinc', 'No income was entered, so post-retirement spending isn’t modelled here — add your income and re-save the plan to see the drawdown.');
+        : _pt('finpath.explain.draw.noexp', 'No expenses or income were entered, so post-retirement spending isn’t modelled here — add your monthly expenses in My Profile and re-save the plan to see the drawdown.');
+    // Be explicit when the figure is a guess rather than the user's own number.
+    if (assume.basis === 'proxy')
+        drawText += ' ' + _pt('finpath.explain.draw.proxy', 'Your monthly expenses aren’t set, so this assumes you’ll need 70% of your current take-home — a rough stand-in that overstates the need if you save more than 30%. Add your expenses in My Profile for an accurate curve.');
+    drawText += retShortText;
 
     el.innerHTML =
         '<div class="mt-3 pt-3 border-t border-slate-100">' +

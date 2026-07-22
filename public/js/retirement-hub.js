@@ -322,7 +322,11 @@
             if (typeof window.saveToolSummary === 'function')
                 window.saveToolSummary('retirement', {
                     totalCorpus: totalCorpus, monthlyIncome: monthlyNeed,
-                    yearsToRetire: yrs, retirementAge: inp.retAge, gap: Math.round(monthlyGap)
+                    yearsToRetire: yrs, retirementAge: inp.retAge, gap: Math.round(monthlyGap),
+                    // Stored as percentages (rhReadInputs keeps them as fractions) so
+                    // Financial Path can reuse the rates the user actually set here
+                    // instead of hardcoding its own. See fpPostRetReturn() in app.js.
+                    retReturnPct: inp.retReturn * 100, inflationPct: inp.inflation * 100
                 });
         }
 

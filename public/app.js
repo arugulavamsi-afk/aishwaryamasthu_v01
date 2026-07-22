@@ -4049,6 +4049,39 @@
             return extras.concat(baseRoadmap).slice(0, 5);
         }
 
+        // ── Retirement assumptions for the Financial Path trajectory ──────────
+        // The trajectory's drawdown phase needs three numbers this form never asks
+        // for. They used to be hardcoded constants in financial-path.js, which
+        // silently disagreed with the tools the user had actually filled in. Resolve
+        // them from the user's own inputs here and freeze them into the snapshot, so
+        // an archived path keeps the assumptions it was generated with.
+        //
+        //  • expenses  — My Profile's monthly expenses. The old fallback (70% of
+        //    income) is only correct for someone saving exactly 30%; it overstates
+        //    the retirement need for everyone who saves more, which made the
+        //    trajectory deplete even when every goal card said "on track".
+        //  • inflation — My Profile's rate, the same field Retirement Hub reads.
+        //  • post-retirement return — Retirement Hub's own input: live from the DOM
+        //    when that panel is loaded, else its persisted tool summary.
+        function fpNumFrom(v) {
+            var n = parseFloat((v + '').replace(/,/g, ''));
+            return isFinite(n) && n > 0 ? n : 0;
+        }
+        function fpProfileExpenses() { return fpNumFrom((window._userProfile || {}).expenses); }
+        function fpProfileInflation() {
+            var v = fpNumFrom((window._userProfile || {}).inflation);
+            if (v > 0) return v;
+            var s = fpNumFrom(((window._toolSummaries || {}).retirement || {}).inflationPct);
+            return s > 0 ? s : 6;   // Retirement Hub's own default
+        }
+        function fpPostRetReturn() {
+            var el = document.getElementById('rh-ret-return');   // panel may not be loaded
+            var live = el ? fpNumFrom(el.value) : 0;
+            if (live > 0) return live;
+            var s = fpNumFrom(((window._toolSummaries || {}).retirement || {}).retReturnPct);
+            return s > 0 ? s : 7;   // Retirement Hub's own default
+        }
+
         // ---- Generate Plan ----
         function fpCalculatePlan() {
             // Goals come solely from the Goal Planner — ensure the plan's working list
@@ -4145,18 +4178,33 @@
                     rate: profile.blendedReturn, color: FP_GOAL_META[g.type].color
                 };
             });
+            // The existing corpus is ONE pot shared across goals by weight — the same
+            // split the corpus cards below apply. Crediting all of it to every goal
+            // (as this used to) counted the same rupees once per goal, marking goals
+            // on track that the trajectory then showed unfunded, because the
+            // trajectory spends from a single pool.
+            var _snapWeightTotal = _snapGoals.reduce(function(s, g){ return s + (g.weightPct || 0); }, 0);
             // NOTE: distinct from window._fpLastPlan (which the Excel export reuses
             // with a different shape and overwrites later in this function).
             window._fpPathSnapshot = {
                 generatedAt: new Date().toISOString(),
                 name: name, age: age, retireAge: retireAge, monthlyInvest: monthlyInvest,
                 monthlyIncome: parseInt((document.getElementById('fp-income').value || '').replace(/,/g, '')) || 0,
+                // Drawdown assumptions, resolved from the user's own inputs (above)
+                monthlyExpenses: fpProfileExpenses(),
+                inflationPct: fpProfileInflation(),
+                postRetReturnPct: fpPostRetReturn(),
                 profileKey: profileKey, profileLabel: profile.label, profileSub: profile.sub,
                 profileGradient: profile.gradient, profileBarColor: profile.barColor,
                 totalScore: totalScore, blendedReturn: profile.blendedReturn,
                 allocs: allocs.map(function(a) { return { name: a.name, pct: a.pct, color: a.color, icon: a.icon }; }),
                 goalSIPs: _snapGoals.map(function(g) {
-                    var goalExistingFV = existingCorpus > 0 ? existingCorpus * Math.pow(1 + existingReturn / 100, g.years) : 0;
+                    var wShare = _snapWeightTotal > 0
+                        ? (g.weightPct || 0) / _snapWeightTotal
+                        : 1 / (_snapGoals.length || 1);
+                    var goalExistingFV = hasExisting
+                        ? existingCorpus * Math.pow(1 + existingReturn / 100, g.years) * wShare
+                        : 0;
                     var effectiveCorpus = (g.corpus || 0) + goalExistingFV;
                     var onTrack = g.gap !== null && (effectiveCorpus >= g.target || g.gap <= 0);
                     return {
@@ -4461,10 +4509,25 @@
                 sipDiv.innerHTML = '<p class="text-xs text-slate-400 italic">Enter your monthly investable amount (Step 1) to see the exact SIP split.</p>';
             }
 
+            // ── Retirement adequacy ───────────────────────────────────────────
+            // The Financial Path trajectory funds retirement from actual expenses,
+            // not from whatever number was typed as the retirement goal's target.
+            // A target could therefore read "met" here while the trajectory still
+            // showed the corpus depleting. Measure the two against each other using
+            // the trajectory's own formula, and qualify the verdict below instead of
+            // letting the plan show an unqualified pass.
+            var retNeedAtRet = 0;
+            if (typeof window.pathRequiredRetCorpus === 'function' && window._fpPathSnapshot) {
+                retNeedAtRet = window.pathRequiredRetCorpus(
+                    window.pathRetAssumptions(window._fpPathSnapshot), yearsToRetire, retireAge);
+            }
+
             // ---- Goal Corpus Projections ----
             var corpusSection = document.getElementById('fp-corpus-section');
             var corpusCards   = document.getElementById('fp-corpus-cards');
             var vOnTrack = 0, vTargets = 0; // for the verdict line
+            var vRetShort = false;          // retirement target met but under-funded
+            var vRetCoverPct = null;        // % of living costs the retirement corpus sustains
             if (goalSIPs && goalSIPs.length > 0) {
                 corpusSection.style.display = '';
                 // Distribute existing future value proportionally across goals by weight
@@ -4494,6 +4557,28 @@
                     var totalInvested = g.amt * g.years * 12;
                     var gainAmt       = effectiveCorpus - totalInvested;
                     var gainPct       = totalInvested > 0 ? Math.round((gainAmt/totalInvested)*100) : 0;
+
+                    // Retirement only: does this corpus actually sustain the user's
+                    // expenses to age 85, or does it merely clear a target they typed?
+                    // Hitting the target is necessary but not sufficient — this is the
+                    // check that reconciles the plan with the Path's drawdown curve.
+                    var retNote = '';
+                    if (g.type === 'retirement' && retNeedAtRet > 0) {
+                        var retCoverPct = Math.round((effectiveCorpus / retNeedAtRet) * 100);
+                        var retOk = effectiveCorpus >= retNeedAtRet;
+                        vRetCoverPct = retCoverPct;
+                        if (!retOk && onTrack) vRetShort = true;
+                        var retMoreSIP = Math.ceil(Math.max(0, retNeedAtRet - effectiveCorpus)
+                                            / fpFvFactor(goalRate, g.years) / 500) * 500;
+                        retNote =
+                            '<div class="rounded-xl px-3 py-2 text-[11px] font-semibold mt-2" style="background:' +
+                                (retOk ? '#10b981' : '#f59e0b') + '0f;color:' + (retOk ? '#10b981' : '#b45309') + '">' +
+                                (retOk
+                                    ? '🏖️ Sustains your living costs to age 85 (needs ₹' + fmt(retNeedAtRet) + ').'
+                                    : '🏖️ Covers ' + retCoverPct + '% of your living costs to age 85. Sustaining them needs ₹' +
+                                      fmt(retNeedAtRet) + ' — about ₹' + fmt(retMoreSIP) + '/mo more.') +
+                            '</div>';
+                    }
 
                     return '<div class="rounded-2xl border overflow-hidden" style="border-color:' + statusColor + '25;">' +
                         '<div class="flex items-center justify-between px-4 py-3" style="background:' + statusColor + '0c;">' +
@@ -4543,6 +4628,7 @@
                             '<div class="rounded-xl px-3 py-2 text-[11px] font-semibold" style="background:' + statusColor + '0f;color:' + statusColor + '">' +
                                 statusMsg +
                             '</div>' +
+                            retNote +
                         '</div>' +
                     '</div>';
                 }).join('');
@@ -4554,7 +4640,11 @@
             var vEl = document.getElementById('fp-verdict');
             if (vEl) {
                 var vTone, vHead;
-                if (vTargets > 0 && vOnTrack === vTargets) {
+                // Every target met but retirement doesn't sustain actual spending —
+                // don't claim an unqualified win the trajectory would contradict.
+                if (vTargets > 0 && vOnTrack === vTargets && vRetShort) {
+                    vTone = 'partial'; vHead = _t('fp.verdict.head.retshort').replace('{t}', vTargets);
+                } else if (vTargets > 0 && vOnTrack === vTargets) {
                     vTone = 'on';      vHead = _t('fp.verdict.head.on').replace('{t}', vTargets);
                 } else if (vTargets > 0 && vOnTrack > 0) {
                     vTone = 'partial'; vHead = _t('fp.verdict.head.partial').replace('{n}', vOnTrack).replace('{t}', vTargets);
@@ -4570,6 +4660,7 @@
                 var vChips = '';
                 if (monthlyInvest > 0) vChips += vchip('₹' + fmt(monthlyInvest), _t('fp.verdict.sip'));
                 if (vTargets > 0)      vChips += vchip(vOnTrack + '/' + vTargets, _t('fp.verdict.goals'));
+                if (vRetCoverPct !== null) vChips += vchip(vRetCoverPct + '%', _t('fp.verdict.retcover'));
                 vChips += vchip(_t('fp.verdict.age').replace('{a}', retireAge), _t('fp.verdict.retire'));
 
                 vEl.className = 'fp-verdict fp-verdict-' + vTone;
