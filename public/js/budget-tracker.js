@@ -21,21 +21,41 @@
     function _btCatLabel(cat) { return cat.tkey ? _btT('bt.cat.' + cat.tkey, cat.key) : cat.key; }
     function _btCatHint(cat)  { return cat.tkey ? _btT('bt.hint.' + cat.tkey, cat.hint) : (cat.hint || ''); }
 
-    var _BT_COLORS = ['#6366f1','#22c55e','#f59e0b','#ef4444','#a78bfa',
-                      '#06b6d4','#ec4899','#f97316','#84cc16','#8b5cf6',
-                      '#14b8a6','#f43f5e','#0ea5e9','#a16207','#7c3aed'];
+    // Curated jewel-tone palette that harmonises with the Royal Heritage
+    // theme (gold, emerald, blue, violet) and reads well on the dark panel.
+    // Deliberately avoids pure red — that's reserved for over-budget signals.
+    var _BT_COLORS = ['#60a5fa','#34d399','#e9c463','#c4b5fd','#fbbf24',
+                      '#2dd4bf','#f472b6','#38bdf8','#a3e635','#fb923c',
+                      '#818cf8','#5eead4','#e879a6','#d8b4fe','#facc15'];
 
     // ── State ──────────────────────────────────────────────────
     window._btData       = window._btData       || {};  // { 'YYYY-MM': { CatKey: { b:0, a:0 } } }
     window._btCustomCats = window._btCustomCats  || [];  // [{ key, icon }]
     window._btChartInst  = null;
-    window._btChartType  = window._btChartType  || 'bar';
+    // Default to the 12-month spend trend (matches the Insights Studio design)
+    window._btChartType  = window._btChartType  || 'line';
 
     function _btNow() {
         var d = new Date();
         return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
     }
     window._btMonth = window._btMonth || _btNow();
+
+    // Professional line-icon for a category (from the app-wide icon set),
+    // falling back to the category's emoji for custom cats / older browsers.
+    function _btCatIcon(cat) {
+        if (typeof window._svgIcon === 'function') {
+            if (cat && cat.tkey) {
+                var svg = window._svgIcon('cat.' + cat.tkey, '');
+                if (svg) return svg;
+            }
+            // Custom categories (no tkey) get the generic "tag" line-icon so
+            // they match the professional set instead of a stray emoji.
+            var generic = window._svgIcon('cat.custom', '');
+            if (generic) return generic;
+        }
+        return (cat && cat.icon) || '📌';
+    }
 
     // Returns all categories: fixed + custom
     function _btAllCats() {
@@ -316,7 +336,7 @@
             catCell =
                 '<td class="bt-td bt-td-cat">' +
                     '<div class="bt-cat-wrap">' +
-                        '<span class="bt-cat-icon">' + cat.icon + '</span>' +
+                        '<span class="bt-cat-icon">' + _btCatIcon(cat) + '</span>' +
                         '<div class="bt-cat-txt">' +
                             '<div class="bt-cat-name bt-cat-name-custom">' + _btEsc(cat.key) + '</div>' +
                             '<div class="bt-cat-hint">' + _btT('bt.cat.custom','Custom') + '</div>' +
@@ -330,7 +350,7 @@
             catCell =
                 '<td class="bt-td bt-td-cat bt-td-nowrap">' +
                     '<div class="bt-cat-wrap">' +
-                        '<span class="bt-cat-icon">' + cat.icon + '</span>' +
+                        '<span class="bt-cat-icon">' + _btCatIcon(cat) + '</span>' +
                         '<div>' +
                             '<div class="bt-cat-name">' + _btCatLabel(cat) + '</div>' +
                             '<div class="bt-cat-hint">' + _btCatHint(cat) + '</div>' +
@@ -386,7 +406,7 @@
         addTr.innerHTML =
             '<td colspan="4" class="bt-addrow-td">' +
                 '<div class="bt-addrow-wrap">' +
-                    '<span class="bt-cat-icon">📌</span>' +
+                    '<span class="bt-cat-icon">' + _btCatIcon({ custom: true }) + '</span>' +
                     '<input id="bt-new-cat-name" type="text" maxlength="30" class="bt-addrow-inp" placeholder="' + _btEsc(_btT('bt.cat.placeholder','Category name…')) + '" ' +
                         'onkeydown="window._btNewCatKeydown(event)">' +
                     '<button class="bt-addrow-btn" onclick="window._btAddCustomCat()">' + _btT('bt.cat.add','+ Add') + '</button>' +
@@ -484,7 +504,7 @@
             b.title = label;   // full name for tiles whose label ellipsizes
             var ic = document.createElement('span');
             ic.className = 'bt-tile-icon';
-            ic.textContent = cat.icon;
+            ic.innerHTML = _btCatIcon(cat);
             var lb = document.createElement('span');
             lb.className = 'bt-tile-lbl';
             lb.textContent = label;
@@ -693,7 +713,7 @@
             var idArg = _btEsc(String(t.i).replace(/\\/g, '\\\\').replace(/'/g, "\\'"));
             html +=
                 '<div class="bt-tx-row' + (_btQaEditId === t.i ? ' bt-tx-editing' : '') + '">' +
-                    '<span class="bt-tx-icon">' + cat.icon + '</span>' +
+                    '<span class="bt-tx-icon">' + _btCatIcon(cat) + '</span>' +
                     '<div class="bt-tx-info">' +
                         '<div class="bt-tx-cat">' + _btEsc(name) + '</div>' +
                         (sub ? '<div class="bt-tx-note">' + sub + '</div>' : '') +
@@ -762,7 +782,7 @@
 
             var icon = document.createElement('span');
             icon.className = 'bt-rec-icon';
-            icon.textContent = cat.icon;
+            icon.innerHTML = _btCatIcon(cat);
 
             var info = document.createElement('div');
             info.className = 'bt-rec-info';
@@ -1114,7 +1134,8 @@
                 var chip = document.createElement('span');
                 chip.className = 'bt-fc-chip';
                 var name = (co.custom || !co.tkey) ? co.key : _btCatLabel(co);
-                chip.textContent = co.icon + ' ' + name + ' ' + inr(e.amt);
+                chip.innerHTML = '<span class="bt-fc-chip-ic">' + _btCatIcon(co) + '</span>' +
+                    _btEsc(name) + ' ' + _btEsc(inr(e.amt));
                 catsEl.appendChild(chip);
             });
             var wrap = document.getElementById('bt-fc-catwrap');
@@ -1195,6 +1216,7 @@
     window._btSetChartType = _btSetChartType;
 
     function _btRenderChart() {
+        _btRenderDonut();   // keep the always-on split donut in sync (own canvas)
         var canvas = document.getElementById('bt-chart-canvas');
         if (!canvas || typeof Chart === 'undefined') return;
         if (window._btChartInst) { window._btChartInst.destroy(); window._btChartInst = null; }
@@ -1251,13 +1273,20 @@
                 totals.push(tot);
                 budgetLines.push(bud);
             }
+            // Green→gold gradient line + soft green area fill (Insights Studio look).
+            // Gradients need pixel coordinates, so derive them from the canvas.
+            var _h = canvas.clientHeight || 210, _w = canvas.clientWidth || 400;
+            var lineGrad = ctx.createLinearGradient(0, 0, _w, 0);
+            lineGrad.addColorStop(0, '#10b981'); lineGrad.addColorStop(0.7, '#34d399'); lineGrad.addColorStop(1, '#e9c463');
+            var areaGrad = ctx.createLinearGradient(0, 0, 0, _h);
+            areaGrad.addColorStop(0, 'rgba(52,211,153,0.28)'); areaGrad.addColorStop(1, 'rgba(52,211,153,0)');
             window._btChartInst = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: months,
                     datasets: [
-                        { label:_btT('bt.chart.legend.actual2','Actual Spend'), data:totals, borderColor:'#6366f1', backgroundColor:'rgba(99,102,241,0.12)', pointBackgroundColor:'#a5b4fc', pointRadius:4, fill:true, tension:0.35 },
-                        { label:_btT('bt.chart.legend.budget','Budget'),        data:budgetLines, borderColor:'#f59e0b', backgroundColor:'transparent', borderDash:[4,3], pointRadius:3, pointBackgroundColor:'#fbbf24', fill:false, tension:0.35 }
+                        { label:_btT('bt.chart.legend.actual2','Actual Spend'), data:totals, borderColor:lineGrad, backgroundColor:areaGrad, borderWidth:3, pointBackgroundColor:'#e9c463', pointBorderColor:'rgba(7,30,34,0.6)', pointBorderWidth:1.5, pointRadius:3, pointHoverRadius:5, fill:true, tension:0.35 },
+                        { label:_btT('bt.chart.legend.budget','Budget'),        data:budgetLines, borderColor:'rgba(233,196,99,0.55)', backgroundColor:'transparent', borderDash:[5,4], borderWidth:1.5, pointRadius:0, pointHoverRadius:4, pointBackgroundColor:'#e9c463', fill:false, tension:0.35 }
                     ]
                 },
                 options: {
@@ -1277,7 +1306,7 @@
             var cats = [], vals = [], bgColors = [];
             allCats.forEach(function(cat, idx) {
                 var actual = (data[cat.key]||{}).a || 0;
-                if (actual > 0) { cats.push(cat.icon+' '+cat.key); vals.push(actual); bgColors.push(_BT_COLORS[idx % _BT_COLORS.length]); }
+                if (actual > 0) { cats.push(_btCatLabel(cat)); vals.push(actual); bgColors.push(_BT_COLORS[idx % _BT_COLORS.length]); }
             });
             if (vals.length === 0) {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -1303,6 +1332,43 @@
                 }
             });
         }
+    }
+
+    // ── Always-on donut (right of the main chart, Insights Studio) ──
+    function _btRenderDonut() {
+        var canvas = document.getElementById('bt-donut-canvas');
+        if (!canvas || typeof Chart === 'undefined') return;
+        if (window._btDonutInst) { window._btDonutInst.destroy(); window._btDonutInst = null; }
+        var ctx  = canvas.getContext('2d');
+        var data = _btMonthData();
+        var cats = [], vals = [], bgColors = [];
+        _btAllCats().forEach(function (cat, idx) {
+            var actual = (data[cat.key] || {}).a || 0;
+            if (actual > 0) { cats.push(_btCatLabel(cat)); vals.push(actual); bgColors.push(_BT_COLORS[idx % _BT_COLORS.length]); }
+        });
+        if (vals.length === 0) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'rgba(243,233,210,0.35)';
+            ctx.font = '12px Inter, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(_btT('bt.chart.donut.empty', 'Enter actual spend to see breakdown'), canvas.width / 2, canvas.height / 2);
+            return;
+        }
+        window._btDonutInst = new Chart(ctx, {
+            type: 'doughnut',
+            data: { labels: cats, datasets: [{ data: vals, backgroundColor: bgColors, borderColor: 'rgba(0,0,0,0.3)', borderWidth: 2 }] },
+            options: {
+                responsive: true, maintainAspectRatio: false, cutout: '58%',
+                plugins: {
+                    legend: { position: 'bottom', labels: { color: 'rgba(243,233,210,0.75)', font: { size: 10 }, padding: 8, boxWidth: 12 } },
+                    tooltip: { callbacks: { label: function (c) {
+                        var total = c.dataset.data.reduce(function (a, b) { return a + b; }, 0);
+                        var pct   = total > 0 ? Math.round(c.parsed / total * 100) : 0;
+                        return c.label + ': ₹' + c.parsed.toLocaleString('en-IN') + ' (' + pct + '%)';
+                    } } }
+                }
+            }
+        });
     }
 
     // ── Emergency Fund section ─────────────────────────────────
@@ -1406,6 +1472,81 @@
     }
 
     // ── Refresh all ────────────────────────────────────────────
+    // ── Smart insights (Insights Studio panel) ─────────────────
+    // Reuses already-computed totals, per-category overspend, pace
+    // projection and the 3-month forecast to narrate what's happening.
+    function _btRenderInsights() {
+        var el = document.getElementById('bt-insights');
+        if (!el) return;
+        var data = _btMonthData();
+        var t    = _btGetTotals();
+        var inr  = function (v) { return '₹' + Math.round(v).toLocaleString('en-IN'); };
+        var rows = [];
+
+        // 1) Over-budget categories (biggest overspend first)
+        var overs = [];
+        _btAllCats().forEach(function (cat) {
+            var e = data[cat.key] || { b: 0, a: 0 };
+            if ((e.b || 0) > 0 && (e.a || 0) > (e.b || 0)) {
+                overs.push({ label: _btCatLabel(cat), icon: cat.icon,
+                    over: (e.a || 0) - (e.b || 0), pct: Math.round((e.a || 0) / (e.b || 0) * 100) });
+            }
+        });
+        overs.sort(function (a, b) { return b.over - a.over; });
+        if (overs.length) {
+            var o = overs[0];
+            rows.push({ e: o.icon || '⚠️', html: _btT('bt.ins.over', '<b>{cat} is over budget</b> by {amt} ({pct}%).')
+                .replace('{cat}', _btEsc(o.label)).replace('{amt}', inr(o.over)).replace('{pct}', o.pct) +
+                (overs.length > 1 ? ' ' + _btT('bt.ins.overmore', '{n} more categories are over too.').replace('{n}', overs.length - 1) : '') });
+        }
+
+        // 2) Biggest single transaction this month (spend outlier)
+        var txs = (data._tx || []).filter(function (x) { return !x.r && !x.m && (x.a || 0) > 0; });
+        if (txs.length >= 3) {
+            var avg = txs.reduce(function (s, x) { return s + x.a; }, 0) / txs.length;
+            var big = txs.slice().sort(function (a, b) { return b.a - a.a; })[0];
+            if (big && big.a >= avg * 3 && big.a > 0) {
+                rows.push({ e: '🔎', html: _btT('bt.ins.outlier', 'The <b>{amt}</b> {note} is your biggest spend this month — {x}× your typical transaction.')
+                    .replace('{amt}', inr(big.a))
+                    .replace('{note}', big.n ? '“' + _btEsc(big.n) + '”' : _btT('bt.ins.txn', 'transaction'))
+                    .replace('{x}', (big.a / avg).toFixed(1)) });
+            }
+        }
+
+        // 3) Pace verdict (only for the current month — _btPaceData guards that)
+        if (t.budget > 0) {
+            var p = (typeof _btPaceData === 'function') ? _btPaceData() : null;
+            if (t.actual === 0) {
+                rows.push({ e: '📋', html: _btT('bt.ins.nospend', 'No spends logged yet — tap a category above to start tracking.') });
+            } else if (p && p.day >= _BT_PACE_MIN_DAY && p.totalProj > 0) {
+                if (p.totalProj <= t.budget) {
+                    rows.push({ e: '✅', html: _btT('bt.ins.ontrack', "You're <b>on pace</b> — projected {proj} against a {bud} budget.")
+                        .replace('{proj}', inr(p.totalProj)).replace('{bud}', inr(t.budget)) });
+                } else {
+                    rows.push({ e: '🚨', html: _btT('bt.ins.overpace', "At this pace you'll spend <b>{proj}</b> — {over} over budget. Ease up to stay on track.")
+                        .replace('{proj}', inr(p.totalProj)).replace('{over}', inr(p.totalProj - t.budget)) });
+                }
+            }
+        }
+
+        // 4) Next-month forecast
+        var fc = (typeof _btForecastData === 'function') ? _btForecastData() : null;
+        if (fc && fc.months && fc.months.length) {
+            rows.push({ e: '🔮', html: _btT('bt.ins.forecast', 'Forecast for <b>{m}</b>: {amt}, based on your recent months.')
+                .replace('{m}', _btEsc(fc.months[0].label)).replace('{amt}', inr(fc.months[0].total)) });
+        }
+
+        if (!rows.length) {
+            el.innerHTML = '<div class="bt-ins-empty">' +
+                _btT('bt.ins.empty', 'Set category budgets and log a few expenses — insights on overspend, outliers and pace will appear here.') +
+                '</div>';
+            return;
+        }
+        el.innerHTML = rows.slice(0, 4).map(function (r) {
+            return '<div class="bt-ins-row"><span class="e">' + r.e + '</span><div>' + r.html + '</div></div>';
+        }).join('');
+    }
+
     function _btRefreshAll() {
         _btRenderMonthDisplay();
         _btRenderQaCats();
@@ -1414,7 +1555,8 @@
         _btRenderTable();
         _btRenderSummary();
         _btRenderTxList();
-        _btSetChartType(window._btChartType || 'bar');
+        _btRenderInsights();
+        _btSetChartType(window._btChartType || 'line');
     }
 
     // ── Public init ────────────────────────────────────────────

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Financial Health — Mockup C · Speedometer</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root{ --gold:#f5c842; }
+  body{ font-family:'Inter',system-ui,-apple-system,sans-serif; color:#e8eee9; min-height:100vh; background-attachment:fixed;
+    background:radial-gradient(1200px 700px at 50% -10%,#123529 0%,transparent 60%),radial-gradient(900px 600px at 50% 115%,#0d2a22 0%,transparent 55%),linear-gradient(180deg,#050f0d 0%,#0a1f1a 50%,#050f0d 100%); }
+  body::before{ content:''; position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image:linear-gradient(rgba(233,196,99,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(233,196,99,.035) 1px,transparent 1px); background-size:52px 52px; }
+  .wrap{ position:relative; z-index:1; }
+  .hdr-grad{ background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%); }
+  .gold-border{ border:2px solid rgba(245,200,66,0.4); }
+  .glass{ background:rgba(17,45,36,0.55); border:1px solid rgba(245,200,66,0.22); border-radius:16px; box-shadow:0 8px 28px rgba(0,0,0,0.35); backdrop-filter:blur(12px); }
+  .glass-in{ background:rgba(255,255,255,0.06); border:1px solid rgba(245,200,66,0.16); border-radius:14px; }
+  .shine{ position:relative; overflow:hidden; }
+  .shine::after{ content:""; position:absolute; inset:0; width:50%; pointer-events:none; border-radius:inherit;
+    background:linear-gradient(105deg,transparent 0%,rgba(245,200,66,0.14) 50%,transparent 100%); transform:translateX(-250%); animation:sh 6s ease-in-out infinite; }
+  @keyframes sh{ 0%{transform:translateX(-250%);} 60%,100%{transform:translateX(400%);} }
+  .count{ font-variant-numeric:tabular-nums; }
+  .cap{ font-size:10px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:rgba(242,245,240,.5); }
+  .bar{ height:5px; border-radius:99px; background:rgba(255,255,255,.08); overflow:hidden; }
+  .step{ width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:12px; flex-shrink:0; }
+</style>
+</head>
+<body class="p-4 md:p-6">
+<div class="wrap max-w-6xl mx-auto flex flex-col gap-4">
+
+  <!-- HEADER -->
+  <div class="hdr-grad gold-border shine rounded-2xl px-6 py-4 text-white flex items-center justify-between flex-wrap gap-3" style="box-shadow:0 6px 22px rgba(0,0,0,.45);">
+    <div class="flex items-center gap-3">
+      <div class="w-11 h-11 rounded-xl flex items-center justify-center text-2xl" style="background:rgba(245,200,66,.12);border:1px solid rgba(245,200,66,.28);">❤️</div>
+      <div>
+        <h1 class="text-lg font-black tracking-tight">Financial Health Score</h1>
+        <p class="text-blue-200 text-[11px] mt-0.5">Read your money vitals at a glance</p>
+      </div>
+    </div>
+    <button class="px-3 py-1.5 rounded-xl text-[11px] font-bold" style="background:rgba(245,200,66,.15);color:#f5c842;border:1px solid rgba(245,200,66,.3);">↻ Reset</button>
+  </div>
+
+  <!-- SPEEDOMETER HERO -->
+  <div class="glass shine p-5 grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-6 items-center">
+    <div class="flex flex-col items-center">
+      <svg viewBox="0 0 300 200" style="width:100%;max-width:340px;">
+        <path d="M30 150 A120 120 0 0 1 150 30" fill="none" stroke="#f87171" stroke-width="20" stroke-linecap="round"/>
+        <path d="M150 30 A120 120 0 0 1 234.85 65.15" fill="none" stroke="#fbbf24" stroke-width="20"/>
+        <path d="M234.85 65.15 A120 120 0 0 1 270 150" fill="none" stroke="#34d399" stroke-width="20" stroke-linecap="round"/>
+        <text x="26" y="172" fill="rgba(242,245,240,.5)" font-size="12" font-weight="700">0</text>
+        <text x="146" y="20" fill="rgba(242,245,240,.5)" font-size="12" font-weight="700">50</text>
+        <text x="262" y="172" fill="rgba(242,245,240,.5)" font-size="12" font-weight="700">100</text>
+        <line x1="150" y1="150" x2="233" y2="81" stroke="#f5c842" stroke-width="4" stroke-linecap="round"/>
+        <circle cx="150" cy="150" r="9" fill="#f5c842"/>
+        <circle cx="150" cy="150" r="4" fill="#0a1f1a"/>
+        <text x="150" y="128" text-anchor="middle" fill="#34d399" font-size="44" font-weight="900">78</text>
+        <text x="150" y="146" text-anchor="middle" fill="rgba(242,245,240,.5)" font-size="11" font-weight="700" letter-spacing="1">/ 100</text>
+      </svg>
+      <div class="px-4 py-1 rounded-full text-sm font-black" style="background:rgba(52,211,153,.15);color:#6ee7b7;border:1px solid rgba(52,211,153,.35);">B+ · Financially Fit</div>
+    </div>
+    <div class="flex flex-col gap-3">
+      <div class="text-sm leading-relaxed" style="color:rgba(242,245,240,.8);">Strong savings and controlled debt put you in the green zone. Shore up your emergency fund and life cover to push into the top decile.</div>
+      <div class="glass-in p-3 flex items-center gap-3">
+        <div class="text-2xl">📊</div>
+        <div class="flex-1">
+          <div class="text-sm font-black text-white">Top <span style="color:#34d399;">28%</span> of Indians aged 30–39</div>
+          <div class="text-[10px] mt-0.5" style="color:rgba(242,245,240,.5);">Estimated · RBI &amp; SEBI household finance surveys</div>
+        </div>
+        <div class="text-2xl font-black count" style="color:#34d399;">72<span class="text-sm">th</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CATEGORY MINI-CARDS -->
+  <div class="glass p-4">
+    <div class="cap mb-3">Vital Signs</div>
+    <div id="cats" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3"></div>
+  </div>
+
+  <!-- PIES + ACTIONS -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <div class="glass p-4">
+      <div class="cap mb-2">💸 Where Your Money Goes</div>
+      <div class="grid grid-cols-[150px_1fr] gap-3 items-center">
+        <div style="height:150px;position:relative;"><canvas id="pieCash"></canvas></div>
+        <div id="cashLegend" class="flex flex-col gap-1.5 text-[11px]"></div>
+      </div>
+    </div>
+    <div class="glass p-4">
+      <div class="cap mb-2">📊 Wealth Portfolio Mix</div>
+      <div class="grid grid-cols-[150px_1fr] gap-3 items-center">
+        <div style="height:150px;position:relative;"><canvas id="pieWealth"></canvas></div>
+        <div id="wealthLegend" class="flex flex-col gap-1.5 text-[11px]"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACTION STEPS -->
+  <div class="glass p-4">
+    <div class="cap mb-3">🎯 Your Next 3 Moves</div>
+    <div id="steps" class="flex flex-col gap-2.5"></div>
+  </div>
+</div>
+
+<script>
+Chart.defaults.color='rgba(242,245,240,.6)';
+Chart.defaults.font.family="'Inter',sans-serif";
+const DARK='#0a1f1a';
+const cats=[['Savings Rate',90,'#34d399'],['Debt Management',80,'#60a5fa'],['Emergency Fund',60,'#fbbf24'],['Insurance',68,'#a78bfa'],['Diversification',78,'#22d3ee'],['Retirement',72,'#f5c842']];
+document.getElementById('cats').innerHTML=cats.map(c=>`<div class="glass-in p-3"><div class="flex items-center justify-between"><span class="text-[11px] font-bold" style="color:rgba(242,245,240,.7);">${c[0]}</span></div><div class="text-xl font-black count mt-1" style="color:${c[2]};">${c[1]}<span class="text-[11px]" style="color:rgba(242,245,240,.4);">/100</span></div><div class="bar mt-1.5"><div class="h-full rounded-full" style="width:${c[1]}%;background:${c[2]};"></div></div></div>`).join('');
+
+function pie(id,labels,data,colors,legendId,fmt){
+  new Chart(document.getElementById(id),{type:'doughnut',data:{labels,datasets:[{data,backgroundColor:colors,borderWidth:2,borderColor:DARK}]},options:{cutout:'58%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+fmt(c.raw)}}}}});
+  const tot=data.reduce((a,b)=>a+b,0);
+  document.getElementById(legendId).innerHTML=labels.map((l,i)=>`<div class="flex items-center justify-between"><span class="flex items-center gap-2"><span style="width:10px;height:10px;border-radius:3px;background:${colors[i]};display:inline-block;"></span><span style="color:rgba(242,245,240,.7);">${l}</span></span><span class="font-black text-white count">${Math.round(data[i]/tot*100)}%</span></div>`).join('');
+}
+pie('pieCash',['Expenses','EMIs','Savings'],[60000,35000,55000],['#60a5fa','#fca5a5','#34d399'],'cashLegend',v=>'₹'+v.toLocaleString('en-IN'));
+pie('pieWealth',['Retirement','Equity','Debt','Gold','Other'],[1800000,1540000,800000,300000,100000],['#a78bfa','#34d399','#60a5fa','#eab308','#94a3b8'],'wealthLegend',v=>'₹'+(v/1e5).toFixed(1)+'L');
+
+const steps=[['#fbbf24','Top up your emergency fund','You have 4.7 months of expenses saved. Add ₹1.2L to hit the 6-month safety line.'],['#a78bfa','Raise your term cover','At 8.3× income you\'re underinsured. A ₹50L top-up gets you to the 10× minimum.'],['#60a5fa','Rebalance toward equity','Equity is 34% of your portfolio — nudge to ~45% to match your age and horizon.']];
+document.getElementById('steps').innerHTML=steps.map((s,i)=>`<div class="glass-in p-3 flex gap-3 items-start"><div class="step" style="background:${s[0]}22;color:${s[0]};border:1px solid ${s[0]}55;">${i+1}</div><div><div class="text-[13px] font-black" style="color:${s[0]};">${s[1]}</div><div class="text-[11px] mt-0.5 leading-relaxed" style="color:rgba(242,245,240,.6);">${s[2]}</div></div></div>`).join('');
+</script>
+</body>
+</html>

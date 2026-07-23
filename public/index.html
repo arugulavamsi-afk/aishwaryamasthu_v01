@@ -279,7 +279,8 @@
         <!-- Breadcrumb bar — hidden on dashboard, shown inside modules -->
         <div id="nav-breadcrumb" class="hidden items-center gap-2 px-1 py-1 flex-wrap">
             <button id="nav-bc-dashboard-btn" onclick="switchMode('dashboard')" class="flex items-center gap-1.5 text-xs font-black px-3 py-1.5 rounded-xl transition-all shine-btn" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);">
-                <span data-i18n="nav.back">⬅ Dashboard</span>
+                <span class="nav-bc-backic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></span>
+                <span data-i18n="nav.backlabel">Dashboard</span>
             </button>
             <!-- Category breadcrumb segment (shown only when inside a tool opened from a category) -->
             <span id="nav-bc-sep-cat" class="hidden" style="color:rgba(255,255,255,0.3);font-size:11px;font-weight:700;">›</span>

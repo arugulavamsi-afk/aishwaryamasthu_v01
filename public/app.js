@@ -387,7 +387,11 @@
             } else {
                 bc.classList.remove('hidden');
                 bc.classList.add('flex');
-                if (icon) icon.textContent = meta.icon;
+                // Professional line-icon (falls back to the emoji when no glyph exists)
+                if (icon) {
+                    var _svg = (typeof window._svgIcon === 'function') ? window._svgIcon(mode, '') : '';
+                    if (_svg) icon.innerHTML = _svg; else icon.textContent = meta.icon;
+                }
                 if (lbl)  lbl.textContent  = meta.label;
 
                 // Show category breadcrumb segment if user drilled in from a category panel
@@ -398,7 +402,10 @@
 
                 if (catMeta && !mode.startsWith('dashcat-')) {
                     if (catBtn) {
-                        catBtn.textContent = catMeta.icon + ' ' + catMeta.label;
+                        var _csvg = (typeof window._svgIcon === 'function') ? window._svgIcon(_prevCategoryMode, '') : '';
+                        catBtn.innerHTML = (_csvg
+                            ? '<span class="nav-bc-catic">' + _csvg + '</span>'
+                            : (catMeta.icon + ' ')) + catMeta.label;
                         const _cat = _prevCategoryMode;
                         catBtn.onclick = function() { switchMode(_cat); };
                         catBtn.classList.remove('hidden');

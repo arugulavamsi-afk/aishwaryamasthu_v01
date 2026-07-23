@@ -1,5 +1,5 @@
 /* AishwaryaMasthu Service Worker */
-var CACHE = 'am-v80';
+var CACHE = 'am-v81';
 
 /* App shell — pre-cached on SW install. Other files are cached on first access. */
 var SHELL = [
@@ -98,6 +98,9 @@ self.addEventListener('message', function(e) {
 
 /* ── Install: cache the app shell ── */
 self.addEventListener('install', function(e) {
+  /* Activate a new SW immediately so a page never runs on a mix of old + new
+     assets (which can break freshly-restructured panels like Net Worth). */
+  self.skipWaiting();
   e.waitUntil(
     caches.open(CACHE).then(function(cache) {
       /* Add shell files individually so one missing file doesn't break install */

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Net Worth — Mockup C · Wealth Cockpit (Royal Dark)</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root{ --gold:#f5c842; }
+  body{ font-family:'Inter',system-ui,-apple-system,sans-serif; color:#e8eee9; min-height:100vh; background-attachment:fixed;
+    background:radial-gradient(1200px 700px at 50% -10%,#123529 0%,transparent 60%),radial-gradient(900px 600px at 50% 115%,#0d2a22 0%,transparent 55%),linear-gradient(180deg,#050f0d 0%,#0a1f1a 50%,#050f0d 100%); }
+  body::before{ content:''; position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image:linear-gradient(rgba(233,196,99,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(233,196,99,.035) 1px,transparent 1px); background-size:52px 52px; }
+  .wrap{ position:relative; z-index:1; }
+  .hdr-grad{ background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%); }
+  .gold-border{ border:2px solid rgba(245,200,66,0.4); }
+  .glass{ background:rgba(255,255,255,0.05); border:1px solid rgba(245,200,66,0.18); border-radius:16px; box-shadow:0 8px 28px rgba(0,0,0,0.25); backdrop-filter:blur(12px); }
+  .glass-in{ background:rgba(255,255,255,0.05); border:1px solid rgba(245,200,66,0.14); border-radius:14px; }
+  .shine{ position:relative; overflow:hidden; }
+  .shine::after{ content:""; position:absolute; inset:0; width:50%; pointer-events:none; border-radius:inherit;
+    background:linear-gradient(105deg,transparent 0%,rgba(245,200,66,0.14) 50%,transparent 100%); transform:translateX(-250%); animation:sh 6s ease-in-out infinite; }
+  @keyframes sh{ 0%{transform:translateX(-250%);} 60%,100%{transform:translateX(400%);} }
+  .count{ font-variant-numeric:tabular-nums; }
+  .cap{ font-size:10px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:rgba(242,245,240,0.5); }
+  .tile{ border-radius:14px; padding:12px; border:1px solid rgba(245,200,66,0.14); background:rgba(255,255,255,0.05); transition:.18s; backdrop-filter:blur(8px); }
+  .tile:hover{ transform:translateY(-3px); border-color:rgba(245,200,66,0.45); box-shadow:0 10px 24px rgba(0,0,0,.35); }
+  .bar{ height:5px; border-radius:99px; background:rgba(255,255,255,.08); overflow:hidden; }
+  .epf{ width:100%; padding:7px 9px; background:rgba(255,255,255,0.06); border:1px solid rgba(245,200,66,0.18); border-radius:9px; font-size:12px; font-weight:700; color:#f2f5f0; outline:none; }
+  .epf:focus{ border-color:var(--gold); box-shadow:0 0 0 3px rgba(245,200,66,.20); }
+  .flbl{ font-size:9px; font-weight:800; letter-spacing:.04em; text-transform:uppercase; color:rgba(242,245,240,.5); }
+</style>
+</head>
+<body class="p-4 md:p-6">
+<div class="wrap max-w-6xl mx-auto flex flex-col gap-4">
+
+  <!-- HEADER -->
+  <div class="hdr-grad gold-border shine rounded-2xl px-6 py-4 flex items-center justify-between flex-wrap gap-3" style="box-shadow:0 6px 22px rgba(0,0,0,.45);">
+    <div class="flex items-center gap-3 text-white">
+      <div class="w-11 h-11 rounded-xl flex items-center justify-center text-2xl" style="background:rgba(245,200,66,.12);border:1px solid rgba(245,200,66,.28);">⚖️</div>
+      <div>
+        <h1 class="text-lg font-black tracking-tight">Wealth Cockpit</h1>
+        <p class="text-blue-200 text-[11px] mt-0.5">Every dial that matters, in one glance</p>
+      </div>
+    </div>
+    <button class="px-3 py-1.5 rounded-xl text-[11px] font-bold" style="background:rgba(245,200,66,.15);color:#f5c842;border:1px solid rgba(245,200,66,.3);">↻ Reset</button>
+  </div>
+
+  <!-- TOP: hero gauge + dials + trend -->
+  <div class="grid grid-cols-1 lg:grid-cols-[1.1fr_1.4fr] gap-4">
+    <div class="glass shine p-5 flex flex-col gap-4">
+      <div class="flex items-center gap-5">
+        <div class="relative" style="width:150px;height:150px;flex-shrink:0;">
+          <canvas id="gauge"></canvas>
+          <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+            <div class="text-[9px] uppercase tracking-widest font-bold" style="color:rgba(242,245,240,.55);">Net Worth</div>
+            <div class="text-2xl font-black count" style="color:#34d399;">₹1.19Cr</div>
+          </div>
+        </div>
+        <div class="flex-1 flex flex-col gap-2">
+          <div class="glass-in px-3 py-2">
+            <div class="text-[9px] uppercase tracking-wider font-bold" style="color:#6ee7b7;">Assets</div>
+            <div class="text-lg font-black count text-white">₹1.65 Cr</div>
+          </div>
+          <div class="glass-in px-3 py-2">
+            <div class="text-[9px] uppercase tracking-wider font-bold" style="color:#fca5a5;">Liabilities</div>
+            <div class="text-lg font-black count text-white">₹45.95 L</div>
+          </div>
+        </div>
+      </div>
+      <div class="grid grid-cols-3 gap-3">
+        <div class="glass-in p-2 flex flex-col items-center">
+          <div class="relative" style="width:70px;height:70px;"><canvas id="d1"></canvas><div class="absolute inset-0 flex items-center justify-center text-white font-black text-sm count">28%</div></div>
+          <div class="text-[9px] font-bold mt-1" style="color:rgba(242,245,240,.6);">Debt/Asset</div>
+        </div>
+        <div class="glass-in p-2 flex flex-col items-center">
+          <div class="relative" style="width:70px;height:70px;"><canvas id="d2"></canvas><div class="absolute inset-0 flex items-center justify-center text-white font-black text-sm count">27%</div></div>
+          <div class="text-[9px] font-bold mt-1" style="color:rgba(242,245,240,.6);">Invested</div>
+        </div>
+        <div class="glass-in p-2 flex flex-col items-center">
+          <div class="relative" style="width:70px;height:70px;"><canvas id="d3"></canvas><div class="absolute inset-0 flex items-center justify-center text-white font-black text-sm count">6%</div></div>
+          <div class="text-[9px] font-bold mt-1" style="color:rgba(242,245,240,.6);">Liquid</div>
+        </div>
+      </div>
+    </div>
+    <div class="glass p-4 flex flex-col">
+      <div class="flex items-center justify-between mb-2">
+        <div class="cap">📈 Net Worth Trajectory</div>
+        <div class="text-[10px] font-black" style="color:#34d399;">+21% YTD</div>
+      </div>
+      <div class="flex-1" style="min-height:180px;position:relative;"><canvas id="trend"></canvas></div>
+    </div>
+  </div>
+
+  <!-- CATEGORY TILES -->
+  <div class="glass p-4">
+    <div class="flex items-center justify-between mb-3">
+      <div class="cap">Asset Classes · tap a tile to edit</div>
+      <div class="text-[10px] font-bold" style="color:rgba(242,245,240,.6);">Total ₹1.65 Cr</div>
+    </div>
+    <div id="tiles" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3"></div>
+  </div>
+
+  <!-- EDIT + insight -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+    <div class="glass p-4 lg:col-span-2">
+      <div class="flex items-center gap-2 mb-3"><span class="w-2 h-2 rounded-full" style="background:#34d399;"></span><span class="text-[10px] font-black uppercase tracking-wider" style="color:#6ee7b7;">Quick Edit — Assets</span></div>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+        <div><label class="flbl">Savings</label><input class="epf mt-1" value="4,50,000"></div>
+        <div><label class="flbl">FD</label><input class="epf mt-1" value="6,00,000"></div>
+        <div><label class="flbl">Stocks</label><input class="epf mt-1" value="8,20,000"></div>
+        <div><label class="flbl">Equity MF</label><input class="epf mt-1" value="15,40,000"></div>
+        <div><label class="flbl">EPF</label><input class="epf mt-1" value="9,80,000"></div>
+        <div><label class="flbl">PPF</label><input class="epf mt-1" value="5,20,000"></div>
+        <div><label class="flbl">Home</label><input class="epf mt-1" value="95,00,000"></div>
+        <div><label class="flbl">Gold</label><input class="epf mt-1" value="8,30,000"></div>
+      </div>
+      <div class="flex items-center gap-2 mb-3 mt-4"><span class="w-2 h-2 rounded-full" style="background:#f87171;"></span><span class="text-[10px] font-black uppercase tracking-wider" style="color:#fca5a5;">Liabilities</span></div>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+        <div><label class="flbl">Home Loan</label><input class="epf mt-1" value="42,00,000"></div>
+        <div><label class="flbl">Car Loan</label><input class="epf mt-1" value="3,50,000"></div>
+        <div><label class="flbl" style="color:#fca5a5;">Card 36%</label><input class="epf mt-1" value="45,000" style="border-color:rgba(248,113,113,.45);background:rgba(248,113,113,.10);"></div>
+      </div>
+    </div>
+    <div class="flex flex-col gap-4">
+      <div class="rounded-2xl p-4 text-white gold-border shine" style="background:linear-gradient(135deg,#0e5c3a,#14532d);">
+        <div class="text-[9px] font-black uppercase tracking-wider" style="color:#6ee7b7;">Milestone</div>
+        <div class="text-sm font-bold mt-1">You're 79% to your first ₹1.5 Cr 🎯</div>
+        <div class="bar mt-2" style="background:rgba(255,255,255,.2);"><div class="h-full rounded-full" style="width:79%;background:#f5c842;"></div></div>
+        <div class="text-[10px] mt-1.5" style="color:#a7f3d0;">₹30.95 L to go · on track by Mar 2027</div>
+      </div>
+      <div class="rounded-2xl p-4 text-[11px] leading-relaxed" style="background:rgba(245,200,66,.10);border:1.5px solid rgba(245,200,66,.35);color:#f5e6b8;">
+        <div class="font-black mb-1" style="color:#f5c842;">💡 Cockpit insight</div>
+        Real estate is 58% of your assets — a touch heavy. Nudging new savings toward equity would improve diversification and liquidity.
+      </div>
+      <button class="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-white font-bold text-sm shine" style="background:#25D366;box-shadow:0 4px 16px rgba(37,211,102,.25);">Share on WhatsApp</button>
+    </div>
+  </div>
+</div>
+
+<script>
+Chart.defaults.color='rgba(242,245,240,.6)';
+Chart.defaults.font.family="'Inter',sans-serif";
+const alloc=[['Real Estate',9500000,'#3b82f6','🏠'],['Equity',2360000,'#34d399','📈'],['Retirement',2050000,'#a78bfa','🔒'],['Liquid',1050000,'#fbbf24','💵'],['Gold',830000,'#eab308','🥇'],['Other',710000,'#94a3b8','💼']];
+const total=alloc.reduce((s,a)=>s+a[1],0);
+const donut=(id,val,col)=>new Chart(document.getElementById(id),{type:'doughnut',data:{datasets:[{data:[val,100-val],backgroundColor:[col,'rgba(255,255,255,.10)'],borderWidth:0}]},options:{cutout:'72%',plugins:{legend:{display:false},tooltip:{enabled:false}}}});
+new Chart(document.getElementById('gauge'),{type:'doughnut',data:{datasets:[{data:[72,28],backgroundColor:['#34d399','rgba(255,255,255,.10)'],borderWidth:0}]},options:{cutout:'78%',plugins:{legend:{display:false},tooltip:{enabled:false}}}});
+donut('d1',28,'#fbbf24');donut('d2',27,'#60a5fa');donut('d3',6,'#a78bfa');
+new Chart(document.getElementById('trend'),{type:'line',data:{labels:['Jan','Feb','Mar','Apr','May','Jun','Jul'],datasets:[{data:[98,101,104,103,108,113,119],borderColor:'#34d399',backgroundColor:'rgba(52,211,153,.16)',fill:true,tension:.4,pointRadius:3,pointBackgroundColor:'#f5c842',borderWidth:2.5}]},options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' ₹'+c.raw+' L'}}},scales:{y:{ticks:{callback:v=>v+'L',font:{size:9}},grid:{color:'rgba(255,255,255,.06)'}},x:{grid:{display:false},ticks:{font:{size:9}}}}}});
+document.getElementById('tiles').innerHTML=alloc.map(a=>{const pct=Math.round(a[1]/total*100);return `<div class="tile"><div class="flex items-center justify-between"><span class="text-lg">${a[3]}</span><span class="text-[10px] font-black count" style="color:${a[2]};">${pct}%</span></div><div class="text-[10px] font-bold mt-1" style="color:rgba(242,245,240,.6);">${a[0]}</div><div class="text-sm font-black count text-white">₹${(a[1]/1e5).toFixed(1)}L</div><div class="bar mt-1.5"><div class="h-full rounded-full" style="width:${pct}%;background:${a[2]};"></div></div></div>`}).join('');
+</script>
+</body>
+</html>

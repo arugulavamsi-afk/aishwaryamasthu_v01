@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Net Worth — Mockup B · Balance Sheet (Royal Dark)</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root{ --gold:#f5c842; }
+  body{ font-family:'Inter',system-ui,-apple-system,sans-serif; color:#e8eee9; min-height:100vh; background-attachment:fixed;
+    background:radial-gradient(1200px 700px at 50% -10%,#123529 0%,transparent 60%),radial-gradient(900px 600px at 50% 115%,#0d2a22 0%,transparent 55%),linear-gradient(180deg,#050f0d 0%,#0a1f1a 50%,#050f0d 100%); }
+  body::before{ content:''; position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image:linear-gradient(rgba(233,196,99,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(233,196,99,.035) 1px,transparent 1px); background-size:52px 52px; }
+  .wrap{ position:relative; z-index:1; }
+  .hdr-grad{ background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%); }
+  .gold-border{ border:2px solid rgba(245,200,66,0.4); }
+  .glass{ background:rgba(255,255,255,0.05); border:1px solid rgba(245,200,66,0.18); border-radius:16px; box-shadow:0 8px 28px rgba(0,0,0,0.25); backdrop-filter:blur(12px); }
+  .shine{ position:relative; overflow:hidden; }
+  .shine::after{ content:""; position:absolute; inset:0; width:50%; pointer-events:none; border-radius:inherit;
+    background:linear-gradient(105deg,transparent 0%,rgba(245,200,66,0.14) 50%,transparent 100%); transform:translateX(-250%); animation:sh 6s ease-in-out infinite; }
+  @keyframes sh{ 0%{transform:translateX(-250%);} 60%,100%{transform:translateX(400%);} }
+  .count{ font-variant-numeric:tabular-nums; }
+  .cap{ font-size:10px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:rgba(242,245,240,0.5); }
+  .grp{ font-size:9px; font-weight:800; letter-spacing:.07em; text-transform:uppercase; color:#f5c842; opacity:.8; margin:12px 4px 6px; }
+  .row{ display:flex; align-items:center; justify-content:space-between; padding:9px 12px; border-radius:10px; transition:.15s; }
+  .row:hover{ transform:translateX(2px); }
+  .row-a{ background:rgba(52,211,153,.08); border:1px solid rgba(52,211,153,.22); }
+  .row-l{ background:rgba(248,113,113,.08); border:1px solid rgba(248,113,113,.22); }
+  .rin{ width:110px; text-align:right; background:transparent; border:none; outline:none; font-weight:800; font-size:13px; color:#f2f5f0; font-variant-numeric:tabular-nums; }
+</style>
+</head>
+<body class="p-4 md:p-6">
+<div class="wrap max-w-6xl mx-auto flex flex-col gap-4">
+
+  <!-- HEADER -->
+  <div class="hdr-grad gold-border shine rounded-2xl px-6 py-4 text-white flex items-center justify-between flex-wrap gap-3" style="box-shadow:0 6px 22px rgba(0,0,0,.45);">
+    <div>
+      <h1 class="text-lg font-black tracking-tight flex items-center gap-2">⚖️ Net Worth — Balance Sheet</h1>
+      <p class="text-blue-200 text-[11px] mt-0.5">A financial plan without a balance sheet is astrology, not planning.</p>
+    </div>
+    <button class="px-3 py-1.5 rounded-xl text-[11px] font-bold" style="background:rgba(245,200,66,.15);color:#f5c842;border:1px solid rgba(245,200,66,.3);">↻ Reset</button>
+  </div>
+
+  <!-- NET WORTH BEAM -->
+  <div class="glass p-5">
+    <div class="flex items-end justify-between flex-wrap gap-4 mb-4">
+      <div>
+        <div class="cap tracking-widest">Net Worth</div>
+        <div class="text-4xl font-black count" style="color:#34d399;">₹1,19,05,000</div>
+        <div class="text-[11px] font-bold mt-0.5" style="color:#6ee7b7;">▲ ₹6,05,000 (5.4%) vs last month</div>
+      </div>
+      <div class="flex gap-6 text-right items-center">
+        <div>
+          <div class="text-[10px] font-black uppercase tracking-wider" style="color:#6ee7b7;">Assets</div>
+          <div class="text-xl font-black text-white count">₹1.65 Cr</div>
+        </div>
+        <div class="text-2xl font-thin self-center" style="color:rgba(255,255,255,.3);">−</div>
+        <div>
+          <div class="text-[10px] font-black uppercase tracking-wider" style="color:#fca5a5;">Liabilities</div>
+          <div class="text-xl font-black text-white count">₹45.95 L</div>
+        </div>
+      </div>
+    </div>
+    <div class="relative h-9 rounded-xl overflow-hidden flex" style="background:rgba(255,255,255,.06);">
+      <div class="h-full flex items-center pl-3" style="width:72.1%;background:linear-gradient(90deg,#0e5c3a,#34d399);">
+        <span class="text-[10px] font-black text-white">NET WORTH · 72%</span>
+      </div>
+      <div class="h-full flex items-center justify-end pr-3" style="width:27.9%;background:linear-gradient(90deg,#b91c1c,#f87171);">
+        <span class="text-[10px] font-black text-white">DEBT · 28%</span>
+      </div>
+    </div>
+    <div class="text-[9px] mt-1.5 text-center" style="color:rgba(242,245,240,.4);">Green = the share of your assets you truly own · aim to keep debt under 30%</div>
+  </div>
+
+  <!-- LEDGER -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <!-- ASSETS -->
+    <div class="glass p-4">
+      <div class="flex items-center justify-between mb-1">
+        <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full" style="background:#34d399;"></span><span class="text-sm font-black" style="color:#6ee7b7;">ASSETS</span></div>
+        <div class="text-lg font-black count" style="color:#6ee7b7;">₹1,65,00,000</div>
+      </div>
+      <div class="grp">💵 Liquid</div>
+      <div class="flex flex-col gap-1.5">
+        <div class="row row-a"><span class="text-[12px] font-semibold" style="color:rgba(242,245,240,.85);">Savings / Bank</span><span class="flex items-center gap-1"><span style="color:rgba(245,200,66,.7);" class="text-[11px] font-bold">₹</span><input class="rin" value="4,50,000"></span></div>
+        <div class="row row-a"><span class="text-[12px] font-semibold" style="color:rgba(242,245,240,.85);">Fixed Deposits</span><span class="flex items-center gap-1"><span style="color:rgba(245,200,66,.7);" class="text-[11px] font-bold">₹</span><input class="rin" value="6,00,000"></span></div>
+      </div>
+      <div class="grp">📈 Equity</div>
+      <div class="flex flex-col gap-1.5">
+        <div class="row row-a"><span class="text-[12px] font-semibold" style="color:rgba(242,245,240,.85);">Direct Stocks</span><span class="flex items-center gap-1"><span style="color:rgba(245,200,66,.7);" class="text-[11px] font-bold">₹</span><input class="rin" value="8,20,000"></span></div>
+        <div class="row row-a"><span class="text-[12px] font-semibold" style="color:rgba(242,245,240,.85);">Equity Mutual Funds</span><span class="flex items-center gap-1"><span style="color:rgba(245,200,66,.7);" class="text-[11px] font-bold">₹</span><input class="rin" value="15,40,000"></span></div>
+      </div>
+      <div class="grp">🔒 Retirement & Fixed Income</div>
+      <div class="flex flex-col gap-1.5">
+        <div class="row row-a"><span class="text-[12px] font-semibold" style="color:rgba(242,245,240,.85);">EPF</span><span class="flex items-center gap-1"><span style="color:rgba(245,200,66,.7);" class="text-[11px] font-bold">₹</span><input class="rin" value="9,80,000"></span></div>
+        <div class="row row-a"><span class="text-[12px] font-semibold" style="color:rgba(242,245,240,.85);">PPF</span><span class="flex items-center gap-1"><span style="color:rgba(245,200,66,.7);" class="text-[11px] font-bold">₹</span><input class="rin" value="5,20,000"></span></div>
+        <div class="row row-a"><span class="text-[12px] font-semibold" style="color:rgba(242,245,240,.85);">NPS + Debt MF</span><span class="flex items-center gap-1"><span style="color:rgba(245,200,66,.7);" class="text-[11px] font-bold">₹</span><input class="rin" value="5,50,000"></span></div>
+      </div>
+      <div class="grp">🏠 Real Estate · 🥇 Gold · Other</div>
+      <div class="flex flex-col gap-1.5">
+        <div class="row row-a"><span class="text-[12px] font-semibold" style="color:rgba(242,245,240,.85);">Primary Home</span><span class="flex items-center gap-1"><span style="color:rgba(245,200,66,.7);" class="text-[11px] font-bold">₹</span><input class="rin" value="95,00,000"></span></div>
+        <div class="row row-a"><span class="text-[12px] font-semibold" style="color:rgba(242,245,240,.85);">Gold (all forms)</span><span class="flex items-center gap-1"><span style="color:rgba(245,200,66,.7);" class="text-[11px] font-bold">₹</span><input class="rin" value="8,30,000"></span></div>
+        <div class="row row-a"><span class="text-[12px] font-semibold" style="color:rgba(242,245,240,.85);">Vehicles + Other</span><span class="flex items-center gap-1"><span style="color:rgba(245,200,66,.7);" class="text-[11px] font-bold">₹</span><input class="rin" value="6,10,000"></span></div>
+      </div>
+    </div>
+
+    <!-- LIABILITIES + allocation -->
+    <div class="flex flex-col gap-4">
+      <div class="glass p-4">
+        <div class="flex items-center justify-between mb-1">
+          <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full" style="background:#f87171;"></span><span class="text-sm font-black" style="color:#fca5a5;">LIABILITIES</span></div>
+          <div class="text-lg font-black count" style="color:#fca5a5;">₹45,95,000</div>
+        </div>
+        <div class="grp">🏦 Loans</div>
+        <div class="flex flex-col gap-1.5">
+          <div class="row row-l"><span class="text-[12px] font-semibold" style="color:rgba(242,245,240,.85);">Home Loan</span><span class="flex items-center gap-1"><span style="color:rgba(245,200,66,.7);" class="text-[11px] font-bold">₹</span><input class="rin" value="42,00,000"></span></div>
+          <div class="row row-l"><span class="text-[12px] font-semibold" style="color:rgba(242,245,240,.85);">Car Loan</span><span class="flex items-center gap-1"><span style="color:rgba(245,200,66,.7);" class="text-[11px] font-bold">₹</span><input class="rin" value="3,50,000"></span></div>
+          <div class="row row-l" style="background:rgba(248,113,113,.16);border-color:rgba(248,113,113,.5);"><span class="text-[12px] font-bold" style="color:#fca5a5;">Credit Card · 36% APR</span><span class="flex items-center gap-1"><span style="color:rgba(248,113,113,.8);" class="text-[11px] font-bold">₹</span><input class="rin" value="45,000" style="color:#fca5a5;"></span></div>
+        </div>
+        <div class="mt-3 rounded-xl px-3 py-2 text-[10px] leading-relaxed" style="background:rgba(245,200,66,.10);border:1px solid rgba(245,200,66,.3);color:#f5e6b8;">
+          💡 Clear the ₹45,000 credit-card balance first — at 36% APR it costs more than any asset earns.
+        </div>
+      </div>
+
+      <div class="glass p-4 flex-1">
+        <div class="cap mb-2">Asset Allocation</div>
+        <div class="grid grid-cols-[150px_1fr] gap-3 items-center">
+          <div style="height:150px;position:relative;"><canvas id="donut"></canvas></div>
+          <div id="legend" class="grid grid-cols-1 gap-1.5 text-[11px]"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TREND -->
+  <div class="glass p-4">
+    <div class="flex items-center justify-between mb-2">
+      <div class="cap">📈 Net Worth History</div>
+      <div class="flex gap-2 text-[10px] font-bold">
+        <span class="px-2 py-0.5 rounded-lg" style="background:rgba(245,200,66,.15);color:#f5c842;border:1px solid rgba(245,200,66,.3);">1Y</span>
+        <span class="px-2 py-0.5 rounded-lg" style="color:rgba(242,245,240,.4);">3Y</span>
+        <span class="px-2 py-0.5 rounded-lg" style="color:rgba(242,245,240,.4);">All</span>
+      </div>
+    </div>
+    <div style="height:170px;position:relative;"><canvas id="trend"></canvas></div>
+  </div>
+</div>
+
+<script>
+Chart.defaults.color='rgba(242,245,240,.6)';
+Chart.defaults.font.family="'Inter',sans-serif";
+const DARK='#0a1f1a';
+const alloc=[['Real Estate',9500000,'#3b82f6'],['Equity',2360000,'#34d399'],['Retirement',2050000,'#a78bfa'],['Liquid',1050000,'#fbbf24'],['Gold',830000,'#eab308'],['Other',610000,'#94a3b8']];
+const total=alloc.reduce((s,a)=>s+a[1],0);
+new Chart(document.getElementById('donut'),{type:'doughnut',data:{labels:alloc.map(a=>a[0]),datasets:[{data:alloc.map(a=>a[1]),backgroundColor:alloc.map(a=>a[2]),borderWidth:2,borderColor:DARK}]},options:{cutout:'60%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+(c.raw/1e5).toFixed(1)+'L'}}}}});
+document.getElementById('legend').innerHTML=alloc.map(a=>`<div class="flex items-center justify-between"><span class="flex items-center gap-2"><span style="width:10px;height:10px;border-radius:3px;background:${a[2]};display:inline-block;"></span><span class="font-semibold" style="color:rgba(242,245,240,.7);">${a[0]}</span></span><span class="font-black count text-white">${Math.round(a[1]/total*100)}%</span></div>`).join('');
+new Chart(document.getElementById('trend'),{type:'line',data:{labels:['Jan','Feb','Mar','Apr','May','Jun','Jul'],datasets:[{data:[98,101,104,103,108,113,119],borderColor:'#34d399',backgroundColor:'rgba(52,211,153,.14)',fill:true,tension:.4,pointRadius:3,pointBackgroundColor:'#f5c842',borderWidth:2.5}]},options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' ₹'+c.raw+' L'}}},scales:{y:{ticks:{callback:v=>v+'L',font:{size:9}},grid:{color:'rgba(255,255,255,.06)'}},x:{grid:{display:false},ticks:{font:{size:9}}}}}});
+</script>
+</body>
+</html>

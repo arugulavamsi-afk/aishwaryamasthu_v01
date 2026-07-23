@@ -125,6 +125,14 @@
         }
         .dash-chip-icon svg { width: 19px; height: 19px; color: #f5c842; display: block; }
 
+        /* ── Breadcrumb line-icons (back arrow · tool · category) ── */
+        .nav-bc-backic { display: inline-flex; align-items: center; }
+        .nav-bc-backic svg { width: 15px; height: 15px; }
+        #nav-bc-icon { display: inline-flex; align-items: center; color: #f5c842; }
+        #nav-bc-icon svg { width: 16px; height: 16px; }
+        .nav-bc-catic { display: inline-flex; align-items: center; vertical-align: middle; margin-right: 5px; }
+        .nav-bc-catic svg { width: 14px; height: 14px; }
+
         /* ── ROYAL DARK slim nav (brand · pills · account) ── */
         .nav-row { display: flex; align-items: center; gap: 14px; width: 100%; max-width: 1240px; margin: 0 auto; padding: 2px 4px; }
         .nav-brand { display: flex; align-items: center; gap: 10px; cursor: pointer; flex-shrink: 0; }
@@ -1892,3 +1900,384 @@
         .bt-pos { color: #16a34a !important; }
         .bt-neg { color: #dc2626 !important; }
         .bt-mut { color: #94a3b8 !important; }
+
+        /* ═══════════════════════════════════════════════════════════════
+           BUDGET TRACKER — INSIGHTS STUDIO skin (Royal Heritage, dark)
+           All rules scoped to .bt-studio so the light base styles above
+           stay intact; these override them for the redesigned panel only.
+        ═══════════════════════════════════════════════════════════════ */
+        .bt-studio {
+            --bs-gold:#e9c463; --bs-gold-deep:#b8892f; --bs-soft:rgba(233,196,99,.28);
+            --bs-cream:#f3e9d2; --bs-mut:rgba(243,233,210,.5);
+            --bs-em:#34d399; --bs-red:#f87171; --bs-blue:#60a5fa; --bs-violet:#c4b5fd;
+            --bs-card:linear-gradient(165deg,rgba(20,45,37,.6),rgba(8,22,18,.7));
+        }
+        .bt-studio .bt-std-card {
+            background:var(--bs-card); border:1px solid var(--bs-soft); border-radius:18px;
+            padding:18px; backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+            box-shadow:0 18px 44px rgba(0,0,0,.28);
+        }
+        .bt-studio .bt-std-lbl {
+            font-size:.7rem; text-transform:uppercase; letter-spacing:.12em;
+            font-weight:800; color:var(--bs-mut); margin-bottom:12px;
+        }
+        /* header */
+        .bt-studio .bt-std-hdr { display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; }
+        .bt-studio .bt-std-title {
+            font-family:'Cormorant Garamond',Georgia,serif; font-size:1.6rem; font-weight:700;
+            color:var(--bs-cream); letter-spacing:.01em; line-height:1.1;
+            display:flex; align-items:center; gap:10px;
+        }
+        .bt-studio .bt-std-title-ic { display:inline-flex; color:var(--bs-gold); flex-shrink:0; }
+        .bt-studio .bt-std-title-ic svg { width:26px; height:26px; }
+        .bt-studio .bt-std-sub { font-size:.76rem; color:var(--bs-mut); margin-top:3px; }
+        .bt-studio .bt-std-hdr-r { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+        .bt-studio .bt-std-mnav {
+            display:flex; align-items:center; gap:6px; background:rgba(0,0,0,.3);
+            border:1px solid var(--bs-soft); border-radius:99px; padding:4px;
+        }
+        .bt-studio .bt-nav-btn {
+            width:28px; height:28px; border-radius:50%; border:none; background:transparent;
+            color:var(--bs-gold); font-size:15px; cursor:pointer; transition:.2s;
+        }
+        .bt-studio .bt-nav-btn:hover { background:rgba(233,196,99,.16); }
+        .bt-studio .bt-month-disp { color:var(--bs-cream); font-weight:700; font-size:.85rem; padding:0 6px; min-width:88px; text-align:center; }
+        /* KPI strip */
+        .bt-studio .bt-kpis { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+        .bt-studio .bt-kpi {
+            background:var(--bs-card); border:1px solid var(--bs-soft); border-radius:16px;
+            padding:15px 18px; backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+        }
+        .bt-studio .bt-sum-lbl {
+            font-size:.64rem; text-transform:uppercase; letter-spacing:.1em;
+            font-weight:800; color:var(--bs-mut); margin-bottom:6px;
+        }
+        .bt-studio .bt-sum-val { font-size:1.5rem; font-weight:900; letter-spacing:-.01em; color:var(--bs-cream); }
+        .bt-studio .bt-sum-val-sm { font-size:.82rem; font-weight:700; line-height:1.35; }
+        .bt-studio .bt-kpi-blue   .bt-sum-val { color:var(--bs-blue); }
+        .bt-studio .bt-kpi-green  .bt-sum-val { color:var(--bs-em); }
+        .bt-studio .bt-kpi-gold   .bt-sum-val { color:var(--bs-gold); }
+        .bt-studio .bt-kpi-purple .bt-sum-val { color:var(--bs-violet); }
+        /* brighter tone utilities on dark */
+        .bt-studio .bt-pos { color:#34d399 !important; }
+        .bt-studio .bt-neg { color:#f87171 !important; }
+        .bt-studio .bt-mut { color:var(--bs-mut) !important; }
+        /* pace bar */
+        .bt-studio .bt-pace-wrap { padding:16px 18px; }
+        .bt-studio .bt-bar-track {
+            height:12px; border-radius:99px; background:rgba(0,0,0,.35);
+            border:1px solid var(--bs-soft); overflow:hidden; position:relative; margin:0;
+        }
+        .bt-studio .bt-fill-green { background:linear-gradient(90deg,#10b981,#34d399,#e9c463); }
+        .bt-studio .bt-fill-amber { background:linear-gradient(90deg,#f59e0b,#fbbf24); }
+        .bt-studio .bt-fill-red   { background:linear-gradient(90deg,#dc2626,#f87171); }
+        .bt-studio .bt-bar-today { background:var(--bs-cream); }
+        .bt-studio .bt-pace-line { display:flex; justify-content:space-between; gap:10px; margin-top:10px; flex-wrap:wrap; font-size:.78rem; }
+        .bt-studio .bt-bar-pct { color:var(--bs-mut); font-weight:600; }
+        .bt-studio .bt-pace-card { display:flex; gap:8px; align-items:center; background:none; border:none; padding:0; }
+        .bt-studio .bt-pace-day { color:var(--bs-mut); font-weight:600; }
+        /* charts row: main chart (wide) + always-on donut (narrow) */
+        .bt-studio .bt-charts { display:grid; grid-template-columns:1.55fr 1fr; gap:16px; align-items:stretch; }
+        .bt-studio .bt-bottom { display:grid; grid-template-columns:1fr 1fr; gap:16px; align-items:stretch; }
+        .bt-studio .bt-donut-card { background:var(--bs-card); border:1px solid var(--bs-soft); display:flex; flex-direction:column; }
+        .bt-studio .bt-donut-wrap { position:relative; flex:1; min-height:240px; }
+        .bt-studio .bt-donut-wrap .bt-chart-canvas { width:100% !important; height:100% !important; }
+        .bt-studio .bt-chart-card { background:var(--bs-card); border:1px solid var(--bs-soft); display:flex; flex-direction:column; gap:12px; }
+        .bt-studio .bt-chart-tabs { display:flex; gap:4px; background:rgba(0,0,0,.3); border-radius:10px; padding:4px; }
+        .bt-studio .bt-chart-tab {
+            flex:1; padding:8px; border:none; border-radius:7px; background:transparent;
+            color:var(--bs-mut); font-weight:700; font-size:.78rem; cursor:pointer; font-family:inherit; transition:.2s;
+        }
+        .bt-studio .bt-chart-tab.on { background:linear-gradient(135deg,var(--bs-gold),var(--bs-gold-deep)); color:#050f0d; }
+        .bt-studio .bt-chart-desc { font-size:.72rem; color:var(--bs-mut); }
+        .bt-studio .bt-chart-wrap { position:relative; flex:1; min-height:210px; }
+        .bt-studio .bt-chart-canvas { width:100% !important; height:100% !important; }
+        /* smart insights */
+        .bt-studio .bt-insights-card { display:flex; flex-direction:column; }
+        .bt-studio .bt-ins-row {
+            display:flex; gap:11px; align-items:flex-start; padding:11px 0;
+            border-top:1px solid rgba(233,196,99,.1); font-size:.82rem; line-height:1.5; color:var(--bs-cream);
+        }
+        .bt-studio .bt-ins-row:first-child { border-top:none; }
+        .bt-studio .bt-ins-row .e { font-size:1.05rem; flex:0 0 auto; }
+        .bt-studio .bt-ins-row b { color:var(--bs-gold); font-weight:700; }
+        .bt-studio .bt-ins-empty { color:var(--bs-mut); font-size:.8rem; padding:10px 0; }
+        /* category table */
+        .bt-studio .bt-table-scroll { overflow-x:auto; border-radius:12px; border:1px solid var(--bs-soft); }
+        .bt-studio .bt-table thead tr { background:rgba(0,0,0,.28); }
+        .bt-studio .bt-th { color:var(--bs-mut); border-bottom:1px solid var(--bs-soft); }
+        .bt-studio .bt-td { border-bottom:1px solid rgba(233,196,99,.08); color:var(--bs-cream); }
+        .bt-studio .bt-row-over { background:rgba(248,113,113,.08); }
+        .bt-studio .bt-cat-name { color:var(--bs-cream); }
+        .bt-studio .bt-cat-hint { color:var(--bs-mut); }
+        /* professional line-icons in place of category emoji */
+        .bt-studio .bt-cat-icon,
+        .bt-studio .bt-tile-icon,
+        .bt-studio .bt-tx-icon,
+        .bt-studio .bt-rec-icon {
+            display:inline-flex; align-items:center; justify-content:center; color:var(--bs-gold);
+        }
+        .bt-studio .bt-cat-icon svg { width:20px; height:20px; }
+        .bt-studio .bt-tile-icon svg { width:22px; height:22px; }
+        .bt-studio .bt-tx-icon svg { width:19px; height:19px; }
+        .bt-studio .bt-rec-icon svg { width:18px; height:18px; }
+        /* the selected quick-add tile flips to dark ink on gold — recolor its icon too */
+        .bt-studio .bt-tile.bt-tile-on .bt-tile-icon { color:#050f0d; }
+        .bt-studio .bt-tx-icon { color:var(--bs-cream); }
+        .bt-studio .bt-fc-chip { display:inline-flex; align-items:center; gap:5px; }
+        .bt-studio .bt-fc-chip-ic { display:inline-flex; color:var(--bs-violet); }
+        .bt-studio .bt-fc-chip-ic svg { width:14px; height:14px; }
+        .bt-studio .bt-num-inp {
+            background:rgba(0,0,0,.3); border:1px solid var(--bs-soft); color:var(--bs-cream);
+        }
+        .bt-studio .bt-num-inp:focus { border-color:var(--bs-gold); box-shadow:0 0 0 2px rgba(233,196,99,.15); }
+        .bt-studio .bt-num-inp.text-slate-400 { color:var(--bs-mut) !important; }
+        .bt-studio .bt-inp-rupee { color:var(--bs-gold); }
+        .bt-studio .bt-spent-val { color:var(--bs-cream); }
+        .bt-studio .bt-spent-val.bt-spent-zero { color:var(--bs-mut); }
+        .bt-studio .bt-row-add { background:rgba(233,196,99,.12); border:1px solid var(--bs-soft); color:var(--bs-gold); }
+        .bt-studio .bt-row-add:hover { background:var(--bs-gold); color:#050f0d; }
+        .bt-studio .bt-cat-del { color:var(--bs-mut); }
+        .bt-studio .bt-cat-del:hover { color:var(--bs-red); }
+        /* quick add */
+        .bt-studio .bt-qa-card {
+            background:var(--bs-card); border:1px solid var(--bs-soft); border-radius:16px;
+            padding:16px 18px; box-shadow:0 18px 44px rgba(0,0,0,.28);
+        }
+        .bt-studio .bt-qa-card.bt-qa-editing { border-color:var(--bs-gold); }
+        .bt-studio .bt-qa-title { color:var(--bs-gold); }
+        .bt-studio .bt-qa-pick { color:var(--bs-mut); }
+        .bt-studio .bt-tile { background:rgba(0,0,0,.22); border:1px solid var(--bs-soft); }
+        .bt-studio .bt-tile:hover { border-color:var(--bs-gold); background:rgba(233,196,99,.08); }
+        .bt-studio .bt-tile.bt-tile-on { background:linear-gradient(135deg,var(--bs-gold),var(--bs-gold-deep)); border-color:var(--bs-gold); }
+        .bt-studio .bt-tile-lbl { color:var(--bs-cream); }
+        .bt-studio .bt-tile.bt-tile-on .bt-tile-lbl { color:#050f0d; }
+        .bt-studio .bt-qa-amt, .bt-studio .bt-qa-date, .bt-studio .bt-qa-note {
+            background:rgba(0,0,0,.3); border:1px solid var(--bs-soft); color:var(--bs-cream);
+        }
+        .bt-studio .bt-qa-amt:focus, .bt-studio .bt-qa-date:focus, .bt-studio .bt-qa-note:focus { border-color:var(--bs-gold); }
+        .bt-studio .bt-qa-rupee { color:var(--bs-gold); }
+        .bt-studio .bt-qa-btn { background:linear-gradient(135deg,#f2d488,var(--bs-gold) 45%,var(--bs-gold-deep)); color:#050f0d; }
+        .bt-studio .bt-qa-btn:hover { filter:brightness(1.06); }
+        .bt-studio .bt-qa-editing .bt-qa-btn { background:linear-gradient(135deg,#fbbf24,#f59e0b); }
+        .bt-studio .bt-qa-repeat { color:var(--bs-mut); }
+        .bt-studio .bt-qa-repeat input { accent-color:var(--bs-gold); }
+        .bt-studio .bt-qa-cancel { color:var(--bs-mut); border:1px solid var(--bs-soft); background:transparent; }
+        .bt-studio .bt-qa-cancel:hover { color:var(--bs-cream); border-color:var(--bs-gold); }
+        /* transactions */
+        .bt-studio .bt-tx-card {
+            background:var(--bs-card); border:1px solid var(--bs-soft); border-radius:18px;
+            padding:16px 18px; box-shadow:0 18px 44px rgba(0,0,0,.28);
+        }
+        .bt-studio .bt-tx-title { color:var(--bs-gold); }
+        .bt-studio .bt-tx-countlbl { color:var(--bs-mut); }
+        .bt-studio .bt-tx-empty { color:var(--bs-mut); }
+        .bt-studio .bt-tx-day { color:var(--bs-mut); border-bottom:1px solid rgba(233,196,99,.1); }
+        .bt-studio .bt-tx-row { border-bottom:1px solid rgba(233,196,99,.06); }
+        .bt-studio .bt-tx-row.bt-tx-editing { background:rgba(251,191,36,.08); box-shadow:inset 0 0 0 1px var(--bs-gold); }
+        .bt-studio .bt-tx-cat { color:var(--bs-cream); }
+        .bt-studio .bt-tx-note { color:var(--bs-mut); }
+        .bt-studio .bt-tx-amt { color:var(--bs-cream); }
+        .bt-studio .bt-tx-btn { color:var(--bs-mut); border:1px solid var(--bs-soft); background:transparent; }
+        .bt-studio .bt-tx-btn:hover { color:var(--bs-gold); border-color:var(--bs-gold); background:rgba(233,196,99,.1); }
+        .bt-studio .bt-tx-btn.bt-tx-del:hover { color:var(--bs-red); border-color:var(--bs-red); background:rgba(248,113,113,.1); }
+        /* recurring */
+        .bt-studio .bt-rec-card { background:rgba(233,196,99,.06); border:1px solid var(--bs-soft); }
+        .bt-studio .bt-rec-title { color:var(--bs-gold); }
+        .bt-studio .bt-rec-hint, .bt-studio .bt-rec-daylbl { color:var(--bs-mut); }
+        .bt-studio .bt-rec-name, .bt-studio .bt-rec-amt { color:var(--bs-cream); }
+        .bt-studio .bt-rec-row { border-bottom:1px dashed rgba(233,196,99,.2); }
+        /* forecast + emergency-fund + tip: inherit their existing card look but
+           lift text onto the dark background */
+        .bt-studio .bt-qa-sugg { color:var(--bs-gold); background:rgba(233,196,99,.12); border:1px solid var(--bs-soft); }
+        /* forecast card → dark w/ violet accent */
+        .bt-studio .bt-fc-card {
+            background:linear-gradient(165deg,rgba(76,63,158,.22),rgba(8,22,18,.6));
+            border:1px solid rgba(196,181,253,.35); border-radius:18px;
+        }
+        .bt-studio .bt-fc-title { color:#ddd4ff; }
+        .bt-studio .bt-fc-basis, .bt-studio .bt-fc-row, .bt-studio .bt-fc-cats-lbl, .bt-studio .bt-fc-tip { color:var(--bs-violet); }
+        .bt-studio .bt-fc-cell { background:rgba(0,0,0,.28); }
+        .bt-studio .bt-fc-cell-lbl { color:var(--bs-violet); }
+        .bt-studio .bt-fc-cell-val, .bt-studio .bt-fc-total { color:#e9e3ff; }
+        .bt-studio .bt-fc-trend { background:rgba(0,0,0,.3); color:var(--bs-em); }
+        .bt-studio .bt-fc-trend-up { color:var(--bs-red); }
+        .bt-studio .bt-fc-chip { background:rgba(0,0,0,.28); border:1px solid rgba(196,181,253,.3); color:#e9e3ff; }
+        /* emergency-fund card → dark w/ gold accent */
+        .bt-studio .bt-ef-card {
+            background:linear-gradient(165deg,rgba(233,196,99,.14),rgba(8,22,18,.6));
+            border:1px solid var(--bs-soft); border-radius:18px;
+        }
+        .bt-studio .bt-ef-title { color:var(--bs-gold); }
+        .bt-studio .bt-ef-basis, .bt-studio .bt-ef-result-lbl, .bt-studio .bt-ef-cell-lbl, .bt-studio .bt-ef-tip { color:var(--bs-mut); }
+        .bt-studio .bt-ef-result { color:var(--bs-gold); }
+        .bt-studio .bt-ef-btn { color:var(--bs-cream); border:1px solid var(--bs-soft); }
+        .bt-studio .bt-ef-btn.on { background:linear-gradient(135deg,var(--bs-gold),var(--bs-gold-deep)); border-color:var(--bs-gold); color:#050f0d; }
+        .bt-studio .bt-ef-cell { background:rgba(0,0,0,.28); }
+        .bt-studio .bt-ef-cell-hl { border:1px solid var(--bs-gold); }
+        .bt-studio .bt-ef-cell-val { color:var(--bs-cream); }
+        /* how-to tip → gold on dark */
+        .bt-studio .bt-tip {
+            background:rgba(233,196,99,.07); border:1px solid var(--bs-soft);
+            color:var(--bs-cream); font-size:11px;
+        }
+        .bt-studio .bt-tip strong { color:var(--bs-gold); }
+        @media (max-width:860px) {
+            .bt-studio .bt-charts { grid-template-columns:1fr; }
+            .bt-studio .bt-bottom { grid-template-columns:1fr; }
+            .bt-studio .bt-kpis { grid-template-columns:repeat(2,1fr); }
+        }
+
+        /* ══════════════════════════════════════════════════════════
+           NET WORTH COCKPIT — royal-dark glass (matches Dashboard)
+           ══════════════════════════════════════════════════════════ */
+        /* Layout grids (the app's prebuilt tailwind.css lacks arbitrary values
+           like grid-cols-[1.1fr_1.4fr], so define them here instead). */
+        #networth-panel .nwc-top { display: grid; grid-template-columns: 1fr; gap: 12px; }
+        @media (min-width: 1024px) { #networth-panel .nwc-top { grid-template-columns: 1.05fr 1.4fr; } }
+        #networth-panel .nwc-col-full { grid-column: 1 / -1; }
+
+        #networth-panel .nwc-glass {
+            background: rgba(17,45,36,0.55);
+            border: 1px solid rgba(245,200,66,0.22);
+            border-radius: 16px;
+            box-shadow: 0 8px 28px rgba(0,0,0,0.35);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        #networth-panel .nwc-glass-in {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(245,200,66,0.16);
+            border-radius: 14px;
+        }
+        #networth-panel .nwc-cap {
+            font-size: 10px; font-weight: 800; letter-spacing: .06em;
+            text-transform: uppercase; color: rgba(242,245,240,0.5);
+        }
+        #networth-panel .nwc-grp {
+            display: flex; align-items: center; gap: 5px;
+            font-size: 9px; font-weight: 800; letter-spacing: .07em;
+            text-transform: uppercase; color: #f5c842; opacity: .85;
+            margin: 13px 2px 6px;
+        }
+        #networth-panel .nwc-tile {
+            border-radius: 14px; padding: 12px;
+            border: 1px solid rgba(245,200,66,0.16);
+            background: rgba(255,255,255,0.055);
+            transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+        }
+        #networth-panel .nwc-tile:hover {
+            transform: translateY(-3px);
+            border-color: rgba(245,200,66,0.45);
+            box-shadow: 0 10px 24px rgba(0,0,0,.35);
+        }
+        #networth-panel .nwc-bar { height: 5px; border-radius: 99px; background: rgba(255,255,255,.08); overflow: hidden; }
+        #networth-panel .nwc-din {
+            width: 100%; padding: 7px 9px 7px 22px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(245,200,66,0.18);
+            border-radius: 9px; font-size: 12px; font-weight: 700;
+            color: #f2f5f0; outline: none; transition: border-color .15s, box-shadow .15s;
+        }
+        #networth-panel .nwc-din:focus { border-color: #f5c842; box-shadow: 0 0 0 3px rgba(245,200,66,.20); background: rgba(255,255,255,0.09); }
+        #networth-panel .nwc-din.text-slate-400 { color: rgba(242,245,240,0.4) !important; }
+        #networth-panel .nwc-din-danger { border-color: rgba(248,113,113,.45); background: rgba(248,113,113,.10); }
+        #networth-panel .nwc-pfx {
+            position: absolute; left: 8px; top: 50%; transform: translateY(-50%);
+            font-size: 11px; font-weight: 800; color: rgba(245,200,66,.7); pointer-events: none;
+        }
+        #networth-panel .nwc-flbl {
+            display: block; font-size: 9px; font-weight: 800; letter-spacing: .03em;
+            text-transform: uppercase; color: rgba(242,245,240,.5); margin-bottom: 3px;
+        }
+        /* Icon holders — sized boxes wrapping the pro-set SVG (currentColor gold) */
+        #networth-panel .nwc-hicon { display: inline-flex; width: 30px; height: 30px; color: #f5c842; align-items: center; justify-content: center; flex-shrink: 0; }
+        #networth-panel .nwc-ico   { display: inline-flex; width: 16px; height: 16px; color: #f5c842; flex-shrink: 0; }
+        #networth-panel .nwc-ico-s { display: inline-flex; width: 13px; height: 13px; color: #f5c842; flex-shrink: 0; }
+        #networth-panel .nwc-ico-lg{ display: inline-flex; width: 30px; height: 30px; flex-shrink: 0; }
+        #networth-panel .nwc-hicon svg,
+        #networth-panel .nwc-ico svg,
+        #networth-panel .nwc-ico-s svg,
+        #networth-panel .nwc-ico-lg svg { width: 100%; height: 100%; display: block; }
+        /* Tile internals (JS-rendered) */
+        #networth-panel .nwc-tile-ico { display: inline-flex; width: 20px; height: 20px; }
+        #networth-panel .nwc-tile-ico svg { width: 100%; height: 100%; display: block; }
+
+        /* ══════════════════════════════════════════════════════════
+           FINANCIAL HEALTH SCORE — royal-dark reskin (matches Dashboard).
+           Scoped theme layer over the existing light layout: same
+           structure/IDs, re-coloured to the dark glass palette. Covers
+           both static markup and JS-injected utility classes.
+           ══════════════════════════════════════════════════════════ */
+        /* Cards → frosted glass */
+        #healthscore-panel .bg-white {
+            background: rgba(17,45,36,0.55) !important;
+            box-shadow: 0 8px 28px rgba(0,0,0,0.35);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        /* Surfaces */
+        #healthscore-panel .bg-slate-50  { background: rgba(255,255,255,0.06) !important; }
+        #healthscore-panel .bg-slate-100 { background: rgba(255,255,255,0.08) !important; }
+        #healthscore-panel .border-slate-200 { border-color: rgba(245,200,66,0.18) !important; }
+        #healthscore-panel .border-slate-100 { border-color: rgba(255,255,255,0.08) !important; }
+        /* Neutral text ramp → light */
+        #healthscore-panel .text-slate-800 { color: #f2f5f0 !important; }
+        #healthscore-panel .text-slate-700 { color: rgba(242,245,240,0.90) !important; }
+        #healthscore-panel .text-slate-600 { color: rgba(242,245,240,0.72) !important; }
+        #healthscore-panel .text-slate-500 { color: rgba(242,245,240,0.58) !important; }
+        #healthscore-panel .text-slate-400 { color: rgba(242,245,240,0.42) !important; }
+        #healthscore-panel .text-slate-300 { color: rgba(242,245,240,0.30) !important; }
+        /* Inputs */
+        #healthscore-panel .hs-input { color: #f2f5f0; }
+        #healthscore-panel .hs-input::placeholder { color: rgba(242,245,240,0.35); }
+        #healthscore-panel .hs-input:focus { background: rgba(255,255,255,0.09) !important; border-color: #f5c842 !important; box-shadow: 0 0 0 3px rgba(245,200,66,0.20) !important; }
+        /* Stat-strip pastel cards → dark tints */
+        #healthscore-panel .bg-emerald-50 { background: rgba(52,211,153,0.10) !important; }
+        #healthscore-panel .bg-red-50     { background: rgba(248,113,113,0.10) !important; }
+        #healthscore-panel .bg-amber-50   { background: rgba(251,191,36,0.10) !important; }
+        #healthscore-panel .bg-violet-50  { background: rgba(167,139,250,0.10) !important; }
+        #healthscore-panel .border-emerald-100 { border-color: rgba(52,211,153,0.30) !important; }
+        #healthscore-panel .border-red-100     { border-color: rgba(248,113,113,0.30) !important; }
+        #healthscore-panel .border-amber-100   { border-color: rgba(251,191,36,0.30) !important; }
+        #healthscore-panel .border-violet-100  { border-color: rgba(167,139,250,0.30) !important; }
+        /* Coloured text → lighter shades that read on dark */
+        #healthscore-panel .text-emerald-600,
+        #healthscore-panel .text-emerald-500 { color: #6ee7b7 !important; }
+        #healthscore-panel .text-emerald-400 { color: #a7f3d0 !important; }
+        #healthscore-panel .text-red-500,
+        #healthscore-panel .text-red-400 { color: #fca5a5 !important; }
+        #healthscore-panel .text-red-300 { color: #fecaca !important; }
+        #healthscore-panel .text-amber-600,
+        #healthscore-panel .text-amber-500 { color: #fcd34d !important; }
+        #healthscore-panel .text-amber-400 { color: #fde68a !important; }
+        #healthscore-panel .text-violet-600,
+        #healthscore-panel .text-violet-500 { color: #c4b5fd !important; }
+        #healthscore-panel .text-violet-400 { color: #ddd6fe !important; }
+        #healthscore-panel .text-indigo-600 { color: #a5b4fc !important; }
+        #healthscore-panel .text-indigo-400 { color: #c7d2fe !important; }
+        #healthscore-panel .text-sky-700 { color: #7dd3fc !important; }
+        /* Percentile banner (inline light gradient) → dark glass */
+        #healthscore-panel #hs-percentile-banner {
+            background: rgba(255,255,255,0.06) !important;
+            border-color: rgba(245,200,66,0.22) !important;
+        }
+        /* Profile "apply" banner → dark sky tint */
+        #healthscore-panel .up-banner {
+            background: rgba(56,189,248,0.10) !important;
+            border-color: rgba(56,189,248,0.30) !important;
+        }
+
+        /* Health Score — professional icon holders (pro SVG set, gold) */
+        #healthscore-panel .hs-ico, #healthscore-panel .hs-ico-sm, #healthscore-panel .hs-ico-md,
+        #healthscore-panel .hs-ico-lg, #healthscore-panel .hs-ico-xl {
+            display:inline-flex; align-items:center; justify-content:center;
+            color:#f5c842; flex-shrink:0; vertical-align:-2px;
+        }
+        #healthscore-panel .hs-ico    { width:16px; height:16px; }
+        #healthscore-panel .hs-ico-sm { width:13px; height:13px; }
+        #healthscore-panel .hs-ico-md { width:20px; height:20px; }
+        #healthscore-panel .hs-ico-lg { width:28px; height:28px; }
+        #healthscore-panel .hs-ico-xl { width:40px; height:40px; }
+        #healthscore-panel [class*="hs-ico"] svg { width:100%; height:100%; display:block; }

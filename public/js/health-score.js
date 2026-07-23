@@ -1,6 +1,11 @@
         // ==================== FINANCIAL HEALTH SCORE ====================
         let hsChartInstance = null;
         let hsPfChartInstance = null;
+        function _hsIco(k){ return (typeof window._svgIcon === 'function') ? window._svgIcon(k, '') : ''; }
+        function hsApplyIcons(){
+            var n = document.querySelectorAll('#healthscore-panel [data-hsicon]');
+            for (var i = 0; i < n.length; i++) { var s = _hsIco(n[i].getAttribute('data-hsicon')); if (s) n[i].innerHTML = s; }
+        }
 
         // Percentile curves by age bracket.
         // Anchored to: RBI Household Finance Committee report, SEBI Investor Survey 2022,
@@ -65,6 +70,7 @@
 
         // Net Worth Tracker → FinHealth Score portfolio auto-fill
         function hsRefreshNwBanner() {
+            if (typeof hsApplyIcons === 'function') hsApplyIcons();
             const banner = document.getElementById('nw-banner-healthscore');
             if (!banner) return;
             const nw = (window._toolSummaries || {}).netWorth;
@@ -168,7 +174,7 @@
             else if (savingsRate >= 10) savingsPts = 11;
             else if (savingsRate >= 5)  savingsPts = 6;
             else                        savingsPts = Math.max(0, Math.round(savingsRate * 1.2));
-            categories.push({ name: 'Savings Rate', pts: savingsPts, max: 20, icon: '💰',
+            categories.push({ name: 'Savings Rate', pts: savingsPts, max: 20, iconKey: 'hs.savings',
                 color: '#10b981', desc: _t('hs.cat.desc.savings').replace('{pct}', savingsRate.toFixed(1)) });
 
             // 2. EMI Burden (20 pts)
@@ -180,7 +186,7 @@
             else if (emiPct < 40)     emiPts = 9;
             else if (emiPct < 50)     emiPts = 4;
             else                      emiPts = 0;
-            categories.push({ name: 'Debt Burden', pts: emiPts, max: 20, icon: '🏦',
+            categories.push({ name: 'Debt Burden', pts: emiPts, max: 20, iconKey: 'hs.debt',
                 color: '#ef4444', desc: _t('hs.cat.desc.emi').replace('{pct}', emiPct.toFixed(1)) });
 
             // 3. Health Insurance (15 pts)
@@ -192,7 +198,7 @@
             else if (hiLakh >= 3)  healthPts = 5;
             else if (hiLakh >= 1)  healthPts = 2;
             else                   healthPts = 0;
-            categories.push({ name: 'Health Insurance', pts: healthPts, max: 15, icon: '🏥',
+            categories.push({ name: 'Health Insurance', pts: healthPts, max: 15, iconKey: 'hs.health',
                 color: '#ec4899', desc: hiLakh > 0 ? _t('hs.cat.desc.health').replace('{lakh}', hiLakh.toFixed(1)) : _t('hs.cat.desc.healthno') });
 
             // 4. Term Insurance (15 pts)  — compare to annual income multiple
@@ -204,7 +210,7 @@
             else if (termMult >= 5)  termPts = 5;
             else if (termMult >= 2)  termPts = 2;
             else                     termPts = 0;
-            categories.push({ name: 'Term Insurance', pts: termPts, max: 15, icon: '🛡️',
+            categories.push({ name: 'Term Insurance', pts: termPts, max: 15, iconKey: 'hs.term',
                 color: '#8b5cf6', desc: termMult > 0 ? _t('hs.cat.desc.term').replace('{mult}', termMult.toFixed(1)) : _t('hs.cat.desc.termno') });
 
             // 5. Emergency Fund (15 pts)
@@ -217,7 +223,7 @@
             else if (efMonths >= 2)  efPts = 4;   // Early stage
             else if (efMonths >= 1)  efPts = 2;   // Minimal buffer
             else                     efPts = 0;   // No emergency fund
-            categories.push({ name: 'Emergency Fund', pts: efPts, max: 15, icon: '🚨',
+            categories.push({ name: 'Emergency Fund', pts: efPts, max: 15, iconKey: 'hs.emergency',
                 color: '#f59e0b', desc: _t('hs.cat.desc.ef').replace('{months}', efMonths.toFixed(1)) });
 
             // 6. Expense Management (15 pts)
@@ -229,7 +235,7 @@
             else if (spendPct <= 80) spendPts = 4;
             else if (spendPct <= 90) spendPts = 1;
             else                     spendPts = 0;
-            categories.push({ name: 'Spending Control', pts: spendPts, max: 15, icon: '🛒',
+            categories.push({ name: 'Spending Control', pts: spendPts, max: 15, iconKey: 'hs.spend',
                 color: '#f97316', desc: _t('hs.cat.desc.spend').replace('{pct}', spendPct.toFixed(1)) });
 
             // 7. Age Readiness (10 pts) — only scored if age is entered
@@ -270,7 +276,7 @@
                     else                        agePts = 0;
                     ageDesc = _t('hs.age.senior').replace('{age}', age);
                 }
-                categories.push({ name: 'Age Readiness', pts: agePts, max: 10, icon: '🎂',
+                categories.push({ name: 'Age Readiness', pts: agePts, max: 10, iconKey: 'hs.age',
                     color: '#6366f1', desc: ageDesc });
             }
 
@@ -311,7 +317,7 @@
                     .replace('{classes}', assetClassCount)
                     .replace('{equity}', equityPct.toFixed(0))
                     .replace('{ideal}', idealEquityPct);
-                categories.push({ name: 'Net Worth Readiness', pts: nwPts, max: 15, icon: '📊',
+                categories.push({ name: 'Net Worth Readiness', pts: nwPts, max: 15, iconKey: 'hs.nw',
                     color: '#0ea5e9', desc: nwDesc });
 
                 // Update portfolio strip
@@ -347,7 +353,7 @@
                     hsPfChartInstance = new Chart(pfCtx, {
                         type: 'doughnut',
                         data: { labels: pfPieLabels, datasets: [{ data: pfPieData,
-                            backgroundColor: pfPieColors, borderColor: '#fff', borderWidth: 3, hoverOffset: 10 }] },
+                            backgroundColor: pfPieColors, borderColor: '#0e241c', borderWidth: 3, hoverOffset: 10 }] },
                         options: {
                             responsive: true, maintainAspectRatio: true, cutout: '60%',
                             plugins: { legend: { display: false }, tooltip: {
@@ -417,14 +423,14 @@
             }
 
             // ---- GRADE ----
-            let grade, emoji, desc, arcColor;
-            if      (totalScore >= 90) { grade='Financial Rockstar 🤘'; emoji='🏆'; desc="Warren Buffett has entered the chat. Your finances are in elite shape. Go flex (responsibly)."; arcColor='#10b981'; }
-            else if (totalScore >= 80) { grade='Wealth Builder'; emoji='🌟'; desc="You're doing things right. A few tweaks and you'll be unstoppable. Keep stacking those chips!"; arcColor='#22c55e'; }
-            else if (totalScore >= 70) { grade='On the Right Track'; emoji='📈'; desc="Solid foundation! A few gaps need attention but you're clearly thinking ahead. Nice work."; arcColor='#84cc16'; }
-            else if (totalScore >= 55) { grade='Getting There'; emoji='🚀'; desc="You're aware, which is step one. Now close those gaps — one action at a time!"; arcColor='#eab308'; }
-            else if (totalScore >= 40) { grade='Wake-Up Call'; emoji='⚡'; desc="Your money needs a serious pep talk. The good news? You're reading this — so the healing begins now."; arcColor='#f97316'; }
-            else if (totalScore >= 25) { grade='SOS Mode'; emoji='🚨'; desc="Houston, we have a problem. But every financial superhero has an origin story. Yours starts today."; arcColor='#ef4444'; }
-            else                       { grade='Financial Emergency'; emoji='🆘'; desc="Okay, time for some real talk. The gap is big but closable. Start with just ONE action below."; arcColor='#dc2626'; }
+            let grade, emoji, desc, arcColor, iconKey;
+            if      (totalScore >= 90) { grade='Financial Rockstar 🤘'; emoji='🏆'; iconKey='hs.g.rockstar'; desc="Warren Buffett has entered the chat. Your finances are in elite shape. Go flex (responsibly)."; arcColor='#10b981'; }
+            else if (totalScore >= 80) { grade='Wealth Builder'; emoji='🌟'; iconKey='hs.g.builder'; desc="You're doing things right. A few tweaks and you'll be unstoppable. Keep stacking those chips!"; arcColor='#22c55e'; }
+            else if (totalScore >= 70) { grade='On the Right Track'; emoji='📈'; iconKey='hs.g.track'; desc="Solid foundation! A few gaps need attention but you're clearly thinking ahead. Nice work."; arcColor='#84cc16'; }
+            else if (totalScore >= 55) { grade='Getting There'; emoji='🚀'; iconKey='hs.g.gettingthere'; desc="You're aware, which is step one. Now close those gaps — one action at a time!"; arcColor='#eab308'; }
+            else if (totalScore >= 40) { grade='Wake-Up Call'; emoji='⚡'; iconKey='hs.g.wakeup'; desc="Your money needs a serious pep talk. The good news? You're reading this — so the healing begins now."; arcColor='#f97316'; }
+            else if (totalScore >= 25) { grade='SOS Mode'; emoji='🚨'; iconKey='hs.g.sos'; desc="Houston, we have a problem. But every financial superhero has an origin story. Yours starts today."; arcColor='#ef4444'; }
+            else                       { grade='Financial Emergency'; emoji='🆘'; iconKey='hs.g.emergency'; desc="Okay, time for some real talk. The gap is big but closable. Start with just ONE action below."; arcColor='#dc2626'; }
 
             // ---- RENDER SCORE ----
             document.getElementById('hs-empty-state').classList.add('hidden');
@@ -452,7 +458,7 @@
             var _gKey = _HS_GRADE_KEYS[grade] || 'rockstar';
             var _titleEl = document.getElementById('hs-grade-title');
             _titleEl.dataset.gradeKey = _gKey;
-            document.getElementById('hs-grade-emoji').textContent = emoji;
+            document.getElementById('hs-grade-emoji').innerHTML = '<span class="hs-ico-xl">' + _hsIco(iconKey) + '</span>';
             _titleEl.textContent = _t('hs.grade.' + _gKey);
             document.getElementById('hs-grade-desc').textContent  = _t('hs.desc.'  + _gKey);
             document.getElementById('hs-grade-badge').textContent = _t('hs.grade.' + _gKey);
@@ -474,7 +480,7 @@
                 barsContainer.innerHTML += `
                     <div>
                         <div class="flex items-center justify-between mb-1">
-                            <span class="text-xs font-bold text-slate-600 flex items-center gap-1.5">${cat.icon} ${_cn}</span>
+                            <span class="text-xs font-bold text-slate-600 flex items-center gap-1.5"><span class="hs-ico hs-ico-sm">${_hsIco(cat.iconKey)}</span>${_cn}</span>
                             <span class="text-xs font-black" style="color:${cat.color}">${cat.pts}/${cat.max}</span>
                         </div>
                         <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
@@ -504,7 +510,7 @@
                 hsChartInstance = new Chart(ctx, {
                     type: 'doughnut',
                     data: { labels: pieLabels, datasets: [{ data: pieData, backgroundColor: pieColors,
-                        borderColor: '#fff', borderWidth: 3, hoverOffset: 10 }] },
+                        borderColor: '#0e241c', borderWidth: 3, hoverOffset: 10 }] },
                     options: {
                         responsive: true, maintainAspectRatio: true, cutout: '60%',
                         plugins: { legend: { display: false }, tooltip: {
@@ -551,14 +557,14 @@
             const actions = [];
             const worstCats = [...categories].sort((a,b) => (a.pts/a.max) - (b.pts/b.max));
             const actionMap = {
-                'Savings Rate':      { tip: _t('hs.action.savings').replace('{amt}', Math.round(income * 0.05 / 100) * 100), color:'#10b981', icon:'💰' },
-                'Debt Burden':       { tip: _t('hs.action.debt'), color:'#ef4444', icon:'🏦' },
-                'Health Insurance':  { tip: _t('hs.action.health').replace('{amt}', Math.round(income*0.002/100)*100), color:'#ec4899', icon:'🏥' },
-                'Term Insurance':    { tip: _t('hs.action.term'), color:'#8b5cf6', icon:'🛡️' },
-                'Emergency Fund':    { tip: _t('hs.action.ef').replace('{amt}', (monthlyExpenses*6).toLocaleString('en-IN')), color:'#f59e0b', icon:'🚨' },
-                'Spending Control':  { tip: _t('hs.action.spend'), color:'#f97316', icon:'🛒' },
-                'Age Readiness':     { tip: age <= 35 ? _t('hs.action.age.young') : age <= 50 ? _t('hs.action.age.mid') : _t('hs.action.age.old'), color:'#6366f1', icon:'🎂' },
-                'Net Worth Readiness': { tip: pfTotal === 0 ? _t('hs.action.nw.none') : (pfEquity / pfTotal) < 0.2 ? _t('hs.action.nw.low') : (pfEquity / pfTotal) > 0.8 ? _t('hs.action.nw.high') : _t('hs.action.nw.div'), color:'#0ea5e9', icon:'📊' },
+                'Savings Rate':      { tip: _t('hs.action.savings').replace('{amt}', Math.round(income * 0.05 / 100) * 100), color:'#10b981', iconKey:'hs.savings' },
+                'Debt Burden':       { tip: _t('hs.action.debt'), color:'#ef4444', iconKey:'hs.debt' },
+                'Health Insurance':  { tip: _t('hs.action.health').replace('{amt}', Math.round(income*0.002/100)*100), color:'#ec4899', iconKey:'hs.health' },
+                'Term Insurance':    { tip: _t('hs.action.term'), color:'#8b5cf6', iconKey:'hs.term' },
+                'Emergency Fund':    { tip: _t('hs.action.ef').replace('{amt}', (monthlyExpenses*6).toLocaleString('en-IN')), color:'#f59e0b', iconKey:'hs.emergency' },
+                'Spending Control':  { tip: _t('hs.action.spend'), color:'#f97316', iconKey:'hs.spend' },
+                'Age Readiness':     { tip: age <= 35 ? _t('hs.action.age.young') : age <= 50 ? _t('hs.action.age.mid') : _t('hs.action.age.old'), color:'#6366f1', iconKey:'hs.age' },
+                'Net Worth Readiness': { tip: pfTotal === 0 ? _t('hs.action.nw.none') : (pfEquity / pfTotal) < 0.2 ? _t('hs.action.nw.low') : (pfEquity / pfTotal) > 0.8 ? _t('hs.action.nw.high') : _t('hs.action.nw.div'), color:'#0ea5e9', iconKey:'hs.nw' },
             };
 
             document.getElementById('hs-actions-empty').classList.add('hidden');
@@ -574,7 +580,7 @@
                     var _catDisplay = _catKey ? _t('hs.cat.' + _catKey) : cat.name;
                     actList.innerHTML += `
                         <div class="flex items-start gap-2.5 p-3 rounded-xl border" style="background:${a.color}12;border-color:${a.color}30;">
-                            <span class="text-base flex-shrink-0 mt-0.5">${a.icon}</span>
+                            <span class="hs-ico hs-ico-md flex-shrink-0 mt-0.5">${_hsIco(a.iconKey)}</span>
                             <div>
                                 <div class="text-[11px] font-black uppercase tracking-wide mb-0.5" style="color:${a.color}">${_catDisplay}</div>
                                 <div class="text-xs text-slate-600 leading-relaxed">${a.tip}</div>
@@ -611,4 +617,4 @@
 
             if (typeof saveUserData === 'function') saveUserData();
         }
-        // ==================== END FINANCIAL HEALTH SCORE ====================
+        // ==================== END FINANCIAL HEALTH SCORE ====================

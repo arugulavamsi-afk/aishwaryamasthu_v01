@@ -1,48 +1,119 @@
-<div id="budgettrack-panel" class="hidden w-full flex flex-col gap-3">
+<div id="budgettrack-panel" class="hidden w-full flex flex-col gap-4 bt-studio">
 
     <!-- HEADER -->
-    <div class="rounded-2xl px-4 py-3 text-white shine-header bt-header">
-        <div class="flex items-center justify-between gap-3 flex-wrap">
-            <div>
-                <h2 data-i18n="page.budgettrack.h" class="text-base font-black flex items-center gap-2">📊 Budget &amp; Expense Tracker</h2>
-                <p data-i18n="budgettrack.subtitle" class="text-blue-200 text-[11px] mt-0.5">Track monthly spend vs budget · Catch outliers · View 12-month trend · Donut breakdown</p>
-            </div>
-            <div class="flex items-center gap-1.5 flex-wrap">
-                <button class="bt-hdr-chip bt-hdr-gold" onclick="switchMode('myprofile')">← My Profile</button>
+    <div class="bt-std-hdr">
+        <div class="bt-std-hdr-l">
+            <h2 class="bt-std-title">
+                <span class="bt-std-title-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 9 9h-9V3z"/><path d="M15 3.5A9 9 0 0 1 20.5 9H15V3.5z"/></svg></span>
+                <span data-i18n="page.budgettrack.h">Budget &amp; Expense Tracker</span>
+            </h2>
+            <p data-i18n="budgettrack.subtitle" class="bt-std-sub">See the story behind your spending — spend vs budget, outliers, 12-month trend</p>
+        </div>
+        <div class="bt-std-hdr-r">
+            <button class="bt-hdr-chip bt-hdr-gold" onclick="switchMode('myprofile')">← My Profile</button>
+            <div class="bt-std-mnav">
                 <button class="bt-nav-btn" onclick="_btNavMonth(-1)">‹</button>
                 <span id="bt-month-disp" class="bt-month-disp">Apr 2026</span>
                 <button class="bt-nav-btn" onclick="_btNavMonth(1)">›</button>
-                <button id="bt-today-btn" data-i18n="bt.btn.today" class="bt-hdr-chip bt-hdr-gold bt-hdr-sm" style="display:none;" onclick="_btGoToToday()">Today</button>
-                <button id="bt-copy-prev-btn" class="bt-hdr-chip bt-hdr-green bt-hdr-sm" style="display:none;" onclick="_btCopyBudgetFromPrev()">Copy budget</button>
-                <button id="bt-clear-btn" data-i18n="bt.btn.clear" class="bt-hdr-chip bt-hdr-red bt-hdr-sm" style="display:none;" onclick="window._btClearMonth()">🗑 Clear month</button>
+            </div>
+            <button id="bt-today-btn" data-i18n="bt.btn.today" class="bt-hdr-chip bt-hdr-gold bt-hdr-sm" style="display:none;" onclick="_btGoToToday()">Today</button>
+            <button id="bt-copy-prev-btn" class="bt-hdr-chip bt-hdr-green bt-hdr-sm" style="display:none;" onclick="_btCopyBudgetFromPrev()">Copy budget</button>
+            <button id="bt-clear-btn" data-i18n="bt.btn.clear" class="bt-hdr-chip bt-hdr-red bt-hdr-sm" style="display:none;" onclick="window._btClearMonth()">🗑 Clear month</button>
+        </div>
+    </div>
+
+    <!-- KPI STRIP -->
+    <div class="bt-kpis">
+        <div class="bt-kpi bt-kpi-blue">
+            <div data-i18n="bt.sum.budget" class="bt-sum-lbl">Total Budget</div>
+            <div id="bt-sum-budget" class="bt-sum-val">—</div>
+        </div>
+        <div class="bt-kpi bt-kpi-green">
+            <div data-i18n="bt.sum.spent" class="bt-sum-lbl">Total Spent</div>
+            <div id="bt-sum-actual" class="bt-sum-val">—</div>
+        </div>
+        <div class="bt-kpi bt-kpi-gold">
+            <div data-i18n="bt.sum.saved" class="bt-sum-lbl">Saved / Over</div>
+            <div id="bt-sum-diff" class="bt-sum-val">—</div>
+        </div>
+        <div class="bt-kpi bt-kpi-purple">
+            <div data-i18n="bt.sum.outliers" class="bt-sum-lbl">Outliers</div>
+            <div id="bt-sum-outliers" class="bt-sum-val bt-sum-val-sm">—</div>
+        </div>
+    </div>
+
+    <!-- PROGRESS BAR + PACE -->
+    <div class="bt-std-card bt-pace-wrap">
+        <div class="bt-bar-track">
+            <div id="bt-bar-fill" class="bt-bar-fill bt-fill-green"></div>
+            <div id="bt-bar-today" class="bt-bar-today" style="display:none;" title="Today"></div>
+        </div>
+        <div class="bt-pace-line">
+            <span id="bt-bar-pct" class="bt-bar-pct"></span>
+            <span id="bt-pace-card" class="bt-pace-card" style="display:none;">
+                <span id="bt-pace-day" class="bt-pace-day"></span>
+                <span id="bt-pace-verdict" class="bt-pace-verdict"></span>
+            </span>
+        </div>
+    </div>
+
+    <!-- CHARTS ROW: trend/bar (wide) + donut split (narrow) -->
+    <div class="bt-charts">
+        <!-- MAIN CHART with Bar / Trend / Split tabs -->
+        <div class="bt-std-card bt-chart-card">
+            <div class="bt-chart-tabs">
+                <button id="bt-tab-bar"   data-i18n="bt.tab.bar"   class="bt-chart-tab" onclick="window._btSetChartType('bar')">📊 Bar</button>
+                <button id="bt-tab-line"  data-i18n="bt.tab.trend" class="bt-chart-tab" onclick="window._btSetChartType('line')">📈 Trend</button>
+                <button id="bt-tab-donut" data-i18n="bt.tab.split" class="bt-chart-tab" onclick="window._btSetChartType('donut')">🍩 Split</button>
+            </div>
+            <div class="bt-chart-desc"><span id="bt-chart-desc">Budget vs Actual spend per category this month</span></div>
+            <div class="bt-chart-wrap">
+                <canvas id="bt-chart-canvas" class="bt-chart-canvas"></canvas>
+            </div>
+        </div>
+
+        <!-- ALWAYS-ON DONUT: this month's split -->
+        <div class="bt-std-card bt-donut-card">
+            <div class="bt-std-lbl">🍩 <span data-i18n="bt.donut.h">This month's split</span></div>
+            <div class="bt-donut-wrap">
+                <canvas id="bt-donut-canvas" class="bt-chart-canvas"></canvas>
             </div>
         </div>
     </div>
 
-    <!-- QUICK ADD EXPENSE -->
-    <div id="bt-qa-card" class="bt-qa-card">
-        <div class="bt-qa-top">
-            <span data-i18n="bt.qa.title" class="bt-qa-title">⚡ Add Expense</span>
-            <span id="bt-qa-sugg" class="bt-qa-sugg"></span>
-            <span data-i18n="bt.qa.pickcat" class="bt-qa-pick">Tap a category, enter the amount, done</span>
+    <!-- INSIGHTS + QUICK ADD (two columns, like the mockup) -->
+    <div class="bt-bottom">
+        <!-- SMART INSIGHTS -->
+        <div class="bt-std-card bt-insights-card">
+            <div class="bt-std-lbl">💡 <span data-i18n="bt.ins.title">Smart insights</span></div>
+            <div id="bt-insights" class="bt-insights-list"></div>
         </div>
-        <div id="bt-qa-cats" class="bt-qa-cats"></div>
-        <div class="bt-qa-row">
-            <div class="bt-qa-amt-wrap">
-                <span class="bt-qa-rupee">₹</span>
-                <input id="bt-qa-amt" type="text" inputmode="numeric" class="bt-qa-amt" placeholder="0"
-                    oninput="window._btFormatInput(this)" onkeydown="window._btQaKeydown(event)">
+
+        <!-- QUICK ADD EXPENSE -->
+        <div id="bt-qa-card" class="bt-qa-card">
+            <div class="bt-qa-top">
+                <span data-i18n="bt.qa.title" class="bt-qa-title">⚡ Add Expense</span>
+                <span id="bt-qa-sugg" class="bt-qa-sugg"></span>
+                <span data-i18n="bt.qa.pickcat" class="bt-qa-pick">Tap a category, enter the amount, done</span>
             </div>
-            <input id="bt-qa-date" type="date" class="bt-qa-date">
-            <input id="bt-qa-note" type="text" maxlength="60" class="bt-qa-note"
-                data-i18n-placeholder="bt.qa.note" placeholder="Note (optional) — e.g. Swiggy, petrol"
-                oninput="window._btNoteInput(this)" onkeydown="window._btQaKeydown(event)">
-            <label id="bt-qa-repeat-lbl" class="bt-qa-repeat">
-                <input id="bt-qa-repeat" type="checkbox">
-                <span data-i18n="bt.qa.repeat">🔁 Monthly</span>
-            </label>
-            <button id="bt-qa-btn" data-i18n="bt.qa.add" class="bt-qa-btn" onclick="window._btQuickAdd()">+ Add</button>
-            <button id="bt-qa-cancel" data-i18n="bt.qa.cancel" class="bt-qa-cancel" style="display:none;" onclick="window._btQaCancelEdit()">Cancel</button>
+            <div id="bt-qa-cats" class="bt-qa-cats"></div>
+            <div class="bt-qa-row">
+                <div class="bt-qa-amt-wrap">
+                    <span class="bt-qa-rupee">₹</span>
+                    <input id="bt-qa-amt" type="text" inputmode="numeric" class="bt-qa-amt" placeholder="0"
+                        oninput="window._btFormatInput(this)" onkeydown="window._btQaKeydown(event)">
+                </div>
+                <input id="bt-qa-date" type="date" class="bt-qa-date">
+                <input id="bt-qa-note" type="text" maxlength="60" class="bt-qa-note"
+                    data-i18n-placeholder="bt.qa.note" placeholder="Note (optional) — e.g. Swiggy, petrol"
+                    oninput="window._btNoteInput(this)" onkeydown="window._btQaKeydown(event)">
+                <label id="bt-qa-repeat-lbl" class="bt-qa-repeat">
+                    <input id="bt-qa-repeat" type="checkbox">
+                    <span data-i18n="bt.qa.repeat">🔁 Monthly</span>
+                </label>
+                <button id="bt-qa-btn" data-i18n="bt.qa.add" class="bt-qa-btn" onclick="window._btQuickAdd()">+ Add</button>
+                <button id="bt-qa-cancel" data-i18n="bt.qa.cancel" class="bt-qa-cancel" style="display:none;" onclick="window._btQaCancelEdit()">Cancel</button>
+            </div>
         </div>
     </div>
 
@@ -55,42 +126,10 @@
         <div id="bt-rec-list" class="bt-rec-list"></div>
     </div>
 
-    <!-- SUMMARY CARDS -->
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-        <div class="rounded-xl px-3 py-2.5 bt-sum-card bt-sum-blue">
-            <div data-i18n="bt.sum.budget" class="bt-sum-lbl">Total Budget</div>
-            <div id="bt-sum-budget" class="bt-sum-val">—</div>
-        </div>
-        <div class="rounded-xl px-3 py-2.5 bt-sum-card bt-sum-green">
-            <div data-i18n="bt.sum.spent" class="bt-sum-lbl">Total Spent</div>
-            <div id="bt-sum-actual" class="bt-sum-val">—</div>
-        </div>
-        <div class="rounded-xl px-3 py-2.5 bt-sum-card bt-sum-yellow">
-            <div data-i18n="bt.sum.saved" class="bt-sum-lbl">Saved / Over</div>
-            <div id="bt-sum-diff" class="bt-sum-val">—</div>
-        </div>
-        <div class="rounded-xl px-3 py-2.5 col-span-2 sm:col-span-1 bt-sum-card bt-sum-purple">
-            <div data-i18n="bt.sum.outliers" class="bt-sum-lbl">Outliers</div>
-            <div id="bt-sum-outliers" class="bt-sum-val bt-sum-val-sm">—</div>
-        </div>
-    </div>
-
-    <!-- PROGRESS BAR + PACE -->
-    <div class="bt-bar-track">
-        <div id="bt-bar-fill" class="bt-bar-fill bt-fill-green"></div>
-        <div id="bt-bar-today" class="bt-bar-today" style="display:none;" title="Today"></div>
-    </div>
-    <div id="bt-bar-pct" class="bt-bar-pct"></div>
-    <div id="bt-pace-card" class="bt-pace-card" style="display:none;">
-        <span id="bt-pace-day" class="bt-pace-day"></span>
-        <span id="bt-pace-verdict" class="bt-pace-verdict"></span>
-    </div>
-
-    <!-- MAIN: TABLE + CHART -->
-    <div class="grid grid-cols-1 lg:grid-cols-5 gap-3">
-
-        <!-- CATEGORY TABLE -->
-        <div class="lg:col-span-3 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-x-auto">
+    <!-- CATEGORY TABLE -->
+    <div class="bt-std-card bt-table-card">
+        <div class="bt-std-lbl">🗂️ <span data-i18n="bt.cats.h">Category budgets</span></div>
+        <div class="bt-table-scroll">
             <table class="bt-table">
                 <thead>
                     <tr>
@@ -100,30 +139,9 @@
                         <th data-i18n="bt.col.status" class="bt-th bt-th-right">Status</th>
                     </tr>
                 </thead>
-                <tbody id="bt-tbody">
-                    <!-- Rendered by JS -->
-                </tbody>
+                <tbody id="bt-tbody"><!-- Rendered by JS --></tbody>
             </table>
         </div>
-
-        <!-- CHART PANEL -->
-        <div class="lg:col-span-2 rounded-2xl p-3 flex flex-col gap-2 bt-chart-card">
-            <!-- Chart type selector -->
-            <div class="bt-chart-tabs">
-                <button id="bt-tab-bar"   data-i18n="bt.tab.bar"   class="bt-chart-tab" onclick="window._btSetChartType('bar')">📊 Bar</button>
-                <button id="bt-tab-line"  data-i18n="bt.tab.trend" class="bt-chart-tab" onclick="window._btSetChartType('line')">📈 Trend</button>
-                <button id="bt-tab-donut" data-i18n="bt.tab.split" class="bt-chart-tab" onclick="window._btSetChartType('donut')">🍩 Split</button>
-            </div>
-            <!-- Chart description -->
-            <div class="bt-chart-desc">
-                <span id="bt-chart-desc">Budget vs Actual spend per category this month</span>
-            </div>
-            <!-- Canvas -->
-            <div class="bt-chart-wrap">
-                <canvas id="bt-chart-canvas" class="bt-chart-canvas"></canvas>
-            </div>
-        </div>
-
     </div>
 
     <!-- TRANSACTIONS -->
@@ -133,11 +151,6 @@
             <span id="bt-tx-count" class="bt-tx-countlbl"></span>
         </div>
         <div id="bt-tx-list"></div>
-    </div>
-
-    <!-- TIP ROW -->
-    <div data-i18n-html="bt.howto.tip" class="bt-tip">
-        💡 <strong>How to use:</strong> Set a monthly budget per category, then log each expense with the <strong>⚡ Add Expense</strong> bar as it happens — the Spent column totals up automatically. Red = over budget. Switch to <strong>Trend</strong> to spot months you overspent, or <strong>Split</strong> to see where your money goes.
     </div>
 
     <!-- NEXT 3 MONTHS OUTLOOK (hidden until there is data to forecast from) -->
@@ -170,17 +183,14 @@
                 <div data-i18n="bt.ef.title" class="bt-ef-title">🛡️ Emergency Fund Needed</div>
                 <div id="bt-ef-basis" data-i18n="bt.ef.basis.default" class="bt-ef-basis">Based on your monthly expenses</div>
             </div>
-            <!-- Coverage selector -->
             <div class="bt-ef-btns">
                 <button id="bt-ef-btn-3"  class="bt-ef-btn on" onclick="window._btSetEFMonths(3)">3M</button>
                 <button id="bt-ef-btn-6"  class="bt-ef-btn"    onclick="window._btSetEFMonths(6)">6M</button>
                 <button id="bt-ef-btn-12" class="bt-ef-btn"    onclick="window._btSetEFMonths(12)">12M</button>
             </div>
         </div>
-        <!-- Main result -->
         <div id="bt-ef-result" class="bt-ef-result">—</div>
         <div id="bt-ef-result-label" data-i18n="bt.ef.empty" class="bt-ef-result-lbl">Fill in your monthly expenses above to see your target</div>
-        <!-- 3 targets row -->
         <div class="bt-ef-grid">
             <div class="bt-ef-cell">
                 <div data-i18n="bt.ef.3m" class="bt-ef-cell-lbl">3 Months</div>
@@ -198,6 +208,11 @@
         <div data-i18n-html="bt.ef.tip" class="bt-ef-tip">
             💡 Park your emergency corpus in a <strong>Liquid Mutual Fund</strong> or <strong>Sweep-in FD</strong> — instant access, better return than savings account. Never use it for planned expenses.
         </div>
+    </div>
+
+    <!-- HOW TO USE -->
+    <div data-i18n-html="bt.howto.tip" class="bt-tip">
+        💡 <strong>How to use:</strong> Set a monthly budget per category, then log each expense with the <strong>⚡ Add Expense</strong> bar as it happens — the Spent column totals up automatically. Red = over budget. Switch to <strong>Trend</strong> to spot months you overspent, or <strong>Split</strong> to see where your money goes.
     </div>
 
 </div>
