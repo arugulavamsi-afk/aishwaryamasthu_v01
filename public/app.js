@@ -2873,6 +2873,17 @@
         window._fpState = fpState;
         let fpDonutChart = null;
 
+        var FP_EMOJI2KEY = { '📊':'fp.largecap','📈':'fp.midcap','🚀':'fp.smallcap','🎯':'fp.elss','🔒':'fp.lock','🛡️':'fp.nps','🛡':'fp.nps','🏛️':'fp.debt','🏛':'fp.debt','🏦':'fp.fd','🥇':'fp.gold','💧':'fp.liquid','⚖️':'fp.check','⚖':'fp.check','🏢':'fp.epf','₿':'fp.crypto','📉':'fp.q1','💼':'fp.q2','🧠':'fp.q3','⏳':'fp.q4','🏖️':'fp.retirement','🏖':'fp.retirement','🏠':'fp.home','🎓':'fp.education','💰':'fp.wealth','💍':'fp.marriage','✈️':'fp.travel','✈':'fp.travel','✏️':'fp.custom','✏':'fp.custom','🏘️':'fp.realestate','🏘':'fp.realestate','👴':'fp.senior','📬':'fp.mail','🌾':'fp.kvp','📜':'fp.nsc','✅':'fp.check','⚠️':'fp.warn','⚠':'fp.warn','🌐':'fp.global','⚡':'fp.bolt','📚':'fp.education','🚗':'fp.vehicle','🚙':'fp.vehicle','🏥':'fp.healthcare','📅':'fincal','📮':'fp.mail','🧾':'taxguide','🔷':'fp.elss','📋':'finplan' };
+        function _fpIco(x){
+            if(x==null) return '';
+            var key = (typeof x==='string' && x.indexOf('.')>-1 && /^[a-z]/.test(x)) ? x : (FP_EMOJI2KEY[x]||'');
+            var svg = (key && typeof window._svgIcon==='function') ? window._svgIcon(key,'') : '';
+            return '<span class="fp-ico">' + (svg || x || '') + '</span>';
+        }
+        function fpApplyIcons(){
+            var n=document.querySelectorAll('#finplan-panel [data-fpicon]');
+            for(var i=0;i<n.length;i++){ var s=(typeof window._svgIcon==='function')?window._svgIcon(n[i].getAttribute('data-fpicon'),''):''; if(s) n[i].innerHTML=s; }
+        }
         const FP_GOAL_META = {
             retirement: { emoji:'🏖️', label:'Retirement',      defaultYrs: 25, color:'#6366f1' },
             home:       { emoji:'🏠', label:'Buy a Home',       defaultYrs: 7,  color:'#3b82f6' },
@@ -3172,7 +3183,7 @@
                 var div = document.createElement('div');
                 div.className = 'space-y-2';
                 var qText = _t('fp.q' + (qi+1) + '.text') || q.text;
-                div.innerHTML = '<p class="text-sm font-bold text-slate-700 flex items-start gap-2"><span>' + q.icon + '</span><span>Q' + (qi+1) + '. ' + qText + '</span></p>' +
+                div.innerHTML = '<p class="text-sm font-bold text-slate-700 flex items-start gap-2"><span>' + _fpIco(q.icon) + '</span><span>Q' + (qi+1) + '. ' + qText + '</span></p>' +
                     '<div class="space-y-1" style="gap:6px;display:flex;flex-direction:column;">' +
                     q.options.map(function(opt, oi) {
                         var sel = fpState.answers[q.id] === oi ? 'fp-q-selected' : '';
@@ -3242,10 +3253,10 @@
                               : isScss    ? 'text-emerald-800'
                               : 'text-slate-700';
                 rows += '<div class="flex items-center gap-2.5 rounded-xl px-3 py-2 ' + bgClass + '">' +
-                    '<span class="text-base flex-shrink-0">' + meta.icon + '</span>' +
+                    '<span class="text-base flex-shrink-0">' + _fpIco(meta.icon) + '</span>' +
                     '<span class="text-xs font-bold flex-1 min-w-0 ' + textClass + '">' + meta.label +
                         (isCrypto ? '<span class="block text-[9px] font-semibold text-amber-600 leading-tight">30% flat tax · 1% TDS · no loss set-off</span>' : '') +
-                        (hasNote  ? '<span class="block text-[9px] font-semibold leading-tight" style="color:#64748b;">' + meta.note + '</span>' : '') +
+                        (hasNote  ? '<span class="block text-[9px] font-semibold leading-tight" style="color:rgba(242,245,240,.5);">' + meta.note + '</span>' : '') +
                     '</span>' +
                     '<div class="relative flex-shrink-0">' +
                         '<span class="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold pointer-events-none">₹</span>' +
@@ -3708,7 +3719,7 @@
                     listEl.innerHTML = '<span class="text-xs text-slate-400 italic">None selected yet</span>';
                 } else {
                     listEl.innerHTML = fpState.goals.map(function(g) {
-                        return '<div class="text-xs font-bold text-violet-600">' + g.emoji + ' ' + g.label + (g.years ? ' · ' + g.years + 'yr' : '') + '</div>';
+                        return '<div class="text-xs font-bold text-violet-600">' + _fpIco(g.emoji) + ' ' + g.label + (g.years ? ' · ' + g.years + 'yr' : '') + '</div>';
                     }).join('');
                 }
             }
@@ -4318,6 +4329,18 @@
             barFill.style.background = profile.barColor;
             barFill.style.width = ((totalScore / 15) * 100) + '%';
 
+            (function(){
+                var _cr=function(n){n=Math.round(n);if(n>=1e7)return '₹'+(n/1e7).toFixed(2)+' Cr';if(n>=1e5)return '₹'+(n/1e5).toFixed(1)+' L';return '₹'+n.toLocaleString('en-IN');};
+                var _r=(profile.blendedReturn||0)/100/12,_n=yearsToRetire*12;
+                var _sipFV=_r>0?monthlyInvest*((Math.pow(1+_r,_n)-1)/_r)*(1+_r):monthlyInvest*_n;
+                var _pc=_sipFV+existingFutureVal;
+                var _s=function(id,v){var e=document.getElementById(id);if(e)e.textContent=v;};
+                _s('fp-kpi-sip',monthlyInvest>0?'₹'+fmt(monthlyInvest):'—');
+                _s('fp-kpi-return',(profile.blendedReturn||0).toFixed(1).replace(/\.0$/,'')+'%');
+                _s('fp-kpi-horizon',yearsToRetire+' yrs');
+                _s('fp-kpi-corpus',_pc>0?_cr(_pc):'—');
+            })();
+
             // ---- Donut chart ----
             if (fpDonutChart) { fpDonutChart.destroy(); fpDonutChart = null; }
             var ctx = document.getElementById('fp-donut-chart').getContext('2d');
@@ -4325,7 +4348,7 @@
                 type: 'doughnut',
                 data: {
                     labels: allocs.map(function(a){ return a.name; }),
-                    datasets: [{ data: allocs.map(function(a){ return a.pct; }), backgroundColor: allocs.map(function(a){ return a.color; }), borderWidth:2, borderColor:'#fff', hoverOffset:8 }]
+                    datasets: [{ data: allocs.map(function(a){ return a.pct; }), backgroundColor: allocs.map(function(a){ return a.color; }), borderWidth:2, borderColor:'#0e241c', hoverOffset:8 }]
                 },
                 options: {
                     responsive:true, maintainAspectRatio:false, cutout:'68%',
@@ -4347,7 +4370,7 @@
                     '<div class="flex items-center gap-2 min-w-0">' +
                         '<div class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background:' + a.color + '"></div>' +
                         '<div class="min-w-0">' +
-                            '<div class="text-xs font-bold text-slate-700 truncate">' + a.icon + ' ' + a.name + '</div>' +
+                            '<div class="text-xs font-bold text-slate-700 truncate">' + _fpIco(a.icon) + ' ' + a.name + '</div>' +
                             '<div class="text-[10px] text-slate-400">' + a.tip + '</div>' +
                             (a.when ? '<div class="text-[9px] font-semibold mt-0.5" style="color:' + a.color + '">Use for: ' + a.when + '</div>' : '') +
                         '</div>' +
@@ -4384,7 +4407,7 @@
                             var effR     = (meta.effectiveReturn || 10.5) / 100;
                             var fvGross  = val * Math.pow(1 + grossR, longestYrs);
                             var fvEff    = val * Math.pow(1 + effR,   longestYrs);
-                            return '<div class="rounded-xl border border-red-200 p-2.5 mb-1" style="background:#fef2f2;">' +
+                            return '<div class="rounded-xl border border-red-200 p-2.5 mb-1" style="background:rgba(248,113,113,0.10);">' +
                                 '<div class="flex items-center justify-between gap-2 mb-1.5">' +
                                     '<div class="flex items-center gap-1.5">' +
                                         '<span class="text-sm">₿</span>' +
@@ -4396,12 +4419,12 @@
                                     '<span class="text-xs font-black text-slate-800 flex-shrink-0">₹' + fmt(val) + '</span>' +
                                 '</div>' +
                                 '<div class="grid grid-cols-2 gap-1.5 text-[10px]">' +
-                                    '<div class="rounded-lg p-1.5" style="background:#fee2e2;">' +
+                                    '<div class="rounded-lg p-1.5" style="background:rgba(248,113,113,0.16);">' +
                                         '<div class="text-[9px] font-black text-red-600 uppercase tracking-wider">Gross (' + (meta.grossReturn||15) + '% p.a.)</div>' +
                                         '<div class="font-black text-slate-700">₹' + fmt(fvGross) + '</div>' +
                                         '<div class="text-[9px] text-red-400">Before tax</div>' +
                                     '</div>' +
-                                    '<div class="rounded-lg p-1.5" style="background:#fff1f1;">' +
+                                    '<div class="rounded-lg p-1.5" style="background:rgba(248,113,113,0.08);">' +
                                         '<div class="text-[9px] font-black text-red-600 uppercase tracking-wider">Post-Tax est. (~' + (meta.effectiveReturn||10.5) + '%)</div>' +
                                         '<div class="font-black text-red-700">₹' + fmt(fvEff) + '</div>' +
                                         '<div class="text-[9px] text-red-400">After 30% flat tax drag</div>' +
@@ -4432,7 +4455,7 @@
                             if (monthly > 0) {
                                 extraNote = ' + ₹' + fmt(monthly) + '/mo contribution · EPS ₹' + fmt(eps) + '/mo pension';
                             }
-                            return '<div class="rounded-xl border border-blue-100 p-2.5 mb-1" style="background:#eff6ff;">' +
+                            return '<div class="rounded-xl border border-blue-100 p-2.5 mb-1" style="background:rgba(96,165,250,0.10);">' +
                                 '<div class="flex items-center justify-between gap-2">' +
                                     '<div class="flex items-center gap-2 min-w-0">' +
                                         '<span class="text-sm flex-shrink-0">🏢</span>' +
@@ -4456,7 +4479,7 @@
                         var noteHtml = meta.note ? '<div class="text-[9px] text-slate-400">' + meta.note + '</div>' : '';
                         return '<div class="flex items-center justify-between gap-2 py-1.5 border-b border-slate-50 last:border-0">' +
                             '<div class="flex items-center gap-2 min-w-0">' +
-                                '<span class="text-sm flex-shrink-0">' + meta.icon + '</span>' +
+                                '<span class="text-sm flex-shrink-0">' + _fpIco(meta.icon) + '</span>' +
                                 '<div class="min-w-0">' +
                                     '<div class="text-xs font-bold text-slate-700 truncate">' + meta.label + '</div>' +
                                     '<div class="text-[10px] text-slate-400">~' + meta.returnRate + '% p.a. · ' + longestYrs + ' yrs → projected ₹' + fmt(fv) + '</div>' +
@@ -4478,7 +4501,7 @@
                             '<svg class="fp-acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>' +
                         '</summary>' +
                         '<div class="fp-acc-body">' +
-                        '<div class="rounded-2xl border border-emerald-100 overflow-hidden" style="background:#f0fdf4;">' +
+                        '<div class="rounded-2xl border border-emerald-100 overflow-hidden" style="background:rgba(52,211,153,0.10);">' +
                             '<div class="px-4 pt-3 pb-2">' + existingRows + '</div>' +
                             '<div class="px-4 pb-3 pt-1 flex flex-wrap gap-3 border-t border-emerald-100 mt-1">' +
                                 '<div>' +
@@ -4521,11 +4544,11 @@
                         ? 'needs ₹' + fmt(g.amt) + '/mo to reach ₹' + fmt(g.target) + ' target in ' + g.years + ' yrs'
                         : 'no target set — receives equal share';
                     return '<div class="flex items-start gap-2 text-[11px] text-slate-500 leading-relaxed">' +
-                        '<span style="color:' + g.color + ';font-weight:900;flex-shrink:0;">' + g.emoji + '</span>' +
-                        '<span><strong style="color:#374151;">' + g.weightPct + '%</strong> → ' + g.goalLabel + ': ' + weightNote + '. Projected at ' + rateNote + '.</span></div>';
+                        '<span style="color:' + g.color + ';font-weight:900;flex-shrink:0;">' + _fpIco(g.emoji) + '</span>' +
+                        '<span><strong style="color:rgba(242,245,240,.9);">' + g.weightPct + '%</strong> → ' + g.goalLabel + ': ' + weightNote + '. Projected at ' + rateNote + '.</span></div>';
                 }).join('');
                 sipDiv.innerHTML =
-                    '<div class="rounded-xl border border-blue-100 p-3 mb-3" style="background:#eff6ff;">' +
+                    '<div class="rounded-xl border border-blue-100 p-3 mb-3" style="background:rgba(96,165,250,0.10);">' +
                         '<div class="text-[10px] font-black text-blue-600 uppercase tracking-wider mb-1.5">' + _t('fp.result.sip.why') + '</div>' +
                         '<div class="space-y-1">' + reasonLines + '</div>' +
                         '<div class="text-[10px] text-blue-400 mt-2 pt-2 border-t border-blue-100">' + _t('fp.result.sip.why.note') + '</div>' +
@@ -4533,24 +4556,24 @@
                     '<div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">' + _t('fp.result.sip.bygoal') + '</div>' +
                     goalSIPs.map(function(g) {
                         return '<div class="fp-sip-row" style="border-left:3px solid ' + g.color + ';padding-left:10px;">' +
-                            '<div class="flex items-center gap-2"><span class="text-sm">' + g.label + '</span><span class="text-[10px] text-slate-400">' + g.years + 'yr horizon</span></div>' +
+                            '<div class="flex items-center gap-2"><span class="text-sm" style="color:rgba(242,245,240,.85);display:inline-flex;align-items:center;gap:6px;">' + _fpIco(g.emoji) + window.esc(g.goalLabel || g.label) + '</span><span class="text-[10px] text-slate-400">' + g.years + 'yr horizon</span></div>' +
                             '<span class="text-xs font-black text-slate-800">₹' + fmt(g.amt) + '/mo</span>' +
                         '</div>';
                     }).join('') +
                     '<div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-3 mb-1.5">' + _t('fp.result.sip.byasset') + '</div>' +
                     allocs.map(function(a) {
                         var amt = Math.round((a.pct/100) * monthlyInvest / 100) * 100;
-                        return '<div class="fp-sip-row"><div class="flex items-center gap-2"><span>' + a.icon + '</span><span class="text-xs font-semibold text-slate-600">' + a.name + '</span></div><span class="text-xs font-black text-slate-800">₹' + fmt(amt) + '/mo</span></div>';
+                        return '<div class="fp-sip-row"><div class="flex items-center gap-2"><span>' + _fpIco(a.icon) + '</span><span class="text-xs font-semibold text-slate-600">' + a.name + '</span></div><span class="text-xs font-black text-slate-800">₹' + fmt(amt) + '/mo</span></div>';
                     }).join('');
             } else if (monthlyInvest > 0) {
                 sipDiv.innerHTML =
-                    '<div class="rounded-xl border border-blue-100 p-3 mb-3" style="background:#eff6ff;">' +
+                    '<div class="rounded-xl border border-blue-100 p-3 mb-3" style="background:rgba(96,165,250,0.10);">' +
                         '<div class="text-[10px] font-black text-blue-600 uppercase tracking-wider mb-1">💡 How this is calculated</div>' +
                         '<div class="text-[11px] text-slate-500 leading-relaxed">Each asset gets a share proportional to its weight in your risk-adjusted portfolio. Equity for long-term growth, debt and liquid for stability and near-term needs.</div>' +
                     '</div>' +
                     allocs.map(function(a) {
                         var amt = Math.round((a.pct/100) * monthlyInvest / 100) * 100;
-                        return '<div class="fp-sip-row"><div class="flex items-center gap-2"><span>' + a.icon + '</span><span class="text-xs font-semibold text-slate-600">' + a.name + '</span></div><span class="text-xs font-black text-slate-800">₹' + fmt(amt) + '/mo</span></div>';
+                        return '<div class="fp-sip-row"><div class="flex items-center gap-2"><span>' + _fpIco(a.icon) + '</span><span class="text-xs font-semibold text-slate-600">' + a.name + '</span></div><span class="text-xs font-black text-slate-800">₹' + fmt(amt) + '/mo</span></div>';
                     }).join('');
             } else {
                 sipDiv.innerHTML = '<p class="text-xs text-slate-400 italic">Enter your monthly investable amount (Step 1) to see the exact SIP split.</p>';
@@ -4632,14 +4655,14 @@
                     return '<div class="rounded-2xl border overflow-hidden" style="border-color:' + statusColor + '25;">' +
                         '<div class="flex items-center justify-between px-4 py-3" style="background:' + statusColor + '0c;">' +
                             '<div class="flex items-center gap-2">' +
-                                '<span class="text-lg">' + g.emoji + '</span>' +
+                                '<span class="text-lg">' + _fpIco(g.emoji) + '</span>' +
                                 '<div>' +
                                     '<div class="text-xs font-black text-slate-700">' + g.goalLabel + '</div>' +
                                     '<div class="text-[10px] text-slate-400">₹' + fmt(g.amt) + '/mo SIP · ' + g.years + ' years' +
                                         (goalExistingFV > 0 ? ' + ₹' + fmt(goalExistingFV) + ' from existing' : '') + '</div>' +
                                 '</div>' +
                             '</div>' +
-                            '<span class="text-xl">' + statusIcon + '</span>' +
+                            '<span class="text-xl">' + _fpIco(statusIcon) + '</span>' +
                         '</div>' +
                         '<div class="px-4 py-3">' +
                             '<div class="grid grid-cols-2 gap-2 mb-3">' +
@@ -4725,13 +4748,13 @@
             var redeemCards   = document.getElementById('fp-redemption-cards');
             if (redeemPlan.length > 0) {
                 redeemSection.style.display = '';
-                var liqLabel = { instant: _t('fp.redeem.liq.instant'), high: _t('fp.redeem.liq.high'), medium: _t('fp.redeem.liq.medium'), low: _t('fp.redeem.liq.low') };
+                var liqLabel = { instant:'<span class="fp-dot" style="background:#34d399"></span>'+_t('fp.redeem.liq.instant'), high:'<span class="fp-dot" style="background:#fbbf24"></span>'+_t('fp.redeem.liq.high'), medium:'<span class="fp-dot" style="background:#fb923c"></span>'+_t('fp.redeem.liq.medium'), low:'<span class="fp-dot" style="background:#f87171"></span>'+_t('fp.redeem.liq.low') };
                 redeemCards.innerHTML = redeemPlan.map(function(g) {
                     var hTag  = g.years <= 3 ? 'Short-term'  : g.years <= 7 ? 'Medium-term' : 'Long-term';
                     var hClr  = g.years <= 3 ? '#ef4444'     : g.years <= 7 ? '#f59e0b'     : '#10b981';
 
                     var corpusStrip = (g.corpus > 0)
-                        ? '<div class="flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-2 border-b border-slate-100" style="background:#f8fafc;">'
+                        ? '<div class="flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-2 border-b border-slate-100" style="background:rgba(255,255,255,0.05);">'
                             + '<div><div class="text-[9px] font-black text-slate-400 uppercase tracking-wider">Projected Corpus</div>'
                             + '<div class="text-sm font-black text-slate-800">₹' + fmt(g.corpus) + '</div></div>'
                             + (g.target > 0
@@ -4742,13 +4765,13 @@
                         : '';
 
                     var emergencyNote = g.isEmergency
-                        ? '<div class="mx-4 mt-3 mb-1 px-3 py-2 rounded-xl text-[10px] leading-relaxed font-semibold text-amber-800 border border-amber-200" style="background:#fffbeb;">'
+                        ? '<div class="mx-4 mt-3 mb-1 px-3 py-2 rounded-xl text-[10px] leading-relaxed font-semibold text-amber-800 border border-amber-200" style="background:rgba(245,200,66,0.10);">'
                             + '🛡️ Emergency corpus must stay in instant-access instruments <strong>at all times</strong>. Never allocate it to equity or locked instruments.'
                           + '</div>'
                         : '';
 
                     var deRiskBanner = g.deRiskNote
-                        ? '<div class="mx-4 mt-3 mb-1 px-3 py-2 rounded-xl text-[10px] leading-relaxed font-semibold text-blue-700 border border-blue-100" style="background:#eff6ff;">'
+                        ? '<div class="mx-4 mt-3 mb-1 px-3 py-2 rounded-xl text-[10px] leading-relaxed font-semibold text-blue-700 border border-blue-100" style="background:rgba(96,165,250,0.10);">'
                             + '📅 ' + g.deRiskNote
                           + '</div>'
                         : '';
@@ -4759,7 +4782,7 @@
                             + '<div class="w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-black text-white mt-0.5" style="background:' + a.color + '">' + (idx + 1) + '</div>'
                             + '<div class="flex-1 min-w-0">'
                                 + '<div class="flex items-center flex-wrap gap-x-2 gap-y-0.5 mb-0.5">'
-                                    + '<span class="text-xs font-bold text-slate-700">' + a.icon + ' ' + a.name + '</span>'
+                                    + '<span class="text-xs font-bold text-slate-700">' + _fpIco(a.icon) + ' ' + a.name + '</span>'
                                     + chip
                                     + '<span class="text-[10px] text-slate-400">~' + a.rate + '% p.a.</span>'
                                 + '</div>'
@@ -4769,7 +4792,7 @@
                     }).join('');
 
                     var lockedWarn = g.hasLocked
-                        ? '<div class="mx-4 mt-1 mb-3 px-3 py-2 rounded-xl text-[10px] font-semibold text-amber-600 border border-amber-100" style="background:#fffbeb;">'
+                        ? '<div class="mx-4 mt-1 mb-3 px-3 py-2 rounded-xl text-[10px] font-semibold text-amber-600 border border-amber-100" style="background:rgba(245,200,66,0.10);">'
                             + _t('fp.redeem.lockin.warn')
                           + '</div>'
                         : '';
@@ -4777,7 +4800,7 @@
                     return '<div class="rounded-2xl border border-slate-200 overflow-hidden">'
                         + '<div class="flex items-center justify-between px-4 py-3" style="background:' + g.color + '12;">'
                             + '<div class="flex items-center gap-2">'
-                                + '<span class="text-lg">' + g.emoji + '</span>'
+                                + '<span class="text-lg">' + _fpIco(g.emoji) + '</span>'
                                 + '<div>'
                                     + '<div class="text-xs font-black text-slate-700">' + g.label + '</div>'
                                     + '<div class="text-[10px] text-slate-400">Needed in ' + g.years + ' year' + (g.years !== 1 ? 's' : '') + ' · Redeem in order shown ↓</div>'
@@ -4800,7 +4823,7 @@
             document.getElementById('fp-roadmap').innerHTML = roadmap.map(function(r) {
                 var rTitle = r.key ? (_t(r.key + '.title') || r.title) : r.title;
                 var rDesc  = r.key ? (_t(r.key + '.desc')  || r.desc)  : r.desc;
-                return '<div class="fp-road-item" style="background:' + r.color + '0f;border-color:' + r.color + '30;"><span class="text-lg flex-shrink-0">' + r.icon + '</span><div><div class="text-xs font-black uppercase tracking-wide mb-0.5" style="color:' + r.color + '">' + rTitle + '</div><div class="text-xs text-slate-600 leading-relaxed">' + rDesc + '</div></div></div>';
+                return '<div class="fp-road-item" style="background:' + r.color + '0f;border-color:' + r.color + '30;"><span class="text-lg flex-shrink-0">' + _fpIco(r.icon) + '</span><div><div class="text-xs font-black uppercase tracking-wide mb-0.5" style="color:' + r.color + '">' + rTitle + '</div><div class="text-xs text-slate-600 leading-relaxed">' + rDesc + '</div></div></div>';
             }).join('');
 
             // Save plan snapshot for Excel export

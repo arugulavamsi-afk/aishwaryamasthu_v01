@@ -15,7 +15,7 @@
         window._fpState = fpState;
         let fpDonutChart = null;
 
-        var FP_EMOJI2KEY = { '📊':'fp.largecap','📈':'fp.midcap','🚀':'fp.smallcap','🎯':'fp.elss','🔒':'fp.lock','🛡️':'fp.nps','🛡':'fp.nps','🏛️':'fp.debt','🏛':'fp.debt','🏦':'fp.fd','🥇':'fp.gold','💧':'fp.liquid','⚖️':'fp.check','⚖':'fp.check','🏢':'fp.epf','₿':'fp.crypto','📉':'fp.q1','💼':'fp.q2','🧠':'fp.q3','⏳':'fp.q4','🏖️':'fp.retirement','🏖':'fp.retirement','🏠':'fp.home','🎓':'fp.education','💰':'fp.wealth','💍':'fp.marriage','✈️':'fp.travel','✈':'fp.travel','✏️':'fp.custom','✏':'fp.custom','🏘️':'fp.realestate','🏘':'fp.realestate','👴':'fp.senior','📬':'fp.mail','🌾':'fp.kvp','📜':'fp.nsc','✅':'fp.check','⚠️':'fp.warn','⚠':'fp.warn','🌐':'fp.global','⚡':'fp.bolt','📚':'fp.education' };
+        var FP_EMOJI2KEY = { '📊':'fp.largecap','📈':'fp.midcap','🚀':'fp.smallcap','🎯':'fp.elss','🔒':'fp.lock','🛡️':'fp.nps','🛡':'fp.nps','🏛️':'fp.debt','🏛':'fp.debt','🏦':'fp.fd','🥇':'fp.gold','💧':'fp.liquid','⚖️':'fp.check','⚖':'fp.check','🏢':'fp.epf','₿':'fp.crypto','📉':'fp.q1','💼':'fp.q2','🧠':'fp.q3','⏳':'fp.q4','🏖️':'fp.retirement','🏖':'fp.retirement','🏠':'fp.home','🎓':'fp.education','💰':'fp.wealth','💍':'fp.marriage','✈️':'fp.travel','✈':'fp.travel','✏️':'fp.custom','✏':'fp.custom','🏘️':'fp.realestate','🏘':'fp.realestate','👴':'fp.senior','📬':'fp.mail','🌾':'fp.kvp','📜':'fp.nsc','✅':'fp.check','⚠️':'fp.warn','⚠':'fp.warn','🌐':'fp.global','⚡':'fp.bolt','📚':'fp.education','🚗':'fp.vehicle','🚙':'fp.vehicle','🏥':'fp.healthcare' };
         function _fpIco(x){
             if(x==null) return '';
             var key = (typeof x==='string' && x.indexOf('.')>-1 && /^[a-z]/.test(x)) ? x : (FP_EMOJI2KEY[x]||'');
