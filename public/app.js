@@ -586,7 +586,7 @@
                 if (isMFKit) { renderMFKit(); applyLang(); return; }
                 if (isFundPicker) { renderFundPickerPage(); applyLang(); return; }
                 if (isHealthScore) { if (typeof hsRefreshNwBanner === 'function') hsRefreshNwBanner(); applyLang(); return; }
-                if (isFinPlan) { fpInitQuestions(); applyLang(); return; }
+                if (isFinPlan) { fpInitQuestions(); if(typeof fpApplyIcons==='function') fpApplyIcons(); applyLang(); return; }
                 if (isMFExplorer) { initMFExplorer(); applyLang(); return; }
                 if (isDashboard)  {
                     if (typeof initDashboard === 'function') initDashboard();
@@ -1239,8 +1239,8 @@
             }
             var fmt = function(n){ return '₹' + Number(n).toLocaleString('en-IN'); };
             el.innerHTML = saved.map(function(g) {
-                return '<div class="flex items-center gap-2 py-2 px-3 rounded-xl" style="background:#f8fafc;border:1px solid #eef2f7;">' +
-                    '<span class="text-base leading-none flex-shrink-0">' + (g.emoji || '🎯') + '</span>' +
+                return '<div class="flex items-center gap-2 py-2 px-3 rounded-xl" style="background:rgba(255,255,255,0.05);border:1px solid rgba(245,200,66,0.14);">' +
+                    '<span class="fp-ico fp-ico-md flex-shrink-0">' + ((typeof window._svgIcon==="function" && window._svgIcon('fp.'+(g.fpType||'custom'),''))||g.emoji||'🎯') + '</span>' +
                     '<div class="flex-1 min-w-0">' +
                         '<div class="text-[12px] font-bold text-slate-700 truncate">' + window.esc(g.label) + '</div>' +
                         '<div class="text-[10px] text-slate-400">' + fmt(g.targetAmt || 0) + ' · ' + (g.years || 0) + ' yrs</div>' +

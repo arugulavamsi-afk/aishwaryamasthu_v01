@@ -2281,3 +2281,101 @@
         #healthscore-panel .hs-ico-lg { width:28px; height:28px; }
         #healthscore-panel .hs-ico-xl { width:40px; height:40px; }
         #healthscore-panel [class*="hs-ico"] svg { width:100%; height:100%; display:block; }
+
+        /* ══════════════════════════════════════════════════════════
+           FINANCIAL PLAN — royal-dark reskin (matches Dashboard / Mockup C)
+           Scoped over the existing wizard: same structure/logic, dark glass.
+           ══════════════════════════════════════════════════════════ */
+        #finplan-panel .bg-white { background: rgba(17,45,36,0.55) !important; box-shadow:0 8px 28px rgba(0,0,0,.35); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); }
+        #finplan-panel .bg-slate-50 { background: rgba(255,255,255,0.06) !important; }
+        #finplan-panel .bg-slate-100 { background: rgba(255,255,255,0.08) !important; }
+        #finplan-panel .bg-indigo-50 { background: rgba(129,140,248,0.12) !important; }
+        #finplan-panel .bg-rose-50 { background: rgba(251,113,133,0.10) !important; }
+        #finplan-panel .bg-emerald-50 { background: rgba(52,211,153,0.10) !important; }
+        #finplan-panel .bg-amber-50 { background: rgba(251,191,36,0.10) !important; }
+        #finplan-panel .border-slate-100 { border-color: rgba(255,255,255,0.08) !important; }
+        #finplan-panel .border-slate-200 { border-color: rgba(245,200,66,0.18) !important; }
+        #finplan-panel .border-slate-50  { border-color: rgba(255,255,255,0.06) !important; }
+        #finplan-panel .border-indigo-100,#finplan-panel .border-indigo-200,#finplan-panel .border-indigo-400 { border-color: rgba(129,140,248,0.3) !important; }
+        #finplan-panel .border-emerald-100,#finplan-panel .border-emerald-200 { border-color: rgba(52,211,153,0.3) !important; }
+        #finplan-panel .border-amber-100,#finplan-panel .border-amber-200 { border-color: rgba(251,191,36,0.3) !important; }
+        #finplan-panel .border-blue-100 { border-color: rgba(96,165,250,0.3) !important; }
+        #finplan-panel .border-red-200 { border-color: rgba(248,113,113,0.35) !important; }
+        #finplan-panel .border-rose-300 { border-color: rgba(251,113,133,0.4) !important; }
+        #finplan-panel .text-slate-800 { color:#f2f5f0 !important; }
+        #finplan-panel .text-slate-700 { color:rgba(242,245,240,.9) !important; }
+        #finplan-panel .text-slate-600 { color:rgba(242,245,240,.72) !important; }
+        #finplan-panel .text-slate-500 { color:rgba(242,245,240,.58) !important; }
+        #finplan-panel .text-slate-400 { color:rgba(242,245,240,.42) !important; }
+        #finplan-panel .text-slate-300 { color:rgba(242,245,240,.3) !important; }
+        #finplan-panel .text-emerald-800 { color:#a7f3d0 !important; }
+        #finplan-panel .text-emerald-700,#finplan-panel .text-emerald-600,#finplan-panel .text-emerald-500 { color:#6ee7b7 !important; }
+        #finplan-panel .text-blue-700,#finplan-panel .text-blue-600,#finplan-panel .text-blue-500,#finplan-panel .text-blue-400 { color:#93c5fd !important; }
+        #finplan-panel .text-indigo-700,#finplan-panel .text-indigo-600,#finplan-panel .text-indigo-500 { color:#a5b4fc !important; }
+        #finplan-panel .text-violet-600 { color:#c4b5fd !important; }
+        #finplan-panel .text-red-700,#finplan-panel .text-red-600,#finplan-panel .text-red-500,#finplan-panel .text-red-400 { color:#fca5a5 !important; }
+        #finplan-panel .text-amber-900,#finplan-panel .text-amber-800 { color:#fde68a !important; }
+        #finplan-panel .text-amber-600,#finplan-panel .text-amber-500 { color:#fcd34d !important; }
+        #finplan-panel .text-sky-700 { color:#7dd3fc !important; }
+        #finplan-panel .text-rose-500 { color:#fda4af !important; }
+        #finplan-panel .num-word { color: rgba(242,245,240,.5); }
+        /* component overrides (defined light in index.html) */
+        #finplan-panel .fp-label { color: rgba(242,245,240,.5); }
+        #finplan-panel .fp-input, #finplan-panel .fp-mini-input { background: rgba(255,255,255,0.06); border-color: rgba(245,200,66,0.18); color:#f2f5f0; }
+        #finplan-panel .fp-input::placeholder, #finplan-panel .fp-mini-input::placeholder { color: rgba(242,245,240,.3); }
+        #finplan-panel .fp-input:focus { border-color:#f5c842; box-shadow:0 0 0 3px rgba(245,200,66,.18); background:rgba(255,255,255,0.09); }
+        #finplan-panel .fp-mini-input:focus { border-color:#f5c842; box-shadow:0 0 0 2px rgba(245,200,66,.18); }
+        #finplan-panel .fp-mini-label { color: rgba(242,245,240,.45); }
+        #finplan-panel .fp-back-btn { background: rgba(255,255,255,0.06); border-color: rgba(245,200,66,0.2); color: rgba(242,245,240,.7); }
+        #finplan-panel .fp-back-btn:hover { background: rgba(255,255,255,0.1); color:#fff; }
+        #finplan-panel .fp-goal-tile, #finplan-panel .fp-goal-card { background: rgba(255,255,255,0.05); }
+        #finplan-panel .fp-goal-tile:hover { background: rgba(129,140,248,0.14); border-color:#818cf8; }
+        #finplan-panel .fp-goal-tile-active { background: rgba(129,140,248,0.16) !important; }
+        #finplan-panel .fp-goal-tile-active span { color:#c7d2fe !important; }
+        #finplan-panel .fp-goal-card-header { background: rgba(255,255,255,0.04); }
+        #finplan-panel .fp-horizon-btn { background: rgba(255,255,255,0.05); color: rgba(242,245,240,.6); }
+        #finplan-panel .fp-horizon-btn:hover { background: rgba(13,148,136,0.15); color:#5eead4; border-color:#0d9488; }
+        #finplan-panel .fp-horizon-active { background: rgba(13,148,136,0.18) !important; color:#5eead4 !important; }
+        #finplan-panel .fp-existing-btn { background: rgba(255,255,255,0.05); color: rgba(242,245,240,.65); }
+        #finplan-panel .fp-existing-btn:hover { background: rgba(245,200,66,0.12); border-color:#f59e0b; }
+        #finplan-panel .fp-existing-active { background: rgba(245,200,66,0.14) !important; color:#fcd34d !important; border-color:#f59e0b !important; }
+        #finplan-panel .fp-q-option { background: rgba(255,255,255,0.04); border-color: rgba(245,200,66,0.14); color: rgba(242,245,240,.85); }
+        #finplan-panel .fp-q-option:hover { background: rgba(249,115,22,0.12); border-color:#f97316; }
+        #finplan-panel .fp-q-selected { background: rgba(245,200,66,0.12) !important; border-color:#f5c842 !important; color:#fff; }
+        #finplan-panel .fp-q-radio { border-color: rgba(245,200,66,0.4); }
+        #finplan-panel .fp-q-selected .fp-q-radio { border-color:#f5c842; background:#f5c842; }
+        #finplan-panel .fp-dot-done { background: rgba(52,211,153,0.16); color:#34d399; border-color:#34d399; }
+        #finplan-panel .fp-legend-row:hover { background: rgba(255,255,255,0.05); }
+        #finplan-panel .fp-sip-row { background: rgba(255,255,255,0.05); border-color: rgba(245,200,66,0.12); }
+        #finplan-panel .fp-vchip { background: rgba(255,255,255,0.05); border-color: rgba(245,200,66,0.14); }
+        #finplan-panel .fp-vchip-val { color:#f2f5f0; }
+        #finplan-panel .fp-vchip-lbl { color: rgba(242,245,240,.45); }
+        #finplan-panel .fp-verdict-head { color:#f2f5f0; }
+        #finplan-panel .fp-verdict-on .fp-verdict-head { color:#6ee7b7; }
+        #finplan-panel .fp-verdict-partial .fp-verdict-head { color:#fcd34d; }
+        #finplan-panel .fp-verdict-off .fp-verdict-head { color: rgba(242,245,240,.8); }
+        #finplan-panel .fp-verdict-hint { color: rgba(242,245,240,.35); }
+        #finplan-panel .fp-acc { border-top-color: rgba(255,255,255,0.08); }
+        #finplan-panel .fp-acc > summary:hover { background: rgba(255,255,255,0.04); }
+        #finplan-panel .fp-acc[open] > summary { background: rgba(255,255,255,0.03); }
+        #finplan-panel .fp-acc-title { color: rgba(242,245,240,.5); }
+        #finplan-panel .fp-acc-chev { color: rgba(242,245,240,.4); }
+        #finplan-panel .fp-risk-saved-card { background: rgba(52,211,153,0.10) !important; border-color: rgba(52,211,153,0.3); }
+        #finplan-panel .fp-risk-edit-btn { background: rgba(255,255,255,0.06); border-color: rgba(245,200,66,0.2); color: rgba(242,245,240,.8); }
+        #finplan-panel .fp-risk-edit-btn:hover { background: rgba(255,255,255,0.1); border-color:#f5c842; color:#f5c842; }
+        #finplan-panel .up-banner { background: rgba(56,189,248,0.10) !important; border-color: rgba(56,189,248,0.3) !important; }
+        /* KPI tiles (Mockup C signature) */
+        #finplan-panel .fp-kpi { background: rgba(255,255,255,0.06); border:1px solid rgba(245,200,66,0.16); border-radius:12px; padding:12px 14px; }
+        #finplan-panel .fp-kpi-lbl { font-size:10px; font-weight:800; letter-spacing:.05em; text-transform:uppercase; color:rgba(242,245,240,.5); }
+        #finplan-panel .fp-kpi-val { font-size:19px; font-weight:900; color:#f2f5f0; font-variant-numeric:tabular-nums; margin-top:2px; }
+
+        /* Financial Plan — professional icon holders + liquidity dots */
+        #finplan-panel .fp-ico, #finplan-panel .fp-ico-sm, #finplan-panel .fp-ico-md, #finplan-panel .fp-ico-lg {
+            display:inline-flex; align-items:center; justify-content:center; color:#f5c842; flex-shrink:0; vertical-align:-2px;
+        }
+        #finplan-panel .fp-ico    { width:16px; height:16px; }
+        #finplan-panel .fp-ico-sm { width:13px; height:13px; }
+        #finplan-panel .fp-ico-md { width:20px; height:20px; }
+        #finplan-panel .fp-ico-lg { width:26px; height:26px; }
+        #finplan-panel [class*="fp-ico"] svg { width:100%; height:100%; display:block; }
+        #finplan-panel .fp-dot { display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:5px; vertical-align:0; }
