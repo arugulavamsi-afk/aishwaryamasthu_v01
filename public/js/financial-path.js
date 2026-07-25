@@ -352,6 +352,11 @@ function pathRender() {
     pathRenderArchive(st.archive || []);
 }
 window.pathRender = pathRender;
+function pathApplyIcons(){
+    var n=document.querySelectorAll('#finpath-panel [data-pathicon]');
+    for(var i=0;i<n.length;i++){ var s=(typeof window._svgIcon==='function')?window._svgIcon(n[i].getAttribute('data-pathicon'),''):''; if(s) n[i].innerHTML=s; }
+}
+window.pathApplyIcons = pathApplyIcons;
 
 // ── Explainer under the chart ─────────────────────────────────────
 // Spells out, in plain language and with this plan's own numbers, how the
@@ -527,9 +532,9 @@ function pathRenderMilestones(milestones) {
     if (!milestones || milestones.length === 0) { el.innerHTML = ''; return; }
     el.innerHTML = milestones.map(function (m) {
         var c = m.onTrack ? '#10b981' : '#ef4444';
-        var badge = m.onTrack ? _pt('finpath.ontrack', '✅ On track') : _pt('finpath.shortfall', '🔴 Shortfall');
+        var badge = m.onTrack ? _pt('finpath.ontrack', 'On track') : _pt('finpath.shortfall', 'Shortfall');
         return '<div class="flex items-center gap-2 py-1.5 border-b border-slate-50 last:border-0">' +
-            '<span class="text-base flex-shrink-0">' + (m.emoji || '🎯') + '</span>' +
+            window._emojiIco((m.emoji || '🎯'), 'pro-ico-lg') +
             '<div class="flex-1 min-w-0">' +
                 '<div class="text-[11px] font-bold text-slate-700 truncate">' + _pathEsc(m.label) + '</div>' +
                 '<div class="text-[10px] text-slate-400">' + _pt('finpath.ms.detail', '{y} · target {t}', { y: m.year, t: pathFmt(m.target) }) + '</div>' +
@@ -548,11 +553,11 @@ function pathRenderCards(plan) {
     var allocs = plan.allocs || [];
     if (allocs.length) {
         html += '<div class="path-card">' +
-            '<div class="path-card-title">' + _pt('finpath.card.alloc', '📊 Recommended Allocation') + '</div>' +
+            '<div class="path-card-title">' + window._emojiIco('📊') + _pt('finpath.card.alloc', 'Recommended Allocation') + '</div>' +
             allocs.map(function (a) {
                 return '<div class="flex items-center gap-2 py-1">' +
                     '<div style="width:8px;height:8px;border-radius:50%;background:' + a.color + ';flex-shrink:0;"></div>' +
-                    '<div class="text-[11px] text-slate-600 flex-1 min-w-0 truncate">' + (a.icon || '') + ' ' + _pathEsc(a.name) + '</div>' +
+                    '<div class="text-[11px] text-slate-600 flex-1 min-w-0 truncate">' + window._emojiIco((a.icon || ''), 'pro-ico') + ' ' + _pathEsc(a.name) + '</div>' +
                     '<div class="text-[11px] font-black text-slate-700">' + a.pct + '%</div>' +
                 '</div>';
             }).join('') +
@@ -562,12 +567,12 @@ function pathRenderCards(plan) {
     // Monthly SIP total
     html += '<div class="path-card">' +
         '<div class="flex items-center justify-between">' +
-            '<span class="text-[11px] font-bold text-slate-500">' + _pt('finpath.card.sip', '💸 Monthly SIP') + '</span>' +
+            '<span class="text-[11px] font-bold text-slate-500">' + window._emojiIco('💸') + _pt('finpath.card.sip', 'Monthly SIP') + '</span>' +
             '<span class="text-sm font-black text-indigo-600">' + _pt('finpath.card.permonth', '{v}/mo', { v: pathFull(plan.monthlyInvest || 0) }) + '</span>' +
         '</div>' +
         (plan.existingCorpus > 0
             ? '<div class="flex items-center justify-between mt-1.5 pt-1.5 border-t border-slate-100">' +
-                '<span class="text-[11px] font-bold text-slate-500">' + _pt('finpath.card.existing', '🏦 Existing corpus') + '</span>' +
+                '<span class="text-[11px] font-bold text-slate-500">' + window._emojiIco('🏦') + _pt('finpath.card.existing', 'Existing corpus') + '</span>' +
                 '<span class="text-xs font-black text-slate-700">' + pathFmt(plan.existingCorpus) + '</span>' +
               '</div>'
             : '') +

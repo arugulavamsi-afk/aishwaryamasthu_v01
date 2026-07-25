@@ -3,22 +3,22 @@
             <!-- HEADER -->
             <div class="rounded-2xl px-4 py-3 text-white flex items-center justify-between gap-3 flex-wrap shine-header" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:2px solid rgba(245,200,66,0.4);box-shadow:0 4px 18px rgba(0,0,0,0.25);">
                 <div>
-                    <h2 class="text-base font-black flex items-center gap-2" data-i18n="page.finpath.h">🧭 Your Financial Path</h2>
+                    <h2 class="text-base font-black flex items-center gap-2"><span class="pro-ico" data-pathicon="finpath"></span><span data-i18n="page.finpath.h">Your Financial Path</span></h2>
                     <p class="text-blue-200 text-[11px] mt-0.5" data-i18n="page.finpath.sub">Track every goal and see where your money is heading — your plan projected forward.</p>
                 </div>
                 <div class="flex items-center gap-2 flex-wrap">
-                    <button onclick="switchMode('finplan')" class="flex items-center gap-1 px-3 py-1.5 rounded-xl text-[11px] font-bold" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);" data-i18n="btn.finpath.plan">📋 Financial Plan</button>
+                    <button onclick="switchMode('finplan')" class="flex items-center gap-1 px-3 py-1.5 rounded-xl text-[11px] font-bold" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);" ><span class="pro-ico" data-pathicon="finplan"></span><span data-i18n="btn.finpath.plan">Financial Plan</span></button>
                 </div>
             </div>
 
             <!-- EMPTY STATE (no plan AND no goals) -->
             <div id="path-empty" class="hidden bg-white rounded-2xl shadow-sm border border-indigo-100 p-8 flex flex-col items-center justify-center text-center gap-3">
-                <div class="text-4xl">🧭</div>
+                <div class="flex justify-center"><span class="pro-ico-xl" style="width:40px;height:40px;color:#f5c842;" data-pathicon="finpath"></span></div>
                 <div class="text-sm font-black text-slate-700" data-i18n="finpath.empty.title">Nothing to track yet</div>
                 <div class="text-[11px] text-slate-400 max-w-xs leading-relaxed" data-i18n="finpath.empty.sub">Set goals in the Goal Planner or generate a Financial Plan — then track your progress and see your trajectory here.</div>
                 <div class="flex items-center gap-2 flex-wrap justify-center mt-1">
-                    <button onclick="switchMode('goal')" class="px-4 py-2.5 rounded-xl font-bold text-sm text-white" style="background:linear-gradient(135deg,#6366f1,#4f46e5);" data-i18n="finpath.empty.cta.goal">🎯 Goal Planner</button>
-                    <button onclick="switchMode('finplan')" class="px-4 py-2.5 rounded-xl font-bold text-sm" style="background:#eef2ff;color:#4f46e5;" data-i18n="finpath.empty.cta.plan">📋 Financial Plan</button>
+                    <button onclick="switchMode('goal')" class="px-4 py-2.5 rounded-xl font-bold text-sm text-white" style="background:linear-gradient(135deg,#6366f1,#4f46e5);" ><span class="pro-ico" data-pathicon="goal"></span><span data-i18n="finpath.empty.cta.goal">Goal Planner</span></button>
+                    <button onclick="switchMode('finplan')" class="px-4 py-2.5 rounded-xl font-bold text-sm" style="background:rgba(129,140,248,0.14);color:#a5b4fc;"><span class="pro-ico" data-pathicon="finplan"></span><span data-i18n="finpath.empty.cta.plan">Financial Plan</span></button>
                 </div>
             </div>
 
@@ -30,7 +30,7 @@
 
                 <!-- Trajectory chart -->
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-4">
-                    <h3 class="text-xs font-black text-slate-400 uppercase tracking-wider mb-2" data-i18n="finpath.chart.title">📈 Net Worth Trajectory</h3>
+                    <h3 class="text-xs font-black text-slate-400 uppercase tracking-wider mb-2" class="flex items-center gap-1.5"><span class="pro-ico" data-pathicon="fp.wealth"></span><span data-i18n="finpath.chart.title">Net Worth Trajectory</span></h3>
                     <div style="position:relative;height:220px;"><canvas id="path-chart"></canvas></div>
                     <!-- Explainer (how the trajectory grows/depletes + assumptions) rendered by pathRenderExplainer() -->
                     <div id="path-explain"></div>
@@ -44,7 +44,7 @@
             <!-- YOUR GOALS (actual tracking) — shown whenever goals exist, plan or not -->
             <div id="path-goals-wrap" class="hidden bg-white rounded-2xl shadow-sm border border-slate-100 p-4">
                 <div class="flex items-center justify-between gap-2 mb-1">
-                    <h3 class="text-xs font-black text-slate-400 uppercase tracking-wider" data-i18n="finpath.goals.title">🎯 Your Goals</h3>
+                    <h3 class="text-xs font-black text-slate-400 uppercase tracking-wider" class="flex items-center gap-1.5"><span class="pro-ico" data-pathicon="goal"></span><span data-i18n="finpath.goals.title">Your Goals</span></h3>
                     <button onclick="switchMode('goal')" class="text-[10px] font-bold text-indigo-600 px-2.5 py-1 rounded-lg border border-indigo-100 hover:bg-indigo-50" data-i18n="finpath.goals.add">＋ New Goal</button>
                 </div>
                 <p class="text-[10px] text-slate-400 mb-3 leading-relaxed" data-i18n="finpath.goals.sub">Log what you've actually saved toward each goal to see if you're on track.</p>
@@ -54,12 +54,12 @@
 
             <!-- History / archive — plan snapshots -->
             <div id="path-archive-wrap" class="hidden bg-white rounded-2xl shadow-sm border border-slate-100 p-4">
-                <h3 class="text-xs font-black text-slate-400 uppercase tracking-wider mb-2" data-i18n="finpath.archive.title">🕑 Saved History</h3>
+                <h3 class="text-xs font-black text-slate-400 uppercase tracking-wider mb-2" class="flex items-center gap-1.5"><span class="pro-ico" data-pathicon="fincal"></span><span data-i18n="finpath.archive.title">Saved History</span></h3>
                 <div id="path-archive"></div>
             </div>
 
             <!-- Disclaimer — shown only when a plan is saved -->
-            <div id="path-disc" class="hidden px-4 py-3 rounded-xl border border-amber-100 text-[10px] text-amber-700 leading-relaxed" style="background:#fffbeb;" data-i18n="finpath.disc">
-                ⚠️ <strong>Directional estimate, not a guarantee.</strong> Projections use your risk-profile blended return; actual returns vary and equity is not guaranteed. Retirement drawdown assumes a 7% post-retirement return, 6% inflation, and annual living costs of 70% of your current income. Re-save your plan whenever your net worth, income, or goals change to keep this path current.
+            <div id="path-disc" class="hidden px-4 py-3 rounded-xl border border-amber-100 text-[10px] text-amber-700 leading-relaxed" style="background:rgba(245,200,66,0.10);" data-i18n="finpath.disc">
+                <strong>Directional estimate, not a guarantee.</strong> Projections use your risk-profile blended return; actual returns vary and equity is not guaranteed. Retirement drawdown assumes a 7% post-retirement return, 6% inflation, and annual living costs of 70% of your current income. Re-save your plan whenever your net worth, income, or goals change to keep this path current.
             </div>
 </div>

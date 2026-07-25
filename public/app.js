@@ -627,7 +627,7 @@
                 if (isConsult)       { if (typeof initConsult === 'function') initConsult(); applyLang(); return; }
                 if (isGoalTracker)   { if (typeof initGoalTracker === 'function') initGoalTracker(); applyLang(); return; }
                 if (isUserGuide)     { if (typeof initUserGuide === 'function') initUserGuide(); applyLang(); return; }
-                if (isFinPath)       { if (typeof pathRender === 'function') pathRender(); applyLang(); return; }
+                if (isFinPath)       { if (typeof pathRender === 'function') pathRender(); if (typeof pathApplyIcons === 'function') pathApplyIcons(); applyLang(); return; }
                 if (isReturnsCalc)   { if (typeof initReturnsCalc === 'function') initReturnsCalc(); applyLang(); return; }
 
                 // Show/hide reset buttons

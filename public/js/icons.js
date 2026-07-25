@@ -124,6 +124,7 @@
         'nw.history':       '<polyline points="3 17 9 11 13 15 21 7"/><polyline points="15 7 21 7 21 13"/>',
         'fp.global': '<circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18z"/>',
         'fp.bolt': '<polygon points="13 2 4 14 11 14 10 22 20 9 13 9 13 2"/>',
+        'fp.trash': '<path d="M4 7h16"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/><path d="M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"/>',
         'fp.vehicle': '<path d="M5 11l1.6-4.2A2 2 0 0 1 8.5 5.5h7a2 2 0 0 1 1.9 1.3L19 11"/><path d="M3 11h18v5a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1v-1H6v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-5z"/><circle cx="7.5" cy="14" r="1.1" fill="currentColor" stroke="none"/><circle cx="16.5" cy="14" r="1.1" fill="currentColor" stroke="none"/>',
         'fp.healthcare': '<rect x="3" y="4" width="18" height="16" rx="3"/><path d="M12 9v6M9 12h6"/>',
         'fp.retirement': '<path d="M12 3a9 9 0 0 1 9 9H3a9 9 0 0 1 9-9z"/><path d="M12 12v6a2 2 0 0 0 4 0"/>',
@@ -207,6 +208,13 @@
     window._svgIcon = function(mode, fallback) {
         var body = I[mode];
         return body ? OPEN + body + CLOSE : (fallback || '');
+    };
+
+    var _EMOJI_ICON = { '🧭':'finpath','📋':'finplan','🎯':'goal','📈':'fp.wealth','🕑':'fincal','⚠️':'fp.warn','⚠':'fp.warn','✅':'fp.check','🔴':'fp.warn','📊':'fp.pie','💸':'fp.sipbars','🏦':'fp.debt','🏖️':'fp.retirement','🏖':'fp.retirement','🏆':'gratuity','📝':'fp.custom','🌱':'fp.kvp','🗑':'fp.trash','🗑️':'fp.trash','🚗':'fp.vehicle','🚙':'fp.vehicle','🏥':'fp.healthcare','🎓':'fp.education','💍':'fp.marriage','✈️':'fp.travel','✈':'fp.travel','🏠':'fp.home','💰':'fp.wealth','🚀':'fp.smallcap','✏️':'fp.custom','✏':'fp.custom','🥇':'fp.gold','💧':'fp.liquid','🔒':'fp.lock','🛡️':'fp.nps','🛡':'fp.nps','🏛️':'fp.debt','🏛':'fp.debt','🌐':'fp.global' };
+    window._emojiIco = function(x, cls) {
+        var k = _EMOJI_ICON[x] || '';
+        var s = k ? window._svgIcon(k, '') : '';
+        return '<span class="' + (cls || 'pro-ico') + '">' + (s || x || '') + '</span>';
     };
 
     /* Upgrade static .dash-card tiles (index.html markup keeps its emoji as

@@ -65,6 +65,10 @@
         var pct    = Math.min(100, Math.round(saved / target * 100));
         var remaining = Math.max(0, target - saved);
         var st = _status(g);
+        var _dark = window._currentMode === 'finpath';
+        var C = _dark
+            ? { name:'#f2f5f0', muted:'rgba(242,245,240,.5)', saved:'rgba(242,245,240,.72)', histAmt:'rgba(242,245,240,.85)', note:'rgba(242,245,240,.45)', track:'rgba(255,255,255,0.09)', circle:'rgba(255,255,255,0.06)', cardBg:'rgba(17,45,36,0.55)', cardBd:'rgba(245,200,66,0.18)', delBg:'rgba(244,63,94,0.14)', updColor:'#a5b4fc', updBg:'rgba(129,140,248,0.10)', updBd:'rgba(129,140,248,0.4)' }
+            : { name:'#1e293b', muted:'#94a3b8', saved:'#475569', histAmt:'#334155', note:'#cbd5e1', track:'#f1f5f9', circle:'#f8fafc', cardBg:'#fff', cardBd:'#e2e8f0', delBg:'#fff1f2', updColor:'#6366f1', updBg:'rgba(99,102,241,0.06)', updBd:'#c7d2fe' };
 
         var barColor = pct >= 75 ? '#10b981' : pct >= 40 ? '#6366f1' : '#f59e0b';
 
@@ -81,35 +85,35 @@
         if (g.checkIns && g.checkIns.length > 0) {
             var recent = g.checkIns.slice(-3).reverse();
             histHtml =
-                '<div style="margin-top:12px;padding-top:12px;border-top:1px solid #f1f5f9;">' +
-                    '<div style="font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">' + _gtT('gt.card.checkins', 'Recent Check-ins') + '</div>' +
+                '<div style="margin-top:12px;padding-top:12px;border-top:1px solid ' + C.track + ';">' +
+                    '<div style="font-size:10px;font-weight:800;color:' + C.muted + ';text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">' + _gtT('gt.card.checkins', 'Recent Check-ins') + '</div>' +
                     recent.map(function (c) {
                         return '<div style="display:flex;align-items:center;justify-content:space-between;padding:3px 0;font-size:11px;">' +
-                            '<span style="color:#94a3b8;">' + _fmtDate(c.ts) + '</span>' +
-                            (c.note ? '<span style="color:#cbd5e1;font-style:italic;flex:1;margin:0 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + window.esc(c.note) + '</span>' : '<span style="flex:1;"></span>') +
-                            '<span style="font-weight:800;color:#334155;">' + _fmt(c.amt) + '</span>' +
+                            '<span style="color:' + C.muted + ';">' + _fmtDate(c.ts) + '</span>' +
+                            (c.note ? '<span style="color:' + C.note + ';font-style:italic;flex:1;margin:0 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + window.esc(c.note) + '</span>' : '<span style="flex:1;"></span>') +
+                            '<span style="font-weight:800;color:' + C.histAmt + ';">' + _fmt(c.amt) + '</span>' +
                         '</div>';
                     }).join('') +
                 '</div>';
         }
 
         return '<div class="bg-white rounded-2xl shadow-sm" id="gt-card-' + i + '" ' +
-            'style="border:1px solid #e2e8f0;padding:18px 20px;margin-bottom:16px;">' +
+            'style="background:' + C.cardBg + ';border:1px solid ' + C.cardBd + ';padding:18px 20px;margin-bottom:16px;">' +
 
             // ── Top row: emoji + name + status badge + delete
             '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px;">' +
                 '<div style="display:flex;align-items:center;gap:12px;">' +
-                    '<div style="width:44px;height:44px;border-radius:12px;background:#f8fafc;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">' + g.emoji + '</div>' +
+                    '<div style="width:44px;height:44px;border-radius:12px;background:' + C.circle + ';display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">' + (_dark ? window._emojiIco(g.emoji,'pro-ico-lg') : g.emoji) + '</div>' +
                     '<div>' +
-                        '<div style="font-size:14px;font-weight:900;color:#1e293b;">' + window.esc(g.label) + '</div>' +
-                        '<div style="font-size:11px;color:#94a3b8;margin-top:2px;">' + targetLabel + '</div>' +
+                        '<div style="font-size:14px;font-weight:900;color:' + C.name + ';">' + window.esc(g.label) + '</div>' +
+                        '<div style="font-size:11px;color:' + C.muted + ';margin-top:2px;">' + targetLabel + '</div>' +
                     '</div>' +
                 '</div>' +
                 '<div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">' +
                     '<span style="font-size:10px;font-weight:700;padding:4px 9px;border-radius:20px;white-space:nowrap;' +
                         'background:' + st.color + '18;color:' + st.color + ';">' + st.icon + ' ' + st.label + '</span>' +
                     '<button onclick="gtDeleteGoal(' + i + ')" title="' + _gtT('gt.btn.delete', 'Delete goal') + '" ' +
-                    'style="width:26px;height:26px;border-radius:8px;border:none;background:#fff1f2;color:#f43f5e;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s;" ' +
+                    'style="width:26px;height:26px;border-radius:8px;border:none;background:' + C.delBg + ';color:#f43f5e;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s;" ' +
                     'onmouseover="this.style.background=\'#ffe4e6\'" onmouseout="this.style.background=\'#fff1f2\'">🗑</button>' +
                 '</div>' +
             '</div>' +
@@ -117,13 +121,13 @@
             // ── Progress bar section
             '<div>' +
                 '<div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px;">' +
-                    '<span style="font-weight:700;color:#475569;">' + _gtT('gt.card.saved', '{amt} saved').replace('{amt}', _fmt(saved)) + '</span>' +
-                    '<span style="font-weight:900;color:#1e293b;">' + pct + '%</span>' +
+                    '<span style="font-weight:700;color:' + C.saved + ';">' + _gtT('gt.card.saved', '{amt} saved').replace('{amt}', _fmt(saved)) + '</span>' +
+                    '<span style="font-weight:900;color:' + C.name + ';">' + pct + '%</span>' +
                 '</div>' +
-                '<div style="width:100%;background:#f1f5f9;border-radius:99px;height:10px;overflow:hidden;">' +
+                '<div style="width:100%;background:' + C.track + ';border-radius:99px;height:10px;overflow:hidden;">' +
                     '<div style="height:10px;border-radius:99px;background:' + barColor + ';width:' + pct + '%;transition:width .6s ease;"></div>' +
                 '</div>' +
-                '<div style="display:flex;justify-content:space-between;font-size:10px;color:#94a3b8;margin-top:4px;">' +
+                '<div style="display:flex;justify-content:space-between;font-size:10px;color:' + C.muted + ';margin-top:4px;">' +
                     '<span>' + lastUpdatedLabel + '</span>' +
                     '<span>' + _gtT('gt.card.remaining', '{amt} remaining').replace('{amt}', _fmt(remaining)) + '</span>' +
                 '</div>' +
@@ -134,7 +138,7 @@
             // ── Update button / form placeholder
             '<div id="gt-form-' + i + '">' +
                 '<button onclick="gtShowUpdateForm(' + i + ')" ' +
-                'style="margin-top:12px;width:100%;padding:9px;border-radius:12px;font-size:13px;font-weight:700;color:#6366f1;background:rgba(99,102,241,0.06);border:1.5px dashed #c7d2fe;cursor:pointer;transition:all .15s;" ' +
+                'style="margin-top:12px;width:100%;padding:9px;border-radius:12px;font-size:13px;font-weight:700;color:' + C.updColor + ';background:' + C.updBg + ';border:1.5px dashed ' + C.updBd + ';cursor:pointer;transition:all .15s;" ' +
                 'onmouseover="this.style.background=\'rgba(99,102,241,0.12)\'" onmouseout="this.style.background=\'rgba(99,102,241,0.06)\'">' +
                 _gtT('gt.btn.update', '+ Update Progress') +
                 '</button>' +
