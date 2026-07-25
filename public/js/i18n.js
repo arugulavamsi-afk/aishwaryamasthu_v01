@@ -1154,7 +1154,7 @@
         'fp.goal.frommgr':      '(managed in Goal Planner)',
         'fp.goal.manage':       'Add / edit goals in Goal Planner →',
         'fp.goals.empty':       'No goals yet — add them in the Goal Planner below.',
-        'btn.goal.tofp':        '📋 Financial Plan →',
+        'btn.goal.tofp':        'Financial Plan →',
         'fp.goal.retirement':   'Retirement',
         'fp.goal.home':         'Buy a Home',
         'fp.goal.education':    'Education',
@@ -1409,7 +1409,7 @@
         'res.gr.posttax':       'Post-Tax Value (After LTCG)',
         'btn.save.fp':          'Save to Financial Plan',
         'lbl.action.plan':      'Investment Action Plan',
-        'gr.ltcg.label':        '📈 Tax note:',
+        'gr.ltcg.label':        'Tax note:',
         'gr.ltcg.body':         'Equity MF gains >₹1.25L/yr taxed at 12.5% LTCG. Debt MF gains taxed at slab rate.',
         'gr.ltcg.link':         'Open Tax Guide →',
         /* ── Goal Planner ── */
@@ -3742,7 +3742,7 @@
         'returnscalc.subtitle':     'You know what you invested and what it became — find the return you actually earned',
         'card.returnscalc.title':   'Returns Calculator',
         'card.returnscalc.desc':    'Invested ₹X, now worth ₹Y? · Your actual annual return · CAGR / XIRR-style',
-        'btn.gr.torc':              '🔍 What return did I get? →',
+        'btn.gr.torc':              'What return did I get? →',
         'btn.rc.togrowth':          '📈 Growth Calculator →',
         'lbl.rc.type':              'How did you invest?',
         'lbl.rc.invested':          'Total Amount Invested (₹)',
@@ -3851,7 +3851,7 @@
         'howto.budgettrack.tip':       'Consistently over budget in one category? That is where the habit change needs to happen — not everywhere at once.',
 
         // ── Goal Tracker ──────────────────────────────────────────────────
-        'page.goaltracker.h':            '🎯 Goal Tracker',
+        'page.goaltracker.h':            'Goal Tracker',
         'goaltracker.subtitle':          'Log your savings progress and stay on track toward every financial goal',
         'gt.btn.newgoal':                '+ New Goal',
         'gt.btn.back':                   '← Back',

@@ -2383,6 +2383,7 @@
         /* Generic professional-icon holder (used by window._emojiIco) */
         .pro-ico, .pro-ico-lg, .pro-ico-xl { display:inline-flex; align-items:center; justify-content:center; color:#f5c842; flex-shrink:0; vertical-align:-2px; }
         .pro-ico    { width:16px; height:16px; }
+        .pro-ico-sm { width:12px; height:12px; }
         .pro-ico-lg { width:24px; height:24px; }
         .pro-ico-xl { width:30px; height:30px; }
         [class^="pro-ico"] svg, [class*=" pro-ico"] svg { width:100%; height:100%; display:block; }
@@ -2409,3 +2410,42 @@
         #finpath-panel .path-card-title { color: rgba(242,245,240,.5) !important; }
         #finpath-panel .pro-ico, #finpath-panel .pro-ico-lg, #finpath-panel .pro-ico-xl { color:#f5c842; }
         #finpath-panel .fp-dot { display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:5px; vertical-align:0; }
+
+        /* ══════════════════════════════════════════════════════════
+           GROWTH CALCULATOR / GOAL PLANNER — royal-dark (shared panel)
+           ══════════════════════════════════════════════════════════ */
+        #growth-wrapper .bg-white { background: rgba(17,45,36,0.55) !important; box-shadow:0 8px 28px rgba(0,0,0,.35); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); }
+        #growth-wrapper .bg-slate-50 { background: rgba(255,255,255,0.06) !important; }
+        #growth-wrapper .bg-slate-100 { background: rgba(255,255,255,0.08) !important; }
+        #growth-wrapper .bg-slate-200 { background: rgba(255,255,255,0.14) !important; }
+        #growth-wrapper .bg-emerald-50 { background: rgba(52,211,153,0.12) !important; }
+        #growth-wrapper .bg-indigo-50 { background: rgba(129,140,248,0.12) !important; }
+        #growth-wrapper .border-slate-100 { border-color: rgba(255,255,255,0.08) !important; }
+        #growth-wrapper .border-slate-200 { border-color: rgba(245,200,66,0.18) !important; }
+        #growth-wrapper .border-emerald-200 { border-color: rgba(52,211,153,0.3) !important; }
+        #growth-wrapper .border-indigo-200 { border-color: rgba(129,140,248,0.3) !important; }
+        #growth-wrapper .border-amber-300 { border-color: rgba(251,191,36,0.4) !important; }
+        #growth-wrapper .text-slate-900, #growth-wrapper .text-slate-800 { color:#f2f5f0 !important; }
+        #growth-wrapper .text-slate-700 { color:rgba(242,245,240,.9) !important; }
+        #growth-wrapper .text-slate-600 { color:rgba(242,245,240,.72) !important; }
+        #growth-wrapper .text-slate-500 { color:rgba(242,245,240,.58) !important; }
+        #growth-wrapper .text-slate-400 { color:rgba(242,245,240,.42) !important; }
+        #growth-wrapper .text-emerald-900, #growth-wrapper .text-emerald-600, #growth-wrapper .text-emerald-500 { color:#6ee7b7 !important; }
+        #growth-wrapper .text-amber-900, #growth-wrapper .text-amber-800 { color:#fde68a !important; }
+        #growth-wrapper .text-amber-700, #growth-wrapper .text-amber-600, #growth-wrapper .text-amber-500 { color:#fcd34d !important; }
+        #growth-wrapper .text-indigo-900 { color:#c7d2fe !important; }
+        #growth-wrapper .text-indigo-500, #growth-wrapper .text-indigo-400 { color:#a5b4fc !important; }
+        /* inputs & selects */
+        #growth-wrapper input, #growth-wrapper select { color:#f2f5f0; }
+        #growth-wrapper input.text-slate-400 { color:rgba(242,245,240,.42) !important; }
+        #growth-wrapper select option { background:#0e241c; color:#f2f5f0; }
+        #growth-wrapper input::placeholder { color:rgba(242,245,240,.3); }
+        /* toggle track off-state already bg-slate-200 -> handled; thumb stays white */
+
+        /* Growth Calculator — toggle fix + rose (Expected Inflation) input */
+        #growth-wrapper #toggle-track.on { background: #10b981 !important; }
+        #growth-wrapper #toggle-thumb { background: #fff !important; box-shadow: 0 1px 3px rgba(0,0,0,.4); }
+        #growth-wrapper .bg-rose-50 { background: rgba(244,63,94,0.10) !important; }
+        #growth-wrapper .border-rose-200 { border-color: rgba(244,63,94,0.35) !important; }
+        #growth-wrapper .text-rose-500, #growth-wrapper .text-rose-400 { color:#fda4af !important; }
+        #growth-wrapper .text-rose-900 { color:#fecdd3 !important; }

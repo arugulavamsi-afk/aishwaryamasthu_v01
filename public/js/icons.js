@@ -210,7 +210,7 @@
         return body ? OPEN + body + CLOSE : (fallback || '');
     };
 
-    var _EMOJI_ICON = { '🧭':'finpath','📋':'finplan','🎯':'goal','📈':'fp.wealth','🕑':'fincal','⚠️':'fp.warn','⚠':'fp.warn','✅':'fp.check','🔴':'fp.warn','📊':'fp.pie','💸':'fp.sipbars','🏦':'fp.debt','🏖️':'fp.retirement','🏖':'fp.retirement','🏆':'gratuity','📝':'fp.custom','🌱':'fp.kvp','🗑':'fp.trash','🗑️':'fp.trash','🚗':'fp.vehicle','🚙':'fp.vehicle','🏥':'fp.healthcare','🎓':'fp.education','💍':'fp.marriage','✈️':'fp.travel','✈':'fp.travel','🏠':'fp.home','💰':'fp.wealth','🚀':'fp.smallcap','✏️':'fp.custom','✏':'fp.custom','🥇':'fp.gold','💧':'fp.liquid','🔒':'fp.lock','🛡️':'fp.nps','🛡':'fp.nps','🏛️':'fp.debt','🏛':'fp.debt','🌐':'fp.global' };
+    var _EMOJI_ICON = { '🧭':'finpath','📋':'finplan','🎯':'goal','📈':'fp.wealth','🕑':'fincal','⚠️':'fp.warn','⚠':'fp.warn','✅':'fp.check','🔴':'fp.warn','📊':'fp.pie','💸':'fp.sipbars','🏦':'fp.debt','🏖️':'fp.retirement','🏖':'fp.retirement','🏆':'gratuity','📝':'fp.custom','🌱':'fp.kvp','🗑':'fp.trash','🗑️':'fp.trash','🚗':'fp.vehicle','🚙':'fp.vehicle','🏥':'fp.healthcare','🎓':'fp.education','💍':'fp.marriage','✈️':'fp.travel','✈':'fp.travel','🏠':'fp.home','💰':'fp.wealth','🚀':'fp.smallcap','✏️':'fp.custom','✏':'fp.custom','🥇':'fp.gold','💧':'fp.liquid','🔒':'fp.lock','🛡️':'fp.nps','🛡':'fp.nps','🏛️':'fp.debt','🏛':'fp.debt','🌐':'fp.global','📉':'fp.q1','⚡':'fp.bolt','🧾':'taxguide' };
     window._emojiIco = function(x, cls) {
         var k = _EMOJI_ICON[x] || '';
         var s = k ? window._svgIcon(k, '') : '';
@@ -229,9 +229,13 @@
         }
     };
 
+    window._applyGrowIcons = function(root){
+        var n=(root||document).querySelectorAll('[data-growicon]');
+        for(var i=0;i<n.length;i++){ var s=window._svgIcon(n[i].getAttribute('data-growicon'),''); if(s) n[i].innerHTML=s; }
+    };
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function() { window._applyTileIcons(); });
+        document.addEventListener('DOMContentLoaded', function() { window._applyTileIcons(); window._applyGrowIcons(); });
     } else {
-        window._applyTileIcons();
+        window._applyTileIcons(); window._applyGrowIcons();
     }
 })();

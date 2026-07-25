@@ -651,7 +651,7 @@
             var barColor = pct >= 75 ? '#10b981' : pct >= 40 ? '#6366f1' : '#f59e0b';
             return '<div style="margin-bottom:5px;">' +
                 '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">' +
-                    '<span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.8);">' + g.emoji + ' ' + g.label + '</span>' +
+                    '<span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.8);">' + window._emojiIco(g.emoji,'pro-ico-sm') + ' ' + g.label + '</span>' +
                     '<span style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.5);">' + pct + '%</span>' +
                 '</div>' +
                 '<div style="height:4px;border-radius:99px;background:rgba(255,255,255,0.1);overflow:hidden;">' +
@@ -904,7 +904,7 @@
                     var bc  = pct >= 75 ? '#34d399' : pct >= 40 ? '#818cf8' : '#fbbf24';
                     return '<div>' +
                         '<div style="display:flex;justify-content:space-between;margin-bottom:3px;">' +
-                            '<span style="font-size:9.5px;font-weight:700;color:rgba(255,255,255,0.85);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:75%;">' + (g.emoji||'') + ' ' + (g.label||'') + '</span>' +
+                            '<span style="font-size:9.5px;font-weight:700;color:rgba(255,255,255,0.85);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:75%;">' + window._emojiIco((g.emoji||''),'pro-ico-sm') + ' ' + (g.label||'') + '</span>' +
                             '<span style="font-size:9px;font-weight:900;color:' + bc + ';flex-shrink:0;">' + pct + '%</span>' +
                         '</div>' +
                         '<div style="height:4px;border-radius:99px;background:rgba(255,255,255,0.1);">' +
@@ -1145,7 +1145,7 @@
             var _off = (_c * (1 - goalPct / 100)).toFixed(1);
             var facts = goals.slice(0, 4).map(function(g) {
                 var p = Math.min(100, Math.round(((g.savedAmt || 0) / (g.targetAmt || 1)) * 100));
-                return '<div class="fr"><span class="nm"><b>' + (g.emoji || '') + ' ' + (g.label || '') + '</b></span><span>' + p + '%</span></div>';
+                return '<div class="fr"><span class="nm"><b>' + window._emojiIco((g.emoji||''),'pro-ico-sm') + ' ' + (g.label || '') + '</b></span><span>' + p + '%</span></div>';
             }).join('');
             ringInner =
                 '<div class="rd-ring-wrap">' +
@@ -1278,4 +1278,4 @@
             if (typeof switchMode === 'function') switchMode('dashboard');
         }, 2000);
     });
-
+

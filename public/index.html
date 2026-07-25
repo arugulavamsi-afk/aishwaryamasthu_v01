@@ -343,7 +343,7 @@
                     <span class="font-bold text-sm flex-shrink-0" style="color:rgba(255,255,255,0.4);">→</span>
                 </button>
                 <div id="consult-tile-tip" class="items-center gap-1.5 mt-2 px-3 py-2 rounded-xl text-[11px]"
-                     style="display:none;background:rgba(245,200,66,0.1);border:1px solid rgba(245,200,66,0.3);color:#b45309;">
+                     style="display:none;background:rgba(245,200,66,0.1);border:1px solid rgba(245,200,66,0.3);color:#fcd34d;">
                     <span style="font-size:13px;flex-shrink:0;">ⓘ</span>
                     <span>Please complete <strong>My Profile</strong> to enable expert consultations</span>
                 </div>
@@ -363,19 +363,19 @@
             <!-- Growth Calculator Header -->
             <div id="growth-panel-header" class="rounded-2xl px-4 py-3 text-white shine-header flex items-center justify-between gap-3 flex-wrap" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:2px solid rgba(245,200,66,0.4);box-shadow:0 4px 18px rgba(0,0,0,0.25);">
                 <div>
-                    <h2 class="text-base font-black flex items-center gap-2" data-i18n="page.growth.h">📈 Growth Calculator</h2>
+                    <h2 class="text-base font-black flex items-center gap-2" ><span class="pro-ico" data-growicon="growth"></span><span data-i18n="page.growth.h">Growth Calculator</span></h2>
                     <p class="text-blue-200 text-[11px] mt-0.5" data-i18n="page.growth.sub">Project how your money grows over time with compound interest.</p>
                 </div>
-                <button onclick="switchMode('returnscalc')" class="flex items-center gap-1 px-3 py-1.5 rounded-xl text-[11px] font-bold" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);" data-i18n="btn.gr.torc">🔍 What return did I get? →</button>
+                <button onclick="switchMode('returnscalc')" class="flex items-center gap-1 px-3 py-1.5 rounded-xl text-[11px] font-bold" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);" ><span class="pro-ico" data-growicon="returnscalc"></span><span data-i18n="btn.gr.torc">What return did I get? →</span></button>
             </div>
 
             <!-- Goal Planner Header (hidden by default) -->
             <div id="goal-panel-header" class="hidden rounded-2xl px-4 py-3 text-white shine-header flex items-center justify-between gap-3 flex-wrap" style="background:linear-gradient(135deg,#0c2340 0%,#1a4a7a 45%,#0e5c3a 100%);border:2px solid rgba(245,200,66,0.4);box-shadow:0 4px 18px rgba(0,0,0,0.25);">
                 <div>
-                    <h2 class="text-base font-black flex items-center gap-2" data-i18n="page.goal.h">🎯 Goal Planner</h2>
+                    <h2 class="text-base font-black flex items-center gap-2" ><span class="pro-ico" data-growicon="goal"></span><span data-i18n="page.goal.h">Goal Planner</span></h2>
                     <p class="text-blue-200 text-[11px] mt-0.5" data-i18n="page.goal.sub">Calculate how much to invest monthly to reach your financial goals.</p>
                 </div>
-                <button onclick="switchMode('finplan')" class="flex items-center gap-1 px-3 py-1.5 rounded-xl text-[11px] font-bold" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);" data-i18n="btn.goal.tofp">📋 Financial Plan →</button>
+                <button onclick="switchMode('finplan')" class="flex items-center gap-1 px-3 py-1.5 rounded-xl text-[11px] font-bold" style="background:rgba(245,200,66,0.15);color:#f5c842;border:1px solid rgba(245,200,66,0.3);" ><span class="pro-ico" data-growicon="finplan"></span><span data-i18n="btn.goal.tofp">Financial Plan →</span></button>
             </div>
 
             <!-- Two-column layout -->
@@ -390,13 +390,13 @@
                 <div id="goal-type-container" class="hidden">
                     <label class="block text-xs font-bold text-emerald-600 uppercase tracking-wider mb-1" data-i18n="lbl.gr.goal">What's Your Goal?</label>
                     <select id="goal-type" onchange="onGoalTypeChange()" class="w-full px-3 py-2 bg-emerald-50 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-500 font-semibold text-sm outline-none text-emerald-900">
-                        <option value="education" data-i18n="goal.type.education">🎓 Child's Education</option>
-                        <option value="marriage" data-i18n="goal.type.marriage">💍 Marriage</option>
-                        <option value="home" data-i18n="goal.type.home">🏠 Home Purchase</option>
-                        <option value="vehicle" data-i18n="goal.type.vehicle">🚗 Buy a Vehicle</option>
-                        <option value="healthcare" data-i18n="goal.type.healthcare">🏥 Healthcare / Medical Fund</option>
-                        <option value="retirement" data-i18n="goal.type.retirement">🏖️ Retirement</option>
-                        <option value="custom" data-i18n="goal.type.custom">✏️ Write your goal</option>
+                        <option value="education" data-i18n="goal.type.education">Child's Education</option>
+                        <option value="marriage" data-i18n="goal.type.marriage">Marriage</option>
+                        <option value="home" data-i18n="goal.type.home">Home Purchase</option>
+                        <option value="vehicle" data-i18n="goal.type.vehicle">Buy a Vehicle</option>
+                        <option value="healthcare" data-i18n="goal.type.healthcare">Healthcare / Medical Fund</option>
+                        <option value="retirement" data-i18n="goal.type.retirement">Retirement</option>
+                        <option value="custom" data-i18n="goal.type.custom">Write your goal</option>
                     </select>
                     <div id="custom-goal-input" class="hidden mt-2">
                         <input type="text" id="custom-goal-text" placeholder="Describe your goal..." data-i18n-placeholder="goal.custom.ph" maxlength="100" class="w-full px-3 py-2.5 bg-white border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-500 text-sm outline-none font-medium text-slate-700" oninput="calculate()">
@@ -405,7 +405,7 @@
 
                 <!-- Goal-specific inflation section (goal mode only) -->
                 <div id="goal-inflation-section" class="hidden">
-                    <div class="rounded-xl p-2.5" style="background:linear-gradient(135deg,#fffbeb,#fef3c7);border:1.5px solid #fde68a;">
+                    <div class="rounded-xl p-2.5" style="background:rgba(245,200,66,0.10);border:1.5px solid rgba(245,200,66,0.3);">
                         <div class="flex items-center justify-between mb-1.5">
                             <span class="text-[10px] font-black text-amber-700 uppercase tracking-wider flex items-center gap-1">
                                 &#128200; <span id="goal-infl-category">Education Inflation</span>
@@ -420,7 +420,7 @@
                             <span class="text-[10px] text-amber-700 font-bold">% p.a.</span>
                             <button onclick="goalInflReset()" class="ml-auto text-[9px] text-amber-500 font-semibold underline" data-i18n="goal.infl.reset">reset</button>
                         </div>
-                        <div id="goal-infl-preview" class="hidden rounded-lg px-2 py-1 text-[10px] font-semibold leading-relaxed" style="background:rgba(146,64,14,0.08);color:#92400e;"></div>
+                        <div id="goal-infl-preview" class="hidden rounded-lg px-2 py-1 text-[10px] font-semibold leading-relaxed" style="background:rgba(245,200,66,0.10);color:#fde68a;"></div>
                     </div>
                 </div>
 
@@ -506,7 +506,7 @@
                 <!-- Short-term debt note (only in goal mode, <7 years) -->
                 <div id="short-term-note" class="debt-note rounded-xl p-2.5 text-[11px] text-amber-800 font-medium hidden">
                     <div class="flex items-start gap-2">
-                        <span class="text-sm leading-none mt-0.5">⚠️</span>
+                        <span class="pro-ico" data-growicon="fp.warn" style="color:#fbbf24;width:14px;height:14px;vertical-align:-2px;"></span>
                         <div>
                             <span class="font-bold text-amber-900" data-i18n="goal.short.title">Short-Term Goal Detected (&lt;7 Years)</span><br>
                             <span data-i18n-html="goal.short.body">For goals under 7 years, always prefer <strong>Debt investments</strong> (FD, RD, Debt Funds) even if returns are lower. Equity markets can be volatile in the short run and may not recover in time to meet your goal.</span>
@@ -539,7 +539,7 @@
 
                 <!-- Growth Results Header -->
                 <div id="growth-results-header" class="px-4 py-2.5 flex items-center gap-2.5 border-b border-slate-100" style="background: linear-gradient(135deg, #1e3a5f08 0%, #0e665508 100%);">
-                    <div class="w-7 h-7 rounded-lg flex items-center justify-center text-sm flex-shrink-0" style="background: linear-gradient(135deg, #1a5276 0%, #0d9488 100%);">📊</div>
+                    <div class="w-7 h-7 rounded-lg flex items-center justify-center text-sm flex-shrink-0" style="background: linear-gradient(135deg, #1a5276 0%, #0d9488 100%);"><span class="pro-ico" data-growicon="growth" style="color:#fff;width:15px;height:15px;"></span></div>
                     <div>
                         <div class="text-xs font-black text-slate-700 uppercase tracking-wider" data-i18n="res.gr.projhead">Projection Results</div>
                         <div class="text-[10px] text-slate-400 font-medium" data-i18n="res.gr.projsub">See how your investment grows</div>
@@ -548,7 +548,7 @@
 
                 <!-- Goal Results Header (hidden by default) -->
                 <div id="goal-results-header" class="hidden px-4 py-2.5 flex items-center gap-2.5 border-b border-slate-100" style="background: linear-gradient(135deg, #1e3a5f08 0%, #0e665508 100%);">
-                    <div class="w-7 h-7 rounded-lg flex items-center justify-center text-sm flex-shrink-0" style="background: linear-gradient(135deg, #1a5276 0%, #0d9488 100%);">🏆</div>
+                    <div class="w-7 h-7 rounded-lg flex items-center justify-center text-sm flex-shrink-0" style="background: linear-gradient(135deg, #1a5276 0%, #0d9488 100%);"><span class="pro-ico" data-growicon="goal" style="color:#fff;width:15px;height:15px;"></span></div>
                     <div>
                         <div class="text-xs font-black text-slate-700 uppercase tracking-wider" data-i18n="res.gr.goalhead">Goal Results</div>
                         <div class="text-[10px] text-slate-400 font-medium" data-i18n="res.gr.goalsub">Required investment to hit your target</div>
@@ -560,7 +560,7 @@
                 <div id="growth-validation-msg" style="display:none;" class="text-xs font-semibold rounded-lg px-3 py-2 mb-2"></div>
 
                 <div id="growth-results">
-                    <div class="mt-1.5 px-3 py-1.5 rounded-lg text-[9px] leading-relaxed" style="background:#f0fdf4;border:1px solid #86efac;color:#166534;" id="growth-ltcg-note"><strong data-i18n="gr.ltcg.label">📈 Tax note:</strong> <span data-i18n="gr.ltcg.body">Equity MF gains &gt;₹1.25L/yr taxed at 12.5% LTCG. Debt MF gains taxed at slab rate.</span> <a onclick="switchMode('taxguide')" style="cursor:pointer;text-decoration:underline;color:#059669;" data-i18n="gr.ltcg.link">Open Tax Guide →</a></div>
+                    <div class="mt-1.5 px-3 py-1.5 rounded-lg text-[9px] leading-relaxed" style="background:rgba(52,211,153,0.10);border:1px solid rgba(52,211,153,0.3);color:#6ee7b7;" id="growth-ltcg-note"><strong data-i18n="gr.ltcg.label">Tax note:</strong> <span data-i18n="gr.ltcg.body">Equity MF gains &gt;₹1.25L/yr taxed at 12.5% LTCG. Debt MF gains taxed at slab rate.</span> <a onclick="switchMode('taxguide')" style="cursor:pointer;text-decoration:underline;color:#6ee7b7;" data-i18n="gr.ltcg.link">Open Tax Guide →</a></div>
                     <div class="mt-2 mb-1"><button onclick="waShare('growth')" class="wa-share-btn shine-btn" title="Share on WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5 flex-shrink-0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.557 4.133 1.535 5.876L.057 23.43a.75.75 0 00.918.924l5.688-1.493A11.946 11.946 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.907 0-3.7-.512-5.241-1.403l-.375-.22-3.877 1.018 1.01-3.769-.234-.389A9.953 9.953 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>Share on WhatsApp</button></div>
                     <h3 id="main-result-title" class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1" data-i18n="res.gr.title">Projected Future Value</h3>
                     <div id="main-result" class="text-3xl sm:text-4xl font-black text-slate-900 break-all">₹0</div>
@@ -580,7 +580,7 @@
                     </div>
 
                     <!-- Post-Tax Value Row (shown when LTCG toggle is on) -->
-                    <div id="ltcg-result-row" class="hidden mt-2.5 rounded-xl px-3 py-2" style="background:#fff7ed;border:1px solid #fed7aa;">
+                    <div id="ltcg-result-row" class="hidden mt-2.5 rounded-xl px-3 py-2" style="background:rgba(251,146,60,0.10);border:1px solid rgba(251,146,60,0.3);">
                         <p class="text-[10px] font-black text-amber-700 uppercase tracking-wider mb-1"><span data-i18n="res.gr.posttax">Post-Tax Value (After LTCG)</span></p>
                         <p id="ltcg-posttax-val" class="text-xl font-black text-amber-800 break-all">₹0</p>
                         <div id="ltcg-posttax-words" class="num-word text-amber-600 mb-0.5">Zero</div>
@@ -599,8 +599,8 @@
                     <div class="flex flex-wrap gap-3" id="goal-cards-container"></div>
 
                     <!-- Save to Financial Plan -->
-                    <button id="gp-save-fp-btn" onclick="saveGoalToFP()" class="mt-3 w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-[11px] font-bold transition-all" style="background:linear-gradient(135deg,#fffbeb,#fef3c7);border:1.5px solid #fde68a;color:#92400e;">
-                        <span>📌</span><span data-i18n="btn.save.fp">Save to Financial Plan</span>
+                    <button id="gp-save-fp-btn" onclick="saveGoalToFP()" class="mt-3 w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-[11px] font-bold transition-all" style="background:rgba(245,200,66,0.10);border:1.5px solid rgba(245,200,66,0.3);color:#92400e;">
+                        <span class="pro-ico" data-growicon="finplan"></span><span data-i18n="btn.save.fp">Save to Financial Plan</span>
                     </button>
 
                     <div class="mt-2 mb-1"><button onclick="waShare('goal')" class="wa-share-btn shine-btn" title="Share on WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5 flex-shrink-0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.557 4.133 1.535 5.876L.057 23.43a.75.75 0 00.918.924l5.688-1.493A11.946 11.946 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.907 0-3.7-.512-5.241-1.403l-.375-.22-3.877 1.018 1.01-3.769-.234-.389A9.953 9.953 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>Share on WhatsApp</button></div>

@@ -1013,7 +1013,7 @@
                     growActEl.innerHTML = '<div class="text-[10px] font-black text-slate-500 uppercase tracking-wider mb-2">⚡ ' + _t('lbl.action.plan') + '</div>' +
                         growActs.slice(0, 4).map(function(a) {
                             return '<div class="flex items-start gap-2.5 p-3 rounded-xl border mb-2" style="background:' + a.color + '12;border-color:' + a.color + '30;">' +
-                                '<span class="text-base flex-shrink-0 mt-0.5">' + a.icon + '</span>' +
+                                window._emojiIco(a.icon,'pro-ico-lg') +
                                 '<div><div class="text-[11px] font-black uppercase tracking-wide mb-0.5" style="color:' + a.color + '">' + a.title + '</div>' +
                                 '<div class="text-xs text-slate-600 leading-relaxed">' + a.tip + '</div></div></div>';
                         }).join('');

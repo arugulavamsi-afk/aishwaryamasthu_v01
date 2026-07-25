@@ -42,22 +42,29 @@
         var target = goal.targetAmt || 1;
         var pct    = saved / target * 100;
 
-        if (pct >= 100) return { label: _gtT('gt.status.reached', 'Goal reached!'), icon: '🏆', color: '#f59e0b' };
+        if (pct >= 100) return { label: _gtT('gt.status.reached', 'Goal reached!'), icon: '🏆', ikey:'gratuity', color: '#f59e0b' };
 
-        if (!goal.createdAt) return { label: _gtT('gt.status.notstarted', 'Not started'), icon: '📝', color: '#94a3b8' };
+        if (!goal.createdAt) return { label: _gtT('gt.status.notstarted', 'Not started'), icon: '📝', ikey:'fp.custom', color: '#94a3b8' };
 
         var monthsTotal   = (goal.years || 1) * 12;
         var monthsElapsed = _monthsAgo(goal.createdAt);
 
-        if (monthsElapsed < 2) return { label: _gtT('gt.status.juststarted', 'Just started'), icon: '🌱', color: '#6366f1' };
+        if (monthsElapsed < 2) return { label: _gtT('gt.status.juststarted', 'Just started'), icon: '🌱', ikey:'fp.kvp', color: '#6366f1' };
 
         var expectedPct = Math.min(100, monthsElapsed / monthsTotal * 100);
-        if (pct >= expectedPct)        return { label: _gtT('gt.status.ontrack', 'On track'),               icon: '✅', color: '#10b981' };
-        if (pct >= expectedPct * 0.75) return { label: _gtT('gt.status.slightlybehind', 'Slightly behind'), icon: '⚠️', color: '#f59e0b' };
-        return { label: _gtT('gt.status.behind', 'Behind'), icon: '🔴', color: '#ef4444' };
+        if (pct >= expectedPct)        return { label: _gtT('gt.status.ontrack', 'On track'),               icon: '✅', ikey:'fp.check', color: '#10b981' };
+        if (pct >= expectedPct * 0.75) return { label: _gtT('gt.status.slightlybehind', 'Slightly behind'), icon: '⚠️', ikey:'fp.warn', color: '#f59e0b' };
+        return { label: _gtT('gt.status.behind', 'Behind'), icon: '🔴', ikey:'fp.warn', color: '#ef4444' };
     }
 
     // ── Card rendering ───────────────────────────────────────────────────────
+
+    function _gtDark(){ return window._currentMode === 'finpath' || window._currentMode === 'goaltracker'; }
+    function _gtC(){
+        return _gtDark()
+            ? { name:'#f2f5f0', muted:'rgba(242,245,240,.5)', saved:'rgba(242,245,240,.72)', histAmt:'rgba(242,245,240,.85)', note:'rgba(242,245,240,.45)', track:'rgba(255,255,255,0.09)', circle:'rgba(255,255,255,0.06)', cardBg:'rgba(17,45,36,0.55)', cardBd:'rgba(245,200,66,0.18)', delBg:'rgba(244,63,94,0.14)', updColor:'#a5b4fc', updBg:'rgba(129,140,248,0.10)', updBd:'rgba(129,140,248,0.4)', formBg:'rgba(255,255,255,0.05)', formBd:'rgba(245,200,66,0.18)', label:'rgba(242,245,240,.6)', inputBg:'rgba(255,255,255,0.06)', inputBd:'rgba(245,200,66,0.25)', inputText:'#f2f5f0', focus:'#f5c842', prefix:'rgba(245,200,66,.7)', secBg:'rgba(255,255,255,0.08)', secColor:'rgba(242,245,240,.7)', heading:'#f2f5f0' }
+            : { name:'#1e293b', muted:'#94a3b8', saved:'#475569', histAmt:'#334155', note:'#cbd5e1', track:'#f1f5f9', circle:'#f8fafc', cardBg:'#fff', cardBd:'#e2e8f0', delBg:'#fff1f2', updColor:'#6366f1', updBg:'rgba(99,102,241,0.06)', updBd:'#c7d2fe', formBg:'#f8fafc', formBd:'#e2e8f0', label:'#64748b', inputBg:'#fff', inputBd:'#e2e8f0', inputText:'#1e293b', focus:'#6366f1', prefix:'#94a3b8', secBg:'#f1f5f9', secColor:'#64748b', heading:'#334155' };
+    }
 
     function _renderCard(g, i) {
         var saved  = g.savedAmt  || 0;
@@ -65,10 +72,8 @@
         var pct    = Math.min(100, Math.round(saved / target * 100));
         var remaining = Math.max(0, target - saved);
         var st = _status(g);
-        var _dark = window._currentMode === 'finpath';
-        var C = _dark
-            ? { name:'#f2f5f0', muted:'rgba(242,245,240,.5)', saved:'rgba(242,245,240,.72)', histAmt:'rgba(242,245,240,.85)', note:'rgba(242,245,240,.45)', track:'rgba(255,255,255,0.09)', circle:'rgba(255,255,255,0.06)', cardBg:'rgba(17,45,36,0.55)', cardBd:'rgba(245,200,66,0.18)', delBg:'rgba(244,63,94,0.14)', updColor:'#a5b4fc', updBg:'rgba(129,140,248,0.10)', updBd:'rgba(129,140,248,0.4)' }
-            : { name:'#1e293b', muted:'#94a3b8', saved:'#475569', histAmt:'#334155', note:'#cbd5e1', track:'#f1f5f9', circle:'#f8fafc', cardBg:'#fff', cardBd:'#e2e8f0', delBg:'#fff1f2', updColor:'#6366f1', updBg:'rgba(99,102,241,0.06)', updBd:'#c7d2fe' };
+        var _dark = _gtDark();
+        var C = _gtC();
 
         var barColor = pct >= 75 ? '#10b981' : pct >= 40 ? '#6366f1' : '#f59e0b';
 
@@ -111,10 +116,10 @@
                 '</div>' +
                 '<div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">' +
                     '<span style="font-size:10px;font-weight:700;padding:4px 9px;border-radius:20px;white-space:nowrap;' +
-                        'background:' + st.color + '18;color:' + st.color + ';">' + st.icon + ' ' + st.label + '</span>' +
+                        'background:' + st.color + '18;color:' + st.color + ';">' + (_dark && st.ikey ? '<span class="pro-ico" style="color:' + st.color + ';width:11px;height:11px;vertical-align:-1px;">' + (window._svgIcon ? window._svgIcon(st.ikey,'') : '') + '</span> ' : st.icon + ' ') + st.label + '</span>' +
                     '<button onclick="gtDeleteGoal(' + i + ')" title="' + _gtT('gt.btn.delete', 'Delete goal') + '" ' +
                     'style="width:26px;height:26px;border-radius:8px;border:none;background:' + C.delBg + ';color:#f43f5e;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s;" ' +
-                    'onmouseover="this.style.background=\'#ffe4e6\'" onmouseout="this.style.background=\'#fff1f2\'">🗑</button>' +
+                    'onmouseover="this.style.background=\'#ffe4e6\'" onmouseout="this.style.background=\'' + C.delBg + '\'">' + (_dark ? '<span class="pro-ico" style="color:#f43f5e;width:14px;height:14px;">' + (window._svgIcon ? window._svgIcon('fp.trash','') : '') + '</span>' : '🗑') + '</button>' +
                 '</div>' +
             '</div>' +
 
@@ -150,6 +155,8 @@
     // ── Public: init & render ────────────────────────────────────────────────
 
     function initGoalTracker() {
+        var ic = document.querySelectorAll('#goaltracker-panel [data-goalicon]');
+        for (var i = 0; i < ic.length; i++) { var s = (typeof window._svgIcon === 'function') ? window._svgIcon(ic[i].getAttribute('data-goalicon'), '') : ''; if (s) ic[i].innerHTML = s; }
         _renderAll();
     }
     window.initGoalTracker = initGoalTracker;
@@ -158,13 +165,14 @@
         var container = document.getElementById('gt-goals-container');
         if (!container) return;
         var goals = window._savedGoals || [];
+        var C = _gtC();
 
         if (goals.length === 0) {
             container.innerHTML =
                 '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center;">' +
-                    '<div style="font-size:52px;margin-bottom:12px;">🎯</div>' +
-                    '<div style="font-size:15px;font-weight:800;color:#334155;margin-bottom:6px;">' + _gtT('gt.empty.title', 'No goals saved yet') + '</div>' +
-                    '<div style="font-size:12px;color:#94a3b8;margin-bottom:20px;">' + _gtT('gt.empty.sub', 'Use the Goal Planner to set up your goals, then track them here.') + '</div>' +
+                    '<div style="margin-bottom:12px;"><span class="pro-ico" style="width:48px;height:48px;color:#f5c842;">' + (window._svgIcon ? window._svgIcon('goal','') : '') + '</span></div>' +
+                    '<div style="font-size:15px;font-weight:800;color:' + C.heading + ';margin-bottom:6px;">' + _gtT('gt.empty.title', 'No goals saved yet') + '</div>' +
+                    '<div style="font-size:12px;color:' + C.muted + ';margin-bottom:20px;">' + _gtT('gt.empty.sub', 'Use the Goal Planner to set up your goals, then track them here.') + '</div>' +
                     '<button onclick="switchMode(\'goal\')" ' +
                     'style="padding:10px 22px;border-radius:12px;background:#6366f1;color:#fff;font-size:13px;font-weight:700;border:none;cursor:pointer;">' +
                     _gtT('gt.empty.cta', 'Open Goal Planner →') +
@@ -183,27 +191,28 @@
         if (!g) return;
         var formDiv = document.getElementById('gt-form-' + idx);
         if (!formDiv) return;
+        var C = _gtC();
 
         formDiv.innerHTML =
-            '<div style="margin-top:12px;padding:14px;border-radius:14px;background:#f8fafc;border:1.5px solid #e2e8f0;">' +
-                '<div style="font-size:11px;font-weight:600;color:#64748b;margin-bottom:10px;">' +
-                    _gtT('gt.form.label', 'Total saved toward {name} so far:').replace('{name}', '<strong style="color:#1e293b;">' + window.esc(g.label) + '</strong>') +
+            '<div style="margin-top:12px;padding:14px;border-radius:14px;background:' + C.formBg + ';border:1.5px solid ' + C.formBd + ';">' +
+                '<div style="font-size:11px;font-weight:600;color:' + C.label + ';margin-bottom:10px;">' +
+                    _gtT('gt.form.label', 'Total saved toward {name} so far:').replace('{name}', '<strong style="color:' + C.name + ';">' + window.esc(g.label) + '</strong>') +
                 '</div>' +
                 '<div style="position:relative;margin-bottom:8px;">' +
-                    '<span style="position:absolute;left:11px;top:50%;transform:translateY(-50%);font-weight:800;color:#94a3b8;font-size:14px;pointer-events:none;">₹</span>' +
+                    '<span style="position:absolute;left:11px;top:50%;transform:translateY(-50%);font-weight:800;color:' + C.prefix + ';font-size:14px;pointer-events:none;">₹</span>' +
                     '<input type="text" id="gt-amt-' + idx + '" inputmode="numeric" placeholder="' + _gtT('gt.form.amtph', 'e.g. 1,50,000') + '" ' +
-                    'style="width:100%;box-sizing:border-box;padding:9px 12px 9px 28px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;font-weight:700;color:#1e293b;outline:none;transition:border .15s;" ' +
-                    'onfocus="this.style.borderColor=\'#6366f1\'" onblur="this.style.borderColor=\'#e2e8f0\'" ' +
+                    'style="width:100%;box-sizing:border-box;padding:9px 12px 9px 28px;background:' + C.inputBg + ';border:1.5px solid ' + C.inputBd + ';border-radius:10px;font-size:14px;font-weight:700;color:' + C.inputText + ';outline:none;transition:border .15s;" ' +
+                    'onfocus="this.style.borderColor=\'' + C.focus + '\'" onblur="this.style.borderColor=\'' + C.inputBd + '\'" ' +
                     'oninput="gtFmtInput(this)" value="' + (g.savedAmt > 0 ? Number(g.savedAmt).toLocaleString('en-IN') : '') + '">' +
                 '</div>' +
                 '<input type="text" id="gt-note-' + idx + '" placeholder="' + _gtT('gt.form.noteph', 'Note (optional) — e.g. Added FD maturity proceeds') + '" ' +
-                'style="width:100%;box-sizing:border-box;padding:8px 12px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:12px;color:#334155;outline:none;margin-bottom:10px;transition:border .15s;" ' +
-                'onfocus="this.style.borderColor=\'#6366f1\'" onblur="this.style.borderColor=\'#e2e8f0\'">' +
+                'style="width:100%;box-sizing:border-box;padding:8px 12px;background:' + C.inputBg + ';border:1.5px solid ' + C.inputBd + ';border-radius:10px;font-size:12px;color:' + C.inputText + ';outline:none;margin-bottom:10px;transition:border .15s;" ' +
+                'onfocus="this.style.borderColor=\'' + C.focus + '\'" onblur="this.style.borderColor=\'' + C.inputBd + '\'">' +
                 '<div style="display:flex;gap:8px;">' +
                     '<button onclick="gtSaveCheckIn(' + idx + ')" ' +
                     'style="flex:1;padding:9px;border-radius:10px;background:#6366f1;color:#fff;font-size:13px;font-weight:700;border:none;cursor:pointer;">' + _gtT('gt.btn.savecheckin', 'Save Check-in') + '</button>' +
                     '<button onclick="gtCancelUpdate(' + idx + ')" ' +
-                    'style="padding:9px 16px;border-radius:10px;background:#f1f5f9;color:#64748b;font-size:13px;font-weight:600;border:none;cursor:pointer;">' + _gtT('gt.btn.cancel', 'Cancel') + '</button>' +
+                    'style="padding:9px 16px;border-radius:10px;background:' + C.secBg + ';color:' + C.secColor + ';font-size:13px;font-weight:600;border:none;cursor:pointer;">' + _gtT('gt.btn.cancel', 'Cancel') + '</button>' +
                 '</div>' +
             '</div>';
 
@@ -273,20 +282,21 @@
         if (!card) return;
         var g = (window._savedGoals || [])[idx];
         if (!g) return;
+        var C = _gtC();
 
         // Replace card content with inline confirmation
         card.innerHTML =
             '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">' +
-                '<div style="font-size:22px;flex-shrink:0;">' + g.emoji + '</div>' +
+                '<div style="font-size:22px;flex-shrink:0;">' + (_gtDark() ? window._emojiIco(g.emoji,'pro-ico-lg') : g.emoji) + '</div>' +
                 '<div style="flex:1;min-width:0;">' +
-                    '<div style="font-size:13px;font-weight:800;color:#1e293b;margin-bottom:2px;">' + _gtT('gt.del.confirm', 'Remove {name}?').replace('{name}', '<em>' + window.esc(g.label) + '</em>') + '</div>' +
-                    '<div style="font-size:11px;color:#94a3b8;">' + _gtT('gt.del.sub', 'This will delete the goal and all check-in history.') + '</div>' +
+                    '<div style="font-size:13px;font-weight:800;color:' + C.name + ';margin-bottom:2px;">' + _gtT('gt.del.confirm', 'Remove {name}?').replace('{name}', '<em>' + window.esc(g.label) + '</em>') + '</div>' +
+                    '<div style="font-size:11px;color:' + C.muted + ';">' + _gtT('gt.del.sub', 'This will delete the goal and all check-in history.') + '</div>' +
                 '</div>' +
                 '<div style="display:flex;gap:8px;flex-shrink:0;">' +
                     '<button onclick="gtConfirmDelete(' + idx + ')" ' +
                     'style="padding:7px 14px;border-radius:10px;background:#ef4444;color:#fff;font-size:12px;font-weight:700;border:none;cursor:pointer;">' + _gtT('gt.btn.confirmdelete', 'Delete') + '</button>' +
                     '<button onclick="gtCancelDelete(' + idx + ')" ' +
-                    'style="padding:7px 14px;border-radius:10px;background:#f1f5f9;color:#64748b;font-size:12px;font-weight:600;border:none;cursor:pointer;">' + _gtT('gt.btn.cancel', 'Cancel') + '</button>' +
+                    'style="padding:7px 14px;border-radius:10px;background:' + C.secBg + ';color:' + C.secColor + ';font-size:12px;font-weight:600;border:none;cursor:pointer;">' + _gtT('gt.btn.cancel', 'Cancel') + '</button>' +
                 '</div>' +
             '</div>';
     }
