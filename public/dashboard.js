@@ -1057,18 +1057,23 @@
         if (_fire) {
             // Marks a figure that leans on a default expense/inflation assumption
             // because My Profile has none — the number is ours, not the user's.
-            var _est = _fire.assumed
-                ? '<span class="rd-est" title="' + _dashEsc(_t('dash.fire.esttip')) + '">' + _t('dash.fire.est') + '</span>'
-                : '';
+            // Caption sits on its own line below the number ("yrs", plus "· est."
+            // when the figure leans on a default assumption). Keeping it off the
+            // number's line lets the number itself centre cleanly instead of being
+            // pulled left by the trailing text.
+            var _fireSub = '<span class="rd-fire-sub"'
+                + (_fire.assumed ? ' title="' + _dashEsc(_t('dash.fire.esttip')) + '"' : '')
+                + '>' + _t('dash.fire.yrs')
+                + (_fire.assumed ? ' · ' + _t('dash.fire.est') : '') + '</span>';
             if (_fire.beyond) {
                 // Never reaches 25× expenses inside the horizon. This is a computed
                 // answer, so it gets a number and a red chip — not the empty state,
                 // which would misread as "you haven't saved a plan".
-                fireBig  = '<span class="rd-fire-n">60+</span><small> ' + _t('dash.fire.yrs') + '</small>' + _est;
+                fireBig  = '<span class="rd-fire-n">60+</span>' + _fireSub;
                 fireChip = '<span class="rd-chip rd-chip-r">' + _t('dash.fire.beyond') + '</span>';
             } else {
                 var _fireIn = _fire.age - (_fPlan.age || 30);
-                fireBig = '<span class="rd-fire-n">' + _fire.age + '</span><small> ' + _t('dash.fire.yrs') + '</small>' + _est;
+                fireBig = '<span class="rd-fire-n">' + _fire.age + '</span>' + _fireSub;
                 fireChip = _fireIn <= 0
                     ? '<span class="rd-chip rd-chip-e">' + _t('dash.fire.now') + '</span>'
                     : '<span class="rd-chip ' + (_fire.age <= (_fPlan.retireAge || 60) ? 'rd-chip-e' : 'rd-chip-g') + '">' + _t('dash.fire.in').replace('{n}', _fireIn) + '</span>';
