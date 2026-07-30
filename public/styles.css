@@ -2468,20 +2468,26 @@
         #growth-wrapper .text-rose-500, #growth-wrapper .text-rose-400 { color:#fda4af !important; }
         #growth-wrapper .text-rose-900 { color:#fecdd3 !important; }
 
-        /* Mobile: compact dashboard so all 4 KPI tiles + trajectory peek fit at a glance */
+        /* Mobile: compact dashboard so all 4 KPI tiles + trajectory peek fit at a glance.
+           Layout per tile: the number/wheel is centred and large in the body, the
+           title sits centred at the very bottom (pushed down by margin-top:auto). */
         @media (max-width: 760px) {
             .rd-head { margin-bottom: 14px; padding-top: 4px; }
             .rd-stats { gap: 10px; margin-bottom: 10px; }
-            .rd-stat { padding: 13px 15px; border-radius: 16px; }
-            .rd-lbl { font-size: 9.5px; letter-spacing: .1em; }
-            .rd-big { font-size: 30px; margin-top: 6px; }
-            .rd-big small { font-size: 15px; }
-            .rd-fire-n { font-size: 46px; }
-            /* FinHealth wheel: pushed to the right edge of its tile and enlarged
-               so it fills the empty space instead of sitting small on the left. */
-            .rd-ring-sc { width: 92px; height: 92px; }
-            .rd-ring-i { gap: 8px; margin-top: 4px; }
-            .rd-ring-side .rd-ring-i { flex-direction: column; align-items: flex-end; text-align: right; }
-            .rd-chip { font-size: 10px; padding: 3px 9px; margin-top: 6px; }
+            .rd-stat { padding: 15px 12px 13px; border-radius: 16px;
+                align-items: center; text-align: center; justify-content: center; gap: 6px; }
+            /* number / wheel — top-centred, large */
+            .rd-big { order: 1; margin: 0; font-size: 34px; }
+            .rd-big small { font-size: 16px; }
+            .rd-fire-n { font-size: 52px; }
+            .rd-ring-i { order: 1; margin: 0; gap: 4px;
+                flex-direction: column; align-items: center; }
+            .rd-ring-side .rd-ring-i { align-items: center; text-align: center; }
+            .rd-ring-sc { width: 104px; height: 104px; }
+            /* chip — sits just under the number/wheel */
+            .rd-chip { order: 5; margin: 0; font-size: 10px; padding: 3px 9px; }
+            /* title — centred at the bottom of the tile */
+            .rd-lbl { order: 10; margin-top: auto; padding-top: 8px;
+                width: 100%; text-align: center; font-size: 9.5px; letter-spacing: .12em; }
             .rd-est { font-size: 9px; }
         }
