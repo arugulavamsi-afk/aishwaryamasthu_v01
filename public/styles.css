@@ -777,6 +777,11 @@
             .splash-lang-btn { width: 32px; height: 32px; font-size: 11px; flex-shrink: 0; padding: 0; }
             /* push the crest/content down so the top-centered coins clear the mandala rings */
             #splash-inner { padding-top: 54px; }
+            /* Reserve clearance below the auth card so the last button (Continue
+               with Google) never collides with the pinned regulatory disclaimer.
+               A margin on the card is honoured at scroll-end where a parent
+               padding-bottom gets dropped by the flex-column overflow quirk. */
+            .auth-panel { margin-bottom: 76px; }
         }
         @media (max-width: 360px) {
             #splash-lang-bar { gap: 6px !important; top: 10px !important; }
@@ -2469,11 +2474,14 @@
             .rd-stats { gap: 10px; margin-bottom: 10px; }
             .rd-stat { padding: 13px 15px; border-radius: 16px; }
             .rd-lbl { font-size: 9.5px; letter-spacing: .1em; }
-            .rd-big { font-size: 22px; margin-top: 5px; }
-            .rd-big small { font-size: 12px; }
-            .rd-fire-n { font-size: 32px; }
-            .rd-ring-sc { width: 72px; height: 72px; }
-            .rd-ring-i { gap: 10px; margin-top: 4px; }
+            .rd-big { font-size: 30px; margin-top: 6px; }
+            .rd-big small { font-size: 15px; }
+            .rd-fire-n { font-size: 46px; }
+            /* FinHealth wheel: pushed to the right edge of its tile and enlarged
+               so it fills the empty space instead of sitting small on the left. */
+            .rd-ring-sc { width: 92px; height: 92px; }
+            .rd-ring-i { gap: 8px; margin-top: 4px; }
+            .rd-ring-side .rd-ring-i { flex-direction: column; align-items: flex-end; text-align: right; }
             .rd-chip { font-size: 10px; padding: 3px 9px; margin-top: 6px; }
-            .rd-est { font-size: 8.5px; }
+            .rd-est { font-size: 9px; }
         }
