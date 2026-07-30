@@ -404,6 +404,16 @@
                   '\nCheck yours 👇';
         }
 
+        else if (page === 'fireage') {
+            var faAge  = document.querySelector('#fa-result .fa-big')?.textContent?.replace(/\s+/g, ' ').trim() || '';
+            var faChip = document.querySelector('#fa-result .fa-hchip')?.textContent?.trim() || '';
+            msg = '🔥 I found my *FIRE age* on Aishwaryamasthu!\n' +
+                  (faAge  ? 'I could reach financial independence at *' + faAge + '*\n' : '') +
+                  (faChip ? faChip + '\n' : '') +
+                  'Based on the 25× / 4% rule · Lean, Fat & Coast FIRE too\n' +
+                  '\nFind your FIRE age 👇';
+        }
+
         if (!msg) {
             msg = '📊 Check out *Aishwaryamasthu* — India\'s best free financial planning tool!\n\n' +
                   'SIP calculator · Goal planner · EPF projector · SSA planner · Tax guide & more 👇';

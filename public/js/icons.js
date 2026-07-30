@@ -52,6 +52,8 @@
         finplan:      '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4a3 3 0 0 1 6 0"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="15" y2="15"/><line x1="9" y1="18" x2="13" y2="18"/>',
         /* financial path — compass */
         finpath:      '<circle cx="12" cy="12" r="9"/><polygon points="14.8 9.2 13 13 9.2 14.8 11 11 14.8 9.2"/>',
+        /* FIRE age — flame (financial independence, retire early) */
+        fireage:      '<path d="M12 2c2 3.5 5 5 5 9a5 5 0 0 1-10 0c0-1.7.7-3 1.8-4 .1 1.2.9 2 1.7 2.2C9.6 7.6 10 4.8 12 2z"/>',
         /* tax guide — receipt */
         taxguide:     '<path d="M6 3h12v18l-2-1.5L14 21l-2-1.5L10 21l-2-1.5L6 21V3z"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="9" y1="12" x2="15" y2="12"/>',
         /* health score — heart pulse */

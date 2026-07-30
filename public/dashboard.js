@@ -35,6 +35,7 @@
         nomtrack:     { icon:'📜', title:'Nomination Tracker & Will',   color:'#7c3aed' },
         budgettrack:  { icon:'📊', title:'Budget & Expense Tracker',    color:'#0891b2' },
         mymfs:        { icon:'★',  title:'My Mutual Funds',             color:'#f5c842' },
+        fireage:      { icon:'🔥', title:'FIRE Age Calculator',        color:'#ea580c' },
     };
 
     function _dashGetFavs() {
@@ -130,6 +131,7 @@
         { mode:'homeloan',     emoji:'🏠', title:'Home Loan Advisor',              desc:'EMI, rent vs buy, prepayment, home loan tax saving' },
         { mode:'stepupsip',    emoji:'🪜', title:'Step-Up SIP Calculator',         desc:'Annual SIP increase, flat vs step-up, corpus gap' },
         { mode:'retirementhub',emoji:'🏖️', title:'Retirement Hub',                desc:'EPF PPF NPS SIP retirement corpus, SWP drawdown income' },
+        { mode:'fireage',      emoji:'🔥', title:'FIRE Age Calculator',            desc:'Financial independence retire early, FIRE age, 4% rule 25x corpus, Lean Fat Coast FIRE, when can I retire' },
         { mode:'epfcalc',      emoji:'🏦', title:'EPF Corpus Projector',           desc:'EPF retirement corpus, basic salary, employer contribution' },
         { mode:'ppfnps',       emoji:'🏛️', title:'PPF & NPS Calculator',          desc:'PPF NPS 80C 80CCD tax deductions, lock-in corpus' },
         { mode:'insure',       emoji:'🛡️', title:'Insurance Adequacy',            desc:'Term life insurance, health insurance, HLV, underinsurance check' },
@@ -1098,7 +1100,7 @@
             '<div class="rd-stats">' +
                 _stat('networth',    _t('dash.nw.val'),       nwBig, nwChip) +
                 _stat('healthscore', _t('dash.card.hs'),      hsBig, hsChip, hsRing) +
-                _stat('finpath',     _t('dash.card.fire'),    fireBig, fireChip) +
+                _stat('fireage',     _t('dash.card.fire'),    fireBig, fireChip) +
                 _stat('budgettrack', _t('dash.card.budget'),  btBig, btChip) +
             '</div>';
 
