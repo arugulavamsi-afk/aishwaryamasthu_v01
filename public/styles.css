@@ -2469,25 +2469,27 @@
         #growth-wrapper .text-rose-900 { color:#fecdd3 !important; }
 
         /* Mobile: compact dashboard so all 4 KPI tiles + trajectory peek fit at a glance.
-           Layout per tile: the number/wheel is centred and large in the body, the
-           title sits centred at the very bottom (pushed down by margin-top:auto). */
+           Layout per tile: the number/wheel + chip form one block that is vertically
+           CENTRED in the tile body (equal gap above and below — no dead space at the
+           bottom), and the title sits centred at the very bottom. The equal top auto
+           margins on the number/wheel AND the title split the free space evenly. */
         @media (max-width: 760px) {
             .rd-head { margin-bottom: 14px; padding-top: 4px; }
             .rd-stats { gap: 10px; margin-bottom: 10px; }
-            .rd-stat { padding: 15px 12px 13px; border-radius: 16px;
-                align-items: center; text-align: center; justify-content: center; gap: 6px; }
-            /* number / wheel — top-centred, large */
-            .rd-big { order: 1; margin: 0; font-size: 34px; }
+            .rd-stat { padding: 16px 12px 14px; border-radius: 16px;
+                align-items: center; text-align: center; justify-content: flex-start; gap: 8px; }
+            /* number / wheel — large, centred vertically via margin-top:auto */
+            .rd-big { order: 1; margin: auto 0 0; font-size: 34px; }
             .rd-big small { font-size: 16px; }
-            .rd-fire-n { font-size: 52px; }
-            .rd-ring-i { order: 1; margin: 0; gap: 4px;
+            .rd-fire-n { font-size: 58px; }
+            .rd-ring-i { order: 1; margin: auto 0 0; gap: 4px;
                 flex-direction: column; align-items: center; }
             .rd-ring-side .rd-ring-i { align-items: center; text-align: center; }
-            .rd-ring-sc { width: 104px; height: 104px; }
+            .rd-ring-sc { width: 112px; height: 112px; }
             /* chip — sits just under the number/wheel */
-            .rd-chip { order: 5; margin: 0; font-size: 10px; padding: 3px 9px; }
-            /* title — centred at the bottom of the tile */
-            .rd-lbl { order: 10; margin-top: auto; padding-top: 8px;
-                width: 100%; text-align: center; font-size: 9.5px; letter-spacing: .12em; }
+            .rd-chip { order: 5; margin: 0; font-size: 10.5px; padding: 4px 10px; }
+            /* title — centred at the bottom; matching auto margin balances the block */
+            .rd-lbl { order: 10; margin: auto 0 0; padding-top: 8px;
+                width: 100%; text-align: center; font-size: 10px; letter-spacing: .12em; }
             .rd-est { font-size: 9px; }
         }
