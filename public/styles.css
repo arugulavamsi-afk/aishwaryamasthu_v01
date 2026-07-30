@@ -254,7 +254,7 @@
         }
         .rd-cta:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(245,200,66,0.38); }
         .rd-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 14px; }
-        @media (max-width: 760px) { .rd-stats { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 760px) { .rd-stats { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 1fr; } }
         /* min-width:0 — grid items default to min-width:auto, so a 1fr column will
            not shrink below its content's min-content width and instead pushes the
            whole document wider than the viewport, clipping the sticky nav. */
@@ -752,7 +752,7 @@
 
         /* ── Splash language toggle — round gold coins ── */
         .splash-lang-btn {
-            width: 36px; height: 36px; border-radius: 50%;
+            width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
             font-size: 12px; font-weight: 600;
             background: rgba(233,196,99,0.05); color: #e9c463;
             border: 1px solid rgba(233,196,99,0.35); cursor: pointer; transition: all .25s;
@@ -767,7 +767,9 @@
                 position: static !important;
                 align-self: flex-end;
                 margin: 0 14px 2px;
+                flex-wrap: nowrap;
             }
+            .splash-lang-btn { width: 34px; height: 34px; font-size: 11px; }
         }
 
         .splash-skip {
