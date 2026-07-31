@@ -25,6 +25,50 @@
             unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
         }
 
+        /* ── Splash TITLE face — same Cormorant roman, but `optional` so it is
+              never mid-render swapped. Preloaded in index.html <head>, so on a
+              warm/normal load it is ready at first paint and the title shows in
+              Cormorant immediately. On a rare slow cold load the fallback below
+              is used steadily (no swap) — so the big title never flashes larger
+              then resizes down. Kept a separate family so the rest of the app's
+              Cormorant text keeps its normal `swap` behaviour. ── */
+        @font-face {
+            font-family: 'Cormorant Display';
+            font-style: normal;
+            font-weight: 500 700;
+            font-display: optional;
+            src: url('fonts/cormorant-garamond-roman.woff2') format('woff2');
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+        }
+        /* Metric-matched Georgia stand-in: measured from the Cormorant woff2
+           (x-height 0.386em, ascent 0.924em, descent 0.287em) so if the
+           fallback ever shows, its size and line box match the real title —
+           no oversized flash, no layout shift of the elements below. */
+        @font-face {
+            font-family: 'Cormorant Display Fallback';
+            src: local('Georgia'), local('Times New Roman'), local('Times');
+            size-adjust: 80.18%;
+            ascent-override: 115.25%;
+            descent-override: 35.80%;
+            line-gap-override: 0%;
+        }
+
+        /* ── Inter (UI/body font) loads async from Google Fonts, so it isn't
+              ready at first paint — the system sans-serif shows first, then Inter
+              swaps in and the text (e.g. the 'Enter the Dashboard' button label)
+              visibly resizes. This Arial-based stand-in is metric-matched to
+              Inter (avg width, ascent 0.969em, descent 0.224em) so when Inter
+              swaps in there is no size jump or reflow. Used in every UI text
+              stack below. ── */
+        @font-face {
+            font-family: 'Inter Fallback';
+            src: local('Arial'), local('Helvetica Neue'), local('Helvetica');
+            size-adjust: 107.63%;
+            ascent-override: 90.01%;
+            descent-override: 22.41%;
+            line-gap-override: 0%;
+        }
+
         /* ── Global smoothness ── */
         *, *::before, *::after {
             -webkit-tap-highlight-color: transparent; /* no blue flash on tap */
@@ -39,7 +83,7 @@
 
         body {
             overflow-x: hidden;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', 'Inter Fallback', sans-serif;
             /* Royal Heritage backdrop — matches the splash screen */
             background:
                 radial-gradient(1200px 700px at 50% -10%, #123529 0%, transparent 60%),
@@ -152,7 +196,7 @@
             position: absolute; right: -2px; top: 50%; transform: translateY(-50%); z-index: 2;
             width: 26px; height: 26px; border-radius: 999px; padding: 0;
             border: 1px solid rgba(245,200,66,0.35); background: rgba(10,31,26,0.92);
-            color: #f5c842; font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 800;
+            color: #f5c842; font-family: 'Inter', 'Inter Fallback', sans-serif; font-size: 15px; font-weight: 800;
             line-height: 1; display: flex; align-items: center; justify-content: center;
             cursor: pointer; transition: opacity .15s, background .15s;
         }
@@ -169,7 +213,7 @@
         }
         .nav-pills::-webkit-scrollbar { display: none; }
         .nav-pill {
-            font-family: 'Inter', sans-serif; font-size: 12.5px; font-weight: 600;
+            font-family: 'Inter', 'Inter Fallback', sans-serif; font-size: 12.5px; font-weight: 600;
             color: #9db3ad; background: none; border: none; border-radius: 999px;
             padding: 8px 15px; cursor: pointer; white-space: nowrap; transition: color .15s, background .15s;
         }
@@ -247,7 +291,7 @@
         .rd-date { font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: #f5c842; font-weight: 700; margin-bottom: 8px; }
         .rd-title { font-size: clamp(1.6rem, 3.2vw, 2.4rem); font-weight: 800; color: #f2f5f0; letter-spacing: -.02em; line-height: 1.12; }
         .rd-cta {
-            font-family: 'Inter', sans-serif; font-weight: 800; font-size: 14px; color: #162a10;
+            font-family: 'Inter', 'Inter Fallback', sans-serif; font-weight: 800; font-size: 14px; color: #162a10;
             background: linear-gradient(130deg, #e8d5a3 0%, #f5c842 40%, #e8a44a 100%);
             padding: 13px 26px; border-radius: 999px; border: none; cursor: pointer;
             box-shadow: 0 8px 24px rgba(245,200,66,0.28); transition: transform .15s, box-shadow .15s; white-space: nowrap;
@@ -636,7 +680,7 @@
 
         /* Splash title — gold-foil serif with a slow travelling shine */
         .splash-title {
-            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-family: 'Cormorant Display', 'Cormorant Display Fallback', Georgia, serif;
             font-weight: 600;
             font-size: clamp(2.6rem, 5vw, 4.1rem);
             line-height: 1.1;
@@ -895,7 +939,7 @@
             font-weight: 500;
             outline: none;
             transition: border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', 'Inter Fallback', sans-serif;
             box-sizing: border-box;
         }
         .auth-input::placeholder { color: rgba(243,233,210,0.28); }
@@ -918,7 +962,7 @@
             box-shadow: 0 10px 28px rgba(233,196,99,0.25);
             transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s;
             margin-top: 4px;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', 'Inter Fallback', sans-serif;
             position: relative;
             overflow: hidden;
         }
@@ -973,7 +1017,7 @@
             font-weight: 700;
             cursor: pointer;
             font-size: 0.72rem;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', 'Inter Fallback', sans-serif;
             text-decoration: underline;
         }
         .auth-row-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -986,7 +1030,7 @@
             font-weight: 700;
             cursor: pointer;
             font-size: 0.68rem;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', 'Inter Fallback', sans-serif;
             transition: color 0.15s;
         }
         .auth-link-btn:hover { color: #f5c842; }
@@ -1007,7 +1051,7 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', 'Inter Fallback', sans-serif;
             transition: background 0.15s, border-color 0.15s;
         }
         .auth-google-btn:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.3); }
@@ -1043,7 +1087,7 @@
             color: #071e22; cursor: pointer;
             box-shadow: 0 6px 20px rgba(245,200,66,0.4);
             transition: transform 0.15s, box-shadow 0.15s;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', 'Inter Fallback', sans-serif;
             position: relative;
             overflow: hidden;
         }
@@ -1062,7 +1106,7 @@
             font-size: 0.68rem; font-weight: 600; letter-spacing: 0.07em;
             color: rgba(232,213,163,0.35); background: none; border: none;
             cursor: pointer; text-transform: uppercase;
-            transition: color 0.15s; font-family: 'Inter', sans-serif;
+            transition: color 0.15s; font-family: 'Inter', 'Inter Fallback', sans-serif;
         }
         .auth-logout-btn:hover { color: rgba(232,213,163,0.65); }
 

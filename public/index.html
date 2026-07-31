@@ -36,6 +36,9 @@
     <!-- Chart.js moved to bottom of body — not needed for splash screen -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Splash brand serif: preload so the big title paints in Cormorant from
+         the first frame — no larger fallback flashing then resizing down. -->
+    <link rel="preload" href="fonts/cormorant-garamond-roman.woff2" as="font" type="font/woff2" crossorigin>
     <!-- Inter (UI/body): async — not needed for splash first paint.
          Cormorant Garamond (display/brand serif) is self-hosted in styles.css -->
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
