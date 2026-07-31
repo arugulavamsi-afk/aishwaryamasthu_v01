@@ -1306,6 +1306,13 @@
         'dash.empty.goals':         'Set Your Goals',
         'dash.empty.budget':        'Set Up Budget',
         'dash.tap':                 'Tap to open →',
+        'card.fundpicker.title':    'Fund Picker Guide',
+        'card.fundpicker.desc':     'Alpha · Sharpe · Sortino · Expense ratio — how to pick the right fund',
+        'card.fireage.title':       'FIRE Age Calculator',
+        'card.fireage.desc':        'Financial independence, retire early · 4% rule · 25× corpus · Lean/Fat/Coast FIRE',
+        'dash.aria.score':          '{n} out of 100',
+        'disc.footer.title':        '⚠️ Important Disclaimer — Please Read',
+        'disc.footer.body':         '<strong class="disc-strong">Aishwaryamasthu is an educational financial calculator — not SEBI-registered investment advice.</strong> This tool is intended solely for financial literacy and illustrative planning purposes. It does not constitute investment advisory services, portfolio management, or a recommendation to buy, sell, or hold any security or financial product. The projections, scores, fund rankings, and metrics shown are <strong class="disc-strong">estimates based on historical data and assumptions</strong> — actual returns may vary materially. Mutual fund investments are subject to market risks. Past performance is not indicative of future results. Data sourced from AMFI (mfapi.in) may have delays or inaccuracies. <strong class="disc-strong">Before making any investment decision, please consult a SEBI-Registered Investment Adviser (RIA) or a qualified financial planner.</strong>',
         'dash.ts.updated':          'Updated {t}',
         'dash.ts.notrun':           'Not yet run',
         'dash.ts.notyetupdated':    'Not yet updated',
@@ -4429,6 +4436,9 @@
         }
         if (_cm === 'dashboard' || _cm === 'dashcat-calc' || _cm === 'dashcat-mf' || _cm === 'dashcat-tax' || _cm === 'dashcat-fav' || _cm === 'dashcat-situation') {
             if (typeof dashRefreshHome === 'function') try { dashRefreshHome(); } catch(e) {}
+            // Re-render the JS-built tool grids so their localized titles/descriptions update live
+            if (typeof initDashFav === 'function') try { initDashFav(); } catch(e) {}
+            if (_cm === 'dashcat-situation' && typeof dashReopenSituation === 'function') try { dashReopenSituation(); } catch(e) {}
         }
         if (_cm === 'growth' || _cm === 'goal' || _cm === 'inflation') {
             if (typeof growthApplyLang === 'function') try { growthApplyLang(); } catch(e) {}

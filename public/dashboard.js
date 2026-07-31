@@ -38,6 +38,31 @@
         fireage:      { icon:'🔥', title:'FIRE Age Calculator',        color:'#ea580c' },
     };
 
+    // Map each tool mode to its translated card.<infix>.{title,desc} keys (these
+    // already exist and are translated in all 4 languages for the static category
+    // pages). Lets the JS-rendered cards (favourites, search, situation) show
+    // localized titles/descriptions instead of the hardcoded English above.
+    var _dashCardKey = {
+        growth:'growth', goal:'goal', homeloan:'hl', stepupsip:'su', epfcalc:'epf',
+        ppfnps:'ppfnps', insure:'insure', mfexplorer:'mfe', mfkit:'mfk', fundpicker:'fundpicker',
+        coffeecan:'coffeecan', finplan:'finplan', finpath:'finpath', taxguide:'tax', healthscore:'hs',
+        ssaplanner:'ssa', ctcoptimizer:'ctc', gratuity:'gratuity', debtplan:'debt', jointplan:'joint',
+        cibil:'cibil', fincal:'fincal', selfempl:'selfempl', goldcomp:'gold', networth:'networth',
+        ulipcheck:'ulip', fixedincome:'fixedincome', retirementhub:'rethub', cgcalc:'cgcalc',
+        returnscalc:'returnscalc', hracalc:'hra', nomtrack:'nomtrack', budgettrack:'budget',
+        mymfs:'mymfs', fireage:'fireage'
+    };
+    function _dashTTitle(mode, fb) {
+        var k = _dashCardKey[mode]; if (!k || typeof _t !== 'function') return fb || '';
+        var v = _t('card.' + k + '.title');
+        return (v && v !== 'card.' + k + '.title') ? v : (fb || '');
+    }
+    function _dashTDesc(mode, fb) {
+        var k = _dashCardKey[mode]; if (!k || typeof _t !== 'function') return fb || '';
+        var v = _t('card.' + k + '.desc');
+        return (v && v !== 'card.' + k + '.desc') ? v : (fb || '');
+    }
+
     function _dashGetFavs() {
         try { var s = localStorage.getItem(_DASH_FAV_KEY); return s ? JSON.parse(s) : null; } catch(e) { return null; }
     }
@@ -71,7 +96,7 @@
                 '<span class="dash-card-star is-pinned" title="' + _t('pin.active') + '" ' +
                     'onclick="event.stopPropagation();dashToggleFav(\'' + k + '\',this);initDashFav();">★</span>' +
                 '<div class="dash-card-icon">' + (window._svgIcon ? _svgIcon(k, t.icon) : t.icon) + '</div>' +
-                '<div class="dash-card-title">' + t.title + '</div>';
+                '<div class="dash-card-title">' + _dashTTitle(k, t.title) + '</div>';
             btn.onclick = function() { switchMode(k); };
             grid.appendChild(btn);
         });
@@ -263,6 +288,11 @@
         if (dd && !dd.contains(e.target)) window.dashCloseSituationMenu();
     });
 
+    var _dashLastSituationIdx = null;
+    window.dashReopenSituation = function() {
+        if (_dashLastSituationIdx != null && typeof window.dashOpenSituation === 'function')
+            window.dashOpenSituation(_dashLastSituationIdx);
+    };
     window.dashRefreshHome = function() {
         _dashRenderUnifiedWidget();
         _dashRenderSmartSection();
@@ -282,7 +312,9 @@
         if (chipsView) chipsView.style.display = 'none';
         if (situView)  situView.style.display  = 'none';
         var matches = _allTools.filter(function(t) {
-            return (t.title + ' ' + t.desc).toLowerCase().indexOf(q) >= 0;
+            // Match English keywords (t.title/t.desc) AND the localized text, so
+            // search works whatever language the UI is in.
+            return (t.title + ' ' + t.desc + ' ' + _dashTTitle(t.mode, '') + ' ' + _dashTDesc(t.mode, '')).toLowerCase().indexOf(q) >= 0;
         });
         if (matches.length === 0) {
             resultsEl.innerHTML =
@@ -299,8 +331,8 @@
                 matches.map(function(t) {
                     return '<button onclick="switchMode(\'' + t.mode + '\')" class="dash-card group">' +
                         '<div class="dash-card-icon">' + (window._svgIcon ? _svgIcon(t.mode, t.emoji) : t.emoji) + '</div>' +
-                        '<div class="dash-card-title">' + t.title + '</div>' +
-                        '<div class="dash-card-desc">' + t.desc + '</div>' +
+                        '<div class="dash-card-title">' + _dashTTitle(t.mode, t.title) + '</div>' +
+                        '<div class="dash-card-desc">' + _dashTDesc(t.mode, t.desc) + '</div>' +
                         '<div class="dash-card-arrow">→</div>' +
                     '</button>';
                 }).join('') +
@@ -312,6 +344,7 @@
     window.dashOpenSituation = function(idx) {
         var s = _situations[idx];
         if (!s) return;
+        _dashLastSituationIdx = idx;   // remembered so a language switch can re-render this page
         if (typeof window.dashCloseSituationMenu === 'function') window.dashCloseSituationMenu();
         var panel = document.getElementById('dashcat-situation-panel');
         if (!panel) return;
@@ -330,8 +363,8 @@
                 tools.map(function(t) {
                     return '<button onclick="switchMode(\'' + t.mode + '\')" class="dash-card group">' +
                         '<div class="dash-card-icon">' + (window._svgIcon ? _svgIcon(t.mode, t.emoji) : t.emoji) + '</div>' +
-                        '<div class="dash-card-title">' + t.title + '</div>' +
-                        '<div class="dash-card-desc">' + t.desc + '</div>' +
+                        '<div class="dash-card-title">' + _dashTTitle(t.mode, t.title) + '</div>' +
+                        '<div class="dash-card-desc">' + _dashTDesc(t.mode, t.desc) + '</div>' +
                         '<div class="dash-card-arrow">→</div>' +
                     '</button>';
                 }).join('') +
@@ -994,7 +1027,7 @@
             var p = Math.max(0, Math.min(100, Math.round(pct || 0)));
             var c = 2 * Math.PI * 44;
             return '<svg class="rd-ring-sc" viewBox="0 0 110 110" role="img" ' +
-                    'aria-label="' + p + ' out of 100">' +
+                    'aria-label="' + (typeof _t === 'function' ? _t('dash.aria.score').replace('{n}', p) : p + ' out of 100') + '">' +
                 '<defs><linearGradient id="rdHsGrad" x1="0" y1="0" x2="1" y2="1">' +
                     '<stop offset="0" stop-color="#10b981"/><stop offset="1" stop-color="#f5c842"/>' +
                 '</linearGradient></defs>' +
