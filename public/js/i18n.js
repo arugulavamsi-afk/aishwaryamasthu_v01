@@ -1311,6 +1311,7 @@
         'card.fireage.title':       'FIRE Age Calculator',
         'card.fireage.desc':        'Financial independence, retire early · 4% rule · 25× corpus · Lean/Fat/Coast FIRE',
         'dash.aria.score':          '{n} out of 100',
+        'splash.disclaimer':        'For educational purposes only · Not SEBI-registered investment advice · Consult a qualified financial adviser before investing',
         'disc.footer.title':        '⚠️ Important Disclaimer — Please Read',
         'disc.footer.body':         '<strong class="disc-strong">Aishwaryamasthu is an educational financial calculator — not SEBI-registered investment advice.</strong> This tool is intended solely for financial literacy and illustrative planning purposes. It does not constitute investment advisory services, portfolio management, or a recommendation to buy, sell, or hold any security or financial product. The projections, scores, fund rankings, and metrics shown are <strong class="disc-strong">estimates based on historical data and assumptions</strong> — actual returns may vary materially. Mutual fund investments are subject to market risks. Past performance is not indicative of future results. Data sourced from AMFI (mfapi.in) may have delays or inaccuracies. <strong class="disc-strong">Before making any investment decision, please consult a SEBI-Registered Investment Adviser (RIA) or a qualified financial planner.</strong>',
         'dash.ts.updated':          'Updated {t}',

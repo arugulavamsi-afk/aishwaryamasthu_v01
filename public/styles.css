@@ -542,13 +542,37 @@
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
-            padding: 4px 16px 90px;
+            padding: 4px 16px calc(14px + env(safe-area-inset-bottom, 0px));
             overflow-y: auto;
             z-index: 2;
+        }
+        /* Regulatory disclaimer under the auth card. In normal flow with
+           margin-top:auto so it drops to the bottom of the (scrollable) auth
+           region on tall screens and simply follows the card on short ones —
+           it can no longer float over the Login / Continue-with-Google buttons. */
+        .splash-disclaimer {
+            margin-top: auto;
+            width: 100%;
+            max-width: min(420px, 92vw);
+            text-align: center;
+            font-size: 9px;
+            line-height: 1.5;
+            font-weight: 500;
+            color: rgba(243,233,210,0.3);
+            padding: 14px 20px 2px;
+            pointer-events: none;
         }
         /* ── Desktop: centered two-column stage (matches Royal Heritage mockup:
               max ~1060px total, crest left, auth card right, 64px gap) ── */
         @media (min-width: 900px) {
+            /* Re-pin to the screen bottom, full-width, as the original design intended */
+            .splash-disclaimer {
+                position: absolute;
+                bottom: 20px; left: 0; right: 0;
+                margin-top: 0;
+                max-width: none;
+                padding: 0 20px;
+            }
             #splash {
                 flex-direction: row;
                 align-items: center;
@@ -825,11 +849,10 @@
             .splash-lang-btn { width: 32px; height: 32px; font-size: 11px; flex-shrink: 0; padding: 0; }
             /* push the crest/content down so the top-centered coins clear the mandala rings */
             #splash-inner { padding-top: 54px; }
-            /* Reserve clearance below the auth card so the last button (Continue
-               with Google) never collides with the pinned regulatory disclaimer.
-               A margin on the card is honoured at scroll-end where a parent
-               padding-bottom gets dropped by the flex-column overflow quirk. */
-            .auth-panel { margin-bottom: 76px; }
+            /* Small gap between the auth card and the in-flow disclaimer below it.
+               (The old 76px overlap-avoidance margin is no longer needed now that
+               the disclaimer sits in normal flow instead of floating over the card.) */
+            .auth-panel { margin-bottom: 14px; }
         }
         @media (max-width: 360px) {
             #splash-lang-bar { gap: 6px !important; top: 10px !important; }

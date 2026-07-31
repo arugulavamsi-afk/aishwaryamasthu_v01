@@ -200,12 +200,14 @@
             <button class="auth-logout-btn" onclick="doLogout()" data-i18n="auth.signout">Not you? Sign out</button>
         </div>
 
-        </div><!-- /#splash-auth -->
-
-        <!-- Regulatory disclaimer -->
-        <p style="position:absolute;bottom:26px;left:0;right:0;z-index:10;text-align:center;font-size:9px;color:rgba(243,233,210,0.3);font-weight:500;padding:0 20px;line-height:1.5;pointer-events:none;">
+        <!-- Regulatory disclaimer — in normal flow, pushed to the bottom of the
+             scroll area (margin-top:auto). Never overlaps the auth card's buttons;
+             re-pins to the screen bottom on desktop via .splash-disclaimer CSS. -->
+        <p class="splash-disclaimer" data-i18n="splash.disclaimer">
             For educational purposes only &nbsp;·&nbsp; Not SEBI-registered investment advice &nbsp;·&nbsp; Consult a qualified financial adviser before investing
         </p>
+
+        </div><!-- /#splash-auth -->
     </div>
     <script src="auth.js"></script>
     <!-- NAV -->
