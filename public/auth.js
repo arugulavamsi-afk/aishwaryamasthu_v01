@@ -622,6 +622,13 @@
                 });
                 return obj;
             });
+            const fireAge = _panelData('fa-age', function() {
+                var obj = {};
+                ['fa-age','fa-retage','fa-expenses','fa-corpus','fa-sip','fa-return','fa-inflation','fa-swr'].forEach(function(id){
+                    obj[id] = document.getElementById(id)?.value || '';
+                });
+                return obj;
+            });
             const ppfnps = _panelData('ppf-annual', function() {
                 var obj = {};
                 ['ppf-annual','ppf-balance','ppf-years-done','ppf-rate','ppf-extend',
@@ -864,6 +871,7 @@
                 ...(epfCalc      ? { epfCalc }      : {}),
                 userProfile: window._userProfile || _base.userProfile || {},
                 ...(drawdown     ? { drawdown }     : {}),
+                ...(fireAge      ? { fireAge }      : {}),
                 ...(ppfnps       ? { ppfnps }       : {}),
                 ...(ctcOptimizer ? { ctcOptimizer } : {}),
                 ...(insurance    ? { insurance }    : {}),

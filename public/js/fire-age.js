@@ -88,22 +88,44 @@ function _faCoast(p, multiple) {
     return { years: yrs, targetAtRet: targetAtRet, number: coastNumber, reached: p.corpus >= coastNumber };
 }
 
+/* ── shared input resolver ──────────────────────────────────────────
+   Resolves the projection inputs the calculator runs on. When the tool
+   panel is in the DOM it reads the live fields (honouring in-session
+   edits); otherwise it falls back to the user's SAVED FIRE inputs
+   (persisted via auth.js) layered over the profile/plan defaults.
+
+   The dashboard tile calls this too, so the tile and the tool always
+   project from the exact same numbers with the exact same engine — no
+   more two-engines-two-answers mismatch.                               */
+function faResolveParams() {
+    var live  = !!document.getElementById('fa-age');
+    var saved = (window._cachedRestoreData && window._cachedRestoreData.fireAge) || {};
+    var defs  = _faDefaults();
+    function raw(id) {
+        if (live) { var el = document.getElementById(id); return el ? el.value : ''; }
+        if (saved[id] !== undefined && saved[id] !== '') return saved[id];
+        return defs[id] || '';
+    }
+    function num(id) { return parseFloat(('' + raw(id)).replace(/[^0-9.]/g, '')) || 0; }
+    return {
+        age:            Math.round(num('fa-age')),
+        retAge:         Math.round(num('fa-retage')) || 60,
+        monthlyExpense: num('fa-expenses'),
+        corpus:         num('fa-corpus'),
+        annualSIP:      num('fa-sip') * 12,
+        r:              num('fa-return') / 100,
+        infl:           num('fa-inflation') / 100,
+        swr:            num('fa-swr')
+    };
+}
+
 /* ── main calculate + render ───────────────────────────────────────── */
 function faCalc() {
     var resEl = document.getElementById('fa-result');
     if (!resEl) return;
     var chartEl = document.getElementById('fa-chart-card');
 
-    var p = {
-        age:          Math.round(faNum('fa-age')),
-        retAge:       Math.round(faNum('fa-retage')) || 60,
-        monthlyExpense: faNum('fa-expenses'),
-        corpus:       faNum('fa-corpus'),
-        annualSIP:    faNum('fa-sip') * 12,
-        r:            faNum('fa-return') / 100,
-        infl:         faNum('fa-inflation') / 100,
-        swr:          faNum('fa-swr')
-    };
+    var p = faResolveParams();
     var multiple = p.swr > 0 ? 100 / p.swr : 25;
 
     // Live hint under the SWR field
@@ -277,13 +299,18 @@ function faUseProfile() {
     faCalc();
 }
 
-// First open — fill only blank fields so in-session edits survive nav
+// First open — fill blank fields, preferring the user's SAVED inputs over the
+// profile/plan defaults so overrides survive a page refresh. In-session edits
+// (fields already holding a value) are never touched.
 function initFireAge() {
     faApplyIcons();
+    var saved = (window._cachedRestoreData && window._cachedRestoreData.fireAge) || {};
     var d = _faDefaults();
     Object.keys(d).forEach(function(id) {
         var el = document.getElementById(id);
-        if (el && !el.value && d[id] !== '') _faSet(id, d[id]);
+        if (!el || el.value) return;
+        var v = (saved[id] !== undefined && saved[id] !== '') ? saved[id] : d[id];
+        if (v !== '' && v !== undefined && v !== null) _faSet(id, v);
     });
     faCalc();
 }
@@ -302,3 +329,8 @@ function faApplyIcons() {
         el.innerHTML = window._svgIcon(key, '');
     });
 }
+
+// Expose the engine + input resolver so the dashboard tile can project the
+// FIRE age with the SAME model and SAME inputs the tool uses.
+window._faProject      = _faProject;
+window.faResolveParams = faResolveParams;

@@ -497,42 +497,28 @@
     // the tile shows it rather than falling back to the empty state.
     function _dashFireAge(plan) {
         if (!plan) return null;
+        // Project with the SAME engine and SAME inputs the FIRE tool uses
+        // (js/fire-age.js) so this tile and the tool never disagree. The tool
+        // honours the user's chosen safe-withdrawal rate (target = 100/SWR ×
+        // yearly expenses); the old inline 25×-only math here is what caused
+        // the dashboard to show a different age than the tool.
+        if (typeof window.faResolveParams !== 'function' || typeof window._faProject !== 'function')
+            return null;
+
+        var p = window.faResolveParams();
+        if (!p.age || p.monthlyExpense <= 0 || p.r <= 0 || p.swr <= 0) return null;
+
+        // "assumed" flags a figure we had to fill in (My Profile carries no
+        // tracked expense or inflation), so the tile can mark it an estimate.
         var prof    = window._userProfile || {};
-        var assumed = false;
+        var assumed = !(parseFloat((prof.expenses || '').replace(/,/g, '')) > 0)
+                   || !(parseFloat(prof.inflation || '') > 0);
 
-        // Living expense — real tracked spend beats a replacement ratio.
-        var monthlyExpense   = parseFloat((prof.expenses || '').replace(/,/g, '')) || 0;
-        var annualExpenseNow = monthlyExpense * 12;
-        if (annualExpenseNow <= 0) {
-            annualExpenseNow = (plan.monthlyIncome || 0) * 12 * 0.70;
-            assumed = true;
-        }
-        if (annualExpenseNow <= 0) return null;
-
-        var inflPct = parseFloat(prof.inflation || '') || 0;
-        if (inflPct <= 0) { inflPct = 6; assumed = true; }
-        var INFL = inflPct / 100;
-
-        // A corpus whose rate never got captured still counts at face value, but
-        // it must not compound at a number we invented.
-        var existingPool = (plan.existingCorpus || 0) > 0 ? plan.existingCorpus : 0;
-        var existingRate = (plan.existingReturn  || 0) > 0 ? plan.existingReturn / 100 : 0;
-        if (existingPool > 0 && existingRate === 0) assumed = true;
-
-        var annualSIP = (plan.monthlyInvest || 0) * 12;
-        var r         = (plan.blendedReturn || 0) > 0 ? plan.blendedReturn / 100 : 0;
-        if (annualSIP > 0 && r === 0) return null; // nothing honest to grow it at
-
-        var sipPool = 0;
-        var age     = plan.age || 30;
-        for (var y = 0; y <= 60; y++) {
-            var expense = annualExpenseNow * Math.pow(1 + INFL, y);
-            if ((existingPool + sipPool) >= expense * 25)
-                return { age: age + y, beyond: false, assumed: assumed };
-            existingPool = existingPool * (1 + existingRate);
-            sipPool      = sipPool * (1 + r) + annualSIP;
-        }
-        return { age: null, beyond: true, assumed: assumed };
+        var multiple = p.swr > 0 ? 100 / p.swr : 25;
+        var reg = window._faProject(p, 1.0, multiple);
+        return reg.reached
+            ? { age: reg.age, beyond: false, assumed: assumed }
+            : { age: null,    beyond: true,  assumed: assumed };
     }
 
     function _dashFmtTs(iso) {
