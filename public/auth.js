@@ -95,6 +95,12 @@
 
         // ── Auth state listener — single source of truth for splash ──
         _fbAuth.onAuthStateChanged(user => {
+            // Session changed — re-close the write gate until THIS user's data has
+            // been read, so a second sign-in can't inherit the previous session's
+            // open gate (and an empty cache) and overwrite their saved data.
+            _loadComplete = false;
+            window._cachedRestoreData = null;
+            _toolWriteBaseline = {};
             const authPanel    = document.getElementById('auth-panel');
             const welcomePanel = document.getElementById('auth-welcome');
 
@@ -139,6 +145,10 @@
                             window._isExpert  = true;
                             window._expertDoc = Object.assign({ id: snap.docs[0].id }, snap.docs[0].data());
                             dismissSplash();
+                            // Experts have a personal tool profile too — load it so the
+                            // write gate opens with a real cache behind it. Without this
+                            // their saves were previously issued with an empty baseline.
+                            if (typeof loadUserData === 'function') loadUserData();
                             if (typeof epInitDashboard === 'function') epInitDashboard(window._expertDoc);
                         } else {
                             // Regular user — restore saved data and show dashboard
@@ -465,6 +475,33 @@
     let _restoring = false; // guard: prevent save-during-restore
     let _saveTimer  = null;  // debounce: batch rapid saves into one Firestore write
 
+    // Guard: no Firestore WRITE may happen before the initial READ has resolved.
+    // Without this, the window between page load and loadUserData() completing is
+    // unguarded (_restoring is only set once _applyData actually runs), so any
+    // save fired in that gap — notably _flushPendingSave() on refresh — writes
+    // with _cachedRestoreData still undefined and wipes every unconditional key
+    // (userProfile, growth, goal, emergency, savedGoals, roadmap).
+    // Set to true when the initial load resolves, fails, or finds no data.
+    // `var` (not `let`) on purpose: it's referenced from the onAuthStateChanged
+    // callback registered earlier in the file. With `var` the hoisted value is
+    // `undefined` — falsy, i.e. gate CLOSED, the safe default — instead of
+    // throwing a temporal-dead-zone error if it is ever read early.
+    var _loadComplete = false;
+
+    // Empty {} / [] must NOT short-circuit `||` — an empty in-memory value means
+    // "not loaded yet", not "user cleared it". Falls back to the cached snapshot.
+    function _isEmptyVal(v) {
+        if (v === null || v === undefined) return true;
+        if (Array.isArray(v)) return v.length === 0;
+        if (typeof v === 'object') return Object.keys(v).length === 0;
+        return v === '';
+    }
+    function _orBase(current, base, fallback) {
+        if (!_isEmptyVal(current)) return current;
+        if (!_isEmptyVal(base))    return base;
+        return fallback;
+    }
+
     function getUserDataKey() {
         // Kept for legacy localStorage reads during migration — returns null for new users
         return null;
@@ -472,6 +509,7 @@
 
     function saveUserData() {
         if (_restoring) return;
+        if (!_loadComplete) return; // never write before the initial read lands
         const user = _fbAuth && _fbAuth.currentUser;
         if (!user || !_fbDb) return;
         // Debounce: wait 0.8s after last change before writing to Firestore
@@ -485,6 +523,7 @@
     // (tab discard, app switch), so visibilitychange === 'hidden' is the
     // primary signal; beforeunload stays as a desktop refresh/close fallback.
     function _flushPendingSave() {
+        if (!_loadComplete) { clearTimeout(_saveTimer); _saveTimer = null; return; }
         const user = _fbAuth && _fbAuth.currentUser;
         if (_saveTimer && user && _fbDb) {
             clearTimeout(_saveTimer);
@@ -858,9 +897,14 @@
             // unchanged docs.
             var _base = window._cachedRestoreData ? Object.assign({}, window._cachedRestoreData) : {};
             var data = Object.assign(_base, {
-                growth:    window._tabState ? Object.assign({}, window._tabState.growth) : (_base.growth || {}),
-                goal:      window._tabState ? Object.assign({}, window._tabState.goal)   : (_base.goal   || {}),
-                emergency: { months: window._efMonths || 6, fixedExpenses: fixedExpenses, customRows: customRows },
+                growth:    _orBase(window._tabState ? Object.assign({}, window._tabState.growth) : null, _base.growth, {}),
+                goal:      _orBase(window._tabState ? Object.assign({}, window._tabState.goal)   : null, _base.goal,   {}),
+                // Emergency rows come from DOM queries — when the panel is lazy-
+                // unloaded they're empty, so keep the cached snapshot instead of
+                // overwriting real data with an empty shell.
+                emergency: (!_isEmptyVal(fixedExpenses) || !_isEmptyVal(customRows))
+                    ? { months: window._efMonths || 6, fixedExpenses: fixedExpenses, customRows: customRows }
+                    : _orBase(null, _base.emergency, { months: window._efMonths || 6, fixedExpenses: {}, customRows: [] }),
                 ...(healthScore  ? { healthScore }  : {}),
                 finplan:   fpSaveObj,
                 // Only include taxGuide when we actually have data (see comment above taxGuide block).
@@ -869,7 +913,9 @@
                 ...(stepUpSIP    ? { stepUpSIP }    : {}),
                 ...(ssaPlanner   ? { ssaPlanner }   : {}),
                 ...(epfCalc      ? { epfCalc }      : {}),
-                userProfile: window._userProfile || _base.userProfile || {},
+                // _orBase, not `||` — window._userProfile starts as {} (truthy!),
+                // which used to short-circuit the fallback and wipe the saved profile
+                userProfile: _orBase(window._userProfile, _base.userProfile, {}),
                 ...(drawdown     ? { drawdown }     : {}),
                 ...(fireAge      ? { fireAge }      : {}),
                 ...(ppfnps       ? { ppfnps }       : {}),
@@ -884,8 +930,8 @@
                 ...(fincal       ? { fincal }       : {}),
                 ...(selfEmpl     ? { selfEmpl }     : {}),
                 ...(goldComp     ? { goldComp }     : {}),
-                savedGoals:   window._savedGoals   || _base.savedGoals   || [],
-                savedGoalsTs: window._savedGoalsTs || _base.savedGoalsTs || '',
+                savedGoals:   _orBase(window._savedGoals,   _base.savedGoals,   []),
+                savedGoalsTs: _orBase(window._savedGoalsTs, _base.savedGoalsTs, ''),
                 ...(ulipCheck    ? { ulipCheck }    : {}),
                 ...(netWorth     ? { netWorth }     : {}),
                 ...(cgCalc       ? { cgCalc }       : {}),
@@ -896,12 +942,12 @@
                 ...((window._pathState && (window._pathState.active || (window._pathState.archive || []).length))
                     ? { finPath: window._pathState }
                     : (_base.finPath ? { finPath: _base.finPath } : {})),
-                roadmap: window._rmState ? {
+                roadmap: window._rmState ? _orBase({
                     profile: window._rmState.profile || null,
                     visited: window._rmState.visited  || [],
                     dismissed: window._rmState.dismissed || false,
                     collapsed: window._rmState.collapsed || false
-                } : (_base.roadmap || {}),
+                }, _base.roadmap, {}) : (_base.roadmap || {}),
                 nwHistory: (typeof _nwHistory !== 'undefined' && _nwHistory.length) ? _nwHistory.slice() : (_base.nwHistory || []),
                 myMFs: window._myMFs && window._myMFs.length ? window._myMFs.slice() : (_base.myMFs || []),
                 hsLastScore: window._hsLastResult ? {
@@ -979,7 +1025,9 @@
             return;
         }
         const user = _fbAuth && _fbAuth.currentUser;
-        if (!user || !_fbDb) return;
+        // No user / no DB: nothing to read, so writes are already impossible —
+        // open the gate so a later sign-in path isn't permanently blocked.
+        if (!user || !_fbDb) { _loadComplete = true; return; }
 
         const userRef = _fbDb.collection('users').doc(user.uid);
         Promise.all([userRef.get(), userRef.collection('tools').get()]).then(function(res) {
@@ -1007,10 +1055,19 @@
                 data = snap.data().appData;
                 _migrateAppDataToToolDocs(user, data);
             }
+            // Gate opens once the read has landed — including the "new user, no
+            // data" case. Set BEFORE _applyData so restores can save normally.
+            _loadComplete = true;
             if (!data) return;
             window._cachedRestoreData = data;
             _applyData(data);
-        }).catch(e => console.warn('loadUserData Firestore failed:', e));
+        }).catch(e => {
+            // Read failed: open the gate so the app stays usable, but without a
+            // cached snapshot. _orBase still protects unconditional keys from
+            // being overwritten by empty in-memory values.
+            _loadComplete = true;
+            console.warn('loadUserData Firestore failed:', e);
+        });
     }
 
     function saveToolSummary(toolName, data) {
