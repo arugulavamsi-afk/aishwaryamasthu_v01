@@ -233,6 +233,7 @@
         'mfe.win.5y':           'Rated on blended 5-year + 3-year data',
         'mfe.win.3y':           'Rated on 3-year data only',
         'mfe.win.lt3y':         'Limited history (under 3 years) — rating less reliable',
+        'mfe.nr.tip':           'Not Rated — under 3 years of history. Star ratings require a full 3-year record; short hot streaks inflate annualised metrics.',
         'mfe.cmp.scroll':       'Scroll to Compare ↓',
         'mfe.cmp.clear':        'Clear ✕',
         'mfe.ts.stale':         'Metrics: {d} · NAV: refreshing live…',

@@ -439,6 +439,11 @@
                     if (f.ter != null && isFinite(f.ter)) _mfeTerMap[f.code] = f.ter; // real TER from pipeline
                     // For Sectoral use composite key (code:subSect) so mfeRender can look it up directly
                     const metKey = (actualCat === 'Sectoral') ? f.code + ':' + ss : f.code;
+                    // Not-Rated gate on stale precomputed data: JSON generated
+                    // before the gate may carry stars for <3y funds — strip them
+                    if (f.metrics && (!f.metrics.rolling || f.metrics.window === '<3Y')) {
+                        f.metrics.stars = null; f.metrics.score = null; f.metrics.pillars = null;
+                    }
                     _mfeMetCache[metKey] = f.metrics;
                     _mfeCatNav[actualCat]  = true;
                     _mfeCatDone[actualCat] = true;
@@ -997,8 +1002,13 @@
             const medals=['🥇','🥈','🥉'];
             const rankHtml=`<span class="mfe-rank${rank<=3?' mfe-rank-top':''}">${rank<=3?medals[rank-1]:rank}</span>`;
             const hasM = m !== undefined && m !== null;
+            // Not Rated: metrics exist but fund lacks a full 3-year record —
+            // distinct from '…' (still computing)
+            const notRated = hasM && m?.stars == null && (!m?.rolling || m?.window === '<3Y');
             const sigCell = !hasM
                 ? '<span class="mfe-st-nd">…</span>'
+                : notRated
+                ? `<span class="mfe-nr" title="${_t('mfe.nr.tip')}">NR</span>`
                 : mfeSignalHtml(m?.stars ?? null, m?.score ?? null, m?.pillars ?? null, m?.window ?? null);
 
             // For Commodity and International, note that Alpha/Beta use non-Nifty benchmark
