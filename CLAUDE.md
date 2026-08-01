@@ -35,6 +35,7 @@ firebase deploy --only firestore  # Deploy Firestore rules only
 node scripts/compute-mf-scores.js # Regenerate output/mf-data.json
 node scripts/compute-cc-data.js   # Coffee Can screen: Nifty 500 via NSE+Yahoo → public/cc-data.json (nightly via GitHub Actions; cache output/cc-history.json is committed)
 node scripts/test-tax-engine.js   # Test tax slab math (run after ANY tax-guide.js change)
+node scripts/test-mf-scoring.js   # Test fund scoring math (run after ANY mf-scoring-core.js change)
 ```
 Never run `firebase deploy` (full) without explicit user confirmation.
 
@@ -42,6 +43,7 @@ Never run `firebase deploy` (full) without explicit user confirmation.
 - **Currency:** display with `toLocaleString('en-IN')` — always ₹, never truncate, round to 2dp
 - **Tax slabs:** New regime uses Budget 2025 slabs (87A rebate ≤₹12L) — verify before changing (`tax-guide.js:1`) and run `node scripts/test-tax-engine.js` after any change to `tgTaxNew`/`tgTaxOld`
 - **MF data:** treat `mfapi.in` responses as read-only; never mutate fetched objects
+- **MF scoring:** ALL fund metric/scoring math lives in `public/mf-scoring-core.js` (shared by `mf-explorer.js`, `fund-comparator.js`, and `scripts/compute-mf-scores.js`) — never duplicate it. Benchmark scheme codes in `MFE_CAT_BENCH`/`CAT_BENCH_CODE` must be verified live against `api.mfapi.in/mf/{code}/latest` before changing (the old table pointed at wrong/dead schemes)
 - **Routing:** new tools must be registered in `app.js` (`switchMode()`) before anything else works
 - **Styles:** all CSS goes in `styles.css`; no inline styles injected from JS
 - **Auth:** Firebase Auth is the only source of truth for sessions — no custom auth logic

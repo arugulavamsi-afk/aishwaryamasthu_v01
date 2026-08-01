@@ -2623,3 +2623,11 @@
         #fireage-panel .fa-bico { display: inline-flex; }
         #fireage-panel .fa-bico svg { width: 13px; height: 13px; }
         #fireage-panel .fa-hico { display: inline-flex; color: #f5c842; }
+
+        /* ── MF Explorer: trust caveats + rating-window badge ── */
+        .mfe-caveat-line { font-size: 10px; line-height: 1.5; color: #b45309; font-weight: 600; }
+        .mfe-caveat-line + .mfe-caveat-line { margin-top: 2px; }
+        .mfe-caveat-past { color: #64748b; font-weight: 500; }
+        .mfe-win-lt { display: inline-block; margin-left: 3px; font-size: 8px; font-weight: 800;
+                      color: #b45309; background: #fef3c7; border-radius: 6px; padding: 0 4px;
+                      vertical-align: middle; cursor: help; }

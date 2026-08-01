@@ -132,13 +132,13 @@
                     {signal: AbortSignal.timeout(20000)});
                 if (!r.ok) throw new Error('HTTP '+r.status);
                 const j = await r.json();
-                const navArr = (j?.data||[]).map(d=>parseFloat(d.nav))
-                    .filter(v=>!isNaN(v)).reverse();
+                const ser = MFScoring.toSeries(j); // {dates,navs} — shared scoring core
                 // Store latest NAV if not already in cache
-                if (!_mfeNavCache[f.code] && navArr.length) {
-                    _mfeNavCache[f.code] = { nav: navArr[navArr.length-1], date: j.data?.[0]?.date||'' };
+                if (!_mfeNavCache[f.code] && ser.navs.length) {
+                    _mfeNavCache[f.code] = { nav: ser.navs[ser.navs.length-1], date: j.data?.[0]?.date||'' };
                 }
-                _mfeMetCache[f.code] = navArr.length >= 30 ? mfeCompute(navArr, bench) : null;
+                _mfeMetCache[f.code] = (ser.navs.length >= 30 && bench && bench.navs && bench.navs.length > 30)
+                    ? mfeCompute(ser, bench) : null;
                 // Refine category from API metadata
                 const metaCat = mfeCatFromMeta(j?.meta?.scheme_category);
                 if (metaCat) f.cat = metaCat;
@@ -223,9 +223,9 @@
         // ── Consistency ──
         section('Consistency');
         const rollHitVals = funds.map((_,i) => mets[i]?.rolling?.hitRate ?? null);
-        row('Roll Hit %', rollHitVals, highlight(rollHitVals),
-            v => `<span class="${v>=80?'mfe-good':v>=60?'mfe-avg':'mfe-bad'}">${v.toFixed(1)}%</span>`,
-            '% of rolling 3Y windows with positive return');
+        row('Beat Benchmark %', rollHitVals, highlight(rollHitVals),
+            v => `<span class="${v>=60?'mfe-good':v>=40?'mfe-avg':'mfe-bad'}">${v.toFixed(1)}%</span>`,
+            '% of rolling 3Y windows where the fund beat its category benchmark');
         const rollAvgVals = funds.map((_,i) => mets[i]?.rolling?.avg ?? null);
         row('Roll Avg Return', rollAvgVals, highlight(rollAvgVals),
             v => `<span class="${v>=12?'mfe-good':v>=8?'mfe-avg':'mfe-bad'}">${v>=0?'+':''}${v.toFixed(2)}%</span>`,

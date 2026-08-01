@@ -12,51 +12,62 @@
 
 const fs   = require('fs');
 const path = require('path');
+const MFScoring = require('../public/mf-scoring-core.js'); // shared with the app
 
 /* ── Config ─────────────────────────────────────────────── */
 const OUT_DIR  = path.join(__dirname, '..', 'public');  // served directly by Firebase hosting
 const OUT_FILE = path.join(OUT_DIR, 'mf-data.json');
+/* Optional real TER data: { "<schemeCode>": <ter %>, ... }
+   AMFI's TER page (amfiindia.com/ter-of-mf-schemes) is client-rendered with
+   no stable public API — export its table to this file manually (or via a
+   separate scraper) whenever you want per-fund TER in the app. Absent file
+   = app falls back to category-median estimates marked "~". */
+const TER_FILE = path.join(__dirname, 'ter-data.json');
 const FETCH_TIMEOUT_MS  = 20_000;
 const BATCH_SIZE        = 15;   // concurrent fetches per batch
 const RETRY_ATTEMPTS    = 3;
 const RETRY_DELAY_MS    = 1_500;
-const RF_RATE           = 0.065; // India 91-day T-bill proxy
 
-/* ── Benchmark codes (mirrors MFE_CAT_BENCH in app) ─────── */
+/* ── Benchmark codes (mirrors MFE_CAT_BENCH in app) ───────
+   ALL codes verified live against api.mfapi.in/{code}/latest on
+   2026-08-01. The previous table pointed at wrong/dead schemes
+   (e.g. 136094 = HDFC Retirement EQUITY plan used for all debt,
+   148942 = a matured SBI FMP used as "Nifty 500"). Re-verify any
+   code before changing.                                          */
 const CAT_BENCH_CODE = {
-  'Large Cap':            '148940',
-  'Large & Mid Cap':      '148942',
-  'Mid Cap':              '148939',
-  'Small Cap':            '148937',
-  'Multi Cap':            '148942',
-  'Flexi Cap':            '148942',
-  'Focused':              '148942',
-  'Value/Contra':         '148942',
-  'ELSS':                 '148942',
-  'Index':                '120716',
-  'Aggressive Hybrid':    '120503',
-  'Conservative Hybrid':  '136094',
-  'Balanced Advantage':   '120503',
-  'Multi Asset':          '120503',
-  'Hybrid':               '120503',
-  'Liquid':               '136094',
-  'Overnight':            '136094',
-  'Ultra Short':          '136094',
-  'Money Market':         '136094',
-  'Short Duration':       '136094',
-  'Medium Duration':      '136094',
-  'Corporate Bond':       '136094',
-  'Banking & PSU Debt':   '136094',
-  'Gilt':                 '136094',
-  'Dynamic Bond':         '136094',
-  'Debt':                 '136094',
-  'Arbitrage':            '136094',
-  'Sectoral':             '148942',
-  'International':        '135781',
-  'Commodity':            '118503',
-  'Solution':             '148942',
-  'FoF':                  '120716',
-  '_default':             '120716',
+  'Large Cap':            '147666', // Axis Nifty 100 Index Direct Growth ✓
+  'Large & Mid Cap':      '147625', // Motilal Nifty 500 Index Direct ✓
+  'Mid Cap':              '147622', // Motilal Nifty Midcap 150 Index Direct ✓
+  'Small Cap':            '147623', // Motilal Nifty Smallcap 250 Index Direct ✓
+  'Multi Cap':            '147625', // Motilal Nifty 500 Index Direct ✓
+  'Flexi Cap':            '147625', // Motilal Nifty 500 Index Direct ✓
+  'Focused':              '147625', // Motilal Nifty 500 Index Direct ✓
+  'Value/Contra':         '147625', // Motilal Nifty 500 Index Direct ✓
+  'ELSS':                 '147625', // Motilal Nifty 500 Index Direct ✓
+  'Index':                '120716', // UTI Nifty 50 Index Direct ✓
+  'Aggressive Hybrid':    '120377', // ICICI Pru Balanced Advantage Direct Growth ✓
+  'Conservative Hybrid':  '148800', // Nippon Nifty 5yr G-Sec ETF ✓ (debt-heavy proxy)
+  'Balanced Advantage':   '120377', // ICICI Pru Balanced Advantage Direct Growth ✓
+  'Multi Asset':          '120377', // ICICI Pru Balanced Advantage Direct Growth ✓
+  'Hybrid':               '120377', // ICICI Pru Balanced Advantage Direct Growth ✓
+  'Liquid':               '119833', // SBI Overnight Direct Growth ✓
+  'Overnight':            '119833', // SBI Overnight Direct Growth ✓
+  'Ultra Short':          '119833', // SBI Overnight Direct Growth ✓ (duration proxy)
+  'Money Market':         '119833', // SBI Overnight Direct Growth ✓ (duration proxy)
+  'Short Duration':       '148800', // Nippon Nifty 5yr G-Sec ETF ✓ (duration proxy)
+  'Medium Duration':      '148800', // Nippon Nifty 5yr G-Sec ETF ✓
+  'Corporate Bond':       '148800', // Nippon Nifty 5yr G-Sec ETF ✓ (no credit-spread index avail.)
+  'Banking & PSU Debt':   '148800', // Nippon Nifty 5yr G-Sec ETF ✓
+  'Gilt':                 '133307', // LIC Nifty 8-13yr G-Sec ETF ✓ (long-duration match)
+  'Dynamic Bond':         '148800', // Nippon Nifty 5yr G-Sec ETF ✓
+  'Debt':                 '148800', // Nippon Nifty 5yr G-Sec ETF ✓
+  'Arbitrage':            '119833', // SBI Overnight Direct Growth ✓ (arbitrage ≈ repo)
+  'Sectoral':             '147625', // Motilal Nifty 500 Index Direct ✓ (sub-sector codes override)
+  'International':        '148381', // Motilal S&P 500 Index Direct Growth ✓
+  'Commodity':            '118663', // Nippon Gold Savings Direct Growth ✓
+  'Solution':             '147625', // Motilal Nifty 500 Index Direct ✓
+  'FoF':                  '120716', // UTI Nifty 50 Index Direct ✓
+  '_default':             '120716', // UTI Nifty 50 Index Direct ✓
 };
 
 /* ── Helpers ─────────────────────────────────────────────── */
@@ -109,11 +120,9 @@ async function fetchFundListFromAMFI() {
   return funds;
 }
 
-function navArray(data) {
-  return (data?.data || [])
-    .map(d => parseFloat(d.nav))
-    .filter(v => !isNaN(v))
-    .reverse(); // chronological order
+/* NAV series with dates — required for date-aligned metrics */
+function navSeries(data) {
+  return MFScoring.toSeries(data); // { dates:[ms], navs:[num] }, chronological
 }
 
 async function batchMap(items, asyncFn, batchSize = BATCH_SIZE) {
@@ -199,121 +208,10 @@ function parseSubSect(n) {
   return 'Thematic';
 }
 
-/* ── Math (identical to app) ─────────────────────────────── */
-function cagr(navArr, years) {
-  const days   = Math.round(years * 252);
-  if (navArr.length < days + 5) return null;
-  const latest = navArr[navArr.length - 1];
-  const past   = navArr[navArr.length - 1 - days];
-  if (!past || past < 1 || !latest || latest <= 0) return null;
-  const c = Math.pow(latest / past, 1 / years) - 1;
-  if (!isFinite(c) || Math.abs(c) > 0.80) return null;
-  return +(c * 100).toFixed(2);
-}
-
-function rolling(navArr) {
-  const windowDays = 756, step = 21;
-  if (navArr.length < windowDays + step) return null;
-  const returns = [];
-  for (let end = navArr.length - 1; end >= windowDays; end -= step) {
-    const start = end - windowDays;
-    if (navArr[start] <= 0 || navArr[end] <= 0) continue;
-    const r = Math.pow(navArr[end] / navArr[start], 1 / 3) - 1;
-    if (isFinite(r) && Math.abs(r) < 2) returns.push(r * 100);
-  }
-  if (returns.length < 5) return null;
-  const avg     = returns.reduce((s, v) => s + v, 0) / returns.length;
-  const hitRate = returns.filter(r => r > 0).length / returns.length * 100;
-  return { avg: +avg.toFixed(2), hitRate: +hitRate.toFixed(1) };
-}
-
-function compute(navArr, bench) {
-  const MAX = 756;
-  const f3  = navArr.slice(-MAX);
-  const b3  = bench.slice(-MAX);
-  if (f3.length < 30 || b3.length < 30) return null;
-  const navMin = Math.min(...f3), navMax = Math.max(...f3);
-  if (navMin < 0.5 || navMax < 1) return null;
-
-  const fR = [], bR = [];
-  for (let i = 1; i < f3.length; i++) { const r = (f3[i] - f3[i-1]) / f3[i-1]; if (isFinite(r)) fR.push(r); }
-  for (let i = 1; i < b3.length; i++) { const r = (b3[i] - b3[i-1]) / b3[i-1]; if (isFinite(r)) bR.push(r); }
-  if (fR.length < 20 || bR.length < 20) return null;
-
-  const n  = Math.min(fR.length, bR.length);
-  const fr = fR.slice(-n), br = bR.slice(-n);
-  const mean = a => a.reduce((s, v) => s + v, 0) / a.length;
-  const std  = a => { const m = mean(a); return Math.sqrt(a.reduce((s, v) => s + (v - m) ** 2, 0) / a.length); };
-  const fm = mean(fr), bm = mean(br), fs = std(fr), bs = std(br);
-  if (!isFinite(fm) || !isFinite(fs) || fs === 0) return null;
-
-  const aFM = fm * 252, aFS = fs * Math.sqrt(252);
-  let cov = 0;
-  for (let i = 0; i < n; i++) cov += (fr[i] - fm) * (br[i] - bm);
-  cov /= n;
-  const bVar  = bs * bs;
-  const beta  = (isFinite(bVar) && bVar > 1e-10) ? cov / bVar : 1.0;
-  const rfD   = RF_RATE / 252;
-  const alpha = (aFM - RF_RATE) - beta * (bm * 252 - RF_RATE);
-  const sharpe  = aFS > 0 ? (aFM - RF_RATE) / aFS : 0;
-  const dn      = fr.filter(r => r < rfD);
-  const dVar    = dn.length > 0 ? dn.reduce((s, r) => s + (r - rfD) ** 2, 0) / fr.length : 0;
-  const ds      = Math.sqrt(dVar) * Math.sqrt(252);
-  const sortino = ds > 0.0001 ? (aFM - RF_RATE) / ds : sharpe * 2;
-  const clamp   = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
-  const roll    = rolling(navArr);
-
-  const m = {
-    stdDev:  +clamp(aFS * 100, 0,  60).toFixed(2),
-    beta:    +clamp(beta,      -2,   3).toFixed(2),
-    alpha:   +clamp(alpha*100, -30, 30).toFixed(2),
-    sharpe:  +clamp(sharpe,    -3,   5).toFixed(2),
-    sortino: +clamp(sortino,   -3,  10).toFixed(2),
-    rolling: roll,
-    cagr: {
-      y1:  cagr(navArr, 1),
-      y3:  cagr(navArr, 3),
-      y5:  cagr(navArr, 5),
-      y10: cagr(navArr, 10),
-    },
-    score: null,
-    stars: null,
-  };
-  if (['stdDev','beta','alpha','sharpe','sortino'].some(k => !isFinite(m[k]))) return null;
-  return m;
-}
-
-function normaliseCat(funds) {
-  // Mirrors mfeNorm() — percentile-bucket into 1–5 signal tiers
-  const valid = funds.filter(f => f.metrics);
-  if (!valid.length) return;
-  const isDebtLike = f => ['Debt','Liquid','Arbitrage'].includes(f.cat);
-  const isGold     = f => f.cat === 'Commodity';
-
-  const scored = valid.map(f => {
-    const m  = f.metrics;
-    const sh = Math.max(-3, Math.min(5, m.sharpe));
-    const al = Math.max(-15, Math.min(15, m.alpha)) / 5;
-    const so = Math.max(-3, Math.min(6, m.sortino));
-    const sdBaseline = isDebtLike(f) ? 8 : isGold(f) ? 25 : 30;
-    const sdScore    = Math.max(0, (sdBaseline - m.stdDev) / sdBaseline);
-    const bScore     = isDebtLike(f)
-      ? Math.max(0, 1 - Math.abs(m.beta))
-      : Math.max(0, 1.5 - Math.abs(m.beta - 1.0));
-    const rHit = m.rolling ? Math.max(0, Math.min(100, m.rolling.hitRate)) / 100 : 0.5;
-    const rAvg = m.rolling ? Math.max(-20, Math.min(20, m.rolling.avg)) / 20 : 0;
-    const raw  = rHit * 0.25 + sh * 0.20 + al * 0.20 + rAvg * 0.15 + so * 0.10 + sdScore * 0.07 + bScore * 0.03;
-    return { f, raw: isFinite(raw) ? raw : null };
-  }).filter(s => s.raw !== null);
-
-  scored.sort((a, b) => a.raw - b.raw);
-  const total = scored.length;
-  scored.forEach(({ f }, idx) => {
-    const pct = (idx + 1) / total;
-    f.metrics.stars = pct <= 0.10 ? 1 : pct <= 0.325 ? 2 : pct <= 0.675 ? 3 : pct <= 0.90 ? 4 : 5;
-    f.metrics.score = Math.round((idx / Math.max(total - 1, 1)) * 100);
-  });
-}
+/* ── Math — lives in public/mf-scoring-core.js (shared with app) ── */
+const compute      = (fundSeries, benchSeries) => MFScoring.compute(fundSeries, benchSeries);
+const normaliseCat = funds =>
+  MFScoring.normaliseCat(funds.map(f => ({ cat: f.cat, metrics: f.metrics })));
 
 /* ── Main ─────────────────────────────────────────────────── */
 async function main() {
@@ -390,15 +288,15 @@ async function main() {
   for (const code of uniqueCodes) {
     process.stdout.write(`  Benchmark ${code}...`);
     const data = await fetchWithRetry(`https://api.mfapi.in/mf/${code}`);
-    const arr  = navArray(data);
-    if (arr.length > 30) {
-      benchCache[code] = arr;
-      process.stdout.write(` ${arr.length} data points\n`);
+    const ser  = navSeries(data);
+    if (ser.navs.length > 30) {
+      benchCache[code] = ser;
+      process.stdout.write(` ${ser.navs.length} data points\n`);
     } else {
       process.stdout.write(` FAILED\n`);
     }
   }
-  const defaultBench = benchCache['120716'] || [];
+  const defaultBench = benchCache['120716'] || { dates: [], navs: [] };
   const getBench = cat => benchCache[CAT_BENCH_CODE[cat]] || benchCache[CAT_BENCH_CODE['_default']] || defaultBench;
   console.log();
 
@@ -419,16 +317,16 @@ async function main() {
       f.cat = metaCat;
     }
 
-    const arr = navArray(data);
-    if (!arr.length) return;
+    const ser = navSeries(data);
+    if (!ser.navs.length) return;
 
     // Latest NAV
     const latest = data.data?.[0];
     if (latest) { f.nav = parseFloat(latest.nav); f.navDate = latest.date; }
 
-    // Compute metrics
+    // Compute metrics (date-aligned against category benchmark)
     const bench = getBench(f.cat);
-    f.metrics   = compute(arr, bench);
+    f.metrics   = bench.navs.length > 30 ? compute(ser, bench) : null;
   });
 
   /* Step 3B: NAV fallback — funds that had no data in Step 3 get nav from /latest */
@@ -461,11 +359,25 @@ async function main() {
   });
   console.log();
 
+  /* Step 4B: Attach real TER where available */
+  let terMap = {};
+  try {
+    if (fs.existsSync(TER_FILE)) {
+      terMap = JSON.parse(fs.readFileSync(TER_FILE, 'utf8'));
+      console.log(`TER data: ${Object.keys(terMap).length} schemes from ter-data.json`);
+    }
+  } catch (e) { console.warn('TER data unreadable — skipping:', e.message); }
+  funds.forEach(f => {
+    const t = parseFloat(terMap[f.code]);
+    f.ter = isFinite(t) && t > 0 && t < 3 ? +t.toFixed(2) : null;
+  });
+
   /* Step 5: Write output */
   const out = {
     generated:  new Date().toISOString(),
     fundCount:  funds.length,
     categories: {},
+    caveats:    {},   // cat → ['sector-fad'|'debt-credit'|'small-peers']
   };
 
   cats.forEach(cat => {
@@ -477,8 +389,12 @@ async function main() {
       subSect: f.subSect,
       nav:     f.nav,
       navDate: f.navDate,
+      ter:     f.ter,   // real TER % or null (app falls back to category median)
       metrics: f.metrics,
     }));
+    const ratedCount = catFunds.filter(f => f.metrics?.stars).length;
+    const cavs = MFScoring.categoryCaveats(cat, ratedCount);
+    if (cavs.length) out.caveats[cat] = cavs;
   });
 
   fs.writeFileSync(OUT_FILE, JSON.stringify(out));

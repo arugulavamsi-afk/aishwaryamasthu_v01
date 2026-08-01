@@ -19,108 +19,33 @@
         'jm','lic','navi','samco','quantum','nj'
     ];
 
-    /* ── Expense Ratio static lookup (Direct plans, latest published TER) ──
-       Source: AMFI TER disclosures. Updated periodically.
-       Key = AMFI scheme code (string), Value = TER as percentage (e.g. 0.45)
-    ── */
     /* ══════════════════════════════════════════════════════════════
-       EXPENSE RATIO — comprehensive lookup (AMFI TER disclosures)
-       Key = AMFI scheme code, Value = TER %
-       Covers top funds by AUM across all categories.
-       Source: AMFI published TER disclosures (Direct plans).
+       EXPENSE RATIO
+       The old static per-scheme TER table was removed: most of its keys
+       (e.g. '120716_lc') could never match a real scheme code, so funds
+       silently fell back to medians while appearing fund-specific.
+       Honest replacement:
+         1. Per-fund TER from mf-data.json (`ter` field) when the nightly
+            pipeline has real data (see scripts/ter-data.json) — exact.
+         2. Otherwise category-median ESTIMATE, always marked "~" in UI.
     ══════════════════════════════════════════════════════════════ */
-    const MFE_ER = {
-        /* Index — Nifty 50 */
-        '120716':'0.18','148618':'0.10','119551':'0.30','148622':'0.18',
-        '148935':'0.10','148931':'0.17','125354':'0.20','140228':'0.05',
-        '119775':'0.30','148918':'0.20','120828':'0.19','135781':'0.20',
-        '120503':'0.19','120465':'0.19','125497':'0.10','120841':'0.20',
-        /* Index — Nifty Next 50 / 100 / 200 / 500 */
-        '148717':'0.30','148940':'0.25','148943':'0.18','148946':'0.20',
-        '148942':'0.30','148944':'0.35','148941':'0.20','148945':'0.25',
-        /* Index — Midcap / Smallcap */
-        '148939':'0.35','148938':'0.30','148937':'0.28','148936':'0.32',
-        '148933':'0.35','148934':'0.30','148932':'0.40','148930':'0.38',
-        /* Index — Sectoral ETF wrappers */
-        '148929':'0.45','148928':'0.42','148927':'0.40','148926':'0.38',
-        /* Large Cap */
-        '120594':'0.52','119552':'0.82','100016':'0.99','125354':'0.88',
-        '119701':'0.80','120838':'0.97','120505':'0.55','135781_lc':'0.72',
-        '148935_lc':'0.72','100425_lc':'0.75','119386':'0.72','120600':'0.65',
-        '148931_lc':'0.70','148918_lc':'0.68','148622_lc':'0.71','148717_lc':'0.80',
-        '119775_lc':'0.85','120472':'0.56','120503_lc':'0.78','120465_lc':'0.82',
-        '125497_lc':'0.68','120841_lc':'0.75','119552_lc':'0.82','100236_lc':'0.82',
-        /* Mid Cap */
-        '100236':'0.82','120822_mc':'0.60','148622_mc':'0.62','148931_mc':'0.55',
-        '120841_mc':'0.45','125497_mc':'0.45','120505_mc':'0.64','119386_mc':'0.72',
-        '148935_mc':'0.68','148918_mc':'0.70','148717_mc':'0.75','120503_mc':'0.72',
-        '120465_mc':'0.70','120594_mc':'0.65','119701_mc':'0.80','120838_mc':'0.85',
-        '119552_mc':'0.78','100016_mc':'0.90','125354_mc':'0.85','100425_mc':'0.79',
-        /* Small Cap */
-        '120822':'0.56','148622_sc':'0.64','148931_sc':'0.74',
-        '119552_sc':'0.69','119386_sc':'0.92','120841_sc':'0.68',
-        '148935_sc':'0.80','148918_sc':'0.78','148717_sc':'0.82','120503_sc':'0.75',
-        '120465_sc':'0.72','120594_sc':'0.70','119701_sc':'0.85','125497_sc':'0.65',
-        '100236_sc':'0.88','120505_sc':'0.72','148622':'0.64','100425_sc':'0.82',
-        /* ELSS */
-        '120472_el':'0.56','100425':'0.79','120600':'0.62','148931_el':'0.57',
-        '148935_el':'0.65','148918_el':'0.72','148622_el':'0.68','120841_el':'0.70',
-        '119552_el':'0.75','119386_el':'0.78','120503_el':'0.68','120465_el':'0.70',
-        '120594_el':'0.60','119701_el':'0.85','120838_el':'0.90','125497_el':'0.62',
-        '148717_el':'0.80','100236_el':'0.85','125354_el':'0.80','120505_el':'0.68',
-        /* Flexi Cap */
-        '148935_fl':'0.59','148931_fl':'0.79','148918_fl':'0.94','148622_fl':'0.68',
-        '120841_fl':'0.72','119552_fl':'0.80','120503_fl':'0.75','120465_fl':'0.78',
-        '120594_fl':'0.65','119701_fl':'0.85','120838_fl':'0.90','125497_fl':'0.62',
-        '119386_fl':'0.75','100016_fl':'0.92','148717_fl':'0.82','100236_fl':'0.88',
-        '100425_fl':'0.82','120822_fl':'0.70','120505_fl':'0.72','125354_fl':'0.85',
-        /* Hybrid / Balanced Advantage */
-        '119701_hy':'0.79','120838_hy':'0.97','120472_hy':'0.54','120503_hy':'0.48',
-        '148935_hy':'0.72','148931_hy':'0.75','148918_hy':'0.78','148622_hy':'0.70',
-        '120841_hy':'0.65','119552_hy':'0.82','120465_hy':'0.75','120594_hy':'0.68',
-        '100016_hy':'0.92','125497_hy':'0.62','119386_hy':'0.72','100425_hy':'0.82',
-        '148717_hy':'0.80','120505_hy':'0.70','100236_hy':'0.85','125354_hy':'0.78',
-        /* Debt — Short/Medium Duration */
-        '119386_db':'0.31','100016_db':'0.35','119552_db':'0.49','120465_db':'0.32',
-        '120503_db':'0.38','148935_db':'0.40','148918_db':'0.35','148931_db':'0.42',
-        '120841_db':'0.30','120594_db':'0.38','119701_db':'0.45','120838_db':'0.50',
-        '125497_db':'0.28','100425_db':'0.42','148622_db':'0.35','148717_db':'0.45',
-        '120472_db':'0.32','119775_db':'0.38','140228_db':'0.25','100236_db':'0.48',
-        /* Debt — Banking & PSU / Corporate Bond */
-        '119386_cp':'0.28','100016_cp':'0.30','119552_cp':'0.35','120465_cp':'0.28',
-        '120503_cp':'0.32','148935_cp':'0.35','120841_cp':'0.25','119701_cp':'0.40',
-        /* Debt — Gilt */
-        '119386_gl':'0.20','100016_gl':'0.25','119552_gl':'0.30','120465_gl':'0.22',
-        /* Liquid */
-        '119775_lq':'0.18','120716_lq':'0.15','148918_lq':'0.12','120503_lq':'0.20',
-        '148935_lq':'0.18','148931_lq':'0.20','148622_lq':'0.15','119552_lq':'0.22',
-        '120841_lq':'0.15','120465_lq':'0.18','120594_lq':'0.20','100016_lq':'0.25',
-        '119386_lq':'0.16','100425_lq':'0.18','148717_lq':'0.22','119701_lq':'0.20',
-        /* Overnight */
-        '119775_on':'0.10','120716_on':'0.08','148918_on':'0.08','120503_on':'0.10',
-        '148935_on':'0.09','120841_on':'0.08','119552_on':'0.12','120465_on':'0.10',
-        /* Sectoral — Pharma/IT/Banking/Infra */
-        '119552_se':'0.75','120503_se':'0.70','119386_se':'0.68','148935_se':'0.72',
-        '148931_se':'0.75','148918_se':'0.78','120841_se':'0.70','120465_se':'0.72',
-        '120594_se':'0.65','119701_se':'0.80','100016_se':'0.88','148622_se':'0.75',
-        /* International / Global */
-        '120503_in':'0.85','148935_in':'0.88','148918_in':'0.90','119552_in':'0.92',
-        '119386_in':'0.88','120465_in':'0.85','120841_in':'0.80','100016_in':'0.95',
-        /* Commodity — Gold */
-        '119775_go':'0.35','120716_go':'0.30','148918_go':'0.32','120503_go':'0.38',
-        '148935_go':'0.35','148931_go':'0.40','119552_go':'0.35','120841_go':'0.32',
-    };
+    let _mfeTerMap = {}; // code → TER % (real data from mf-data.json)
 
-    /* Get expense ratio for a fund. Falls back to category median if not in lookup. */
+    /* Category-median Direct-plan TER estimates (fallback only) */
     const MFE_ER_CAT_MEDIAN = {
-        'Index':0.20,'Large Cap':0.75,'Mid Cap':0.72,'Small Cap':0.72,
-        'Flexi Cap':0.75,'ELSS':0.72,'Hybrid':0.75,'Debt':0.38,
-        'Liquid':0.18,'Sectoral':0.75,'International':0.88,'Commodity':0.35,'Other':0.80
+        'Index':0.20,'Large Cap':0.75,'Large & Mid Cap':0.80,'Mid Cap':0.72,
+        'Small Cap':0.72,'Multi Cap':0.80,'Flexi Cap':0.75,'Focused':0.75,
+        'Value/Contra':0.75,'ELSS':0.72,'Aggressive Hybrid':0.85,
+        'Conservative Hybrid':0.65,'Balanced Advantage':0.75,'Multi Asset':0.80,
+        'Hybrid':0.75,'Arbitrage':0.40,'Liquid':0.18,'Overnight':0.10,
+        'Ultra Short':0.35,'Money Market':0.25,'Short Duration':0.35,
+        'Medium Duration':0.45,'Corporate Bond':0.32,'Banking & PSU Debt':0.35,
+        'Gilt':0.45,'Dynamic Bond':0.45,'Debt':0.38,'Sectoral':0.75,
+        'International':0.88,'Commodity':0.35,'Solution':0.85,'FoF':0.50,'Other':0.80
     };
     function mfeGetER(code, cat) {
-        const v = MFE_ER[String(code)];
-        if (v != null) return { val: parseFloat(v), estimated: false };
-        // Fallback: return category median as estimate
+        const real = _mfeTerMap[String(code)];
+        if (real != null && isFinite(real)) return { val: real, estimated: false };
         const med = MFE_ER_CAT_MEDIAN[cat];
         return med != null ? { val: med, estimated: true } : null;
     }
@@ -184,55 +109,59 @@
                                              replace with a verified long G-Sec fund code)
          Commodity    → Nippon Gold ETF     (same asset class; measures tracking efficiency)
     ══════════════════════════════════════════════════════════════ */
+    /* ALL codes verified live against api.mfapi.in/{code}/latest on 2026-08-01.
+       The previous table pointed at wrong or dead schemes (136094 was an HDFC
+       Retirement EQUITY plan used as the benchmark for every debt category;
+       148942 was a matured SBI FMP used as "Nifty 500"). Re-verify any code
+       against /latest before changing it. */
     const MFE_CAT_BENCH = {
         // ── Equity ──────────────────────────────────────────────
-        'Large Cap':       '148940', // Nippon Nifty 100 Direct     → Nifty 100 (SEBI top-100 universe)
-        'Large & Mid Cap': '148942', // UTI Nifty 500 proxy         → broader than Nifty 100; swap when LMC 250 code verified
-        'Mid Cap':         '148939', // Motilal Nifty Midcap 150   → Nifty Midcap 150 ✓
-        'Small Cap':       '148937', // Nippon Nifty Smallcap 250  → Nifty Smallcap 250 ✓
-        'Multi Cap':       '148942', // UTI Nifty 500              → Nifty 500 (proxy: Nifty 500 Multicap 50:25:25 ideal)
-        'Flexi Cap':       '148942', // UTI Nifty 500              → Nifty 500
-        'Focused':         '148942', // UTI Nifty 500              → Nifty 500
-        'Value/Contra':    '148942', // UTI Nifty 500              → Nifty 500
-        'ELSS':            '148942', // UTI Nifty 500              → Nifty 500
-        'Index':           '120716', // UTI Nifty 50               → default (per-fund ideal, impractical)
+        'Large Cap':       '147666', // Axis Nifty 100 Index Direct Growth ✓
+        'Large & Mid Cap': '147625', // Motilal Nifty 500 Index Direct ✓ (LMC 250 proxy)
+        'Mid Cap':         '147622', // Motilal Nifty Midcap 150 Index Direct ✓
+        'Small Cap':       '147623', // Motilal Nifty Smallcap 250 Index Direct ✓
+        'Multi Cap':       '147625', // Motilal Nifty 500 Index Direct ✓
+        'Flexi Cap':       '147625', // Motilal Nifty 500 Index Direct ✓
+        'Focused':         '147625', // Motilal Nifty 500 Index Direct ✓
+        'Value/Contra':    '147625', // Motilal Nifty 500 Index Direct ✓
+        'ELSS':            '147625', // Motilal Nifty 500 Index Direct ✓
+        'Index':           '120716', // UTI Nifty 50 Index Direct ✓
         // ── Hybrid ──────────────────────────────────────────────
-        'Aggressive Hybrid':    '120503', // ICICI Pru BAF          → ~65-80% Nifty 50 + Debt ✓
-        'Conservative Hybrid':  '136094', // Overnight proxy        → ⚠ gap: short-dur debt fund better
-        'Balanced Advantage':   '120503', // ICICI Pru BAF          → dynamic equity+debt blend ✓
-        'Multi Asset':          '120503', // ICICI Pru BAF          → equity+debt blended (was Nifty 500 equity-only)
-        'Hybrid':               '120503', // ICICI Pru BAF (catch-all hybrid)
+        'Aggressive Hybrid':    '120377', // ICICI Pru Balanced Advantage Direct Growth ✓
+        'Conservative Hybrid':  '148800', // Nippon Nifty 5yr G-Sec ETF ✓ (debt-heavy proxy)
+        'Balanced Advantage':   '120377', // ICICI Pru Balanced Advantage Direct Growth ✓
+        'Multi Asset':          '120377', // ICICI Pru Balanced Advantage Direct Growth ✓
+        'Hybrid':               '120377', // ICICI Pru Balanced Advantage Direct Growth ✓
         // ── Debt ────────────────────────────────────────────────
-        'Liquid':               '136094', // Overnight              → closest to T-bill/repo baseline ✓
-        'Overnight':            '136094', // Overnight              → exact match ✓
-        'Ultra Short':          '136094', // Overnight proxy        → Nifty Short Duration (gap)
-        'Money Market':         '136094', // Overnight proxy        → Nifty Money Market (gap)
-        'Short Duration':       '136094', // Overnight proxy        → Nifty Short Duration (gap)
-        'Medium Duration':      '136094', // Overnight proxy        → Nifty Composite Debt (gap)
-        'Corporate Bond':       '136094', // Overnight proxy        → Nifty Corporate Bond (gap)
-        'Banking & PSU Debt':   '136094', // Overnight proxy        → Nifty Banking & PSU Debt (gap)
-        'Gilt':                 '136094', // ⚠ CRITICAL: overnight ≠ long G-Sec duration;
-                                          //   replace with verified long G-Sec/gilt fund code
-        'Dynamic Bond':         '136094', // Overnight proxy        → Nifty Composite Debt (gap)
-        'Debt':                 '136094', // Overnight (catch-all debt)
-        'Arbitrage':            '136094', // Repo rate proxy ✓ (arbitrage tracks repo rate)
+        'Liquid':               '119833', // SBI Overnight Direct Growth ✓
+        'Overnight':            '119833', // SBI Overnight Direct Growth ✓
+        'Ultra Short':          '119833', // SBI Overnight Direct Growth ✓ (duration proxy)
+        'Money Market':         '119833', // SBI Overnight Direct Growth ✓ (duration proxy)
+        'Short Duration':       '148800', // Nippon Nifty 5yr G-Sec ETF ✓ (duration proxy)
+        'Medium Duration':      '148800', // Nippon Nifty 5yr G-Sec ETF ✓
+        'Corporate Bond':       '148800', // Nippon Nifty 5yr G-Sec ETF ✓ (no credit index avail.)
+        'Banking & PSU Debt':   '148800', // Nippon Nifty 5yr G-Sec ETF ✓
+        'Gilt':                 '133307', // LIC Nifty 8-13yr G-Sec ETF ✓ (long-duration match)
+        'Dynamic Bond':         '148800', // Nippon Nifty 5yr G-Sec ETF ✓
+        'Debt':                 '148800', // Nippon Nifty 5yr G-Sec ETF ✓
+        'Arbitrage':            '119833', // SBI Overnight Direct Growth ✓ (arbitrage ≈ repo)
         // ── Others ──────────────────────────────────────────────
-        'Sectoral':        '148942', // Nifty 500 fallback (sub-sector specific codes used in SUBSECT_BENCH_CODE)
-        'International':   '135781', // Motilal S&P 500 INR proxy ✓
-        'Commodity':       '118503', // Nippon Gold ETF ✓
-        'Solution':        '148942', // Nifty 500 / Hybrid proxy
-        'FoF':             '120716', // Nifty 50 (underlying-dependent; impractical to per-fund)
-        '_default':        '120716', // UTI Nifty 50 Index Direct
+        'Sectoral':        '147625', // Motilal Nifty 500 Index Direct ✓ (sub-sector codes override)
+        'International':   '148381', // Motilal S&P 500 Index Direct Growth ✓
+        'Commodity':       '118663', // Nippon Gold Savings Direct Growth ✓
+        'Solution':        '147625', // Motilal Nifty 500 Index Direct ✓
+        'FoF':             '120716', // UTI Nifty 50 Index Direct ✓
+        '_default':        '120716', // UTI Nifty 50 Index Direct ✓
     };
 
-    /* Per-category benchmark cache */
-    let _mfeCatBenchCache = {}; // cat → nav array
-    let _mfeNifty500Nav  = []; // cached Nifty 500 (UTI 148942) NAV array
+    /* Per-category benchmark cache — values are {dates,navs} series */
+    let _mfeCatBenchCache = {}; // cat → series
+    let _mfeNifty500Nav  = null; // cached Nifty 500 (Motilal 147625) series
     let _mfeNifty500Ready = false;
 
     /* Codes that share a pre-cached benchmark — avoids redundant fetches */
     const _MFE_NIFTY50_CODE  = '120716'; // UTI Nifty 50 → cached in _mfeBench at startup
-    const _MFE_NIFTY500_CODE = '148942'; // UTI Nifty 500 → cached in _mfeNifty500Nav on first use
+    const _MFE_NIFTY500_CODE = '147625'; // Motilal Nifty 500 → cached in _mfeNifty500Nav on first use
 
     async function mfeFetchCatBench(cat, signal) {
         if (_mfeCatBenchCache[cat]) return _mfeCatBenchCache[cat];
@@ -252,16 +181,15 @@
                 { signal: signal || AbortSignal.timeout(20000) });
             if (!r.ok) throw new Error('HTTP ' + r.status);
             const j = await r.json();
-            const navArr = (j?.data||[]).map(d=>parseFloat(d.nav))
-                .filter(v=>!isNaN(v)).reverse();
-            if (navArr.length > 30) {
+            const ser = MFScoring.toSeries(j); // {dates,navs} — date-aligned metrics
+            if (ser.navs.length > 30) {
                 // If this was a Nifty 500 fetch, cache globally for reuse
                 if (code === _MFE_NIFTY500_CODE) {
-                    _mfeNifty500Nav   = navArr;
+                    _mfeNifty500Nav   = ser;
                     _mfeNifty500Ready = true;
                 }
-                _mfeCatBenchCache[cat] = navArr;
-                return navArr;
+                _mfeCatBenchCache[cat] = ser;
+                return ser;
             }
         } catch {}
         // Fallback to Nifty 50 if fetch fails
@@ -282,23 +210,23 @@
         'ELSS':               'Nifty 500',
         'Index':              'Nifty 50 (underlying)',
         // Hybrid
-        'Aggressive Hybrid':  'Nifty 50 + Debt (65/35)',
-        'Conservative Hybrid':'Overnight proxy (gap)',
-        'Balanced Advantage': 'Nifty 50 + Composite Debt',
-        'Multi Asset':        'Equity + Debt (BAF proxy)',
-        'Hybrid':             'Nifty 50 + Debt proxy',
+        'Aggressive Hybrid':  'Balanced Advantage proxy',
+        'Conservative Hybrid':'5yr G-Sec proxy',
+        'Balanced Advantage': 'Balanced Advantage peer',
+        'Multi Asset':        'Balanced Advantage proxy',
+        'Hybrid':             'Balanced Advantage proxy',
         // Debt
-        'Liquid':             'Nifty Liquid Index',
-        'Overnight':          'Nifty Liquid Index',
-        'Ultra Short':        'Nifty Short Duration Debt',
-        'Money Market':       'Nifty Money Market Index',
-        'Short Duration':     'Nifty Short Duration Debt',
-        'Medium Duration':    'Nifty Composite Debt Index',
-        'Corporate Bond':     'Nifty Corporate Bond Index',
-        'Banking & PSU Debt': 'Nifty Banking & PSU Debt',
-        'Gilt':               'Overnight proxy ⚠',
-        'Dynamic Bond':       'Nifty Composite Debt Index',
-        'Debt':               'Overnight rate proxy',
+        'Liquid':             'Overnight rate',
+        'Overnight':          'Overnight rate',
+        'Ultra Short':        'Overnight rate (proxy)',
+        'Money Market':       'Overnight rate (proxy)',
+        'Short Duration':     '5yr G-Sec (proxy)',
+        'Medium Duration':    '5yr G-Sec',
+        'Corporate Bond':     '5yr G-Sec (proxy)',
+        'Banking & PSU Debt': '5yr G-Sec (proxy)',
+        'Gilt':               '8-13yr G-Sec',
+        'Dynamic Bond':       '5yr G-Sec',
+        'Debt':               '5yr G-Sec (proxy)',
         'Arbitrage':          'Overnight / repo rate',
         // Others
         'Sectoral':           'Nifty 500 (sub-sector specific)',
@@ -321,20 +249,22 @@
         'PSU','Commodities & Resources','MNC','ESG','Thematic'
     ];
     const MFE_SUBSECT_BENCH_LABEL = {
+        // Labels reflect the benchmark actually used (Nifty 500 where no
+        // sector ETF with a working mfapi code exists — honesty > polish)
         'Banking & Finance':     'Nifty Bank',
-        'Transport & Logistics':  'Nifty India Transport',
+        'Transport & Logistics':  'Nifty 500 (proxy)',
         'Pharma & Healthcare':   'Nifty Pharma',
-        'Technology':            'Nifty IT',
-        'FMCG & Consumption':    'Nifty FMCG',
-        'Infrastructure':        'Nifty Infrastructure',
-        'Energy & Power':        'Nifty Energy',
-        'Auto':                  'Nifty Auto',
-        'Realty':                'Nifty Realty',
-        'Manufacturing':         'Nifty India Manufacturing',
-        'Defence & Aerospace':   'Nifty India Defence',
-        'PSU':                   'Nifty PSE',
-        'Commodities & Resources':'Nifty Commodities',
-        'MNC':                   'Nifty MNC',
+        'Technology':            'Nifty 500 (proxy)',
+        'FMCG & Consumption':    'Nifty 500 (proxy)',
+        'Infrastructure':        'Nifty 500 (proxy)',
+        'Energy & Power':        'Nifty 500 (proxy)',
+        'Auto':                  'Nifty 500 (proxy)',
+        'Realty':                'Nifty 500 (proxy)',
+        'Manufacturing':         'Nifty 500 (proxy)',
+        'Defence & Aerospace':   'Nifty 500 (proxy)',
+        'PSU':                   'Nifty 500 (proxy)',
+        'Commodities & Resources':'Nifty 500 (proxy)',
+        'MNC':                   'Nifty 500 (proxy)',
         'ESG':                   'Nifty 500',
         'Thematic':              'Nifty 500',
     };
@@ -344,22 +274,23 @@
        ⚠ = using Nifty 500 proxy (148942) — sector-specific ETF code needs verification
     */
     const MFE_SUBSECT_BENCH_CODE = {
-        'Banking & Finance':      '120684', // Nippon India ETF Bank BeES      → Nifty Bank ✓
-        'Pharma & Healthcare':    '135803', // Mirae Asset Nifty Pharma ETF    → Nifty Pharma ✓
-        'Technology':             '120237', // Nippon India ETF Nifty IT        → Nifty IT ✓
-        'FMCG & Consumption':     '148942', // ⚠ Nifty 500 proxy — verify Nifty FMCG ETF code
-        'Infrastructure':         '148942', // ⚠ Nifty 500 proxy — verify Nifty Infrastructure ETF code
-        'Energy & Power':         '148942', // ⚠ Nifty 500 proxy — verify Nifty Energy ETF code
-        'Auto':                   '148942', // ⚠ Nifty 500 proxy — verify Nifty Auto ETF code
-        'Realty':                 '148942', // ⚠ Nifty 500 proxy — verify Nifty Realty ETF code
-        'Manufacturing':          '148942', // ⚠ Nifty 500 proxy — Nifty India Manufacturing ETF code TBD
-        'Defence & Aerospace':    '148942', // ⚠ Nifty 500 proxy — Nifty India Defence ETF code TBD
-        'PSU':                    '148942', // ⚠ Nifty 500 proxy — CPSE ETF / Nifty PSE ETF code TBD
-        'Commodities & Resources':'148942', // ⚠ Nifty 500 proxy — no liquid Nifty Commodities ETF available
-        'Transport & Logistics':  '148942', // ⚠ Nifty 500 proxy — Nifty India Transport ETF code TBD
-        'MNC':                    '148942', // ⚠ Nifty 500 proxy — Nifty MNC ETF code TBD
-        'ESG':                    '148942', // Nifty 500 — no dedicated ESG index ETF available
-        'Thematic':               '148942', // Nifty 500 — heterogeneous; no single benchmark
+        // Verified live 2026-08-01 (old codes pointed at unrelated schemes)
+        'Banking & Finance':      '140087', // Nippon India ETF Nifty Bank BeES ✓
+        'Pharma & Healthcare':    '149008', // Nippon India Nifty Pharma ETF ✓
+        'Technology':             '147625', // Nifty 500 proxy — no working IT ETF code on mfapi
+        'FMCG & Consumption':     '147625', // Nifty 500 proxy
+        'Infrastructure':         '147625', // Nifty 500 proxy
+        'Energy & Power':         '147625', // Nifty 500 proxy
+        'Auto':                   '147625', // Nifty 500 proxy
+        'Realty':                 '147625', // Nifty 500 proxy
+        'Manufacturing':          '147625', // Nifty 500 proxy
+        'Defence & Aerospace':    '147625', // Nifty 500 proxy
+        'PSU':                    '147625', // Nifty 500 proxy
+        'Commodities & Resources':'147625', // Nifty 500 proxy
+        'Transport & Logistics':  '147625', // Nifty 500 proxy
+        'MNC':                    '147625', // Nifty 500 proxy
+        'ESG':                    '147625', // Nifty 500 — no dedicated ESG index ETF available
+        'Thematic':               '147625', // Nifty 500 — heterogeneous; no single benchmark
     };
     const MFE_SUBSECT_ICON = {
         'Banking & Finance':'🏦','Pharma & Healthcare':'💊','Technology':'💻',
@@ -429,6 +360,7 @@
     }
 
     const MFE_DATA_URL = '/mf-data.json'; // served by Firebase hosting — same domain, CDN-cached
+    let _mfeCaveats     = {};    // cat → caveat codes from pipeline (Phase 4 UI badges)
     let _mfePrecomputed = false;
     let _mfeNavStale    = false; // true when precomputed NAVs are > 20h old — triggers live refresh
     let _mfeNavRefreshAbort = null; // AbortController for background NAV refresh
@@ -440,7 +372,7 @@
     let _mfeMetCache = {};   // code → {stdDev,beta,alpha,sharpe,sortino,score}|null
     let _mfeCatDone  = {};   // cat → true when step3 complete
     let _mfeCatNav   = {};   // cat → true when step2 complete
-    let _mfeBench    = [];   // benchmark NAV array
+    let _mfeBench    = null; // benchmark series {dates,navs}
     let _mfeBenchReady = false;
     let _mfeCur      = 'Index';
     let _mfeSortCol  = 'score';
@@ -485,6 +417,9 @@
 
             const MFE_PRECOMP_EXCLUDE = /\bseries\s+(?:[ivxlcdm]+|\d+)\b/i;
 
+            // Category trust caveats from the pipeline (rendered as badges)
+            _mfeCaveats = data.caveats || {};
+
             _mfeList = [];
             Object.entries(data.categories).forEach(([cat, funds]) => {
                 funds.forEach(f => {
@@ -501,6 +436,7 @@
                     const ss = f.subSect || 'Thematic';
                     _mfeList.push({ code: f.code, name: f.name, amc: f.amc, cat: actualCat, subSect: ss });
                     if (f.nav !== null) _mfeNavCache[f.code] = { nav: f.nav, date: f.navDate };
+                    if (f.ter != null && isFinite(f.ter)) _mfeTerMap[f.code] = f.ter; // real TER from pipeline
                     // For Sectoral use composite key (code:subSect) so mfeRender can look it up directly
                     const metKey = (actualCat === 'Sectoral') ? f.code + ':' + ss : f.code;
                     _mfeMetCache[metKey] = f.metrics;
@@ -589,7 +525,7 @@
 
     function refreshMFExplorer() {
         _mfeList=[]; _mfeNavCache={}; _mfeMetCache={}; _mfeCatDone={}; _mfeCatNav={};
-        _mfeBench=[]; _mfeBenchReady=false; _mfeNifty500Nav=[]; _mfeNifty500Ready=false; _mfeCatBenchCache={}; _mfeReady=false; _mfeBusy=false; _mfePage=0; _mfeSubSect='All';
+        _mfeBench=null; _mfeBenchReady=false; _mfeNifty500Nav=null; _mfeNifty500Ready=false; _mfeCatBenchCache={}; _mfeTerMap={}; _mfeCaveats={}; _mfeReady=false; _mfeBusy=false; _mfePage=0; _mfeSubSect='All';
         _mfeNavStale=false;
         if (_mfeNavRefreshAbort) { _mfeNavRefreshAbort.abort(); _mfeNavRefreshAbort=null; }
         if (_mfeScopeAbort) { _mfeScopeAbort.abort(); _mfeScopeAbort=null; }
@@ -767,8 +703,8 @@
        STEP 3 — fetch full 3yr history per fund → compute → score
     ════════════════════════════════════════════════════════ */
     async function mfeStep3(cat, signal, catBench) {
-        // catBench = category-appropriate benchmark NAV array
-        const bench = (catBench && catBench.length > 30) ? catBench : _mfeBench;
+        // catBench = category-appropriate benchmark series {dates,navs}
+        const bench = (catBench && catBench.navs && catBench.navs.length > 30) ? catBench : _mfeBench;
         // For Sectoral, use composite key code:subSect so each sub-sector is scored once
         const _mfeCacheKey = (f) => (cat === 'Sectoral') ? f.code + ':' + _mfeSubSect : f.code;
         const _mfeDoneKey  = (cat === 'Sectoral') ? 'Sectoral:' + _mfeSubSect : cat;
@@ -788,10 +724,9 @@
                         {signal: AbortSignal.timeout(20000)});
                     if (!r.ok) { _mfeMetCache[_mfeCacheKey(f)] = null; return; }
                     const j = await r.json();
-                    const navArr = (j?.data||[])
-                        .map(d => parseFloat(d.nav)).filter(v => !isNaN(v)).reverse();
-                    _mfeMetCache[_mfeCacheKey(f)] = (navArr.length >= 30 && bench.length > 30)
-                        ? mfeCompute(navArr, bench)
+                    const ser = MFScoring.toSeries(j);
+                    _mfeMetCache[_mfeCacheKey(f)] = (ser.navs.length >= 30 && bench && bench.navs.length > 30)
+                        ? mfeCompute(ser, bench)
                         : null;
                 } catch { _mfeMetCache[_mfeCacheKey(f)] = null; }
             }));
@@ -861,8 +796,8 @@
                     const r = await fetch(`https://api.mfapi.in/mf/${ssCode}`, {signal: ctl.signal || AbortSignal.timeout(20000)});
                     if (r.ok) {
                         const j = await r.json();
-                        const navArr = (j?.data||[]).map(d=>parseFloat(d.nav)).filter(v=>!isNaN(v)).reverse();
-                        if (navArr.length > 30) _mfeCatBenchCache['SS_' + _mfeSubSect] = navArr;
+                        const ser = MFScoring.toSeries(j);
+                        if (ser.navs.length > 30) _mfeCatBenchCache['SS_' + _mfeSubSect] = ser;
                     }
                 } catch {}
             }
@@ -890,12 +825,14 @@
                 {signal: AbortSignal.timeout(25000)});
             if (!r.ok) return;
             const j = await r.json();
-            _mfeBench = (j?.data||[]).map(d=>parseFloat(d.nav))
-                .filter(v=>!isNaN(v)).reverse();
-            _mfeBenchReady = _mfeBench.length > 30;
-            // Cache Nifty 50 for categories that use it
+            _mfeBench = MFScoring.toSeries(j);
+            _mfeBenchReady = _mfeBench.navs.length > 30;
+            // Pre-seed ONLY categories that genuinely map to Nifty 50.
+            // (Previously Hybrid/Sectoral/International/Commodity/Arbitrage were
+            // seeded with Nifty 50 too, which blocked their real benchmarks
+            // from ever being fetched — cache hit short-circuits the fetch.)
             if (_mfeBenchReady) {
-                ['Index','Hybrid','Sectoral','International','Commodity','Arbitrage','_default']
+                ['Index','FoF','_default']
                     .forEach(cat => { if (!_mfeCatBenchCache[cat]) _mfeCatBenchCache[cat] = _mfeBench; });
             }
         } catch {}
@@ -904,215 +841,28 @@
     /* ════════════════════════════════════════════════════════
        METRIC COMPUTATION
     ════════════════════════════════════════════════════════ */
-    /* ── Compute CAGR for a given year window ── */
-    function mfeCagr(navArr, years) {
-        const days = Math.round(years * 252);
-        if (navArr.length < days + 5) return null;
-        const latest = navArr[navArr.length - 1];
-        const past   = navArr[navArr.length - 1 - days];
-        // Sanity: reject if starting NAV is suspiciously low (< ₹1 = likely
-        // a segregated-portfolio fragment that slipped through, or a NAV reset)
-        if (!past || past < 1 || !latest || latest <= 0) return null;
-        const cagr = Math.pow(latest / past, 1 / years) - 1;
-        if (!isFinite(cagr)) return null;
-        // Cap at ±80% — anything beyond is almost certainly a data artefact
-        // (credit-event recovery, scheme merger, NAV adjustment) not real returns
-        if (Math.abs(cagr) > 0.80) return null;
-        return +(cagr * 100).toFixed(2);
-    }
-
-    /* ── Rolling returns: compute 3Y rolling windows step=21 days (monthly) ──
-       Returns: { hitRate: %, avgReturn: % } where hitRate = % of windows > 0
-    ── */
-    function mfeRolling(navArr) {
-        const windowDays = 756;   // ~3 years
-        const step       = 21;    // monthly step
-        if (navArr.length < windowDays + step) return null;
-        const returns = [];
-        for (let end = navArr.length - 1; end >= windowDays; end -= step) {
-            const start = end - windowDays;
-            if (navArr[start] <= 0 || navArr[end] <= 0) continue;
-            const r = Math.pow(navArr[end] / navArr[start], 1/3) - 1; // annualised
-            if (isFinite(r) && Math.abs(r) < 2) returns.push(r * 100); // % terms, cap at 200%
-        }
-        if (returns.length < 5) return null;
-        const avg     = returns.reduce((s,v)=>s+v,0) / returns.length;
-        const hitRate = returns.filter(r=>r>0).length / returns.length * 100;
-        return {
-            avg:     +avg.toFixed(2),
-            hitRate: +hitRate.toFixed(1)
-        };
-    }
-
-    function mfeCompute(navArr, bench) {
-        const MAX=756, f3=navArr.slice(-MAX), b3=bench.slice(-MAX);
-        if (f3.length < 30 || b3.length < 30) return null;
-        // Reject suspiciously low NAV — segregated portfolio remnants
-        const navMin = Math.min(...f3), navMax = Math.max(...f3);
-        if (navMin < 0.5 || navMax < 1) return null;
-
-        const fR=[], bR=[];
-        for(let i=1;i<f3.length;i++){const r=(f3[i]-f3[i-1])/f3[i-1]; if(isFinite(r)) fR.push(r);}
-        for(let i=1;i<b3.length;i++){const r=(b3[i]-b3[i-1])/b3[i-1]; if(isFinite(r)) bR.push(r);}
-        if(fR.length<20||bR.length<20) return null;
-
-        const n=Math.min(fR.length,bR.length);
-        const fr=fR.slice(-n), br=bR.slice(-n);
-        const mean=a=>a.reduce((s,v)=>s+v,0)/a.length;
-        const std =a=>{const m=mean(a);return Math.sqrt(a.reduce((s,v)=>s+(v-m)**2,0)/a.length);};
-        const fm=mean(fr),bm=mean(br),fs=std(fr),bs=std(br);
-        if(!isFinite(fm)||!isFinite(fs)||fs===0) return null;
-        const aFM=fm*252, aFS=fs*Math.sqrt(252);
-        let cov=0; for(let i=0;i<n;i++) cov+=(fr[i]-fm)*(br[i]-bm); cov/=n;
-        const bVar=bs*bs, beta=(isFinite(bVar)&&bVar>1e-10)?cov/bVar:1.0;
-        const RF=0.065, rfD=RF/252;  // India 91-day T-bill / repo rate proxy (updated from 5.5%)
-        const alpha=(aFM-RF)-beta*(bm*252-RF);
-        const sharpe=aFS>0?(aFM-RF)/aFS:0;
-        const dn=fr.filter(r=>r<rfD);
-        const dVar=dn.length>0?dn.reduce((s,r)=>s+(r-rfD)**2,0)/fr.length:0;
-        const ds=Math.sqrt(dVar)*Math.sqrt(252);
-        const sortino=ds>0.0001?(aFM-RF)/ds:sharpe*2;
-        const clamp=(v,lo,hi)=>Math.min(hi,Math.max(lo,v));
-
-        // Rolling returns (uses full navArr for maximum window coverage)
-        const rolling = mfeRolling(navArr);
-
-        const result = {
-            stdDev:  +clamp(aFS*100,   0, 60).toFixed(2),
-            beta:    +clamp(beta,     -2,  3).toFixed(2),
-            alpha:   +clamp(alpha*100,-30,30).toFixed(2),
-            sharpe:  +clamp(sharpe,   -3,  5).toFixed(2),
-            sortino: +clamp(sortino,  -3, 10).toFixed(2),
-            rolling,   // { avg, hitRate } or null
-            cagr: {
-                y1:  mfeCagr(navArr, 1),
-                y3:  mfeCagr(navArr, 3),
-                y5:  mfeCagr(navArr, 5),
-                y10: mfeCagr(navArr, 10)
-            },
-            score: null,
-            stars:  null
-        };
-        if (Object.entries(result)
-            .filter(([k])=>!['cagr','rolling','score','stars'].includes(k))
-            .some(([,v])=>v!==null&&!isFinite(v))) return null;
-        return result;
-    }
+    /* ── Metric math lives in mf-scoring-core.js (shared with the nightly
+       precompute script). These wrappers keep old call-sites working.
+       All inputs are {dates,navs} series — date-aligned, calendar-annualised. ── */
+    function mfeCagr(series, years)       { return MFScoring.cagr(series, years); }
+    function mfeRolling(series, bench)    { return MFScoring.rolling(series, bench); }
+    function mfeCompute(series, bench)    { return MFScoring.compute(series, bench); }
 
     /* ══════════════════════════════════════════════════════════
        SCORING — 1–5 signal tiers by percentile (Morningstar distribution)
-
-       WEIGHTS (revised for v6):
-         Rolling HitRate  25%  — consistency: % of 3Y windows with positive return
-         Sharpe           20%  — risk-adjusted return (RF = 6.5% India T-bill proxy)
-         Alpha            20%  — manager skill vs category benchmark (raised from 15%)
-         Rolling AvgRet   15%  — rolling return magnitude
-         Sortino          10%  — downside protection (lowered from 15%; was scale-distorted)
-         Std Dev           7%  — NAV stability (lowered from 10%; partially captured by Sharpe)
-         Beta              3%  — market sensitivity (lowered from 5%; least informative signal)
-
-       KEY FIXES vs prior version:
-         1. RF rate updated 5.5% → 6.5% (India repo / 91-day T-bill, inside mfeCompute).
-         2. Sortino cap lowered 10 → 6: previously a Sortino outlier could contribute 1.5× raw
-            vs Sharpe's 1.0×, letting a single metric hijack the top rank.
-         3. Alpha clamp tightened ±30% → ±15% (realistic Indian active fund range),
-            /5 keeps output on same [-3,+3] scale as Sharpe for fair weighting.
-         4. RollAvg clamp tightened ±30% → ±20% for finer discrimination.
-         5. Weights rebalanced: rolling consistency + alpha upweighted; Sortino/StdDev/Beta down.
+       Weights, 3y/5y blending, benchmark-relative hit rate, star tiers
+       and pillar grades all live in mf-scoring-core.js — see the header
+       of that file for the current methodology and change log.
     ══════════════════════════════════════════════════════════ */
     function mfeNorm(cat) {
         // Use composite key for Sectoral (code:subSect), plain code for all others
         const _ck = (f) => (cat === 'Sectoral') ? f.code + ':' + _mfeSubSect : f.code;
         const funds = _mfeList.filter(f => f.cat===cat && _mfeMetCache[_ck(f)]);
         if (!funds.length) return;
-        const isDebtLike = ['Debt','Liquid','Arbitrage'].includes(cat);
-        const isGold     = cat === 'Commodity';
-        const isIntl     = cat === 'International';
-
-        const scored = [];
-        funds.forEach(f => {
-            const m = _mfeMetCache[_ck(f)];
-            if (!m) return;
-            if (!isFinite(m.sharpe)||!isFinite(m.alpha)||!isFinite(m.sortino)
-                ||!isFinite(m.stdDev)||!isFinite(m.beta)) return;
-
-            // Sharpe (20%) — clamp [-3, 5]
-            const sh = Math.max(-3, Math.min(5, m.sharpe));
-
-            // Alpha (20%) — tightened ±15% realistic range; /5 → [-3, +3] scale
-            const al = Math.max(-15, Math.min(15, m.alpha)) / 5;
-
-            // Sortino (10%) — cap lowered 10→6 to match Sharpe's realistic ceiling
-            const so = Math.max(-3, Math.min(6, m.sortino));
-
-            // Std Dev (7%) — inverted; lower volatility = better
-            const sdBaseline = isDebtLike ? 8 : (isGold ? 25 : 30);
-            const sdScore = Math.max(0, (sdBaseline - m.stdDev) / sdBaseline);
-
-            // Beta (3%) — debt: near 0; equity/intl/gold: near 1
-            const bScore = isDebtLike
-                ? Math.max(0, 1 - Math.abs(m.beta))
-                : Math.max(0, 1.5 - Math.abs(m.beta - 1.0));
-
-            // Rolling Hit Rate (25%) — % of 3Y windows positive
-            const rHit = m.rolling ? Math.max(0, Math.min(100, m.rolling.hitRate)) / 100 : 0.5;
-
-            // Rolling Avg Return (15%) — tightened ±20%
-            const rAvg = m.rolling ? Math.max(-20, Math.min(20, m.rolling.avg)) / 20 : 0;
-
-            const raw =
-                rHit    * 0.25 +
-                sh      * 0.20 +
-                al      * 0.20 +
-                rAvg    * 0.15 +
-                so      * 0.10 +
-                sdScore * 0.07 +
-                bScore  * 0.03;
-
-            if (isFinite(raw)) scored.push({ code: f.code, cacheKey: _ck(f), raw });
-        });
-        if (!scored.length) return;
-
-        // Percentile-bucket into 1–5 fund score tiers (Morningstar distribution)
-        scored.sort((a,b) => a.raw - b.raw);
-        const total = scored.length;
-        scored.forEach(({ code, cacheKey }, idx) => {
-            const key = cacheKey || code;
-            if (!_mfeMetCache[key]) return;
-            const pct = (idx + 1) / total;
-            let stars;
-            if      (pct <= 0.10)  stars = 1;  // Avoid   — bottom 10%
-            else if (pct <= 0.325) stars = 2;  // Weak    — next 22.5%
-            else if (pct <= 0.675) stars = 3;  // Average — middle 35%
-            else if (pct <= 0.90)  stars = 4;  // Strong  — next 22.5%
-            else                   stars = 5;  // Elite   — top 10%
-            _mfeMetCache[key].stars = stars;
-            _mfeMetCache[key].score = Math.round((idx / Math.max(total-1,1)) * 100);
-        });
-
-        // ── 3-Pillar grades (1=Weak 2=Fair 3=Strong) — category-relative ──
-        // Returns: alpha + rolling avg  |  Safety: sharpe + sortino + stdDev  |  Consistency: hit rate
-        const _pArr = scored.map(({ cacheKey }) => {
-            const m = _mfeMetCache[cacheKey];
-            if (!m) return null;
-            const sdB = isDebtLike ? 8 : (isGold ? 25 : 30);
-            return {
-                k:    cacheKey,
-                ret:  Math.max(-15, Math.min(15, m.alpha)) / 5 + (m.rolling ? Math.max(-20, Math.min(20, m.rolling.avg)) / 20 : 0),
-                safe: Math.max(-3, Math.min(5, m.sharpe)) + Math.max(-3, Math.min(6, m.sortino)) + Math.max(0, (sdB - m.stdDev) / sdB),
-                cons: m.rolling ? Math.max(0, Math.min(100, m.rolling.hitRate)) / 100 : 0.5
-            };
-        }).filter(Boolean);
-        ['ret', 'safe', 'cons'].forEach(pillar => {
-            const sorted = _pArr.slice().sort((a, b) => a[pillar] - b[pillar]);
-            const n = sorted.length;
-            sorted.forEach(({ k }, i) => {
-                if (!_mfeMetCache[k]) return;
-                if (!_mfeMetCache[k].pillars) _mfeMetCache[k].pillars = {};
-                const p = (i + 1) / n;
-                _mfeMetCache[k].pillars[pillar] = p <= 0.33 ? 1 : p <= 0.67 ? 2 : 3;
-            });
-        });
+        // Weights, star tiers and pillar grades live in mf-scoring-core.js
+        // (single source of truth, shared with the nightly precompute script).
+        // Mutates the cached metric objects in place: .stars .score .pillars
+        MFScoring.normaliseCat(funds.map(f => ({ cat, metrics: _mfeMetCache[_ck(f)] })));
     }
 
     /* ════════════════════════════════════════════════════════
@@ -1129,7 +879,7 @@
     ];
     const _mfePillarLabel = ['Weak', 'Fair', 'Strong'];
 
-    function mfeSignalHtml(tier, score, pillars) {
+    function mfeSignalHtml(tier, score, pillars, win) {
         if (tier == null) return '<span class="mfe-st-nd">…</span>';
         const cfg = _mfeSigCfg[tier];
         if (!cfg) return '';
@@ -1143,7 +893,11 @@
                 + `\nSafety:       ${_mfePillarLabel[(pillars.safe || 1) - 1]}`
                 + `\nConsistency:  ${_mfePillarLabel[(pillars.cons || 1) - 1]}`;
         }
-        return `<span class="mfe-stars" title="${tip}">${stars}</span>`;
+        // Rating window disclosure (5Y blend / 3Y only / limited history)
+        const winKey = win === '5Y' ? 'mfe.win.5y' : win === '3Y' ? 'mfe.win.3y' : win === '<3Y' ? 'mfe.win.lt3y' : null;
+        if (winKey) tip += '\n' + _t(winKey);
+        const ltBadge = win === '<3Y' ? `<span class="mfe-win-lt" title="${_t('mfe.win.lt3y')}">‹3y</span>` : '';
+        return `<span class="mfe-stars" title="${tip}">${stars}</span>${ltBadge}`;
     }
 
     /* kept for sort compat — internal value unchanged */
@@ -1160,9 +914,26 @@
         return `<span class="${cls}">${val >= 0 ? '+' : ''}${val.toFixed(2)}%</span>`;
     }
 
+    /* ── Category trust caveats + past-performance disclaimer ── */
+    function mfeRenderCaveats(cat) {
+        const el = document.getElementById('mfe-caveats');
+        if (!el) return;
+        const ratedCount = _mfeList.filter(f => {
+            const k = (cat === 'Sectoral') ? f.code + ':' + _mfeSubSect : f.code;
+            return f.cat === cat && _mfeMetCache[k]?.stars;
+        }).length;
+        // Prefer pipeline-computed caveats; fall back to live computation
+        const codes = _mfeCaveats[cat] || MFScoring.categoryCaveats(cat, ratedCount);
+        const keyMap = { 'sector-fad': 'mfe.cav.sector', 'debt-credit': 'mfe.cav.debt', 'small-peers': 'mfe.cav.small' };
+        const lines = codes.map(c => keyMap[c] ? `<div class="mfe-caveat-line">${_t(keyMap[c])}</div>` : '').join('');
+        el.innerHTML = lines + `<div class="mfe-caveat-line mfe-caveat-past">${_t('mfe.cav.pastperf')}</div>`;
+        el.classList.remove('hidden');
+    }
+
     function mfeRender() {
         // Keep sub-sector pills in sync (counts may update as NAVs load)
         if (_mfeCur === 'Sectoral') mfeRenderSubSectPills();
+        mfeRenderCaveats(_mfeCur);
 
         const search=(document.getElementById('mfe-search')?.value||'').toLowerCase().trim();
         let view = _mfeList.filter(f => {
@@ -1199,7 +970,8 @@
                 return _mfeSortDir*(ra-rb);
             }
             if (_mfeSortCol==='expenseRatio'){
-                const ea=mfeGetER(a.code)??99, eb=mfeGetER(b.code)??99;
+                // .val — mfeGetER returns {val, estimated}, not a number
+                const ea=mfeGetER(a.code, a.cat)?.val??99, eb=mfeGetER(b.code, b.cat)?.val??99;
                 return _mfeSortDir*(ea-eb);
             }
             if (_mfeSortCol==='nav') return _mfeSortDir*((_mfeNavCache[a.code]?.nav||0)-(_mfeNavCache[b.code]?.nav||0));
@@ -1227,7 +999,7 @@
             const hasM = m !== undefined && m !== null;
             const sigCell = !hasM
                 ? '<span class="mfe-st-nd">…</span>'
-                : mfeSignalHtml(m?.stars ?? null, m?.score ?? null, m?.pillars ?? null);
+                : mfeSignalHtml(m?.stars ?? null, m?.score ?? null, m?.pillars ?? null, m?.window ?? null);
 
             // For Commodity and International, note that Alpha/Beta use non-Nifty benchmark
             const benchNote = (_mfeCur==='International'||_mfeCur==='Commodity')
@@ -1236,9 +1008,10 @@
             // Rolling returns cells
             const rollHit = m?.rolling?.hitRate;
             const rollAvg = m?.rolling?.avg;
+            // Benchmark-relative: beating the benchmark in ≥60% of windows is strong
             const rollHitHtml = !hasM ? '<span class="mfe-shimmer"></span>'
                 : rollHit==null ? '<span class="mfe-na">—</span>'
-                : `<span class="${rollHit>=80?'mfe-good':rollHit>=60?'mfe-avg':'mfe-bad'}">${rollHit.toFixed(1)}%</span>`;
+                : `<span class="${rollHit>=60?'mfe-good':rollHit>=40?'mfe-avg':'mfe-bad'}">${rollHit.toFixed(1)}%</span>`;
             const rollAvgHtml = !hasM ? '<span class="mfe-shimmer"></span>'
                 : rollAvg==null ? '<span class="mfe-na">—</span>'
                 : `<span class="${rollAvg>=12?'mfe-good':rollAvg>=8?'mfe-avg':'mfe-bad'}">${rollAvg>=0?'+':''}${rollAvg.toFixed(2)}%</span>`;

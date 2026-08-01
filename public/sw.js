@@ -1,5 +1,5 @@
 /* AishwaryaMasthu Service Worker */
-var CACHE = 'am-v114';
+var CACHE = 'am-v115';
 
 /* App shell — pre-cached on SW install. Other files are cached on first access. */
 var SHELL = [
@@ -9,6 +9,7 @@ var SHELL = [
   '/app.js',
   '/auth.js',
   '/dashboard.js',
+  '/mf-scoring-core.js',
   '/mf-explorer.js',
   '/fund-comparator.js',
   '/home-loan.js',
