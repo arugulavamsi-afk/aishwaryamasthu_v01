@@ -49,7 +49,66 @@ function _rcSolveRate(P, n, target) {
     return (lo + hi) / 2;
 }
 
+// The first amount input means different things per type: a one-time total for
+// lumpsum, but a per-installment amount for SIP/annual — the user shouldn't have
+// to work out "₹10,000 × 60 months" themselves, so we do that multiplication.
+// All three defaults describe the same ₹6,00,000 total over the default 5 years,
+// so switching type doesn't move the worked example.
+var RC_AMT_DEFAULTS = { lumpsum: '6,00,000', sip: '10,000', annually: '1,20,000' };
+
+function _rcType() {
+    return document.getElementById('rc-type')?.value || 'sip';
+}
+
+function _rcAmtDefault() {
+    return RC_AMT_DEFAULTS[_rcType()] || RC_AMT_DEFAULTS.lumpsum;
+}
+
+// Placeholder handling lives here rather than inline in the panel HTML because
+// the "untouched example" value now changes with the selected type.
+function rcFocusAmt(el) {
+    if (el.value === _rcAmtDefault()) el.value = '';
+    el.classList.remove('text-slate-400');
+}
+
+function rcBlurAmt(el) {
+    if (el.value) { el.classList.remove('text-slate-400'); return; }
+    el.value = _rcAmtDefault();
+    el.classList.add('text-slate-400');
+    rcCalc();
+}
+
+function _rcUpdateAmtLabel() {
+    var T = function(key, fb) { return (typeof _t === 'function') ? _t(key) : fb; };
+    var el = document.getElementById('rc-amt-label');
+    if (!el) return;
+    var type = _rcType();
+    var key = type === 'sip'      ? 'lbl.rc.amt.sip'
+            : type === 'annually' ? 'lbl.rc.amt.annual'
+            :                       'lbl.rc.invested';
+    var fb  = type === 'sip'      ? 'Monthly SIP Amount (₹)'
+            : type === 'annually' ? 'Yearly Investment Amount (₹)'
+            :                       'Total Amount Invested (₹)';
+    // Keep data-i18n in sync so a later applyLang() re-translates to the same label
+    el.setAttribute('data-i18n', key);
+    el.textContent = T(key, fb);
+}
+
+// Total actually put in, derived from the per-installment amount for SIP/annual.
+// 'annually' multiplies by fractional years so that perYear in rcCalc() divides
+// back to exactly the entered amount — the solved rate stays true to the input.
+function _rcTotalInvested(type, amount, months) {
+    if (!amount || !months) return 0;
+    if (type === 'sip')      return amount * months;
+    if (type === 'annually') return amount * (months / 12);
+    return amount;
+}
+
 function rcTypeChange() {
+    var el = document.getElementById('rc-invested');
+    // Still showing the untouched example — swap it for the new type's equivalent
+    if (el && el.classList.contains('text-slate-400')) el.value = _rcAmtDefault();
+    _rcUpdateAmtLabel();
     rcCalc();
 }
 
@@ -76,20 +135,24 @@ function _rcDurStr() {
         : T('rc.dur.yrs', '{n} yrs').replace('{n}', v);
 }
 
-function _rcUpdateInstHint(type, invested, months) {
+// Shows the total we worked out from the per-installment amount, so the number
+// the results are based on is visible without the user having to compute it.
+function _rcUpdateInstHint(type, amount, months, invested) {
     var T = function(key, fb) { return (typeof _t === 'function') ? _t(key) : fb; };
     var el = document.getElementById('rc-inst-hint');
     if (!el) return;
-    if (!invested || !months || type === 'lumpsum') { el.style.display = 'none'; return; }
+    if (!amount || !months || type === 'lumpsum') { el.style.display = 'none'; return; }
     el.style.display = 'block';
     if (type === 'sip') {
-        var perMonth = invested / months;
-        el.textContent = T('rc.hint.sip', '≈ {amt} per month for {dur} — we assume equal monthly installments')
-            .replace('{amt}', _rcInrFull(perMonth)).replace('{dur}', _rcDurStr());
+        el.textContent = T('rc.total.sip', 'Total invested: {amt} — {n} monthly installments of {each}')
+            .replace('{amt}', _rcInrFull(invested))
+            .replace('{n}', months)
+            .replace('{each}', _rcInrFull(amount));
     } else {
-        var perYear = invested / (months / 12);
-        el.textContent = T('rc.hint.annual', '≈ {amt} per year for {dur} — we assume equal yearly installments')
-            .replace('{amt}', _rcInrFull(perYear)).replace('{dur}', _rcDurStr());
+        el.textContent = T('rc.total.annual', 'Total invested: {amt} — {n} yearly installments of {each}')
+            .replace('{amt}', _rcInrFull(invested))
+            .replace('{n}', Math.round((months / 12) * 100) / 100)
+            .replace('{each}', _rcInrFull(amount));
     }
 }
 
@@ -158,12 +221,13 @@ function _rcRenderChart(type, invested, months, annRate) {
 function rcCalc() {
     var T = function(key, fb) { return (typeof _t === 'function') ? _t(key) : fb; };
 
-    var type     = document.getElementById('rc-type')?.value || 'sip';
-    var invested = rcNum('rc-invested');
+    var type     = _rcType();
+    var amount   = rcNum('rc-invested');  // per-installment for SIP/annual, total for lumpsum
     var value    = rcNum('rc-value');
     var months   = _rcGetMonths();
+    var invested = _rcTotalInvested(type, amount, months);
 
-    _rcUpdateInstHint(type, invested, months);
+    _rcUpdateInstHint(type, amount, months, invested);
 
     var resEl   = document.getElementById('rc-result');
     var chartEl = document.getElementById('rc-chart-card');
@@ -291,7 +355,7 @@ function rcCalc() {
 }
 
 function initReturnsCalc() {
-    var defs = { 'rc-invested': '6,00,000', 'rc-value': '9,00,000', 'rc-years': '5' };
+    var defs = { 'rc-invested': _rcAmtDefault(), 'rc-value': '9,00,000', 'rc-years': '5' };
     Object.keys(defs).forEach(function(id) {
         var el = document.getElementById(id);
         if (!el) return;
@@ -299,6 +363,7 @@ function initReturnsCalc() {
         else if (el.value === defs[id]) { el.classList.add('text-slate-400'); }
         else { el.classList.remove('text-slate-400'); }
     });
+    _rcUpdateAmtLabel();
     rcUnitChange();
 }
 
@@ -307,11 +372,13 @@ function resetReturnsCalc() {
     if (typeEl) typeEl.value = 'sip';
     var unitEl = document.getElementById('rc-unit');
     if (unitEl) unitEl.value = 'years';
-    var defs = { 'rc-invested': '6,00,000', 'rc-value': '9,00,000', 'rc-years': '5' };
+    // _rcAmtDefault() reads rc-type, which was just reset to 'sip' above
+    var defs = { 'rc-invested': _rcAmtDefault(), 'rc-value': '9,00,000', 'rc-years': '5' };
     Object.keys(defs).forEach(function(id) {
         var el = document.getElementById(id);
         if (el) { el.value = defs[id]; el.classList.add('text-slate-400'); }
     });
+    _rcUpdateAmtLabel();
     rcUnitChange();
     if (typeof saveUserData === 'function') saveUserData();
 }

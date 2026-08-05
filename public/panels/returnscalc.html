@@ -30,16 +30,18 @@
                 </select>
             </div>
 
-            <!-- Total Invested -->
+            <!-- Invested amount — label + default switch with the type (see rcTypeChange).
+                 For SIP/annual this is the per-installment amount and the total is
+                 computed for the user, shown in #rc-inst-hint below. -->
             <div>
-                <label class="epf-label" data-i18n="lbl.rc.invested">Total Amount Invested (₹)</label>
+                <label id="rc-amt-label" class="epf-label" data-i18n="lbl.rc.amt.sip">Monthly SIP Amount (₹)</label>
                 <div class="relative"><span class="epf-prefix">₹</span>
-                <input id="rc-invested" type="text" inputmode="numeric" value="6,00,000" maxlength="15" class="epf-input pl-7 text-slate-400"
+                <input id="rc-invested" type="text" inputmode="numeric" value="10,000" maxlength="15" class="epf-input pl-7 text-slate-400"
                     oninput="rcFmt(this);rcCalc();this.classList.remove('text-slate-400');"
-                    onfocus="if(this.value==='6,00,000'){this.value='';this.classList.remove('text-slate-400');}else{this.classList.remove('text-slate-400');}"
-                    onblur="if(!this.value){this.value='6,00,000';this.classList.add('text-slate-400');}else{this.classList.remove('text-slate-400');}">
+                    onfocus="rcFocusAmt(this)"
+                    onblur="rcBlurAmt(this)">
                 </div>
-                <div id="rc-inst-hint" class="text-[9px] text-slate-400 mt-0.5" style="display:none;"></div>
+                <div id="rc-inst-hint" class="text-[10px] font-bold mt-1 rounded-lg px-2 py-1.5" style="display:none;background:#f0fdf4;border:1px solid #bbf7d0;color:#166534;"></div>
             </div>
 
             <!-- Current / Maturity Value -->

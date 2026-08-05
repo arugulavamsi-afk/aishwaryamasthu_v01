@@ -840,6 +840,9 @@
                 });
                 obj['rc-type'] = document.getElementById('rc-type')?.value || 'sip';
                 obj['rc-unit'] = document.getElementById('rc-unit')?.value || 'years';
+                // Payload version. v2 stores rc-invested as the PER-INSTALLMENT amount
+                // for sip/annually; v1 (no marker) stored the total. See the restore side.
+                obj['rc-v'] = 2;
                 return obj;
             });
             const hraCalc = _panelData('hra-basic', function() {
@@ -1876,9 +1879,28 @@
             // Returns Calculator restore
             if (data.returnsCalc) {
                 var _rcData = data.returnsCalc;
+                // v1 payloads stored rc-invested as the TOTAL for every type. The tool now
+                // takes the per-installment amount for sip/annually and does the
+                // multiplication itself, so an old total has to be divided back down —
+                // otherwise it would be re-read as a monthly SIP and inflate the total
+                // by the number of installments.
+                if (_rcData['rc-v'] !== 2) {
+                    var _oldType = _rcData['rc-type'] || 'sip';
+                    if (_oldType === 'sip' || _oldType === 'annually') {
+                        var _rcN  = parseInt(_rcData['rc-years'], 10) || 0;
+                        var _rcMo = (_rcData['rc-unit'] === 'months') ? _rcN : _rcN * 12;
+                        var _rcTot = parseFloat(String(_rcData['rc-invested'] || '').replace(/[^0-9.]/g, '')) || 0;
+                        var _rcDiv = (_oldType === 'sip') ? _rcMo : (_rcMo / 12);
+                        if (_rcTot > 0 && _rcDiv > 0) {
+                            _rcData = Object.assign({}, _rcData, {
+                                'rc-invested': Math.round(_rcTot / _rcDiv).toLocaleString('en-IN')
+                            });
+                        }
+                    }
+                }
                 _applyWhenReady('rc-invested', function() {
                     try {
-                        var rcDefs = {'rc-invested':'6,00,000','rc-value':'9,00,000','rc-years':'5'};
+                        var rcDefs = {'rc-value':'9,00,000','rc-years':'5'};
                         Object.entries(_rcData).forEach(function(entry) {
                             var id = entry[0], val = entry[1];
                             var el = document.getElementById(id);
@@ -1888,6 +1910,14 @@
                             if (val === (rcDefs[id] || '')) el.classList.add('text-slate-400');
                             else el.classList.remove('text-slate-400');
                         });
+                        // rc-invested's default depends on rc-type, which the loop above may
+                        // only have just applied — grey it out once the type is settled.
+                        var _amtEl = document.getElementById('rc-invested');
+                        if (_amtEl && typeof _rcAmtDefault === 'function') {
+                            if (_amtEl.value === _rcAmtDefault()) _amtEl.classList.add('text-slate-400');
+                            else _amtEl.classList.remove('text-slate-400');
+                        }
+                        if (typeof _rcUpdateAmtLabel === 'function') _rcUpdateAmtLabel();
                         if (typeof rcUnitChange === 'function') rcUnitChange();
                         else if (typeof rcCalc === 'function') rcCalc();
                     } catch(e) { console.warn('loadUserData returnsCalc:', e); }
