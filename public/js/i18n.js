@@ -3770,7 +3770,7 @@
         'rc.unit.months':           'Months',
         'rc.dur.yrs':               '{n} yrs',
         'rc.dur.months':            '{n} months',
-        'rc.tipbox':                'Open your mutual fund app or statement — "Total Invested" and "Current Value" are exactly the two numbers this tool needs.',
+        'rc.tipbox':                'Open your mutual fund app or statement — the amount you invest (monthly for SIP) and "Current Value" are exactly the two numbers this tool needs.',
         'rc.hint.sip':              '≈ {amt} per month for {dur} — we assume equal monthly installments',
         'rc.hint.annual':           '≈ {amt} per year for {dur} — we assume equal yearly installments',
         'rc.total.sip':             'Total invested: {amt} — {n} monthly installments of {each}',
