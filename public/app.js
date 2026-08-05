@@ -2,6 +2,15 @@
         let currentMode = 'dashboard';
         let goalCalculateClicked = false;
 
+        // `currentMode` is module-scoped, but other modules (goal-tracker.js,
+        // dashboard.js) read `window._currentMode` to decide whether to re-render
+        // after Firestore data loads. It was never assigned anywhere, so it was
+        // permanently undefined and those refreshes silently no-opped — saved
+        // goals loaded into memory but never appeared on screen after a refresh.
+        // Always set the mode through _setMode() so the mirror stays in sync.
+        window._currentMode = currentMode;
+        function _setMode(m) { currentMode = m; window._currentMode = m; return m; }
+
         // Per-tab state to preserve values when switching tabs
         const tabState = {
             growth: { invType: 'lumpsum', amount: '', rate: '', years: '', inflationEnabled: false, infRate: '', ltcgEnabled: false },
@@ -78,7 +87,7 @@
                 const ltcgTog = document.getElementById('ltcg-toggle');
                 if (ltcgTog) ltcgTog.checked = s.ltcgEnabled || false;
                 if (s.inflationEnabled) {
-                    currentMode = 'inflation';
+                    _setMode('inflation');
                     const infEl = document.getElementById('inf-rate');
                     infEl.value = s.infRate || '0';
                     if (s.infRate && parseFloat(s.infRate) !== 0) {
@@ -90,7 +99,7 @@
                     }
                     updateWords('inf-rate', 'inf-rate-words');
                 } else {
-                    currentMode = 'growth';
+                    _setMode('growth');
                 }
             } else if (mode === 'goal') {
                 const s = tabState.goal;
@@ -162,7 +171,7 @@
             if (ltcgToggle) ltcgToggle.checked = false;
             const ltcgRow = document.getElementById('ltcg-result-row');
             if (ltcgRow) ltcgRow.classList.add('hidden');
-            currentMode = 'growth';
+            _setMode('growth');
             calculate();
             if (typeof saveUserData === 'function') saveUserData();
         }
@@ -489,7 +498,7 @@
             // from snapshotting the wrong DOM values into the new tab's state
             window._switchingMode = true;
 
-            currentMode = mode;
+            _setMode(mode);
             if (typeof roadmapMarkVisited === 'function') roadmapMarkVisited(mode);
             // No pill tabs to update — breadcrumb handled by updateBreadcrumb()
 
@@ -657,7 +666,7 @@
                     toggle.checked = false;
                     document.getElementById('toggle-track').classList.remove('on');
                     document.getElementById('toggle-thumb').classList.remove('on');
-                    currentMode = 'goal';
+                    _setMode('goal');
                     // Hide investment suggestions until Calculate is clicked
                     document.getElementById('invest-suggestions').classList.add('hidden');
                     goalCalculateClicked = false;
@@ -723,12 +732,12 @@
                 track.classList.add('on');
                 thumb.classList.add('on');
                 document.getElementById('inflation-rate-container').classList.remove('hidden');
-                currentMode = 'inflation';
+                _setMode('inflation');
             } else {
                 track.classList.remove('on');
                 thumb.classList.remove('on');
                 document.getElementById('inflation-rate-container').classList.add('hidden');
-                currentMode = 'growth';
+                _setMode('growth');
             }
             calculate();
         }
