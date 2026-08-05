@@ -109,10 +109,30 @@ function rcTypeChange() {
     // Still showing the untouched example — swap it for the new type's equivalent
     if (el && el.classList.contains('text-slate-400')) el.value = _rcAmtDefault();
     _rcUpdateAmtLabel();
-    rcCalc();
+    // via rcUnitChange so the unit options + numeric max resettle for the new type
+    rcUnitChange();
+}
+
+// "Annually Once" only makes sense over whole years — a 30-month period would
+// mean 2.5 yearly installments — so the Months unit is withdrawn for that type.
+// disabled as well as hidden: Safari has historically ignored `hidden` on <option>.
+function _rcSyncUnitOptions() {
+    var unitEl = document.getElementById('rc-unit');
+    if (!unitEl) return;
+    var annual    = (_rcType() === 'annually');
+    var monthsOpt = unitEl.querySelector('option[value="months"]');
+    if (monthsOpt) { monthsOpt.hidden = annual; monthsOpt.disabled = annual; }
+    if (annual && unitEl.value === 'months') {
+        // Carry the period across rather than silently rereading "30 months" as "30 years"
+        var yrEl = document.getElementById('rc-years');
+        var mo   = yrEl ? (parseInt(yrEl.value, 10) || 0) : 0;
+        if (yrEl && mo) yrEl.value = Math.max(1, Math.min(60, Math.round(mo / 12)));
+        unitEl.value = 'years';
+    }
 }
 
 function rcUnitChange() {
+    _rcSyncUnitOptions();
     var input = document.getElementById('rc-years');
     if (input) input.max = document.getElementById('rc-unit')?.value === 'months' ? 720 : 60;
     rcCalc();
