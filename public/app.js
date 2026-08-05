@@ -2,14 +2,11 @@
         let currentMode = 'dashboard';
         let goalCalculateClicked = false;
 
-        // `currentMode` is module-scoped, but other modules (goal-tracker.js,
-        // dashboard.js) read `window._currentMode` to decide whether to re-render
-        // after Firestore data loads. It was never assigned anywhere, so it was
-        // permanently undefined and those refreshes silently no-opped — saved
-        // goals loaded into memory but never appeared on screen after a refresh.
-        // Always set the mode through _setMode() so the mirror stays in sync.
-        window._currentMode = currentMode;
-        function _setMode(m) { currentMode = m; window._currentMode = m; return m; }
+        // Single owner for `currentMode`. Other modules (goal-tracker.js,
+        // dashboard.js) read it through the window._currentMode getter defined
+        // below to decide whether to re-render after Firestore data loads —
+        // that getter reads this variable live, so nothing else needs syncing.
+        function _setMode(m) { currentMode = m; return m; }
 
         // Per-tab state to preserve values when switching tabs
         const tabState = {

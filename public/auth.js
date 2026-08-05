@@ -1278,59 +1278,70 @@
                         answers:         Object.assign({}, fp.answers || {}),
                         planGenerated:   fp.planGenerated   || false
                     });
-                    ['fp-name','fp-age','fp-retire-age','fp-income','fp-invest-amt','fp-epf-basic','fp-epf-balance'].forEach(function(id) {
-                        const el = document.getElementById(id);
-                        if (el && fp[id]) el.value = fp[id];
-                    });
-                    // Custom "other investment" label — synced to state via oninput,
-                    // so the visible input must be refilled from state on restore.
-                    var fpCustEl = document.getElementById('fp-existing-custom-text');
-                    if (fpCustEl && fp.existingCustom) fpCustEl.value = fp.existingCustom;
                     if (fp.epfMode) window._fpState.epfMode = fp.epfMode;
-                    if (typeof fpGoStep === 'function') fpGoStep(1);
-                    // Restore tile visual state after DOM is ready
-                    if (typeof fpRestoreGoalTiles === 'function') fpRestoreGoalTiles();
-                    // Restore EPF panel + button state
-                    if (fp.existing && fp.existing.includes('epf')) {
-                        var epfBtn   = document.getElementById('fp-existing-epf-btn');
-                        var epfPanel = document.getElementById('fp-epf-panel');
-                        if (epfBtn)   epfBtn.classList.add('fp-existing-active');
-                        if (epfPanel) epfPanel.classList.remove('hidden');
-                        // Restore the EPF balance field — prefer direct DOM field value, fall back to existingAmounts
-                        var epfBalEl = document.getElementById('fp-epf-balance');
-                        var savedEpfBal = (fp['fp-epf-balance'] && fp['fp-epf-balance'] !== '0') ? fp['fp-epf-balance']
-                            : (fp.existingAmounts && fp.existingAmounts['epf'] ? Number(fp.existingAmounts['epf']).toLocaleString('en-IN') : '');
-                        if (epfBalEl && savedEpfBal) epfBalEl.value = savedEpfBal;
-                        // Only sync when panel is in DOM — fpEpfSync reads fp-epf-balance; calling with
-                        // no panel would zero out fpState.existingAmounts['epf'] via empty input.
-                        if (epfBalEl && typeof fpEpfSync === 'function') fpEpfSync();
-                    }
-                    // Restore crypto button + active indicator (already confirmed)
-                    if (fp.existing && fp.existing.includes('crypto')) {
-                        var cryptoBtnR   = document.getElementById('fp-existing-crypto-btn');
-                        var cryptoActive = document.getElementById('fp-crypto-active');
-                        if (cryptoBtnR)   cryptoBtnR.classList.add('fp-existing-active');
-                        if (cryptoActive) cryptoActive.classList.remove('hidden');
-                    }
-                    // Restore active state for all other existing investment buttons
-                    // (mf, ppf, nps, fd, stocks, gold, real_estate, scss, pomis, kvp, rbi_frb, nsc, custom_inv)
-                    if (fp.existing && fp.existing.length > 0) {
-                        document.querySelectorAll('.fp-existing-btn').forEach(function(btn) {
-                            var onclick = btn.getAttribute('onclick') || '';
-                            var match = onclick.match(/fpToggleExisting\(this,'([^']+)'\)/);
-                            if (match && fp.existing.includes(match[1])) {
-                                btn.classList.add('fp-existing-active');
-                            }
+
+                    // The Financial Plan panel is lazy-injected (data-panel-src), so on a
+                    // fresh page load none of these elements exist yet and every
+                    // getElementById below returned null — the Personal Profile fields
+                    // stayed blank until a later navigation let upApplyAuto() refill them
+                    // from My Profile, which is why the data only appeared after visiting
+                    // another tool and coming back. Defer the whole DOM half of the restore
+                    // until the panel is actually in the document, the same way the Tax
+                    // Guide / Health Score / Home Loan restores already do.
+                    _applyWhenReady('fp-name', function() {
+                        ['fp-name','fp-age','fp-retire-age','fp-income','fp-invest-amt','fp-epf-basic','fp-epf-balance'].forEach(function(id) {
+                            const el = document.getElementById(id);
+                            if (el && fp[id]) el.value = fp[id];
                         });
-                        // Restore custom_inv text input
-                        if (fp.existing.includes('custom_inv')) {
-                            var customInp = document.getElementById('fp-existing-custom-input');
-                            if (customInp) customInp.classList.remove('hidden');
+                        // Custom "other investment" label — synced to state via oninput,
+                        // so the visible input must be refilled from state on restore.
+                        var fpCustEl = document.getElementById('fp-existing-custom-text');
+                        if (fpCustEl && fp.existingCustom) fpCustEl.value = fp.existingCustom;
+                        if (typeof fpGoStep === 'function') fpGoStep(1);
+                        // Restore tile visual state after DOM is ready
+                        if (typeof fpRestoreGoalTiles === 'function') fpRestoreGoalTiles();
+                        // Restore EPF panel + button state
+                        if (fp.existing && fp.existing.includes('epf')) {
+                            var epfBtn   = document.getElementById('fp-existing-epf-btn');
+                            var epfPanel = document.getElementById('fp-epf-panel');
+                            if (epfBtn)   epfBtn.classList.add('fp-existing-active');
+                            if (epfPanel) epfPanel.classList.remove('hidden');
+                            // Restore the EPF balance field — prefer direct DOM field value, fall back to existingAmounts
+                            var epfBalEl = document.getElementById('fp-epf-balance');
+                            var savedEpfBal = (fp['fp-epf-balance'] && fp['fp-epf-balance'] !== '0') ? fp['fp-epf-balance']
+                                : (fp.existingAmounts && fp.existingAmounts['epf'] ? Number(fp.existingAmounts['epf']).toLocaleString('en-IN') : '');
+                            if (epfBalEl && savedEpfBal) epfBalEl.value = savedEpfBal;
+                            // Only sync when panel is in DOM — fpEpfSync reads fp-epf-balance; calling with
+                            // no panel would zero out fpState.existingAmounts['epf'] via empty input.
+                            if (epfBalEl && typeof fpEpfSync === 'function') fpEpfSync();
                         }
-                        // Re-render the amount inputs
-                        if (typeof fpRenderExistingAmounts === 'function') fpRenderExistingAmounts();
-                    }
-                    if (typeof fpLiveUpdate === 'function') fpLiveUpdate();
+                        // Restore crypto button + active indicator (already confirmed)
+                        if (fp.existing && fp.existing.includes('crypto')) {
+                            var cryptoBtnR   = document.getElementById('fp-existing-crypto-btn');
+                            var cryptoActive = document.getElementById('fp-crypto-active');
+                            if (cryptoBtnR)   cryptoBtnR.classList.add('fp-existing-active');
+                            if (cryptoActive) cryptoActive.classList.remove('hidden');
+                        }
+                        // Restore active state for all other existing investment buttons
+                        // (mf, ppf, nps, fd, stocks, gold, real_estate, scss, pomis, kvp, rbi_frb, nsc, custom_inv)
+                        if (fp.existing && fp.existing.length > 0) {
+                            document.querySelectorAll('.fp-existing-btn').forEach(function(btn) {
+                                var onclick = btn.getAttribute('onclick') || '';
+                                var match = onclick.match(/fpToggleExisting\(this,'([^']+)'\)/);
+                                if (match && fp.existing.includes(match[1])) {
+                                    btn.classList.add('fp-existing-active');
+                                }
+                            });
+                            // Restore custom_inv text input
+                            if (fp.existing.includes('custom_inv')) {
+                                var customInp = document.getElementById('fp-existing-custom-input');
+                                if (customInp) customInp.classList.remove('hidden');
+                            }
+                            // Re-render the amount inputs
+                            if (typeof fpRenderExistingAmounts === 'function') fpRenderExistingAmounts();
+                        }
+                        if (typeof fpLiveUpdate === 'function') fpLiveUpdate();
+                    });
                 }
             } catch(e) { console.warn('loadUserData finplan:', e); }
 
@@ -2004,6 +2015,19 @@
                 window._myMFs = data.myMFs;
                 if (typeof _myMFsRefreshBookmarks === 'function') _myMFsRefreshBookmarks();
             }
+
+            // Dashboard widgets (Goal Progress ring, My Goals bars, net worth, budget)
+            // read the globals restored above. Each restore block calls its own update
+            // hook inline, but those are all `typeof fn === 'function'` guarded and fire
+            // mid-restore: auth.js is loaded at the top of index.html while dashboard.js
+            // is loaded at the very bottom, so a fast (offline-cached) Firestore read can
+            // resolve before those renderers exist, and every hook silently no-ops —
+            // leaving the dashboard on its empty state even though the data arrived.
+            // One deferred re-render after the restore has fully settled closes that gap.
+            setTimeout(function() {
+                if (window._currentMode !== 'dashboard') return;
+                if (typeof window.dashRefreshHome === 'function') window.dashRefreshHome();
+            }, 0);
 
             } finally {
                 _restoring = false;
