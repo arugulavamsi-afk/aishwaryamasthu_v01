@@ -334,4 +334,3 @@ function faApplyIcons() {
 // FIRE age with the SAME model and SAME inputs the tool uses.
 window._faProject      = _faProject;
 window.faResolveParams = faResolveParams;
-window._faCoast        = _faCoast;   // dashboard.js FIRE ring reads the Coast number

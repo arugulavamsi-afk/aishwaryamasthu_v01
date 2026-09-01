@@ -342,28 +342,6 @@
             .rd-ring-i { flex-direction: column; align-items: flex-start; gap: 8px; }
             .rd-ring-sc { width: 84px; height: 84px; }
         }
-        /* ── FIRE Age tile: twin progress rings, the age centred inside ──
-           Outer gold  = share of the FIRE number already saved.
-           Inner green = share of the Coast FIRE number already saved.
-           Both are corpus/target, so the two arcs sit on one scale and the
-           inner ring normally leads. Set on the card by _stat()'s
-           `cls` hook so the side-by-side FinHealth ring is untouched. */
-        .rd-ring-c .rd-ring-i { flex-direction: column; align-items: center; gap: 6px; text-align: center; }
-        .rd-ring-c .rd-ring-i > div { width: 100%; }
-        .rd-ring-fire { width: 130px; height: 130px; flex-shrink: 0; display: block; }
-        .rd-fr-lg { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;
-            font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.45); line-height: 1.4; }
-        .rd-fr-lg i { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 5px; }
-        .rd-fr-lg .k-f i { background: #f5c842; }
-        .rd-fr-lg .k-c i { background: #34d399; }
-
-        /* SVG presentation attributes name only "Inter", so if that webfont has
-           not loaded the ring numerals drop to the browser's default SERIF and
-           read as off-brand. A CSS rule beats the presentation attribute, so
-           this restores the app stack for the FIRE ring and the FinHealth one. */
-        .rd-ring-fire text,
-        .rd-ring-sc text { font-family: 'Inter', 'Inter Fallback', sans-serif; }
-
         .rd-ring-wrap { display: flex; gap: 20px; align-items: center; min-height: 160px; }
         .rd-ring-facts { font-size: 12.5px; color: rgba(255,255,255,0.55); line-height: 2.1; min-width: 0; flex: 1; }
         .rd-ring-facts b { color: rgba(255,255,255,0.85); font-weight: 700; }
@@ -2579,12 +2557,6 @@
                 flex-direction: column; align-items: center; }
             .rd-ring-side .rd-ring-i { align-items: center; text-align: center; }
             .rd-ring-sc { width: 112px; height: 112px; }
-            /* 124px keeps the ring inside the 2-up tile even at a 360px viewport */
-            .rd-ring-fire { width: 124px; height: 124px; }
-            /* 9px/7px keeps the two keys on ONE line at a 360px viewport, so the
-               FIRE tile does not grow taller than the other three in the 2x2 grid */
-            .rd-fr-lg { font-size: 9px; gap: 7px; }
-            .rd-fr-lg i { width: 6px; height: 6px; margin-right: 4px; }
             /* chip — sits just under the number/wheel */
             .rd-chip { order: 5; margin: 0; font-size: 10.5px; padding: 4px 10px; }
             /* title — centred at the bottom; matching auto margin balances the block */
