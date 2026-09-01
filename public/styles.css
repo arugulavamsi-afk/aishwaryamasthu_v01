@@ -312,6 +312,16 @@
         .rd-big small { font-size: 15px; color: rgba(255,255,255,0.35); font-weight: 700; }
         .rd-fire-n { display: block; font-size: 46px; font-weight: 800; letter-spacing: -.02em; line-height: 1; }
         .rd-fire-sub { display: block; font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.42); letter-spacing: .03em; margin-top: 3px; }
+
+        /* Desktop only: the value column left the right half of the FIRE tile
+           empty. Setting the number and its unit on one baseline lets the figure
+           grow into that space, giving the tile the same value-then-chip anatomy
+           as the Net Worth and Budget tiles beside it. Below 761px the mobile
+           block's centred 58px treatment governs and is byte-identical to before. */
+        @media (min-width: 761px) {
+            .rd-fire-n   { display: inline; font-size: 74px; }
+            .rd-fire-sub { display: inline; margin-top: 0; margin-left: 9px; font-size: 15px; }
+        }
         .rd-chip { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 700; padding: 4px 11px; border-radius: 999px; margin-top: 10px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .rd-chip-e { background: rgba(16,185,129,0.14); color: #34d399; }
         .rd-chip-g { background: rgba(245,200,66,0.13); color: #f5c842; }
