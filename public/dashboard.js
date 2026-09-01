@@ -549,9 +549,26 @@
 
         var multiple = p.swr > 0 ? 100 / p.swr : 25;
         var reg = window._faProject(p, 1.0, multiple);
+
+        // Two ring percentages, both expressed as "share of a corpus target"
+        // so they sit on ONE scale and can be read against each other:
+        //   fireP  = corpus / this year's FIRE target   (the long goal)
+        //   coastP = corpus / the Coast FIRE number     (the near milestone)
+        // coastNumber = fireTarget0 x ((1+infl)/(1+r))^yrsToRetirement, so the
+        // inner ring leads the outer WHENEVER the expected return beats
+        // inflation (the normal case). If a user sets a return below their
+        // inflation the arcs cross over — which is itself a true and useful
+        // signal, so nothing here forces an order. See scripts/test-fire-ring.js.
+        var _t0    = (reg.series && reg.series[0]) ? reg.series[0].target : 0;
+        var _fireP = _t0 > 0 ? (p.corpus / _t0) * 100 : 0;
+        var _coastP = 0;
+        if (typeof window._faCoast === 'function') {
+            var _co = window._faCoast(p, multiple);
+            if (_co && _co.number > 0) _coastP = (p.corpus / _co.number) * 100;
+        }
         return reg.reached
-            ? { age: reg.age, beyond: false, assumed: assumed }
-            : { age: null,    beyond: true,  assumed: assumed };
+            ? { age: reg.age, beyond: false, assumed: assumed, fireP: _fireP, coastP: _coastP }
+            : { age: null,    beyond: true,  assumed: assumed, fireP: _fireP, coastP: _coastP };
     }
 
     function _dashFmtTs(iso) {
@@ -1012,9 +1029,9 @@
         // ringHtml (optional) puts a progress ring left of the tile's body. When the
         // ring already carries the value (see _scoreRing), bigHtml is empty and only
         // the chip sits beside it — so nothing is stated twice.
-        function _stat(mode, label, bigHtml, chipHtml, ringHtml) {
+        function _stat(mode, label, bigHtml, chipHtml, ringHtml, cls) {
             var body = (bigHtml ? '<div class="rd-big">' + bigHtml + '</div>' : '') + (chipHtml || '');
-            return '<div class="royal-card rd-stat' + (ringHtml ? ' rd-ring-side' : '') + '" onclick="switchMode(\'' + mode + '\')">' +
+            return '<div class="royal-card rd-stat' + (ringHtml ? ' rd-ring-side' : '') + (cls ? ' ' + cls : '') + '" onclick="switchMode(\'' + mode + '\')">' +
                 '<div class="rd-lbl">' + label + '</div>' +
                 (ringHtml ? '<div class="rd-ring-i">' + ringHtml + '<div>' + body + '</div></div>' : body) +
             '</div>';
@@ -1040,6 +1057,41 @@
                 '<text x="55" y="74" text-anchor="middle" font-family="Inter" font-size="13" ' +
                     'font-weight="700" fill="rgba(255,255,255,0.35)">/100</text>' +
             '</svg>';
+        }
+
+        // FIRE Age ring: two concentric meters around the age itself.
+        // Outer (gold) = share of the FIRE number saved. Inner (emerald) =
+        // share of the Coast FIRE number saved. Both are corpus/target, so
+        // the two arcs are directly comparable. Carries its own aria-label
+        // so the figure stays available rather than being decorative SVG.
+        function _fireRing(ageTxt, firePct, coastPct, subTxt) {
+            var f  = Math.max(0, Math.min(100, Math.round(firePct  || 0)));
+            var c  = Math.max(0, Math.min(100, Math.round(coastPct || 0)));
+            var cO = 2 * Math.PI * 47;          // outer track circumference
+            var cI = 2 * Math.PI * 39;          // inner track circumference
+            var txt = String(ageTxt);
+            // "60+" needs to step down a size or it overruns the inner ring
+            var fs  = txt.length >= 3 ? 34 : 46;
+            var aria = (typeof _t === 'function' ? _t('dash.aria.fire') : '{age} · FIRE {f}% · Coast {c}%')
+                .replace('{age}', txt).replace('{f}', f).replace('{c}', c);
+            return '<svg class="rd-ring-fire" viewBox="0 0 110 110" role="img" aria-label="' + _dashEsc(aria) + '">' +
+                '<circle cx="55" cy="55" r="47" fill="none" stroke="rgba(245,200,66,0.10)" stroke-width="6.5"/>' +
+                '<circle cx="55" cy="55" r="47" fill="none" stroke="#f5c842" stroke-width="6.5" ' +
+                    'stroke-linecap="round" stroke-dasharray="' + cO.toFixed(1) + '" ' +
+                    'stroke-dashoffset="' + (cO * (1 - f / 100)).toFixed(1) + '" transform="rotate(-90 55 55)"/>' +
+                '<circle cx="55" cy="55" r="39" fill="none" stroke="rgba(52,211,153,0.12)" stroke-width="3"/>' +
+                '<circle cx="55" cy="55" r="39" fill="none" stroke="#34d399" stroke-width="3" ' +
+                    'stroke-linecap="round" stroke-dasharray="' + cI.toFixed(1) + '" ' +
+                    'stroke-dashoffset="' + (cI * (1 - c / 100)).toFixed(1) + '" transform="rotate(-90 55 55)"/>' +
+                '<text x="55" y="61" text-anchor="middle" font-family="Inter" font-size="' + fs + '" ' +
+                    'font-weight="800" letter-spacing="-2" fill="#f2f5f0">' + _dashEsc(txt) + '</text>' +
+                '<text x="55" y="78" text-anchor="middle" font-family="Inter" font-size="9.5" ' +
+                    'font-weight="700" letter-spacing="1.2" fill="rgba(255,255,255,0.40)">' + _dashEsc(subTxt) + '</text>' +
+            '</svg>' +
+            '<div class="rd-fr-lg">' +
+                '<span class="k-f"><i></i>' + _t('dash.fire.lg.fire').replace('{n}', f) + '</span>' +
+                '<span class="k-c"><i></i>' + _t('dash.fire.lg.coast').replace('{n}', c) + '</span>' +
+            '</div>';
         }
 
         var nwBig, nwChip;
@@ -1074,27 +1126,24 @@
         // ── FIRE Age tile — from the active Financial Path plan ──
         var _fPlan = window._pathState && window._pathState.active;
         var _fire  = _dashFireAge(_fPlan);
-        var fireBig, fireChip;
+        var fireBig, fireChip, fireRing = '';
         if (_fire) {
-            // Marks a figure that leans on a default expense/inflation assumption
-            // because My Profile has none — the number is ours, not the user's.
-            // Caption sits on its own line below the number ("yrs", plus "· est."
-            // when the figure leans on a default assumption). Keeping it off the
-            // number's line lets the number itself centre cleanly instead of being
-            // pulled left by the trailing text.
-            var _fireSub = '<span class="rd-fire-sub"'
-                + (_fire.assumed ? ' title="' + _dashEsc(_t('dash.fire.esttip')) + '"' : '')
-                + '>' + _t('dash.fire.yrs')
-                + (_fire.assumed ? ' · ' + _t('dash.fire.est') : '') + '</span>';
+            // The age now reads from inside the ring, so the tile body is just
+            // the chip. "· est." still marks a figure that leans on a default
+            // expense/inflation assumption because My Profile has none — the
+            // number is ours, not the user's.
+            var _fireSub = _t('dash.fire.yrs') + (_fire.assumed ? ' · ' + _t('dash.fire.est') : '');
+            fireBig = '';
             if (_fire.beyond) {
                 // Never reaches 25× expenses inside the horizon. This is a computed
                 // answer, so it gets a number and a red chip — not the empty state,
-                // which would misread as "you haven't saved a plan".
-                fireBig  = '<span class="rd-fire-n">60+</span>' + _fireSub;
+                // which would misread as "you haven't saved a plan". The rings still
+                // carry real progress here, so they stay.
+                fireRing = _fireRing('60+', _fire.fireP, _fire.coastP, _fireSub);
                 fireChip = '<span class="rd-chip rd-chip-r">' + _t('dash.fire.beyond') + '</span>';
             } else {
                 var _fireIn = _fire.age - (_fPlan.age || 30);
-                fireBig = '<span class="rd-fire-n">' + _fire.age + '</span>' + _fireSub;
+                fireRing = _fireRing(_fire.age, _fire.fireP, _fire.coastP, _fireSub);
                 fireChip = _fireIn <= 0
                     ? '<span class="rd-chip rd-chip-e">' + _t('dash.fire.now') + '</span>'
                     : '<span class="rd-chip ' + (_fire.age <= (_fPlan.retireAge || 60) ? 'rd-chip-e' : 'rd-chip-g') + '">' + _t('dash.fire.in').replace('{n}', _fireIn) + '</span>';
@@ -1119,7 +1168,7 @@
             '<div class="rd-stats">' +
                 _stat('networth',    _t('dash.nw.val'),       nwBig, nwChip) +
                 _stat('healthscore', _t('dash.card.hs'),      hsBig, hsChip, hsRing) +
-                _stat('fireage',     _t('dash.card.fire'),    fireBig, fireChip) +
+                _stat('fireage',     _t('dash.card.fire'),    fireBig, fireChip, fireRing, fireRing ? 'rd-ring-c' : '') +
                 _stat('budgettrack', _t('dash.card.budget'),  btBig, btChip) +
             '</div>';
 
